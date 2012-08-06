@@ -15,8 +15,15 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# last updated 10/jul/2012 by cassio@ime.usp.br
-privatedir=/var/www/boca/src/private/remotescores
+# last updated 06/aug/2012 by cassio@ime.usp.br
+if [ "`id -u`" != "0" ]; then
+  echo "Must be run as root"
+  exit 1
+fi
+bocadir=/var/www/boca
+[ -r /etc/boca.conf ] && . /etc/boca.conf
+
+privatedir=$bocadir/src/private/remotescores
 others=$privatedir/otherservers
 if [ "$1" == "" -o "$2" == "" ]; then
   echo "Usage $0 <remotescorefolder> <serversfile>"

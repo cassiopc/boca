@@ -66,8 +66,18 @@ if [ -f boca-$bocaver.$di/src/private/conf.php ]; then
    echo "You probably need to update the new file boca-$bocaver/src/private/conf.php with the correct passwords - PLEASE CHECK IT - NOT DONE AUTOMATICALLY"
  fi
 fi
+
+apacheuser=
+[ -r /etc/icpc/apacheuser ] && apacheuser=`cat /etc/icpc/apacheuser | sed 's/ \t\n//g'`
+[ "$apacheuser" == "" ] && apacheuser=www-data
+id -u $apacheuser >/dev/null 2>/dev/null
+if [ $? != 0 ]; then
+  echo "User $apacheuser not found -- error to set permissions with chown/chmod"
+  apacheuser=root
+fi
+
 tar xzf boca-$bocaver.tgz
-chown -R root.www-data boca-$bocaver/
+chown -R root.$apacheuser boca-$bocaver/
 chmod -R g+rx,u+rwx boca-$bocaver/
 
 chmod 600 boca-$bocaver/src/private/*.php
@@ -94,11 +104,8 @@ cp boca-$bocaver/tools/.htaccess boca-$bocaver/old/.htaccess
 cp boca-$bocaver/tools/.htaccess boca-$bocaver/src/private/.htaccess
 cp boca-$bocaver/tools/.htaccess boca-$bocaver/src/webcast/.htaccess
 
-chmod -R 770 boca-$bocaver/src/balloons
-chmod -R 770 boca-$bocaver/src/private/problemtmp
-chmod -R 770 boca-$bocaver/src/private/runtmp
-chmod -R 770 boca-$bocaver/src/private/scoretmp
-chmod -R 770 boca-$bocaver/src/private/remotescores
+chmod -R 770 boca-$bocaver/src/private
+chmod -R 775 boca-$bocaver/src/balloons
 
 echo "=========================================================================================="
 echo "=========== SETTING UP SOME LINKS (main apache server index.html updated)  ==============="
@@ -137,3 +144,21 @@ if [ "$OK" == "y" -o "$OK" == "Y" ]; then
   /etc/icpc/becomeserver.sh
   fi
 fi
+
+cat > /etc/apache2/conf.d/boca <<EOF
+<Directory $basedir/boca/src>
+       AllowOverride Options AuthConfig Limit
+       Order Allow,Deny
+       Allow from all
+       AddDefaultCharset utf-8
+</Directory>
+<Directory $basedir/boca/src/private>
+       AllowOverride Options AuthConfig Limit
+       Deny from all
+</Directory>
+<Directory $basedir/boca>
+       AllowOverride Options AuthConfig Limit
+       Deny from all
+</Directory>
+Alias /boca $basedir/boca/src
+EOF

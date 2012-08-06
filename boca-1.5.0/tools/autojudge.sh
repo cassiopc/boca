@@ -22,5 +22,5 @@ if [ "`id -u`" != "0" ]; then
 fi
 bocadir=/var/www/boca
 [ -r /etc/boca.conf ] && . /etc/boca.conf
-cd $bocadir
+cd $bocadir/src
 php private/autojudging.php

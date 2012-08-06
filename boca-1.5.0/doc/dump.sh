@@ -1,4 +1,10 @@
 #!/bin/bash
+if [ "`id -u`" != "0" ]; then
+  echo "Must be run as root"
+  exit 1
+fi
+bocadir=/var/www/boca
+[ -r /etc/boca.conf ] && . /etc/boca.conf
 
 for i in pg_dump grep cut gzip date; do
   if [ "`which $i`" == "" ]; then
@@ -8,10 +14,10 @@ for i in pg_dump grep cut gzip date; do
 done
 da=`date +%d%b%Y-%Hh%Mmin`
 echo "I will create the file `pwd`/bocadb.$da.tar.gz"
-f=/var/www/boca/private/conf.php
-[ -r $f ] || f=/var/www/private/conf.php
+f=$bocadir/src/private/conf.php
+[ -r $f ] || f=$bocadir/src/private/conf.php
 if [ -r $f ]; then
-  echo I believe the password is `grep "\$conf\[\"dbpass\"\]=" /var/www/boca/private/conf.php | cut -d'"' -f4`
+  echo I believe the password is `grep "\$conf\[\"dbpass\"\]=" $bocadir/src/private/conf.php | cut -d'"' -f4`
 else
   echo "The password can be found in private/conf.php of the boca directory"
 fi

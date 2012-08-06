@@ -15,7 +15,7 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 05/aug/2012 by cassio@ime.usp.br
+# // Last modified 06/aug/2012 by cassio@ime.usp.br
 for i in id chown chmod cut awk grep cat sed makepasswd ifconfig iptables php touch mkdir update-rc.d su rm mv; do
   p=`which $i`
   if [ -x "$p" ]; then
@@ -26,7 +26,14 @@ for i in id chown chmod cut awk grep cat sed makepasswd ifconfig iptables php to
   fi
 done
 
-privatedir=/var/www/boca/private
+if [ "`id -u`" != "0" ]; then
+  echo "Must be run as root"
+  exit 1
+fi
+bocadir=/var/www/boca
+[ -r /etc/boca.conf ] && . /etc/boca.conf
+
+privatedir=$bocadir/src/private
 if [ ! -d $privatedir ]; then
   echo "Could not find directory $privatedir"
   exit 1
@@ -36,18 +43,15 @@ apacheuser=
 [ -r /etc/icpc/apacheuser ] && apacheuser=`cat /etc/icpc/apacheuser | sed 's/ \t\n//g'`
 [ "$apacheuser" == "" ] && apacheuser=www-data
 id -u $apacheuser >/dev/null 2>/dev/null
-[ $? != 0 ] && echo "User $apacheuser not found -- error to set permissions with chown/chmod"
+if [ $? != 0 ]; then
+  echo "User $apacheuser not found -- error to set permissions with chown/chmod"
+  apacheuser=root
+fi
 
 postgresuser=postgres
 id -u $postgresuser >/dev/null 2>/dev/null
 if [ $? != 0 ]; then
   echo "User $postgresuser not found -- maybe you use another name (then update this script) or postgres is not installed"
-  exit 1
-fi
-
-uid=`id -u`
-if [ "$uid" != "0" ]; then
-  echo "Must be root to run this script. Use sudo /bin/bash first"
   exit 1
 fi
 
@@ -83,6 +87,12 @@ for i in `ls /etc/postgresql/*/main/pg_hba.conf`; do
    echo "I AM GIVING ACCESS TO THE DATABASE FROM ANY IP (AS LONG AS THE PASSWORD IS OK)"
    echo "In order to improve security, it is possible to alter the file $i"
    echo "and perform a finer tune. Nevertheless, if the password of the DB is safe, there is no big threat"
+   echo "For doing that, I am using the line:"
+   echo ""
+   echo -e "echo \"host bocadb bocauser 0/0 md5\" >> $i"
+   echo ""
+   echo "==> IDEALLY FOR IMPROVED SECURITY, REPLACE THE 0/0 ABOVE (IN THAT FILE) WITH THE IP ADDRESS OF THE AUTOJUDGE MACHINE <=="
+   echo "==> IF YOU HAVE MULTIPLE AUTOJUDGE MACHINES, WRITE ONE LINE FOR EACH IP ADDRESS THERE IN THE FILE <=="
    echo "############"
    echo "host bocadb bocauser 0/0 md5" >> $i
   fi
@@ -178,13 +188,13 @@ if [ $? == 0 ]; then
   done
 fi
 if [ "$OK" == "y" ]; then
-cd /var/www/boca
+cd $bocadir/src
 php private/createdb.php
 cd -
  echo "database renewed. Data on bocadb has been lost"
 else
  echo "*** database not erased. Check if BOCA is compatible. You can always erase the database and"
- echo "*** fix the problem by running (as root) cd /var/www/boca; php private/createdb.php"
+ echo "*** fix the problem by running (as root) cd $bocadir/src; php private/createdb.php"
  echo "*** still, all data regarding BOCA in the database will be lost" 
 fi
 touch /etc/icpc/.isserver
