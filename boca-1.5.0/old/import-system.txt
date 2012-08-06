@@ -1,0 +1,78 @@
+import-system.txt
+-----------------
+Last modified 20/aug/2007 by cassio@ime.usp.br
+
+************************************
+OUTDATED INFORMATION. PLEASE WAIT FOR A NEW VERSION OF THIS FILE.
+FOR MORE DETAILS, SEE THE EXAMPLE FILE: bits/import.txt
+************************************
+
+
+
+It's possible to create a language file
+(or use the same user file for it, putting the
+languages at the end). Following are some language
+examples, but it is recommended to insert the
+languages by the web pages directly. See the files
+run.sh and compare.sh for compiling/running script and
+comparing script respectively.
+
+
+[language]
+langnumber=1
+langname=C
+langscript=runscriptforlang1.sh
+#!/bin/bash
+echo este eh o runscript 1...
+exit 1
+***END***
+langcompscript=compscriptforlang1.sh
+#!/bin/bash
+echo este eh o compscript 1...
+exit 1
+***END***
+
+langnumber=2
+langname=C++
+langscript=runscriptforlang2.sh
+#!/bin/bash
+echo este eh o runscript 2...
+exit 2
+***END***
+langcompscript=compscriptforlang2.sh
+#!/bin/bash
+echo este eh o compscript 2...
+exit 2
+***END***
+
+langnumber=3
+langname=Java
+langscript=runscriptforlang3.sh
+#!/bin/bash
+echo este eh o runscript 3...
+exit 3
+***END***
+langcompscript=compscriptforlang3.sh
+#!/bin/bash
+echo este eh o compscript 3...
+exit 3
+***END***
+
+
+
+Contacts and Copyrights
+-----------------------
+BOCA Copyright (c) 2003- Cassio Polpo de Campos (cassio@ime.usp.br)
+http://www.ime.usp.br/~cassio/boca
+
+This software may be distributed under the terms of the Q Public
+License version 1.0. A copy of the license can be found with this
+software or at http://www.opensource.org/licenses/qtpl.php
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR
+CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
