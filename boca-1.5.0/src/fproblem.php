@@ -54,6 +54,12 @@ CONSTRAINT \"contest_fk\" FOREIGN KEY (\"contestnumber\") REFERENCES \"contestta
               "(\"contestnumber\" int4_ops, \"problemname\" varchar_ops)", "DBCreateProblemTable(create problem_index2)");
 }
 
+function DBinsertfakeproblem($n,$c) {
+	DBExec($c, "insert into problemtable (contestnumber, problemnumber, problemname, problemfullname, ".
+		"problembasefilename, probleminputfilename, probleminputfile, fake) values ($n, 0, 'General', 'General', NULL, NULL, ".
+	   	"NULL, 't')", "DBNewContest(insert problem)");
+}
+
 //////////////////////funcoes de problemas//////////////////////////////////////////////////////////////
 //recebe um numero de contest e numero de problema
 //devolve todos os dados relativos ao problema em cada linha do array, sendo que cada linha representa o fato
@@ -61,7 +67,7 @@ CONSTRAINT \"contest_fk\" FOREIGN KEY (\"contestnumber\") REFERENCES \"contestta
 function DBGetProblemData($contestnumber, $problemnumber) {
 	$c = DBConnect();
 	$r = DBExec($c, "select p.problemname as problemname, p.problemfullname as fullname, p.problembasefilename " . 
-			"as basefilename, p.problemtimelimit as timelimit, " .
+			"as basefilename, " .
 			"p.problemcolor as color, p.problemcolorname as colorname, " .
 			"p.probleminputfilename as inputfilename, p.probleminputfile as inputoid, p.probleminputfilehash as inputhash " .
 			" from problemtable as p where p.contestnumber=$contestnumber and p.problemnumber=$problemnumber and p.fake!='t'",
@@ -80,8 +86,9 @@ function DBGetProblemData($contestnumber, $problemnumber) {
 		if($ds=="") $ds = "/";
 		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $a[$i]['number'] . "-contest" . $contestnumber;
 		if(is_readable($ptmp . ".name")) {
-			$a[$i]['descfilename']=$ptmp . $ds . file_get_contents($ptmp . ".name");
-			$a[$i]['descoid']=-1;
+			$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
+			if($a[$i]['descfilename'] != '')
+				$a[$i]['descoid']=-1;
 		}
 	}
 	return $a;
@@ -90,7 +97,7 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 	$c = DBConnect();
 	DBExec($c, "begin work", "GetFullProblemData");
 	$r = DBExec($c, "select p.problemnumber as number, p.problemname as name, p.problemfullname as fullname, " .
-			"p.problembasefilename as basefilename, p.fake as fake, p.problemtimelimit as timelimit, " .
+			"p.problembasefilename as basefilename, p.fake as fake, " .
 			"p.problemcolor as color, p.problemcolorname as colorname, " .
 			"p.probleminputfilename as inputfilename, p.probleminputfile as inputoid, p.probleminputfilehash as inputhash " .
 			" from problemtable as p " .
@@ -110,8 +117,9 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 			if($ds=="") $ds = "/";
 			$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $nn . "-contest" . $contestnumber;
 			if(is_readable($ptmp . ".name")) {
-				$a[$i]['descfilename']=$ptmp . $ds . file_get_contents($ptmp . ".name");
-				$a[$i]['descoid']=-1;
+				$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
+				if($a[$i]['descfilename'] != '')
+					$a[$i]['descoid']=-1;
 			} else {
 				$randnum = session_id() . "_" . rand();
 				$dir = $ptmp . '-' . $randnum;
@@ -145,19 +153,21 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 									$fullname=trim(sanitizeText($aa[1]));
 								}
 							}
-							if($descfile=='' || $basename=='' || $fullname=='')
+							if($basename=='' || $fullname=='')
 								$failed=3;
 						}
 					} else $failed=4;
 					if(!$failed) {
 						@mkdir($ptmp);
-						if(file_put_contents($ptmp . $ds . $descfile, encryptData(file_get_contents($dir . $ds . "description" . $ds . $descfile),$cf['key']),LOCK_EX)===FALSE)
-							$failed=5;
+						if($descfile != '')
+							if(file_put_contents($ptmp . $ds . $descfile, encryptData(file_get_contents($dir . $ds . "description" . $ds . $descfile),$cf['key']),LOCK_EX)===FALSE)
+								$failed=5;
 						if(!$failed) {
-							file_put_contents($ptmp . ".name",$descfile);
+							file_put_contents($ptmp . ".name",$ptmp . $ds . $descfile);
 							if(is_readable($ptmp . ".name")) {
-								$a[$i]['descfilename']=$ptmp . $ds . $descfile;
-								$a[$i]['descoid']=-1;
+								$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
+								if($a[$i]['descfilename'] != '')
+									$a[$i]['descoid']=-1;
 							}
 							DBExec($c,"update problemtable set problemfullname='$fullname', problembasefilename='$basename' where problemnumber=$nn and contestnumber=$contestnumber",
 								   "DBGetFullProblemData(free problem)");
@@ -410,8 +420,9 @@ function DBGetProblems($contest,$showanyway=false) {
 		if($ds=="") $ds = "/";
 		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $a[$i]['number'] . "-contest" . $contestnumber;
 		if(is_readable($ptmp . ".name")) {
-			$a[$i]['descfilename']=$ptmp . $ds . file_get_contents($ptmp . ".name");
-			$a[$i]['descoid']=-1;
+			$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
+			if($a[$i]['descfilename'] != '')
+				$a[$i]['descoid']=-1;
 		}
 	}
 	return $a;

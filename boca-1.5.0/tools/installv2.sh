@@ -20,7 +20,6 @@
 echo "#############################################################"
 echo "### installv2.sh of 06/Aug/2012 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
-# checked with ubuntu 10.04 and 10.10 and 11.04 and 12.04
 
 for i in id chown chmod cut awk tail grep cat sed mkdir rm mv sleep apt-get add-apt-repository update-alternatives; do
   p=`which $i`

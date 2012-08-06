@@ -1,0 +1,24 @@
+#!/bin/bash
+
+cat > test.c <<EOF
+int main() {
+  char s[100];
+  scanf("%s", s);
+  printf("%s\n",s);
+  return 0;
+}
+EOF
+cat > test.in <<EOF
+inputdata
+EOF
+
+TL=2
+REP=10
+../compile/c test.c test.exe TL
+../run/c test.exe test.in TL REP
+output=`cat stdout0`
+if [ "$output" != "inputdata" ]; then
+  echo "ERROR"
+  exit 1
+fi
+exit 0

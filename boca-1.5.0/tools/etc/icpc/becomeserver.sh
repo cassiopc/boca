@@ -190,7 +190,7 @@ fi
 if [ "$OK" == "y" ]; then
 cd $bocadir/src
 php private/createdb.php
-cd -
+cd - >/dev/null 2>/dev/null
  echo "database renewed. Data on bocadb has been lost"
 else
  echo "*** database not erased. Check if BOCA is compatible. You can always erase the database and"

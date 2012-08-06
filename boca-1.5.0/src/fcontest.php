@@ -151,6 +151,7 @@ CREATE TABLE \"usertable\" (
         \"usersessionextra\" varchar(50) DEFAULT '',      -- (sessao do usuario)
         \"userlastlogout\" int4,                          -- (data em seg desde epoch do ult logout)
         \"userpermitip\" varchar(300),                     -- (ip permitido para acesso)
+        \"userinfo\" varchar(300) DEFAULT '',
         \"updatetime\" int4 DEFAULT EXTRACT(EPOCH FROM now()) NOT NULL, -- (indica a ultima atualizacao no registro)
 -- (esta tabela contem uma linha para cada usuario, seja ele administrador, juiz ou time. )
 	    \"usericpcid\" varchar(50) DEFAULT '',		-- (compatibilidade com dados do ICPC)
@@ -921,11 +922,7 @@ function DBNewContest ($param=array(), $c=null) {
 
 	insertanswers($n,$c);
 	insertlanguages($n,$c);
-
-	DBExec($c, "insert into problemtable (contestnumber, problemnumber, problemname, problemfullname, ".
-		"problembasefilename, problemdescfilename, problemdescfile, probleminputfilename, probleminputfile, ".
-		"problemsolfilename, problemsolfile, fake) values ($n, 0, 'General', 'General', NULL, NULL, ".
-	   	"NULL, NULL, NULL, NULL, NULL, 't')", "DBNewContest(insert problem)");
+	DBinsertfakeproblem($n,$c);
 
 	if($cw) {
 		DBExec($c, "commit work", "DBNewContest(commit)");
