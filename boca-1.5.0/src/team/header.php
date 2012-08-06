@@ -85,15 +85,42 @@ if($doslow) {
 	}
 }
 
-$str = '';
-foreach($_SESSION["popups"] as $key => $value) {
-	if($value != null) {
-		$str .= $value;
-		$_SESSION["popups"][$key] = null;
+if(!isset($_SESSION["popuptime"]) || $_SESSION["popuptime"] < time()-120) {
+	$_SESSION["popuptime"] = time();
+
+	if(($st = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) != null) {
+		$clar = DBUserClars($_SESSION["usertable"]["contestnumber"],
+							$_SESSION["usertable"]["usersitenumber"],
+							$_SESSION["usertable"]["usernumber"]);
+		for ($i=0; $i<count($clar); $i++) {
+			if ($clar[$i]["timestamp"]>$_SESSION["usertable"]["userlastlogin"]-$st["sitestartdate"] && 
+				$clar[$i]["timestamp"] < $st['siteduration'] &&
+				trim($clar[$i]["answer"])!='' && !isset($_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["timestamp"]])) {
+				$_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["timestamp"]] = "Clarification for problem ".$clar[$i]["problem"]." answered\n";
+			}
+		}
+		$run = DBUserRuns($_SESSION["usertable"]["contestnumber"],
+						  $_SESSION["usertable"]["usersitenumber"],
+						  $_SESSION["usertable"]["usernumber"]);
+		for ($i=0; $i<count($run); $i++) {
+			if ($run[$i]["anstime"]>$_SESSION["usertable"]["userlastlogin"]-$st["sitestartdate"] && 
+				$run[$i]["anstime"] < $st['sitelastmileanswer'] &&
+				$run[$i]["ansfake"]!="t" && !isset($_SESSION["popups"]['run' . $i . '-' . $run[$i]["anstime"]])) {
+				$_SESSION["popups"]['run' . $i . '-' . $run[$i]["anstime"]] = "Run ".$run[$i]["number"]." result: ".$run[$i]["answer"] . '\n';
+			}
+		}
 	}
-}
-if($str != '') {
-	MSGError('YOU GOT NEWS:<br>' . $str);
+
+	$str = '';
+	foreach($_SESSION["popups"] as $key => $value) {
+        if($value != '') {
+			$str .= $value;
+			$_SESSION["popups"][$key] = '';
+        }
+	}
+	if($str != '') {
+        MSGError('YOU GOT NEWS:\n' . $str . '\n');
+	}
 }
 
 list($clockstr,$clocktype)=siteclock();

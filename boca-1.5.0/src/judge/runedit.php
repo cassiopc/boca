@@ -48,7 +48,7 @@ if (isset($_POST["answer"]) && isset($_POST["Submit"]) && $_POST["Submit"]=="Jud
 	        DBUpdateRun($_SESSION["usertable"]["contestnumber"],
 	                     $_SESSION["usertable"]["usersitenumber"],
 	                     $_SESSION["usertable"]["usernumber"],
-	                     $sitenumber, $number, $answer); //, $notuser, updscore);
+	                     $sitenumber, $number, $answer); //, $notuser, $updscore);
 	}
         ForceLoad("run.php");
 }
@@ -69,7 +69,6 @@ if (($a = DBGetRunToAnswer($runnumber, $runsitenumber,
 }
 
 $b = DBGetProblemData($_SESSION["usertable"]["contestnumber"], $a["problemnumber"]);
-$c = DBGetLanguageData($_SESSION["usertable"]["contestnumber"], $a["langnumber"], $a["problemnumber"]);
 ?>
 <br><br><center><b>Use the following fields to judge the run:
 </b></center>
@@ -105,35 +104,25 @@ for ($i=0;$i<count($b);$i++) {
         $if = rawurlencode($b[$i]["inputfilename"]);
         $sf = rawurlencode($b[$i]["solfilename"]);
 
-        echo "<b>Input:</b><a href=\"../filedownload.php?". filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) . "\">";
+        echo "<a href=\"../filedownload.php?". filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) . "\">";
         echo $b[$i]["inputfilename"] . "</a>";
-        echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
-            filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) ."', 'View$i - INPUT','width=680,height=600,scrollbars=yes,".
-	     "resizable=yes')\">view</a> &nbsp;";
+//        echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
+//            filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) ."', 'View$i - INPUT','width=680,height=600,scrollbars=yes,".
+//	     "resizable=yes')\">view</a> &nbsp;";
 
-        echo "<b>Sol:</b><a href=\"../filedownload.php?". filedownload($b[$i]["soloid"],$b[$i]["solfilename"]) . "\">";
-        echo $b[$i]["solfilename"] . "</a>";
-        echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
-             filedownload($b[$i]["soloid"],$b[$i]["solfilename"]) . "', 'View$i - CORRECT OUTPUT','width=680,height=600,scrollbars=yes,".
-	     "resizable=yes')\">view</a>";
+//        echo "<b>Sol:</b><a href=\"../filedownload.php?". filedownload($b[$i]["soloid"],$b[$i]["solfilename"]) . "\">";
+//        echo $b[$i]["solfilename"] . "</a>";
+//        echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
+//             filedownload($b[$i]["soloid"],$b[$i]["solfilename"]) . "', 'View$i - CORRECT OUTPUT','width=680,height=600,scrollbars=yes,".
+//	     "resizable=yes')\">view</a>";
 }
 ?>
 	&nbsp;</td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Language</b><i> <?php echo $a["language"]; ?></i>:</td>
+        <td width="27%" align=right><b>Language</b>:</td>
         <td width="83%">
-<?php
-		if (isset($c["compilation"]) && $c["compilation"]!="") echo "<b>Compilation Line:</b> ".$c["compilation"]. "<br>"; 
-if (isset($c["execution"]) && $c["execution"]!="") echo "<b>Execution Line:</b> ".$c["execution"]. "<br>";
-if (isset($c["showoutput"]) && $c["showoutput"]!="") echo "<b>Showing Output Line:</b> ". $c["showoutput"]. "<br>";
-
-    if (isset($c["scriptname"]) && $c["scriptname"]!="") {
-			echo "<b>Script for judging:</b> <a href=\"../filedownload.php?". filedownload($c["scriptoid"],$c["scriptname"]) ."\">";
-			echo $c["scriptname"] . "</a>";
-	}
-?>
-        &nbsp;</td>
+        <i> <?php echo $a["language"]; ?></i></td>
       </tr>
       <tr> 
         <td width="27%" align=right><b>Source code:</b></td>

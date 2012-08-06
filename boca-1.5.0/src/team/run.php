@@ -82,6 +82,7 @@ if(!isset($_SESSION['forceredo']) || $_SESSION['forceredo']==false) {
 	}
 }
 if($redo) {
+	$_SESSION["popuptime"] = time();
 	$_SESSION['forceredo']=false;
 	if(($st = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
         ForceLoad("../index.php");
@@ -117,11 +118,6 @@ if($redo) {
 		$strtmp .= "</td>\n";
 		
 		$strtmp .= " </tr>\n";
-		
-		if ($run[$i]["anstime"]>$_SESSION["usertable"]["userlastlogin"]-$st["sitestartdate"] && $run[$i]["anstime"] < $st['sitelastmileanswer'] &&
-			$run[$i]["ansfake"]!="t" && !isset($_SESSION["popups"]['run' . $i . '-' . $run[$i]["anstime"]])) {
-			$_SESSION["popups"]['run' . $i . '-' . $run[$i]["anstime"]] = "Run ".$run[$i]["number"]." result: ".$run[$i]["answer"]. "<br>";
-		}
 	}
 $strtmp .= "</table>";
 if (count($run) == 0) $strtmp .= "<br><center><b><font color=\"#ff0000\">NO RUNS AVAILABLE</font></b></center>";

@@ -415,7 +415,7 @@ function DBGetClarToAnswerC($number,$site,$contest,$chief) {
 	}
 
 	DBExec($c, "commit work", "DBGetClarToAnswerC(commit)");
-	LOGLevel("User got a clarification (clar=$number, site=$site, contest=$contest, status=$status, " .
+	LOGLevel("User got a clarification (clar=$number, site=$site, contest=$contest, status=$st, " .
 		"user=".$_SESSION["usertable"]["usernumber"]."(site=".$_SESSION["usertable"]["usersitenumber"].")).", 3);
 	return $a;
 }

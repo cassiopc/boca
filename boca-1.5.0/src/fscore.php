@@ -157,25 +157,25 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 	return $result;
 }
 
-function DBBalloon($contest, $site, $user, $problem, $localsite=true) {
-	if (($b = DBSiteInfo($contest, $site)) == null)
+function DBBalloon($contest, $site, $user, $problem, $localsite=true, $c=null) {
+	if($c==null)
+		$c = DBConnect();
+	if (($b = DBSiteInfo($contest, $site, $c)) == null)
 		exit;
 	if ($localsite) {
-		if (($blocal = DBSiteInfo($contest, $_SESSION["usertable"]["usersitenumber"])) == null)
+		if (($blocal = DBSiteInfo($contest, $_SESSION["usertable"]["usersitenumber"], $c)) == null)
 			exit;
 	} else $blocal = $b;
-	if (($ct = DBContestInfo($contest)) == null)
+	if (($ct = DBContestInfo($contest,$c)) == null)
 		exit;
 
 	$t = time();
 	$ta = $blocal["currenttime"];
-	if ($verifylastmile)
-		$tf = $b["sitelastmilescore"];
-	else {
-		$tf = $b["siteduration"];
-	}
-
-	$c = DBConnect();
+//	if ($verifylastmile)
+	$tf = $b["sitelastmilescore"];
+//	else {
+//		$tf = $b["siteduration"];
+//	}
 	$r = DBExec($c, "select r.rundatediff as time, a.yes as yes from " .
 		"runtable as r, answertable as a where r.runanswer=a.answernumber and " .
 		"a.contestnumber=$contest and r.usernumber=$user and r.runproblem=$problem and " .

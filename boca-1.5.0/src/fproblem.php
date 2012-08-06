@@ -64,10 +64,11 @@ function DBinsertfakeproblem($n,$c) {
 //recebe um numero de contest e numero de problema
 //devolve todos os dados relativos ao problema em cada linha do array, sendo que cada linha representa o fato
 //que existe mais que um arquivo de entrada/sol. Nao retorna dados sobre problemas fake, ja que eles nao devem ter.
-function DBGetProblemData($contestnumber, $problemnumber) {
-	$c = DBConnect();
+function DBGetProblemData($contestnumber, $problemnumber, $c=null) {
+	if($c==null)
+		$c = DBConnect();
 	$r = DBExec($c, "select p.problemname as problemname, p.problemfullname as fullname, p.problembasefilename " . 
-			"as basefilename, " .
+			"as basefilename, p.problemnumber as number, " .
 			"p.problemcolor as color, p.problemcolorname as colorname, " .
 			"p.probleminputfilename as inputfilename, p.probleminputfile as inputoid, p.probleminputfilehash as inputhash " .
 			" from problemtable as p where p.contestnumber=$contestnumber and p.problemnumber=$problemnumber and p.fake!='t'",
@@ -134,25 +135,13 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 					if ($zip->open($dir . $ds . "tmp.zip") === true) {
 						$zip->extractTo($dir);
 						$zip->close();
-						if(($info=@file($dir . $ds . "description" . $ds . 'problem.info'))===false) {
+						if(($info=@parse_ini_file($dir . $ds . "description" . $ds . 'problem.info'))===false) {
 							$failed=2;
 						}
 						if(!$failed) {
-							$descfile='';
-							$basename='';
-							$fullname='';
-							foreach($info as $line) {
-								$aa=explode('=',$line);
-								if(trim($aa[0])=='descfile') {
-									$descfile=trim(sanitizeText($aa[1]));
-								}
-								if(trim($aa[0])=='basename') {
-									$basename=trim(sanitizeText($aa[1]));
-								}
-								if(trim($aa[0])=='fullname') {
-									$fullname=trim(sanitizeText($aa[1]));
-								}
-							}
+							$descfile=trim(sanitizeText($info['descfile']));
+							$basename=trim(sanitizeText($info['basename']));
+							$fullname=trim(sanitizeText($info['fullname']));
 							if($basename=='' || $fullname=='')
 								$failed=3;
 						}
@@ -418,7 +407,7 @@ function DBGetProblems($contest,$showanyway=false) {
 
 		$ds = DIRECTORY_SEPARATOR;
 		if($ds=="") $ds = "/";
-		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $a[$i]['number'] . "-contest" . $contestnumber;
+		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $a[$i]['number'] . "-contest" . $contest;
 		if(is_readable($ptmp . ".name")) {
 			$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
 			if($a[$i]['descfilename'] != '')

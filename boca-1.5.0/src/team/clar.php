@@ -29,6 +29,7 @@ if (isset($_POST["message"]) && isset($_POST["problem"]) && isset($_POST["Submit
 	}
 	ForceLoad("clar.php");
 }
+$_SESSION["popuptime"] = time();
 ?>
 <br>
 <table width="100%" border=1>
@@ -57,11 +58,6 @@ for ($i=0; $i<count($clar); $i++) {
 //  echo "<pre>" . $clar[$i]["question"] . "</pre>";
   echo "  <textarea name=\"m$i\" cols=\"60\" rows=\"8\" readonly>".$clar[$i]["question"]."</textarea>\n";
   echo "</td>\n";
-
-  if ($clar[$i]["timestamp"]>$_SESSION["usertable"]["userlastlogin"]-$st["sitestartdate"] && $clar[$i]["timestamp"] < $st['siteduration'] &&
-	  trim($clar[$i]["answer"])!='' && !isset($_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["timestamp"]])) {
-	  $_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["timestamp"]] = "Clarification for problem ".$clar[$i]["problem"]." answered<br>";
-  }
 
   if (trim($clar[$i]["answer"]) == "") $clar[$i]["answer"] = "Not answered yet";
   echo "  <td>";

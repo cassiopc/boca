@@ -96,7 +96,6 @@ if (($a = DBChiefGetRunToAnswer($runnumber, $runsitenumber,
 }
 
 $b = DBGetProblemData($_SESSION["usertable"]["contestnumber"], $a["problemnumber"]);
-$c = DBGetLanguageData($_SESSION["usertable"]["contestnumber"], $a["langnumber"], $a["problemnumber"]);
 ?>
 <br><br><center><b>Use the following fields to judge the run:
 </b></center>
@@ -129,10 +128,10 @@ $c = DBGetLanguageData($_SESSION["usertable"]["contestnumber"], $a["langnumber"]
         <td width="83%"> 
 <?php
 for ($i=0;$i<count($b);$i++) {
-	echo "<b>Problem package:</b><a href=\"../filedownload.php?". filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) . "\">";
+	echo "<a href=\"../filedownload.php?". filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) . "\">";
 	echo $b[$i]["inputfilename"] . "</a>";
-	echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
-	filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) ."', 'View$i - INPUT','width=680,height=600,scrollbars=yes,resizable=yes')\">view</a> &nbsp;";
+//	echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
+//	filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) ."', 'View$i - INPUT','width=680,height=600,scrollbars=yes,resizable=yes')\">view</a> &nbsp;";
 /*
 	echo "<b>Sol:</b><a href=\"../filedownload.php?". filedownload($b[$i]["soloid"], $b[$i]["solfilename"]) . "\">";
 	echo $b[$i]["solfilename"] . "</a>";
@@ -144,19 +143,9 @@ for ($i=0;$i<count($b);$i++) {
 	&nbsp;</td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Language</b><i> <?php echo $a["language"]; ?></i>:</td>
+        <td width="27%" align=right><b>Language</b>:</td>
         <td width="83%">
-<?php
-		if (isset($c["compilation"]) && $c["compilation"]!="") echo "<b>Compilation Line:</b> ".$c["compilation"]. "<br>"; 
-        if (isset($c["execution"]) && $c["execution"]!="") echo "<b>Execution Line:</b> ".$c["execution"]. "<br>";
-        if (isset($c["showoutput"]) && $c["showoutput"]!="") echo "<b>Showing Output Line:</b> ". $c["showoutput"]. "<br>";
-
-        if (isset($c["scriptname"]) && $c["scriptname"]!="") {
-			echo "<b>Script for judging:</b> <a href=\"../filedownload.php?". filedownload($c["scriptoid"],$c["scriptname"]) ."\">";
-			echo $c["scriptname"] . "</a>";
-		}
-?>
-        &nbsp;</td>
+        <i> <?php echo $a["language"]; ?></i></td>
       </tr>
       <tr> 
         <td width="27%" align=right><b>Team's code:</b></td>

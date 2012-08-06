@@ -237,10 +237,10 @@ function DBAllSiteTime($contest, $site) {
 
 	return $a;
 }
-function DBUserInfo($contest, $site, $user) {
+function DBUserInfo($contest, $site, $user, $c=null) {
 	$sql = "select * from usertable where usernumber=$user and usersitenumber=$site and " .
                "contestnumber=$contest";
-	$a = DBGetRow ($sql, 0);
+	$a = DBGetRow ($sql, 0, $c);
 	if ($a == null) {
 		LOGError("Unable to find the user in the database. SQL=(" . $sql . ")");
 		MSGError("Unable to find the user in the database. Contact an admin now!");

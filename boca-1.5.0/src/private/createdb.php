@@ -16,17 +16,24 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 21/jul/2012 by cassio@ime.usp.br
+//Last updated 06/aug/2012 by cassio@ime.usp.br
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 
-if(is_readable(getcwd() . $ds . '..' .$ds . 'db.php')) {
-	require_once(getcwd() . $ds . '..' .$ds . 'db.php');
-	@include_once(getcwd() . $ds . '..' .$ds . 'version.php');
+if(is_readable('/etc/boca.conf')) {
+	$pif=parse_ini_file('/etc/boca.conf');
+	$bocadir = trim($pif['bocadir']) . $ds . 'src';
 } else {
-  if(is_readable(getcwd() . $ds . 'db.php')) {
-	require_once(getcwd() . $ds . 'db.php');
-	@include_once(getcwd() . $ds . 'version.php');
+	$bocadir = getcwd();
+}
+
+if(is_readable($bocadir . $ds . '..' .$ds . 'db.php')) {
+	require_once($bocadir . $ds . '..' .$ds . 'db.php');
+	@include_once($bocadir . $ds . '..' .$ds . 'version.php');
+} else {
+  if(is_readable($bocadir . $ds . 'db.php')) {
+	require_once($bocadir . $ds . 'db.php');
+	@include_once($bocadir . $ds . 'version.php');
   } else {
 	  echo "unable to find db.php";
 	  exit;
