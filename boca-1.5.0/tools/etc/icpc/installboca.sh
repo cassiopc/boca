@@ -16,7 +16,18 @@ else
 bocaver=$1
 fi
 echo "Looking for BOCA version $bocaver from http://www.ime.usp.br/~cassio/boca/"
-cd /var/www
+if [ "$2" == "" ]; then
+basedir=/var/www
+else
+if [ -d "$2" ]; then
+basedir=$2
+else
+echo "Directory $2 does not exist"
+exit 1
+fi
+fi
+
+cd $basedir
 rm -f boca-$bocaver.tgz
 wget -O boca-$bocaver.tgz "http://www.ime.usp.br/~cassio/boca/download.php?filename=boca-$bocaver.tgz"
 if [ "$?" != "0" -o ! -f boca-$bocaver.tgz ]; then
@@ -36,6 +47,9 @@ if [ -d boca-$bocaver ]; then
   echo "OLD BOCA FOLDER for version $bocaver saved as boca-$bocaver.$di"
 fi
 
+echo "bocadir=$basedir/boca" > /etc/boca.conf
+chmod 644 /etc/boca.conf
+
 echo "====================================================="
 echo "=================== EXTRACTING BOCA   ==============="
 echo "====================================================="
@@ -53,35 +67,54 @@ if [ -f boca-$bocaver.$di/src/private/conf.php ]; then
  fi
 fi
 tar xzf boca-$bocaver.tgz
-chown -R www-data.www-data boca-$bocaver/
-[ -f boca-$bocaver.$di/src/private/otherservers ] && cp -f boca-$bocaver.$di/src/private/otherservers boca-$bocaver/src/private/otherservers
+chown -R root.www-data boca-$bocaver/
+chmod -R g+rx,u+rwx boca-$bocaver/
+
+chmod 600 boca-$bocaver/src/private/*.php
+[ -f boca-$bocaver.$di/src/private/remotescores/otherservers ] && cp -f boca-$bocaver.$di/src/private/remotescores/otherservers boca-$bocaver/src/private/remotescores/otherservers
 if [ "$OK" == "y" ]; then
   cp -f boca-$bocaver.$di/src/private/conf.php boca-$bocaver/src/private/conf.php
-  chown www-data.www-data boca-$bocaver/src/private/conf.php
-  chmod 660 boca-$bocaver/src/private/conf.php
 fi
-chown root.root boca-$bocaver/src/private/autojudging.php
-chmod 600 boca-$bocaver/src/private/autojudging.php
-chown root.root boca-$bocaver/src/private/createdb.php
-chmod 600 boca-$bocaver/src/private/createdb.php
-chown root.root boca-$bocaver/tools/*.sh
 chmod 700 boca-$bocaver/tools/*.sh
+
+cat > boca-$bocaver/src/.htaccess <<EOF
+php_flag output_buffering on
+php_value memory_limit 256M
+php_value post_max_size 128M
+php_flag magic_quotes_gpc off
+php_value upload_max_filesize 128M
+EOF
+chmod 755 boca-$bocaver/src/.htaccess
+cat > boca-$bocaver/tools/.htaccess <<EOF
+Deny from all
+EOF
+chmod 755 boca-$bocaver/tools/.htaccess
+cp boca-$bocaver/tools/.htaccess boca-$bocaver/doc/.htaccess
+cp boca-$bocaver/tools/.htaccess boca-$bocaver/old/.htaccess
+cp boca-$bocaver/tools/.htaccess boca-$bocaver/src/private/.htaccess
+cp boca-$bocaver/tools/.htaccess boca-$bocaver/src/webcast/.htaccess
+
+chmod -R 770 boca-$bocaver/src/balloons
+chmod -R 770 boca-$bocaver/src/private/problemtmp
+chmod -R 770 boca-$bocaver/src/private/runtmp
+chmod -R 770 boca-$bocaver/src/private/scoretmp
+chmod -R 770 boca-$bocaver/src/private/remotescores
 
 echo "=========================================================================================="
 echo "=========== SETTING UP SOME LINKS (main apache server index.html updated)  ==============="
 echo "=========================================================================================="
 
-rm -f /var/www/boca /usr/bin/makebkp.sh
-ln -s /var/www/boca-$bocaver /var/www/boca
-ln -s /var/www/boca/tools/makebkp.sh /usr/bin/makebkp.sh
-chmod 755 /var/www/boca/tools/makebkp.sh
-chmod 755 /var/www/boca/tools/singlefilebkp.sh
+rm -f $basedir/boca /usr/bin/makebkp.sh
+ln -s $basedir/boca-$bocaver $basedir/boca
+ln -s $basedir/boca/tools/makebkp.sh /usr/bin/makebkp.sh
+chmod 755 $basedir/boca/tools/makebkp.sh
+chmod 755 $basedir/boca/tools/singlefilebkp.sh
 
 echo "=============================================================="
 echo "================== COMPILING safeexec utility  ==============="
 echo "=============================================================="
 
-cd /var/www/boca/tools
+cd $basedir/boca/tools
 gcc -static -O2 -Wall safeexec.c -o safeexec
 if [ $? == 0 ]; then
   echo "COMPILATION OK"

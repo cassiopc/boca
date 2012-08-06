@@ -15,10 +15,10 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 05/aug/2012 by cassio@ime.usp.br
+# // Last modified 06/aug/2012 by cassio@ime.usp.br
 #///////////////////////////////////////////////////////////////////////////////////////////
 echo "#############################################################"
-echo "### installv2.sh of 09/july/2012 (A) by cassio@ime.usp.br ###"
+echo "### installv2.sh of 06/Aug/2012 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
 # checked with ubuntu 10.04 and 10.10 and 11.04 and 12.04
 
@@ -313,7 +313,7 @@ fi
 if [ -f /etc/icpc/installboca.sh ]; then
 	chmod 750 /etc/icpc/installboca.sh
     /sbin/iptables -F
-	/etc/icpc/installboca.sh $3
+	/etc/icpc/installboca.sh "$3" "$4"
 else
 	echo "************* SCRIPT TO INSTALL BOCA NOT FOUND -- SOMETHING IS WRONG -- I CANT INSTALL BOCA **************"
 fi
