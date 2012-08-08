@@ -49,18 +49,6 @@ if [ ! -r "$1" ]; then
     echo "$1 not found or it's not readable"
     exit 44
 fi
-mkdir -p src
-if [ "${name##*.}" == "zip" -a "${name##*.}" == "ZIP" ]; then
-	unzip "$name" -d src
-    if [ "${name##*.}" == "zip" ]; then
-		name=`basename $name .zip`
-	else
-		name=`basename $name .ZIP`
-	fi
-else
-	mv $name src
-fi
-
 id -u bocajail >/dev/null 2>/dev/null
 if [ $? == 0 ]; then
 	bocau=`id -u bocajail`
@@ -75,6 +63,20 @@ if [ "$bocau" == "" -o "$bocag" == "" ]; then
 	echo "error finding user to run script"
 	exit 43
 fi
+
+mkdir -p src
+if [ "${name##*.}" == "zip" -a "${name##*.}" == "ZIP" ]; then
+	unzip "$name" -d src
+    if [ "${name##*.}" == "zip" ]; then
+		name=`basename $name .zip`
+	else
+		name=`basename $name .ZIP`
+	fi
+else
+	cp $name src
+fi
+chown -R $bocau src
+chmod -R 700 src
 
 # this script makes use of safeexec to execute the code with less privilegies
 # make sure that directories below are correct.
@@ -124,15 +126,16 @@ fi
 export CLASSPATH=.:\$CLASSPATH
 cd src
 if [ -r "$name" ]; then
-  \$javac -Xmx${maxm}M -Xms${maxm}M "$name"
-  echo \$? > compileit.retcode
+  \$javac "$name"
+  echo \$? > ../compileit.retcode
 fi
 find . -name "*.java" | while read lin; do
-  \$javac -Xmx${maxm}M -Xms${maxm}M "\$lin"
-  echo \$? > compileit.retcode
+  \$javac "\$lin"
+  echo \$? > ../compileit.retcode
 done
 rm -f ../$jarfile
 \$jar cvf ../$jarfile *
+exit 0
 EOF
 chmod 755 compileit.sh
 
@@ -141,29 +144,39 @@ if [ $? == 0 ]; then
     cdir=`echo $cdir | sed "s/.*\/bocajail//"`
     cat <<EOF > runit.sh
 #!/bin/bash
+cd "$cdir"
 [ -f /proc/cpuinfo ] || /bin/mount -t proc proc /proc
 #/bin/mount --bind /dev /dev
 [ -d /sys/kernel ] || /bin/mount -t sysfs sysfs /sys
 
 $sf -r1 -t$time -T$ttime -F256 -u256 -ostdout0 -estderr0 -U$bocau -G$bocag -n0 -C. -f20000 -d20000000 -m20000000 ./compileit.sh
-
-/bin/umount /proc 2>/dev/null
-#/bin/umount /dev
-/bin/umount /sys 2>/dev/null
+echo \$? > runit.retcode
+if [ ! -d /bocajail ]; then
+  /bin/umount /proc 2>/dev/null
+  #/bin/umount /dev
+  /bin/umount /sys 2>/dev/null
+fi
 EOF
     chmod 755 runit.sh
     chroot /bocajail "$cdir/runit.sh"
-  	ret=`cat runit.retcode`
+    if [ -r runit.retcode ]; then
+    	ret=`cat runit.retcode`
+    else
+		ret=99
+    fi
 else
 	echo "COMPILATION IS NOT BEING CHROOTED -- THIS IS NOT AN IDEAL SETTING"
 #	$javac "$name"
 	$sf -r1 -t$time -T$ttime -F256 -u256 -U$bocau -G$bocag -ostdout0 -estderr0 -n0 -C. -d20000000 -m20000000 ./compileit.sh
 	ret=$?
 fi
-rm -rf src/
-if [ -f stdout0 ]; then
-	cat stdout0
+if [ -f "stdout0" ]; then
+	cat "stdout0"
 fi
+if [ -f "stderr0" ]; then
+	cat "stderr0"
+fi
+rm -rf src/
 if [ "$ret" != "0" ]; then
 	echo "Compilation Error: $ret"
 	exit $ret

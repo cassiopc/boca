@@ -290,9 +290,9 @@ else
         <td width="83%"> 
 <?php 
 if($a["autostdout"]!="") {
-	echo "<a href=\"../filedownload.php?".filedownload($a["autostdout"]."stdout") ."\">stdout</a>\n";
+	echo "<a href=\"../filedownload.php?".filedownload($a["autostdout"],"stdout") ."\">stdout</a>\n";
       echo "<a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
-          filedownload($a["autostdout"]."stdout") ."', 'View - STDOUT','width=680,height=600,scrollbars=yes,".
+	filedownload($a["autostdout"],"stdout") ."', 'View - STDOUT','width=680,height=600,scrollbars=yes,".
 	   "resizable=yes')\">view</a>\n";
 } else
       echo "unavailable";

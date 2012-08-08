@@ -59,7 +59,7 @@ if [ "${name##*.}" == "zip" -a "${name##*.}" == "ZIP" ]; then
 	unzip "$name" -d src
 	name="*.c"
 else
-	mv $name src
+	cp "$name" src
 fi
 id -u bocajail >/dev/null 2>/dev/null
 if [ $? == 0 ]; then
@@ -85,8 +85,10 @@ if [ ! -x $sf ]; then
     exit 46
 fi
 maxm=512000
-if [ "$4" != "" -a "$4" -gt "0" ]; then
-maxm=${4}000
+if [ "$4" != "" ]; then
+  if [ "$4" -gt "0" ]; then
+    maxm=${4}000
+  fi
 fi
 
 # setting up the timelimit according to the problem
@@ -95,7 +97,7 @@ time=5
 else
 time=$3
 fi
-let ttime=$time+30
+let "ttime = $time + 30"
 
 if [ "$2" == "" ]; then
   exe=run.exe
@@ -103,7 +105,7 @@ else
   exe=$2
 fi
 
-rm -f ../$exe 2>/dev/null
+rm -f $exe compileit.retcode runit.retcode 2>/dev/null
 cat <<EOF > compileit.sh
 #!/bin/bash
 cc=\`which g++\`
@@ -113,8 +115,8 @@ if [ ! -x "\$cc" ]; then
     exit 47
 fi
 cd src
-"\$cc" -static -O2 -lm -o ../$exe "$name"
-echo \$? > compileit.retcode
+"\$cc" -static -O2 -o ../$exe $name -lm
+echo \$? > ../compileit.retcode
 exit 0
 EOF
 chmod 755 compileit.sh
@@ -124,29 +126,40 @@ echo "Current directory is $cdir" >&2
 echo $cdir | grep -q "/bocajail"
 if [ $? == 0 ]; then
     cdir=`echo $cdir | sed "s/.*\/bocajail//"`
+    echo "Internal directory is $cdir"
     cat <<EOF > runit.sh
 #!/bin/bash
+cd "$cdir"
 [ -f /proc/cpuinfo ] || /bin/mount -t proc proc /proc
 #/bin/mount --bind /dev /dev
 [ -d /sys/kernel ] || /bin/mount -t sysfs sysfs /sys
 $sf -r1 -F1000 -n0 -U$bocau -G$bocag -C. -ostdout0 -estderr0 -d$maxm -m$maxm -f20000 -t$ttime -T$ttime ./compileit.sh
 echo \$? > runit.retcode
-/bin/umount /proc 2>/dev/null
-#/bin/umount /dev
-/bin/umount /sys 2>/dev/null
+if [ ! -d /bocajail ]; then
+  /bin/umount /proc 2>/dev/null
+  #/bin/umount /dev
+  /bin/umount /sys 2>/dev/null
+fi
 EOF
     chmod 755 runit.sh
     chroot /bocajail "$cdir/runit.sh"
-  	ret=`cat runit.retcode`
+    if [ -r runit.retcode ]; then
+    	ret=`cat runit.retcode`
+    else
+		ret=99
+    fi
 else
 	echo "COMPILATION IS NOT BEING CHROOTED -- THIS IS NOT AN IDEAL SETTING"
 	$sf -r1 -F1000 -n0 -U$bocau -G$bocag -C. -ostdout0 -estderr0 -d$maxm -m$maxm -f20000 -t$ttime -T$ttime ./compileit.sh
 	ret=$?
 fi
-rm -rf src/
-if [ -f stdout0 ]; then
-	cat stdout0
+if [ -f "stdout0" ]; then
+	cat "stdout0"
 fi
+if [ -f "stderr0" ]; then
+	cat "stderr0"
+fi
+rm -rf src/
 if [ "$ret" != "0" ]; then
 	echo "Compilation Error: $ret"
 	exit $ret

@@ -53,7 +53,6 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
 		$param['fake'] = 'f';
 		$param['colorname'] = $_POST["colorname"];
 		$param['color'] = $_POST["color"];
-		if($param['color']=='') $param['color']=-1;
 		DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
 	}
 	ForceLoad("problem.php");

@@ -95,12 +95,16 @@ if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["p
 				if($dd > 0) {
 					$param['keys']=implode(',',$ar);
 					MSGError(count($ar) . ' keys are being imported from the file');
+					DBClearProblemTmp($_SESSION["usertable"]["contestnumber"]);
 				}
 			}
 			$param['atualizasites']=$at;
 		}
 		DBUpdateContest ($param);
-		if(strlen($param['unlockkey'])>1) DBGetFullProblemData($_SESSION["usertable"]["contestnumber"],true);
+		if(strlen($param['unlockkey'])>1) {
+			DBClearProblemTmp($_SESSION["usertable"]["contestnumber"]);
+			DBGetFullProblemData($_SESSION["usertable"]["contestnumber"],true);
+		}
 	}
 	ForceLoad("contest.php");
 }

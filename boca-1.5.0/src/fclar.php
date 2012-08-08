@@ -80,7 +80,7 @@ function DBUserClars($contest,$site,$user) {
 	$c = DBConnect();
 	$r = DBExec($c, "select distinct c.clarsitenumber as site, c.clarnumber as number, c.clardatediff as timestamp, " .
                                         "p.problemname as problem, c.clarstatus as status, c.clardata as question, " .
-                                        "c.claranswer as answer, c.updatetime as updatetime " .
+                                        "c.claranswer as answer, c.updatetime as updatetime, c.clardatediffans as anstime " .
                              "from clartable as c, problemtable as p " .
                              "where c.contestnumber=$contest and p.contestnumber=c.contestnumber and " .
                                     "c.clarproblem=p.problemnumber and not clarstatus ~ 'deleted' and " .

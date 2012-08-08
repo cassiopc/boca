@@ -59,7 +59,7 @@ rm -rf /bocajail
 mkdir -p $homejail/tmp
 chmod 1777 $homejail/tmp
 ln -s $homejail /bocajail
-[ -f /usr/bin/safeexec ] && cp -a /usr/bin/safeexec /bocajail/usr/bin/
+[ -x /usr/bin/safeexec ] && cp -a /usr/bin/safeexec /bocajail/usr/bin/
 #for i in usr lib var bin sbin etc dev; do
 #  [ -d $homejail/$i ] && rm -rf $homejail/$i
 #  cp -ar /$i $homejail

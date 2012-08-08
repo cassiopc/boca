@@ -102,19 +102,9 @@ $b = DBGetProblemData($_SESSION["usertable"]["contestnumber"], $a["problemnumber
 <?php
 for ($i=0;$i<count($b);$i++) {
         $if = rawurlencode($b[$i]["inputfilename"]);
-        $sf = rawurlencode($b[$i]["solfilename"]);
 
         echo "<a href=\"../filedownload.php?". filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) . "\">";
-        echo $b[$i]["inputfilename"] . "</a>";
-//        echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
-//            filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) ."', 'View$i - INPUT','width=680,height=600,scrollbars=yes,".
-//	     "resizable=yes')\">view</a> &nbsp;";
-
-//        echo "<b>Sol:</b><a href=\"../filedownload.php?". filedownload($b[$i]["soloid"],$b[$i]["solfilename"]) . "\">";
-//        echo $b[$i]["solfilename"] . "</a>";
-//        echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
-//             filedownload($b[$i]["soloid"],$b[$i]["solfilename"]) . "', 'View$i - CORRECT OUTPUT','width=680,height=600,scrollbars=yes,".
-//	     "resizable=yes')\">view</a>";
+        echo basename($b[$i]["inputfilename"]) . "</a>";
 }
 ?>
 	&nbsp;</td>

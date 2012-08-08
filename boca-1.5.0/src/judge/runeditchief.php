@@ -96,7 +96,6 @@ if (($a = DBChiefGetRunToAnswer($runnumber, $runsitenumber,
 }
 
 $b = DBGetProblemData($_SESSION["usertable"]["contestnumber"], $a["problemnumber"]);
-$c = DBGetLanguageData($_SESSION["usertable"]["contestnumber"], $a["langnumber"], $a["problemnumber"]);
 ?>
 <br><br><center><b>Use the following fields to judge the run:
 </b></center>
@@ -143,18 +142,8 @@ for ($i=0;$i<count($b);$i++) {
 	&nbsp;</td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Language</b><i> <?php echo $a["language"]; ?></i>:</td>
-        <td width="83%">
-<?php
-		if (isset($c["compilation"]) && $c["compilation"]!="") echo "<b>Compilation Line:</b> ".$c["compilation"]. "<br>"; 
-        if (isset($c["execution"]) && $c["execution"]!="") echo "<b>Execution Line:</b> ".$c["execution"]. "<br>";
-        if (isset($c["showoutput"]) && $c["showoutput"]!="") echo "<b>Showing Output Line:</b> ". $c["showoutput"]. "<br>";
-
-        if (isset($c["scriptname"]) && $c["scriptname"]!="") {
-			echo "<b>Script for judging:</b> <a href=\"../filedownload.php?". filedownload($c["scriptoid"], $c["scriptname"]) ."\">";
-			echo $c["scriptname"] . "</a>";
-		}
-?>
+        <td width="27%" align=right><b>Language</b>:</td>
+        <td width="83%"><i> <?php echo $a["language"]; ?></i>
         &nbsp;</td>
       </tr>
       <tr> 

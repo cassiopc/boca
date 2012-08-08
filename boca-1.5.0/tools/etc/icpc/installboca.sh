@@ -129,6 +129,7 @@ fi
 strip safeexec
 cp -f safeexec /usr/bin
 chmod 4555 /usr/bin/safeexec
+[ -d /bocajail/usr/bin ] && cp -a /usr/bin/safeexec /bocajail/usr/bin/
 
 echo "=================================================="
 echo "=================== SERVER SETUP   ==============="

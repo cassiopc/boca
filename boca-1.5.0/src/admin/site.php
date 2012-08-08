@@ -131,7 +131,7 @@ if (isset($_POST["Submit1"]) && $_POST["Submit1"] == "Send" && isset($_POST["nam
 		$param['contestnumber']=$_SESSION["usertable"]["contestnumber"];
 		$param['sitenumber']=$_POST["site"];
 		$param['sitename']=$_POST["name"];
-		$param['siteip']=$_POST["ip"];
+//		$param['siteip']=$_POST["ip"];
 		$param['siteduration']=$_POST["duration"]*60;
 		$param['sitelastmileanswer']=	$_POST["lastmileanswer"]*60;
 		$param['sitelastmilescore']= $_POST["lastmilescore"]*60;

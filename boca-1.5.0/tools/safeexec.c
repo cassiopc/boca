@@ -52,7 +52,7 @@ int killallproc;
 int bequiet;
 int checknchild;
 int user, group;
-const char vers[] = "1.4.1";
+const char vers[] = "1.5.0";
 
 #define BUFFSIZE 256
 char curdir[BUFFSIZE], rootdir[BUFFSIZE], saida[BUFFSIZE], entrada[BUFFSIZE], erro[BUFFSIZE];
@@ -72,14 +72,14 @@ unsigned int getprocs(pid_t ppid, pid_t ppid2, int userid, int groupid, int *nch
 void exitandkill(int ret) {
 	if(killallproc) {
 		if(!bequiet)
-			fprintf(stderr,"Notice: killing all recent processes from this user/group to avoid possible malicious code... use -K if you don't want this\n");
+			fprintf(stderr,"safeexec: killing all recent processes from this user/group to avoid possible malicious code... use -K if you don't want this\n");
 		struct Proc *P;
 		unsigned n;
 		int nchild, i;
 		if((n = getprocs(child_pid,getpid(),user,group,&nchild,&P)) > 0) {
 			for(i = 0; i < n; i++) {
 				if(!bequiet)
-					fprintf(stderr,"killing processes pid=%d\n", P[i].pid);
+					fprintf(stderr,"safeexec: killing processes pid=%d\n", P[i].pid);
 				kill(P[i].pid,9);   /* kill children and all processes with userid/groupid that started after us if instructed to do so */
 			}		
 		}
@@ -89,7 +89,7 @@ void exitandkill(int ret) {
 		case 7: fprintf(stderr,"safeexec: memory limit exceeded\n"); break;
 		case 5: fprintf(stderr,"safeexec: parameter problem\n"); break;
 		case 6:
-		case 4: fprintf(stderr,"ERROR: internal error\n"); break;
+		case 4: fprintf(stderr,"safeexec: ERROR! internal error\n"); break;
 		case 3: fprintf(stderr,"safeexec: time limit exceeded\n"); break;
 		case 2: fprintf(stderr,"safeexec: runtime error\n"); break;
 		case 9: fprintf(stderr,"safeexec: runtime error\n"); break;
@@ -111,7 +111,7 @@ unsigned int getprocs(pid_t ppid, pid_t ppid2, int userid, int groupid, int *nch
   
 	P = calloc(globbuf.gl_pathc, sizeof(struct Proc));
 	if (P == NULL) {
-		if(!bequiet) fprintf(stderr,"problem with malloc");
+		if(!bequiet) fprintf(stderr,"safeexec: problem with malloc");
 		exitandkill(4);
 	}
 	*Pr = P;
@@ -174,7 +174,7 @@ unsigned int getprocs(pid_t ppid, pid_t ppid2, int userid, int groupid, int *nch
 			P[i] = P[--j];
 		} else {
 			if(!bequiet)
-				fprintf(stderr,"process %d has user %d, group %d, time %lu, which is suspicious\n",P[i].pid,userid,groupid,P[i].starttime);
+				fprintf(stderr,"safeexec: process %d has user %d, group %d, time %lu, which is suspicious\n",P[i].pid,userid,groupid,P[i].starttime);
 			i++;
 		}
 	}
@@ -193,8 +193,8 @@ int testsystem(pid_t p, pid_t pp, int userid, int groupid, double memlim, double
 	if(checknchild) {
 		if(nchild != n) {
 			if(!bequiet) {
-				fprintf(stderr,"\n%d children of this user/group, but list has %d processes (who are the others?).\n",nchild,n);
-				fprintf(stderr,"detached children found! Aborting because of possible malicious code... use -a if you don't want this\n");
+				fprintf(stderr,"\nsafeexec: %d children of this user/group, but list has %d processes (who are the others?).\n",nchild,n);
+				fprintf(stderr,"safeexec: detached children found! Aborting because of possible malicious code... use -a if you don't want this\n");
 			}
 			exitandkill(8);
 		}
@@ -212,7 +212,7 @@ int testsystem(pid_t p, pid_t pp, int userid, int groupid, double memlim, double
 #endif
 		if(mem2 > memlim || mem1 > rsslim) {
 			if(!bequiet)
-				fprintf(stderr,"\nmemory limit exceeded\n");
+				fprintf(stderr,"\nsafeexec: memory limit exceeded\n");
 			exitandkill(7);
 		}
 		if(nchild == 0) ret = 2;
@@ -221,7 +221,7 @@ int testsystem(pid_t p, pid_t pp, int userid, int groupid, double memlim, double
 //		fprintf(stderr,"WARNING: controlling only waited-for children! Security issues here if code is not trustful...\n");
 		if(mem1 > memlim) {
 			if(!bequiet)
-				fprintf(stderr,"\nmemory limit exceeded of %lfMB\n",memlim/1048576.);
+				fprintf(stderr,"\nsafeexec: memory limit exceeded of %lfMB\n",memlim/1048576.);
 			exitandkill(7);
 		}
 		ret = 0;
@@ -239,7 +239,7 @@ void handle_alarm(int sig) {
 	testsystem(child_pid,getpid(),allproc?user:-1,allproc?group:-1,max_data.rlim_max,max_rss.rlim_max);
 	if(++iter >= real_timeout) {
 		if(!bequiet)
-			fprintf(stderr, "timed-out (realtime) after %d seconds\n", real_timeout);
+			fprintf(stderr, "safeexec: timed-out (realtime) after %d seconds\n", real_timeout);
 		fflush(stderr);
 		kill(child_pid,9);   /* kill child */
 		exitandkill(3);
@@ -411,7 +411,7 @@ Use -U and -G for that, but you might need to have root privilegies.\n");
 	}
     currun++;
 	if(!bequiet)
-		fprintf(stderr,"Starting the job. Parent controller has pid %d, child is %d...\n",getpid(),child_pid);
+		fprintf(stderr,"safeexec: starting the job. Parent controller has pid %d, child is %d...\n",getpid(),child_pid);
 	alarm(1);   /* set alarm and wait for child execution */
 	signal(SIGALRM, handle_alarm);
 	while(waitpid(child_pid, &status, 0) != child_pid) ;
@@ -427,7 +427,7 @@ Use -U and -G for that, but you might need to have root privilegies.\n");
     if (dt + EPSILON >= cpu_timeout.rlim_max) {
 //      printf ("utsec=%d utusec=%d stsec=%d stusec=%d\n", uso.ru_utime.tv_sec, uso.ru_utime.tv_usec, uso.ru_stime.tv_sec, uso.ru_stime.tv_usec);
 		if(!bequiet)
-			fprintf(stderr, "timed-out (cputime) after %d seconds\n", (int) cpu_timeout.rlim_max);
+			fprintf(stderr, "safeexec: timed-out (cputime) after %d seconds\n", (int) cpu_timeout.rlim_max);
 		fflush(stderr);
 //      fprintf(stdout, "timed-out (cputime) after %d seconds\n", (int) cpu_timeout.rlim_max);
 //      fflush(stdout);

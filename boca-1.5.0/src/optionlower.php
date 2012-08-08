@@ -56,17 +56,18 @@ $a = DBUserInfo($_SESSION["usertable"]["contestnumber"],
 <script language="JavaScript">
 function computeHASH()
 {
-        var username, userdesc, userfull, passHASHo, passHASHn1, passHASHn2;
+	var username, userdesc, userfull, passHASHo, passHASHn1, passHASHn2;
 	if (document.form1.passwordn1.value != document.form1.passwordn2.value) return;
-        username = document.form1.username.value;
-        userdesc = document.form1.userdesc.value;
-        userfull = document.form1.userfull.value;
-        passMDo = js_myhash(js_myhash(document.form1.passwordo.value)+'<?php echo session_id(); ?>');
-        passMDn = bighexsoma(js_myhash(document.form1.passwordn2.value),js_myhash(document.form1.passwordo.value));
-        document.form1.passwordo.value = '';
-        document.form1.passwordn1.value = '';
-        document.form1.passwordn2.value = '';
-        document.location='option.php?username='+username+'&userdesc='+userdesc+'&userfullname='+userfull+'&passwordo='+passMDo+'&passwordn='+passMDn;
+	username = document.form1.username.value;
+	userdesc = document.form1.userdesc.value;
+	userfull = document.form1.userfull.value;
+
+	passMDo = js_myhash(js_myhash(document.form1.passwordo.value)+'<?php echo session_id(); ?>');
+	passMDn = bighexsoma(js_myhash(document.form1.passwordn2.value),js_myhash(document.form1.passwordo.value));
+	document.form1.passwordo.value = '';
+	document.form1.passwordn1.value = '';
+	document.form1.passwordn2.value = '';
+	document.location='option.php?username='+username+'&userdesc='+userdesc+'&userfullname='+userfull+'&passwordo='+passMDo+'&passwordn='+passMDn;
 }
 </script>
 

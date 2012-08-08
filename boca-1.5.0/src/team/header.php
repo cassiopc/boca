@@ -93,10 +93,10 @@ if(!isset($_SESSION["popuptime"]) || $_SESSION["popuptime"] < time()-120) {
 							$_SESSION["usertable"]["usersitenumber"],
 							$_SESSION["usertable"]["usernumber"]);
 		for ($i=0; $i<count($clar); $i++) {
-			if ($clar[$i]["timestamp"]>$_SESSION["usertable"]["userlastlogin"]-$st["sitestartdate"] && 
-				$clar[$i]["timestamp"] < $st['siteduration'] &&
-				trim($clar[$i]["answer"])!='' && !isset($_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["timestamp"]])) {
-				$_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["timestamp"]] = "Clarification for problem ".$clar[$i]["problem"]." answered\n";
+			if ($clar[$i]["anstime"]>$_SESSION["usertable"]["userlastlogin"]-$st["sitestartdate"] && 
+				$clar[$i]["anstime"] < $st['siteduration'] &&
+				trim($clar[$i]["answer"])!='' && !isset($_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["anstime"]])) {
+				$_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["anstime"]] = "Clarification for problem ".$clar[$i]["problem"]." answered\n";
 			}
 		}
 		$run = DBUserRuns($_SESSION["usertable"]["contestnumber"],
@@ -112,14 +112,16 @@ if(!isset($_SESSION["popuptime"]) || $_SESSION["popuptime"] < time()-120) {
 	}
 
 	$str = '';
-	foreach($_SESSION["popups"] as $key => $value) {
-        if($value != '') {
-			$str .= $value;
-			$_SESSION["popups"][$key] = '';
-        }
-	}
-	if($str != '') {
-        MSGError('YOU GOT NEWS:\n' . $str . '\n');
+	if(isset($_SESSION["popups"])) {
+		foreach($_SESSION["popups"] as $key => $value) {
+			if($value != '') {
+				$str .= $value;
+				$_SESSION["popups"][$key] = '';
+			}
+		}
+		if($str != '') {
+			MSGError('YOU GOT NEWS:\n' . $str . '\n');
+		}
 	}
 }
 

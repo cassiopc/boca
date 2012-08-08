@@ -412,9 +412,8 @@ function DBGetRunToAutojudging($contest, $ip) {
 		"r.runnumber as number, r.rundatediff as timestamp, r.runstatus as status, " .
 		"r.rundata as sourceoid, r.runfilename as sourcename, l.langnumber as langnumber, " .
 		"p.problemname as problemname, p.problemnumber as problemnumber, l.langextension as extension, l.langname as language, " .
-		"p.problembasefilename as basename, p.problemtimelimit as timelimit, ".
+		"p.problembasefilename as basename, ".
 		"p.probleminputfilename as inputname, p.probleminputfile as inputoid, " .
-		"p.problemsolfilename as solname, p.problemsolfile as soloid, " .
 		"r.autoip as autoip, r.autobegindate as autobegin, r.autoenddate as autoend, r.autoanswer as autoanswer, ".
 		"r.autostdout as autostdout, r.autostderr as autostderr ".
 		"from runtable as r, problemtable as p, langtable as l " .
@@ -947,5 +946,83 @@ function DBJudgedRuns($contest,$site,$user) {
 	}
 	return $a;
 }
+
+function exitmsg($retval) {
+/* FROM SAFEEXEC
+# 0 ok
+# 1 compile error
+# 2 runtime error
+# 3 timelimit exceeded
+# 4 internal error
+# 5 parameter error
+# 6 internal error
+# 7 memory limit exceeded
+# 8 security threat
+# 9 runtime error
+*/
+/*
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 0, 'Not answered yet', 'f', 't')", "DBNewContest(insert fake answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 1, 'YES', 't', 'f')", "DBNewContest(insert YES answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 2, 'NO - Compilation error', 'f', 'f')", "DBNewContest(insert CE answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 3, 'NO - Runtime error', 'f', 'f')", "DBNewContest(insert RE answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 4, 'NO - Time limit exceeded', 'f', 'f')", "DBNewContest(insert TLE answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 5, 'NO - Presentation error', 'f', 'f')", "DBNewContest(insert PE answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 6, 'NO - Wrong answer', 'f', 'f')", "DBNewContest(insert WA answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 7, 'NO - Contact staff', 'f', 'f')", "DBNewContest(insert CS answer)");
+*/
+	if($retval==-1) {
+		$answer="Internal error while executing run command";
+		$retval = 7; // contact staff
+	}
+	else if($retval==1) {
+		$answer="Compilation error";
+		$retval = 2; // compilation error
+	}
+	else if($retval==2) {
+		$answer="Runtime error";
+		$retval = 3; // runtime error
+	}
+	else if($retval==3) {
+		$answer="Time limit exceeded";
+		$retval = 4; // timelimit exceeded
+	}
+	else if($retval==4) {
+		$answer="safeexec internal error (4)";
+		$retval = 7; // contact staff
+	}
+	else if($retval==5) {
+		$answer="safeexec error: parameter problem";
+		$retval = 7; // contact staff
+	}
+	else if($retval==6) {
+		$answer="safeexec internal error (6)";
+		$retval = 7; // contact staff
+	}
+	else if($retval==7) {
+		$answer="Runtime error (memory-limit)";
+		$retval = 3; // runtime error
+	}
+	else if($retval==8) {
+		$answer="Code generates security threat";
+		$retval = 3; // runtime error
+	}
+	else if($retval==9) {
+		$answer="Runtime error";
+		$retval = 3; // runtime error
+	} else {
+		$answer="Unknown autojudge status";
+		$retval = 7;
+	}
+	return array($retval,$answer);
+}
+
 // eof
 ?>

@@ -237,7 +237,7 @@ function DBAllSiteTime($contest, $site) {
 
 	return $a;
 }
-function DBUserInfo($contest, $site, $user, $c=null) {
+function DBUserInfo($contest, $site, $user, $c=null,$hashpass=true) {
 	$sql = "select * from usertable where usernumber=$user and usersitenumber=$site and " .
                "contestnumber=$contest";
 	$a = DBGetRow ($sql, 0, $c);
@@ -245,7 +245,8 @@ function DBUserInfo($contest, $site, $user, $c=null) {
 		LOGError("Unable to find the user in the database. SQL=(" . $sql . ")");
 		MSGError("Unable to find the user in the database. Contact an admin now!");
 	}
-	$a['userpassword'] = myhash($a['userpassword'] . $a['usersessionextra']);
+	if($hashpass)
+		$a['userpassword'] = myhash($a['userpassword'] . $a['usersessionextra']);
 	return $a;
 }
 function DBDeleteUser($contest, $site, $user) {
@@ -973,11 +974,12 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 	}
 	$ct = DBContestInfo ($contest, $c);
 	if($ct==null) return false;
-	$f=$ct["contestduration"];
 
 	if(isset($param['sitenumber']) && !isset($param['number'])) $param['number']=$param['sitenumber'];
-	$ac=array('number','siteip','sitename','sitescorelevel','updatetime');
+	$ac=array('number','siteip','sitename','sitescorelevel','updatetime','startdate','duration');
 	$type=array();
+	$type['startdate']=1;
+	$type['duration']=1;
 	$type['number']=1;
 	$type['sitescorelevel']=1;
 	$type['updatetime']=1;
@@ -997,6 +999,8 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 		$a = DBGetRow ("select * from sitetable where contestnumber=$contest and sitenumber=$number", 0, $c);
 		if($a != null) return 1;
 	}
+	if($duration=='') $duration = $ct["contestduration"];
+	if($startdate=='') $startdate=$ct["conteststartdate"];
 	if($siteip=="") $siteip="127.0.0.1/boca";
 	if($sitename=="") $sitename="Site";
 	if($sitescorelevel=="") $sitescorelevel=3;
@@ -1008,7 +1012,7 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 			"sitenextuser, sitenextclar, sitenextrun, sitenexttask, sitemaxtask, updatetime) values ".
 			"($contest, $number, '$siteip', '$sitename', 't', 't', ".
                         $ct["contestlastmileanswer"].",".$ct["contestlastmilescore"].
-			", $f, 't', '$number', '$number', '$number', $sitescorelevel, 0, 0, 0, 0, 10, $updatetime)");
+			", $duration, 't', '$number', '$number', '$number', $sitescorelevel, 0, 0, 0, 0, 10, $updatetime)");
 
 	$cf=globalconf();
 	$admpass = myhash($cf["basepass"]);
@@ -1022,7 +1026,7 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 	$param=array();
 	$param['contest']=$contest;
 	$param['site']=$number;
-	$param['start']=$ct["conteststartdate"];
+	$param['start']=$startdate;
 	DBRenewSiteTime($param, $c);
 	if($cw)	DBExec($c, "commit work");
 	LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . 
@@ -1031,18 +1035,18 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 }
 
 function DBUserUpdate($contest, $site, $user, $username, $userfull, $userdesc, $passo, $passn) {
-	$a = DBUserInfo ($contest, $site, $user);
+	$a = DBUserInfo($contest, $site, $user, null, false);
 	$p = myhash($a["userpassword"] . session_id());
-        if ($a["userpassword"] != "" && $p != $passo) {
+	if ($a["userpassword"] != "" && $p != $passo) {
 		LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . " (contest=$contest, site=$site) " .
-			"tried to change settings, but password was incorrect.",2);
+				 "tried to change settings, but password was incorrect.",2);
 		MSGError ("Incorrect password.");
 	}
 	else {
 		if ($a["userpassword"] == "") $temp = myhash("");
 		else $temp = $a["userpassword"];
 		$temp = bighexsub($passn, $temp);
-		$newpass = substr($temp, strlen($temp)-32, 32);
+		$newpass = substr($temp, strlen($temp)-strlen($myhash), strlen($myhash));
 
 		$c = DBConnect();
 		DBExec($c, "begin work");
@@ -1207,6 +1211,10 @@ function siteclock() {
 		return array("contest not running",-1000000000);
 	if ($s["currenttime"]<0) {
 		$t = - $s["currenttime"];
+		if($t>3600) {
+			$t = ((int) ($t/360))/10;
+			return array("&gt; ". $t . " hour(s) to start",$s["currenttime"]);
+		}
 		if ($t>60) {
 			$t = (int) ($t/60);
 			return array("&gt; ". $t . " min(s) to start",$s["currenttime"]);
@@ -1216,17 +1224,22 @@ function siteclock() {
 	}
 	if ($s["currenttime"]>=0) {
 		$t = $s["siteduration"] - $s["currenttime"];
+		$str = '';
+		if($t >= 3600) {
+			$str .= ((int)($t/3600)) . 'h ';
+			$t = $t % 3600;
+		}
 		if ($t>60) {
 			$t = (int) ($t/60);
-			return array("&gt; " . $t . " minute(s) left",$s["currenttime"]);
-		} else {
+			return array($str . $t . " min(s) left",$s["currenttime"]);
+		} else if($str=='') {
 			if ($t>0) {
 				return array($t . " second(s) left",$s["currenttime"]);
 			} else {
 				$t = (int) (- $t/60);
 				return array($t . "min. of extra time",$s["currenttime"]);
 			}
-		}
+		} else return array($str . " left",$s["currenttime"]);
 	}
 	else return array("not started",-1000000000);
 }

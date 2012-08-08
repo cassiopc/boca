@@ -85,7 +85,8 @@ function DBGetProblemData($contestnumber, $problemnumber, $c=null) {
 
 		$ds = DIRECTORY_SEPARATOR;
 		if($ds=="") $ds = "/";
-		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $a[$i]['number'] . "-contest" . $contestnumber;
+		$nn = $a[$i]['number'];
+		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $nn;
 		if(is_readable($ptmp . ".name")) {
 			$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
 			if($a[$i]['descfilename'] != '')
@@ -93,6 +94,14 @@ function DBGetProblemData($contestnumber, $problemnumber, $c=null) {
 		}
 	}
 	return $a;
+}
+function DBClearProblemTmp($contestnumber) {
+	$ds = DIRECTORY_SEPARATOR;
+	if($ds=="") $ds = "/";
+	$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber . "-*.name";
+	foreach(glob($ptmp) as $file) @unlink($file);
+	$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber . "-*.hash";
+	foreach(glob($ptmp) as $file) @unlink($file);
 }
 function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 	$c = DBConnect();
@@ -110,18 +119,31 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 	}
 	$cf = globalconf();
 	$a = array();
+	$ds = DIRECTORY_SEPARATOR;
+	if($ds=="") $ds = "/";
 	for ($i=0;$i<$n;$i++) {
 		$a[$i] = array_merge(array(),DBRow($r,$i));
 		$nn=$a[$i]['number'];
+		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $nn;
+		$ck = myshorthash('');
+		if(is_readable($ptmp . ".hash")) {
+			$ck = trim(file_get_contents($ptmp . ".hash"));
+		}
+		if($ck != $a[$i]['inputhash']) {
+			@unlink($ptmp . ".name");
+			@unlink($ptmp . ".hash");
+			$a[$i]['basefilename']='';
+			$a[$i]['descfilename']='';
+			$a[$i]['fullname']='';
+		}
 		if($freeproblems && $a[$i]['fake'] != 't') {
-			$ds = DIRECTORY_SEPARATOR;
-			if($ds=="") $ds = "/";
-			$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $nn . "-contest" . $contestnumber;
 			if(is_readable($ptmp . ".name")) {
 				$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
 				if($a[$i]['descfilename'] != '')
 					$a[$i]['descoid']=-1;
 			} else {
+				@unlink($ptmp . ".name");
+				@unlink($ptmp . ".hash");
 				$randnum = session_id() . "_" . rand();
 				$dir = $ptmp . '-' . $randnum;
 				@mkdir($dir,0770,true);
@@ -153,6 +175,7 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 								$failed=5;
 						if(!$failed) {
 							file_put_contents($ptmp . ".name",$ptmp . $ds . $descfile);
+							file_put_contents($ptmp . ".hash",$a[$i]['inputhash']);
 							if(is_readable($ptmp . ".name")) {
 								$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
 								if($a[$i]['descfilename'] != '')
@@ -166,6 +189,13 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 					}
 				}
 				if($failed) {
+					$a[$i]['basefilename']='';
+					$a[$i]['descfilename']='';
+					@unlink($ptmp . ".name");
+					@unlink($ptmp . ".hash");
+					DBExec($c,"update problemtable set problemfullname='', problembasefilename='' where problemnumber=$nn and contestnumber=$contestnumber",
+						   "DBGetFullProblemData(unfree problem)");
+
 					if($failed!=4) {
 						LogError("Failed to unzip problem package (failcode=$failed, problem=$nn, contest=$contestnumber)");
 						if($failed==1) $a[$i]['fullname']='(ERROR READING FROM DATABASE, OR DIRECTORY PERMISSION PROBLEM)';
@@ -177,7 +207,7 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 				}
 				cleardir($dir,false,true);
 			}	
-		}	
+		}
 	}
 	DBExec($c, "commit", "GetFullProblemData");
 	return $a;
@@ -282,8 +312,8 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 	$oldfullname='';
 	$deservesupdatetime=false;
 	if ($n == 0) {
-		DBExec ($c, "insert into problemtable (contestnumber, problemnumber, problemname) values " .
-				"($contestnumber, $number, '$name')", "DBNewProblem(insert problem)");
+		DBExec ($c, "insert into problemtable (contestnumber, problemnumber, problemname, problemcolor) values " .
+				"($contestnumber, $number, '$name','-1')", "DBNewProblem(insert problem)");
 		$deservesupdatetime=true;
 		$s = "created";
 	}
@@ -369,7 +399,7 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 		if($deservesupdatetime) {
 			$ds = DIRECTORY_SEPARATOR;
 			if($ds=="") $ds = "/";
-			@unlink($_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $number . "-contest" . $contestnumber . '.name');
+			@unlink($_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $number . '.name');
 			DBExec ($c, "update problemtable set updatetime=" . $updatetime .
 					" where contestnumber=$contestnumber and problemnumber=$number", "DBNewProblem(time)");
 		}
@@ -407,7 +437,8 @@ function DBGetProblems($contest,$showanyway=false) {
 
 		$ds = DIRECTORY_SEPARATOR;
 		if($ds=="") $ds = "/";
-		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "problem" . $a[$i]['number'] . "-contest" . $contest;
+		$nn = $a[$i]['number'];
+		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $nn;
 		if(is_readable($ptmp . ".name")) {
 			$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
 			if($a[$i]['descfilename'] != '')
