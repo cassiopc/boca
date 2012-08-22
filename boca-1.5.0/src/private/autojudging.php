@@ -82,12 +82,8 @@ $cf = globalconf();
 $ip = $cf["ip"];
 $activecontest=DBGetActiveContest();
 $prevsleep=0;
-$dodebug=1;
+//$dodebug=1;
 while(42) {
-if(!isset($dodebug)) {
-	if(isset($dir)) cleardir($dir);
-	if(isset($name)) unlink($name);
-}
 
 if(($run = DBGetRunToAutojudging($activecontest["contestnumber"], $ip)) === false) {
   if($prevsleep==0)
@@ -98,6 +94,10 @@ if(($run = DBGetRunToAutojudging($activecontest["contestnumber"], $ip)) === fals
   sleep(10);
   $prevsleep=1;
   continue;
+}
+if(!isset($dodebug)) {
+	if(isset($dir)) cleardir($dir);
+	if(isset($name)) unlink($name);
 }
 echo "\n";
 flush();
@@ -162,6 +162,7 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 	echo "Getting problem package file from local cache: " . $cache . $ds . $run["inputoid"] . "." . $run["inputname"] . "\n";
 	$s = file_get_contents($cache .	$ds . $run["inputoid"]	. "." . $run["inputname"]);
 	file_put_contents($dir . $ds . $run["inputname"], decryptData($s,$key));
+	$basename=$basenames[$run['inputoid']. "." . $run["inputname"]];
 } else {
 	echo "Downloading problem package file from db into: " . $dir . $ds . $run["inputname"] . "\n";
 	if(DB_lo_export($contest,$c, $run["inputoid"], $dir . $ds . $run["inputname"]) === false) {
@@ -200,6 +201,7 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		cleardir($dir . $ds . "problemdata");
 		continue;
 	}
+	$basenames[$run['inputoid']. "." . $run["inputname"]]=$basename;
 	if(!is_dir($dir . $ds . "problemdata" . $ds . "limits")) {
 		echo "Problem content missing (limits) -- please check the problem package\n";
 		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid");
@@ -247,7 +249,8 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 
 if(!isset($limits[$basename][$run["extension"]][0]) || !is_numeric($limits[$basename][$run["extension"]][0]) ||
    !isset($limits[$basename][$run["extension"]][1]) || !is_numeric($limits[$basename][$run["extension"]][1]) ||
-   !isset($limits[$basename][$run["extension"]][2]) || !is_numeric($limits[$basename][$run["extension"]][2]) ) {
+   !isset($limits[$basename][$run["extension"]][2]) || !is_numeric($limits[$basename][$run["extension"]][2]) ||
+   !isset($limits[$basename][$run["extension"]][3]) || !is_numeric($limits[$basename][$run["extension"]][3]) ) {
 	echo "Failed to find proper limits information for the problem -- please check the problem package\n";
 	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid");
 	continue;
@@ -311,7 +314,8 @@ if($retval != 0) {
 //# $2 input_file
 //# $3 timelimit (limit to run all the repetitions, by default only one repetition)
 //# $4 number_of_repetitions_to_run (optional, can be used for better tuning the timelimit)
-//# $5 maximum allowed memory (in KBytes)
+//# $5 maximum allowed memory (in MBytes)
+//# $6 maximum allowed output size (in KBytes)
 
 	$zip = new ZipArchive;
 	$inputlist = array();
@@ -324,7 +328,7 @@ if($retval != 0) {
 			$pos = strrpos(dirname($filename),"input");
 			if($pos !== false && $pos==strlen(dirname($filename))-5) {
 				$inputlist[$ninputlist++] = 'input' . $ds . basename($filename);
-				$outputlist[$noutputlist++] = 'output' . $ds . basename($filename);
+				$outputlist[$noutputlist++] = 'output' . $ds . basename($filename,'.link');
 			}
 		}
 		$zip->extractTo($dir, array_merge(array("run" . $ds . $run["extension"]),$inputlist));
@@ -348,15 +352,32 @@ if($retval != 0) {
 		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid");
 		continue;
 	} else {
+		$errp=0;
 		foreach($inputlist as $file) {
 			$file = basename($file);
 			if(is_file($dir . $ds . "input" . $ds . $file)) {
+				$file1=basename($file,'.link');
+				if($file != $file1) {
+					$fnam = trim(file_get_contents($dir . $ds . "input" . $ds . $file));
+					echo "Input file $file is a link. Trying to read the linked file: ($fnam)\n";
+					if(is_readable($fnam)) {
+						@unlink($dir . $ds . "input" . $ds . $file);
+						$file = basename($file,".link");
+						@copy($fnam,$dir . $ds . "input" . $ds . $file);
+ 					} else {
+						echo "Failed to read input files from link indicated in the ZIP -- please check the problem package\n";
+						DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid or missing files on the autojudge");
+						$errp=1; break;
+					}
+				}
+
 				$ex = escapeshellcmd($script) ." ".
 					escapeshellarg($basename) . " ".
 					escapeshellarg($dir . $ds . "input" . $ds . $file)." ".
 					escapeshellarg(trim($limits[$basename][$run["extension"]][0]))." ".
 					escapeshellarg(trim($limits[$basename][$run["extension"]][1]))." ".
-					escapeshellarg(trim($limits[$basename][$run["extension"]][2]));
+					escapeshellarg(trim($limits[$basename][$run["extension"]][2]))." ".
+					escapeshellarg(trim($limits[$basename][$run["extension"]][3]));
 				$ex .= " >stdout 2>stderr";
 				echo "Executing " . $ex . " at " . getcwd() . " for input " . $file . "\n";
 				if(system($ex, $retval)===false) $retval=-1;
@@ -380,6 +401,7 @@ if($retval != 0) {
 				echo "==> ERROR reading input file " . $dir . $ds . "input" . $ds . $file . " - skipping it!\n";
 			}
 		}
+		if($errp==1) continue;
 	}
 	if($retval==0) {
 		echo "Processing results\n";
@@ -458,8 +480,8 @@ if($retval > 9) {
 }
 
 echo "Sending results to server...\n";
-echo "out==> "; system("tail -n1 ". $dir.$ds.'allout');
-echo "err==> "; system("tail -n1 ". $dir.$ds.'allerr');
+//echo "out==> "; system("tail -n1 ". $dir.$ds.'allout');
+//echo "err==> "; system("tail -n1 ". $dir.$ds.'allerr');
 DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $dir.$ds.'allout', $dir.$ds.'allerr', $retval);
 LogLevel("Autojudging: answered '$answer' (run=$number, site=$site, contest=$contest)",3);
 echo "Autojudging answered '$answer' (contest=$contest, site=$site, run=$number)\n";

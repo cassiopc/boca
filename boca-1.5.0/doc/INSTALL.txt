@@ -121,6 +121,23 @@ setting up the correct values. Ex:
 5) It's all done. Now you have to manage the contest with a 
 browser and boca. Proceed to the ADMIN.TXT file.
 
+
+----------
+==> DETAIL ABOUT MOVING FROM POSTGRES 8.x TO 9.1
+LARGE OBJECTS GET WRONG OWNERSHIP. TO FIX, RUN WITHIN psql:
+# su - postgres
+# psql -d bocadb
+
+do $$
+declare r record;
+begin
+for r in select loid from pg_catalog.pg_largeobject loop
+execute 'ALTER LARGE OBJECT ' || r.loid || ' OWNER TO bocauser';
+end loop;
+end$$;
+\q
+
+
 Security Issues
 ---------------
 It is strongly recommended that BOCA be installed on a computer

@@ -727,12 +727,12 @@ function DBNewRun($param,$c=null) {
 		$b = DBSiteInfo($contest, $site, $c);
 		$dif = $b["currenttime"]; 
 		$rundatediff = $dif;
-		if ($dif < 0) {
+		if ($dif < 0) { if(!isset($param['allowneg'])) {
 			DBExec($c, "rollback work", "DBNewRun(rollback-started)");
 			LOGError("Tried to submit a run but the contest is not started. SQL=(" . $sql . ")");
 			MSGError("The contest is not started yet!");
 			return false;
-		}
+		} }
 		if (!$b["siterunning"]) {
 			DBExec($c, "rollback work", "DBNewRun(rollback-over)");
 			LOGError("Tried to submit a run but the contest is over. SQL=(" . $sql . ")");

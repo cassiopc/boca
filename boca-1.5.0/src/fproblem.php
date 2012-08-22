@@ -111,8 +111,9 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 			"p.problemcolor as color, p.problemcolorname as colorname, " .
 			"p.probleminputfilename as inputfilename, p.probleminputfile as inputoid, p.probleminputfilehash as inputhash " .
 			" from problemtable as p " .
-		      "where p.contestnumber=$contestnumber and p.problemfullname !~ '(DEL)' order by p.problemnumber",
+		      "where p.contestnumber=$contestnumber order by p.problemnumber",
 		    "DBGetFullProblemData(get problem)");
+             // and p.problemfullname !~ '(DEL)'
 	$n = DBnlines($r);
 	if ($n == 0) {
 		LOGLevel("No problems defined in the database ($contestnumber)",1);
@@ -122,7 +123,10 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 	$ds = DIRECTORY_SEPARATOR;
 	if($ds=="") $ds = "/";
 	for ($i=0;$i<$n;$i++) {
-		$a[$i] = array_merge(array(),DBRow($r,$i));
+           $a[$i] = array_merge(array(),DBRow($r,$i));
+
+		if(strpos($a[$i]['fullname'],'(DEL)') !== false) continue;
+
 		$nn=$a[$i]['number'];
 		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $nn;
 		$ck = myshorthash('');
@@ -161,7 +165,9 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 							$failed=2;
 						}
 						if(!$failed) {
-							$descfile=trim(sanitizeText($info['descfile']));
+							$descfile='';
+							if(isset($info['descfile']))
+								$descfile=trim(sanitizeText($info['descfile']));
 							$basename=trim(sanitizeText($info['basename']));
 							$fullname=trim(sanitizeText($info['fullname']));
 							if($basename=='' || $fullname=='')
@@ -170,17 +176,23 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 					} else $failed=4;
 					if(!$failed) {
 						@mkdir($ptmp);
-						if($descfile != '')
+						if($descfile != '') {
 							if(file_put_contents($ptmp . $ds . $descfile, encryptData(file_get_contents($dir . $ds . "description" . $ds . $descfile),$cf['key']),LOCK_EX)===FALSE)
 								$failed=5;
-						if(!$failed) {
-							file_put_contents($ptmp . ".name",$ptmp . $ds . $descfile);
-							file_put_contents($ptmp . ".hash",$a[$i]['inputhash']);
-							if(is_readable($ptmp . ".name")) {
-								$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
-								if($a[$i]['descfilename'] != '')
-									$a[$i]['descoid']=-1;
+							if(!$failed) {
+								file_put_contents($ptmp . ".name",$ptmp . $ds . $descfile);
+								file_put_contents($ptmp . ".hash",$a[$i]['inputhash']);
+								if(is_readable($ptmp . ".name")) {
+									$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
+									if($a[$i]['descfilename'] != '')
+										$a[$i]['descoid']=-1;
+								}
 							}
+						} else {
+							@unlink($ptmp . ".name");
+							@unlink($ptmp . ".hash");
+						}
+						if(!$failed) {
 							DBExec($c,"update problemtable set problemfullname='$fullname', problembasefilename='$basename' where problemnumber=$nn and contestnumber=$contestnumber",
 								   "DBGetFullProblemData(free problem)");
 							$a[$i]['basefilename']=$basename;
@@ -233,11 +245,15 @@ function DBDeleteProblem($contestnumber, $param, $c=null) {
 	$r = DBExec($c, $sql . " for update", "DBDeleteProblem(get for update)");
 	if(DBnlines($r)>0) {
 		$a = DBRow($r,0);
-		$sql="update problemtable set problemfullname='".$a["problemfullname"] ."(DEL)', updatetime=".time().
-			" where contestnumber=$contestnumber and problemnumber=$number ";
+		if(($pos=strpos($a["problemfullname"],"(DEL)")) !== false) {
+			$sql="update problemtable set problemfullname='".substr($a["problemfullname"],0,$pos) ."', updatetime=".time().
+				" where contestnumber=$contestnumber and problemnumber=$number ";
+		} else {
+			$sql="update problemtable set problemfullname='".$a["problemfullname"] ."(DEL)', updatetime=".time().
+				" where contestnumber=$contestnumber and problemnumber=$number ";
+		}
 		if ($inputfilename != "")
 			$sql .= " and probleminputfilename='$inputfilename'";
-		
 		$r = DBExec($c, $sql, "DBDeleteLanguage(update)");
 		$r = DBExec($c,"select runnumber as number, runsitenumber as site from runtable where contestnumber=$contestnumber and runproblem=$number for update");
 		$n = DBnlines($r);
@@ -248,7 +264,13 @@ function DBDeleteProblem($contestnumber, $param, $c=null) {
 	}
 	if($cw)
 		DBExec($c, "commit", "DBDeleteProblem(commit)");
+			$ds = DIRECTORY_SEPARATOR;
+			if($ds=="") $ds = "/";
 	
+	$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $number;
+	@unlink($ptmp . ".name");
+	@unlink($ptmp . ".hash");
+
 	LOGLevel("Problem $number (inputfile=$inputfilename) deleted (user=".
 			 $_SESSION["usertable"]["username"]."/".$_SESSION["usertable"]["usersitenumber"] . ")",2);
 	return true;
@@ -438,7 +460,7 @@ function DBGetProblems($contest,$showanyway=false) {
 		$ds = DIRECTORY_SEPARATOR;
 		if($ds=="") $ds = "/";
 		$nn = $a[$i]['number'];
-		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $nn;
+		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contest ."-problem" . $nn;
 		if(is_readable($ptmp . ".name")) {
 			$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
 			if($a[$i]['descfilename'] != '')

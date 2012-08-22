@@ -40,15 +40,22 @@ echo
 for ($i = 0; $i < $numTeams; $i++) {
 	$a = DBRow($r, $i);
 	$teamID = $a['username'];
-	$pieces = explode('</b>', $a['userfullname']);
-	$teamName = trim($pieces[1]);
-	$pieces = explode('<b>', $pieces[0]);
-	$teamUni = trim($pieces[1]);
+	if(isset($a['usershortname']))
+		$teamName = $a['usershortname'];
+	else
+		$teamName = $a['userfullname'];
+	if(isset($a['usershortinstitution']))
+		$teamUni = $a['usershortinstitution'];
+	else
+		$teamUni = $teamName;
 
 	echo
 		$teamID . '' .
 		$teamUni . '' .
 		$teamName . "\n";
 }
+
+echo '1' . '' . '1' . "\n";
+echo $numProblems . '' . 'Y' . "\n";
 
 ?>

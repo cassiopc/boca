@@ -419,13 +419,14 @@ function DBNewTask($param, $c=null) {
 			   "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
 			   "'$desc', '$sys', '$color', '$colorname', $updatetime)",
 			   "DBNewTask(insert task)");
+              if($sys=="t") $u="System";
+                else $u = "User $user";
+  
 		if($cw) {
 			DBExec($c, "commit work", "DBNewTask(commit-insert)");
 			LOGLevel("$u submitted a task (#$tasknumber) on site #$site " .
 					 "(filename=$filename, contest=$contest).",2);
 		}
-		if($sys=="t") $u="System";
-		else $u = "User $user";
 		$ret=2;
 	} else {
 		if($updatetime > $t) {

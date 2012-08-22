@@ -55,6 +55,7 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Su
 					   'lang'=>$lang,
 					   'filename'=>$name,
 					   'filepath'=>$temp);
+		if($runteam=='team.php') $param['allowneg']=1;
 		DBNewRun ($param);
 		$_SESSION['forceredo']=true;
 	}

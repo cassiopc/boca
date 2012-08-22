@@ -15,14 +15,15 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-#Last modified: 21/july/2012 by cassio@ime.usp.br
+#Last modified: 22/aug/2012 by cassio@ime.usp.br
 #
 # parameters are:
 # $1 main_class
 # $2 input_file
 # $3 timelimit (limit to run all the repetitions, by default only one repetition)
 # $4 number_of_repetitions_to_run (optional, can be used for better tuning the timelimit)
-# $5 maximum allowed memory (in KBytes)
+# $5 maximum allowed memory (in MBytes)
+# $6 maximum allowed output size (in KBytes)
 #
 # the output of the submission should be directed to the standard output
 #
@@ -108,10 +109,16 @@ if [ "$4" != "" ]; then
     nruns=$4
   fi
 fi
-maxm=512
+maxm=512000
 if [ "$5" != "" ]; then
   if [ "$5" -gt "0" ]; then
-    maxm=${5}
+    maxm=${5}000
+  fi
+fi
+maxf=1024
+if [ "$6" != "" ]; then
+  if [ "$6" -gt "0" ]; then
+    maxf=${6}
   fi
 fi
 
@@ -136,7 +143,7 @@ if [ ! -x \$java ]; then
     exit 47
 fi
 export CLASSPATH=.:./run.jar:$CLASSPATH
-$sf -r$nruns -t$time -T$ttime -istdin0 -F256 -u256 -ostdout0 -estderr0 -U$bocau -G$bocag -n0 -C. -f20000 -d20000000 -m20000000 -- \$java -Xmx${maxm}M -Xms${maxm}M "$name"
+$sf -r$nruns -t$time -T$ttime -istdin0 -F256 -u256 -ostdout0 -estderr0 -U$bocau -G$bocag -n0 -C. -f20000 -d20000000 -m20000000 -- \$java -Xmx${maxm}K -Xms${maxm}K "$name"
 echo \$? > runit.retcode
 if [ ! -d /bocajail ]; then
   /bin/umount /proc 2>/dev/null
@@ -157,7 +164,7 @@ else
     echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
     echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
     echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
-	$sf -r$nruns -t$time -T$ttime -istdin0 -F256 -u256 -U$bocau -G$bocag -ostdout0 -estderr0 -n0 -C. -d20000000 -m20000000 -- $java -cp run.jar -Xmx${maxm}M -Xms${maxm}M "$name"
+	$sf -r$nruns -t$time -T$ttime -istdin0 -F256 -u256 -U$bocau -G$bocag -ostdout0 -estderr0 -n0 -C. -d20000000 -m20000000 -- $java -cp run.jar -Xmx${maxm}K -Xms${maxm}K "$name"
 	ret=$?
 fi
 if [ $ret -gt 10 ]; then

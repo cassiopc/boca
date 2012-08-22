@@ -86,7 +86,7 @@ for ($i=0; $i<count($task); $i++) {
   }
   echo "</td>\n";
   if ($task[$i]["oid"] != null) {
-    $msg = $task[$i]["username"]." ".$task[$i]["username"]." ".$task[$i]["username"]." ".
+    $msg = "///// " . $task[$i]["username"]." ".$task[$i]["username"]." ".$task[$i]["username"]." ".
            $task[$i]["username"]." ".$task[$i]["username"]." ".$task[$i]["username"];
     echo "  <td nowrap><a href=\"../filedownload.php?" . filedownload($task[$i]["oid"],$task[$i]["filename"]) .
         "\">" . $task[$i]["filename"] . "</a>";

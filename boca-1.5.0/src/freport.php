@@ -69,32 +69,53 @@ function DBRunReport($contest,$site) {
 		$a = DBRow($r,$i);
 		$xdados[$i] = $a;
 		// # of runs by team
-		$xuser[$a['user']]++;
+		if(isset($xuser[$a['user']]))
+			$xuser[$a['user']]++;
+		else $xuser[$a['user']]=1;
 		// # of runs by problem
-		$xproblem[$a['problem']]++;
+		if(isset($xproblem[$a['problem']]))
+			$xproblem[$a['problem']]++;
+		else 	$xproblem[$a['problem']]=1;
 		if($a['yes'] == 't') {
+			if(isset($xuseryes[$a['user']]))
 				$xuseryes[$a['user']]++;
+			else $xuseryes[$a['user']]=1;
 			$xproblemyes[$a['problem']]++;
 		}
 		// # of runs by language
-		$xlanguage[$a['language']]++;
-		if($a['yes'] == 't')
-			$xlanguageyes[$a['language']]++;
+		if(isset($xlanguage[$a['language']]))
+			$xlanguage[$a['language']]++;
+		else $xlanguage[$a['language']]=1;
+		if($a['yes'] == 't') {
+			if(isset($xlanguageyes[$a['language']]))
+				$xlanguageyes[$a['language']]++;
+			else $xlanguageyes[$a['language']]=1;
+		}
 		// # of runs by answer
-		$xanswer[$a['answer']]++;
+		if(isset(	$xanswer[$a['answer']]))
+			$xanswer[$a['answer']]++;
+		else 	$xanswer[$a['answer']]=1;
 		// time of the runs
 		array_push($xtimestamp, $a['timestamp']);
 		if($a['yes'] == 't')
 			array_push($xtimestampyes, $a['timestamp']);
 
 		// # of runs by answer by problem
-		$xpa[$a['problem']][$a['answer']]++;
+		if(isset($xpa[$a['problem']][$a['answer']]))
+			$xpa[$a['problem']][$a['answer']]++;
+		else $xpa[$a['problem']][$a['answer']]=1;
 		// # of runs by language by problem
-		$xpl[$a['problem']][$a['language']]++;
+		if(isset($xpl[$a['problem']][$a['language']]))
+			$xpl[$a['problem']][$a['language']]++;
+		else $xpl[$a['problem']][$a['language']]=1;
 		// # of runs by answer by language
-		$xla[$a['language']][$a['answer']]++;
+		if(isset($xla[$a['language']][$a['answer']]))
+			$xla[$a['language']][$a['answer']]++;
+		else $xla[$a['language']][$a['answer']]=1;
 		// # of runs by problem by user
 		// negative sign means team got an yes for the problem
+		if(!isset($xup[$a['user']][$a['problem']]))
+			$xup[$a['user']][$a['problem']]=0;
 		if($xup[$a['user']][$a['problem']] < 0)
 			$xup[$a['user']][$a['problem']]--;
 		else {

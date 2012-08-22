@@ -233,7 +233,9 @@ echo "<td>Total</td><td>Accepted</td></tr>\n";
 reset($d['username']);
 while (list($keya, $vala) = each($d['username'])) {
   $keya = $d['username'][$keya];
-  $vala = $d['user'][$keya];
+  if(isset($d['user'][$keya]))
+	  $vala = $d['user'][$keya];
+  else $vala=0;
   echo "<tr><td>".$d['userfull'][$keya]."</td>";
   reset($d['problem']);
   while (list($key, $val) = each($d['problem'])) {
@@ -289,7 +291,9 @@ while (list($keya, $val) = each($d['timestamp'])) {
     $atual += $passo;
     $pos++;
   }
-  $res[$pos]++;
+  if(isset($res[$pos]))
+	  $res[$pos]++;
+  else $res[$pos]=1;
   if($res[$pos] > $m) $m=$res[$pos];
 }
 
@@ -318,7 +322,9 @@ while (list($keya, $val) = each($d['timestampyes'])) {
     $atual += $passo;
     $pos++;
   }
-  $res[$pos]++;
+  if(isset($res[$pos]))
+	  $res[$pos]++;
+  else $res[$pos]=1;
 }
 
 $str="Accepted Runs by Time Period" . chr(1) . $m;

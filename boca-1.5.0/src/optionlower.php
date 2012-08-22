@@ -35,13 +35,13 @@ if (isset($_GET["username"]) && isset($_GET["userfullname"]) && isset($_GET["use
 	$passwordo = myhtmlspecialchars($_GET["passwordo"]);
 	$passwordn = myhtmlspecialchars($_GET["passwordn"]);
 	DBUserUpdate($_SESSION["usertable"]["contestnumber"],
-       	             $_SESSION["usertable"]["usersitenumber"],
-               	     $_SESSION["usertable"]["usernumber"],
-		     $username,
-		     $userfullname,
-		     $userdesc,
-		     $passwordo,
-		     $passwordn);
+				 $_SESSION["usertable"]["usersitenumber"],
+				 $_SESSION["usertable"]["usernumber"],
+				 $username,
+				 $userfullname,
+				 $userdesc,
+				 $passwordo,
+				 $passwordn);
 	ForceLoad("option.php");
 }
 
@@ -64,9 +64,9 @@ function computeHASH()
 
 	passMDo = js_myhash(js_myhash(document.form1.passwordo.value)+'<?php echo session_id(); ?>');
 	passMDn = bighexsoma(js_myhash(document.form1.passwordn2.value),js_myhash(document.form1.passwordo.value));
-	document.form1.passwordo.value = '';
-	document.form1.passwordn1.value = '';
-	document.form1.passwordn2.value = '';
+	document.form1.passwordo.value = '                                                         ';
+	document.form1.passwordn1.value = '                                                         ';
+	document.form1.passwordn2.value = '                                                         ';
 	document.location='option.php?username='+username+'&userdesc='+userdesc+'&userfullname='+userfull+'&passwordo='+passMDo+'&passwordn='+passMDn;
 }
 </script>

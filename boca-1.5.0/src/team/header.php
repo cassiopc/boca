@@ -96,7 +96,7 @@ if(!isset($_SESSION["popuptime"]) || $_SESSION["popuptime"] < time()-120) {
 			if ($clar[$i]["anstime"]>$_SESSION["usertable"]["userlastlogin"]-$st["sitestartdate"] && 
 				$clar[$i]["anstime"] < $st['siteduration'] &&
 				trim($clar[$i]["answer"])!='' && !isset($_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["anstime"]])) {
-				$_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["anstime"]] = "Clarification for problem ".$clar[$i]["problem"]." answered\n";
+				$_SESSION["popups"]['clar' . $i . '-' . $clar[$i]["anstime"]] = "(Clar for problem ".$clar[$i]["problem"]." answered)\n";
 			}
 		}
 		$run = DBUserRuns($_SESSION["usertable"]["contestnumber"],
@@ -106,7 +106,7 @@ if(!isset($_SESSION["popuptime"]) || $_SESSION["popuptime"] < time()-120) {
 			if ($run[$i]["anstime"]>$_SESSION["usertable"]["userlastlogin"]-$st["sitestartdate"] && 
 				$run[$i]["anstime"] < $st['sitelastmileanswer'] &&
 				$run[$i]["ansfake"]!="t" && !isset($_SESSION["popups"]['run' . $i . '-' . $run[$i]["anstime"]])) {
-				$_SESSION["popups"]['run' . $i . '-' . $run[$i]["anstime"]] = "Run ".$run[$i]["number"]." result: ".$run[$i]["answer"] . '\n';
+				$_SESSION["popups"]['run' . $i . '-' . $run[$i]["anstime"]] = "(Run ".$run[$i]["number"]." result: ".$run[$i]["answer"] . ')\n';
 			}
 		}
 	}

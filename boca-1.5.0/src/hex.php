@@ -104,40 +104,39 @@ function bighexsoma ($hex1, $hex2){
 	return $resultado;
 }
 //hex1 e hex2 sao strings hexa
-//devolve a string que representa hex2 - hex1 
+//devolve a string que representa hex1 - hex2
 function bighexsub ($hex1, $hex2) { 
-	if (strlen($hex1) == strlen($hex2)) {
-		$i=0;
-		while ($hex1[$i] == $hex2[$i] && $i<strlen($hex1)) $i++;
-
-		if ($i>=strlen($hex1)) return 0;
-		if ($hex1[$i] > $hex2[$i]) {
-			$sinal='';
-			$a = $hex2;
-			$hex2 = $hex1;
-			$hex1 = $a;
-		} else $sinal = '-';
+	$h1 = strlen($hex1);
+	$h2 = strlen($hex2);
+	while ($h1 < $h2) {
+		$hex1 = '0' . $hex1;
+		$h1++;
 	}
-	else {
-		if (strlen($hex1) < strlen($hex2)) $sinal='-';
-		else {
-			$sinal='';
-			$a = $hex2;
-			$hex2 = $hex1;
-			$hex1 = $a;
-		}
-		while (strlen($hex1) < strlen($hex2))
-			$hex1 = '0' . $hex1;
+	while ($h2 < $h1) {
+		$hex2 = '0' . $hex2;
+		$h2++;
+	}
+
+	$i=0;
+	while ($hex1[$i] == $hex2[$i] && $i<$h1) $i++;
+	if ($i>=$h1) return '0';
+
+	if ($hex1[$i] > $hex2[$i]) {
+		$sinal='';
+	} else {
+		$sinal = '-';
+		$a = $hex2;
+		$hex2 = $hex1;
+		$hex1 = $a;
 	}
 
 	$sobra = 0;
 	$resultado = '';
-	for($x = strlen($hex1)-1; $x>=0; $x--){ 
-		
+	for($x = $h1-1; $x>=0; $x--) { 
 		$op1 = (int) hexdec(substr($hex1,$x,1)); 
 		$op2 = (int) hexdec(substr($hex2,$x,1));
 
-		$r = $op2 - $op1 - $sobra;
+		$r = $op1 - $op2 - $sobra;
 		if ($r < 0) {
 			$r += 16;
 			$sobra = 1;

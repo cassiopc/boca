@@ -163,7 +163,8 @@ function DBConnect($forcenew=false) {
 			"Is it running? Is the DB password in conf.php correct?");
 		exit;
 	}
-	DBExecNonStop($conn,"SET NAMES '${conf["dbclientenc"]}'","set client encoding");
+	if(isset($conf["dbclientenc"]))
+		DBExecNonStop($conn,"SET NAMES '${conf["dbclientenc"]}'","set client encoding");
 	return $conn;
 }
 //fecha a conexao com o banco (isso nao eh realmente necessario, ja que o php/apache cuidam do servico)
@@ -267,7 +268,10 @@ function DBCreateDatabase() {
 		 MSGError("Unable to connect to template1 as ".$conf["dbsuperuser"]);
 		 exit;
 	 }
-	 $r = DBExec($conn, "create database ${conf["dbname"]} with encoding = '${conf["dbencoding"]}'", "DBCreateDatabase(create)");
+	 if(isset($conf["dbencoding"]))
+		 $r = DBExec($conn, "create database ${conf["dbname"]} with encoding = '${conf["dbencoding"]}'", "DBCreateDatabase(create)");
+	 else
+		 $r = DBExec($conn, "create database ${conf["dbname"]} with encoding = 'UTF8'", "DBCreateDatabase(create)");
 }
 
 function DBcrc($contest,$id, $c=null) {

@@ -5,6 +5,8 @@ echo 4
 echo 10
 # and the maximum amount of memory per repetition in the third line (in Mbytes)
 echo 512
+# and the maximum file size in the fourth line (in kbytes)
+echo 1024
 # and shall return zero to indicate no failure
 exit 0
 # the idea is that this file will be executed by the autojudge in the first time the autojudge downloads a problem, so as it will be

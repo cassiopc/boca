@@ -61,7 +61,7 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
 <br>
   <script language="javascript">
     function conf2(url) {
-      if (confirm("Confirm the DELETION of the PROBLEM and ALL data associated to it (including the SUBMISSIONS)?")) {
+      if (confirm("Confirm the DELETION of the PROBLEM and ALL data associated to it?")) {
 		  if (confirm("Are you REALLY sure about what you are doing? DATA CANNOT BE RECOVERED!")) {
 			  document.location=url;
 		  } else {
@@ -70,6 +70,13 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
       } else {
         document.location='problem.php';
       }
+    }
+    function conf3(url) {
+      if (confirm("Confirm the UNDELETION of the PROBLEM?")) {
+		  document.location=url;
+	  } else {
+		  document.location='problem.php';
+	  }
     }
   </script>
 <table width="100%" border=1>
@@ -89,8 +96,15 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
 for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
   if($prob[$i]["fake"]!='t') {
-	  echo "  <td nowrap><a href=\"javascript: conf2('problem.php?delete=" . $prob[$i]["number"] . "&input=" . rawurlencode($prob[$i]["inputfilename"]) . 
-	"')\">" . $prob[$i]["number"] . "</a></td>\n";
+	  if(strpos($prob[$i]["fullname"],"(DEL)") !== false) {
+		  echo "  <td nowrap><a href=\"javascript: conf3('problem.php?delete=" . $prob[$i]["number"] . "&input=" . rawurlencode($prob[$i]["inputfilename"]) . 
+			  "')\">" . $prob[$i]["number"];
+		  echo "(deleted)";
+	  } else {
+		  echo "  <td nowrap><a href=\"javascript: conf2('problem.php?delete=" . $prob[$i]["number"] . "&input=" . rawurlencode($prob[$i]["inputfilename"]) . 
+			  "')\">" . $prob[$i]["number"];
+	  }
+	  echo "</a></td>\n";
   } else {
     echo "  <td nowrap>" . $prob[$i]["number"] . " (fake)</td>\n";
   }

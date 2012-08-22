@@ -223,6 +223,14 @@ if($redo) {
 						$score[$e]['classingroup'][$rfi]=$class;
 						$class++;
 					}
+					else if(strpos($grname[$k],'/') >= 1) {
+						$u1 = explode('/',$grname[$k]);
+						if(isset($u1[1]) && $score[$e]['user'] >= $u1[0] && $score[$e]['user'] <= $u1[1]) {
+							$score[$e]['classingroup'][$rfi]=$class;
+							$class++;
+						}
+					}
+
 				}
 			}
 			if($class>1)

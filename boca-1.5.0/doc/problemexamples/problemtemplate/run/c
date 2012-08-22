@@ -15,14 +15,15 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-#Last modified: 21/july/2012 by cassio@ime.usp.br
+#Last modified: 22/aug/2012 by cassio@ime.usp.br
 #
 # parameters are:
 # $1 exe_file
 # $2 input_file
 # $3 timelimit (limit to run all the repetitions, by default only one repetition)
 # $4 number_of_repetitions_to_run (optional, can be used for better tuning the timelimit)
-# $5 maximum allowed memory (in KBytes)
+# $5 maximum allowed memory (in MBytes)
+# $6 maximum allowed output size (in KBytes)
 #
 # the output of the submission should be directed to the standard output
 #
@@ -98,6 +99,12 @@ if [ "$5" != "" ]; then
     maxm=${5}000
   fi
 fi
+maxf=1024
+if [ "$6" != "" ]; then
+  if [ "$6" -gt "0" ]; then
+    maxf=${6}
+  fi
+fi
 
 cp "$2" stdin0 2>/dev/null
 cp "$1" run.exe 2>/dev/null
@@ -110,7 +117,7 @@ fi
 
 cdir=`pwd`
 echo "Current directory is $cdir -- chrooting on it" >&2
-$sf -F10 -r$nruns -n1 -R$cdir -C. -U$bocau -G$bocag -ostdout0 -estderr0 -d$maxm -m$maxm -t$time -T$ttime -istdin0 ./run.exe
+$sf -F10 -f$maxf -r$nruns -n1 -R$cdir -C. -U$bocau -G$bocag -ostdout0 -estderr0 -d$maxm -m$maxm -t$time -T$ttime -istdin0 ./run.exe
 ret=$?
 if [ $ret -gt 10 ]; then
 	ret=0

@@ -37,7 +37,7 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) $main=true; else $main=false
 if (isset($_POST["username"]) && isset($_POST["userfullname"]) && isset($_POST["userdesc"]) && isset($_POST["userip"]) &&
     isset($_POST["usernumber"]) && isset($_POST["usersitenumber"]) && isset($_POST["userenabled"]) && isset($_POST["usericpcid"]) &&
     isset($_POST["usermultilogin"]) && isset($_POST["usertype"]) && isset($_POST["confirmation"]) &&
-    isset($_POST["passwordn1"]) && isset($_POST["passwordn2"]) && $_POST["confirmation"] == "confirm") {
+    isset($_POST["passwordn1"]) && isset($_POST["passwordn2"]) && isset($_POST["passwordo"]) && $_POST["confirmation"] == "confirm") {
 	$param['user'] = htmlspecialchars($_POST["usernumber"]);
 	$param['site'] = htmlspecialchars($_POST["usersitenumber"]);
 	$param['username'] = htmlspecialchars($_POST["username"]);
@@ -47,13 +47,20 @@ if (isset($_POST["username"]) && isset($_POST["userfullname"]) && isset($_POST["
 	$param['userfull'] = htmlspecialchars($_POST["userfullname"]);
 	$param['userdesc'] = htmlspecialchars($_POST["userdesc"]);
 	$param['type'] = htmlspecialchars($_POST["usertype"]);
-	$param['pass'] = htmlspecialchars($_POST["passwordn1"]);
 	$param['permitip'] = htmlspecialchars($_POST["userip"]);
 	$param['contest'] = $_SESSION["usertable"]["contestnumber"];
-	if ($_POST["passwordn1"] == $_POST["passwordn2"]) {
-		DBNewUser($param);
+
+	$passcheck = htmlspecialchars($_POST["passwordo"]);
+	$a = DBUserInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"], $_SESSION["usertable"]["usernumber"], null, false);
+	if(myhash($a['userpassword'] . session_id()) != $passcheck) {
+		MSGError('Admin password is incorrect');
+	} else {
+		if ($_POST["passwordn1"] == $_POST["passwordn2"]) {
+			$param['pass'] = bighexsub(htmlspecialchars($_POST["passwordn1"]),$a['userpassword']);
+			DBNewUser($param);
+		}
+		else MSGError ("Passwords don't match.");
 	}
-	else MSGError ("Passwords don't match.");
 	ForceLoad("user.php");
 }
 else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["importfile"]["name"]!="") {
@@ -73,10 +80,10 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
                 }
 				$userlist=array();
 				if(strtolower(substr($name,-4))==".tsv") {
-					for ($i=0; $i<count($ar) && strpos($ar[$i], "File_Version\t1") === false; $i++) ;
-					if($i >= $count($ar)) MSGError('File format not recognized');
+					for ($i=0; $i < count($ar) && strpos($ar[$i], "File_Version\t1") === false; $i++) ;
+					if($i >= count($ar)) MSGError('File format not recognized');
 					$oklines=0;
-					for ($i++; $i<count($ar); $i++) {
+					for ($i++; $i < count($ar); $i++) {
                         $x = explode("\t",trim($ar[$i]));
 						if(count($x)==7) {
 							$param['site']=trim($x[2]);
@@ -129,9 +136,9 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
 					}
 					MSGError($oklines . ' users included/updated successfully');
 				} else {
-					for ($i=0; $i<count($ar) && strpos($ar[$i], "[user]") === false; $i++) ;
-					if($i >= $count($ar)) MSGError('File format not recognized');
-					for ($i++; $i<count($ar) && $ar[$i][0] != "["; $i++) {
+					for ($i=0; $i < count($ar) && strpos($ar[$i], "[user]") === false; $i++) ;
+					if($i >= count($ar)) MSGError('File format not recognized');
+					for ($i++; $i < count($ar) && $ar[$i][0] != "["; $i++) {
                         $x = trim($ar[$i]);
                         if (strpos($x, "user") !== false && strpos($x, "user") == 0) {
                         	$param = array();
@@ -215,7 +222,7 @@ else
   <td><b>Description</b></td>
  </tr>
 <?php
-for ($i=0; $i<count($usr); $i++) {
+for ($i=0; $i < count($usr); $i++) {
   echo " <tr>\n";
   if(($usr[$i]["usersitenumber"] == $_SESSION["usertable"]["usersitenumber"] || $main==true) && 
 	 //$usr[$i]["usertype"] != 'site' && 
@@ -271,8 +278,11 @@ if (isset($_GET["site"]) && isset($_GET["user"]) && is_numeric($_GET["site"]) &&
 <script language="JavaScript">
 function computeHASH()
 {
-        document.form3.passwordn1.value = js_myhash(document.form3.passwordn1.value);
-        document.form3.passwordn2.value = js_myhash(document.form3.passwordn2.value);
+	document.form3.passwordn1.value = bighexsoma(js_myhash(document.form3.passwordn1.value),js_myhash(document.form3.passwordo.value));
+	document.form3.passwordn2.value = bighexsoma(js_myhash(document.form3.passwordn2.value),js_myhash(document.form3.passwordo.value));
+	document.form3.passwordo.value = js_myhash(js_myhash(document.form3.passwordo.value)+'<?php echo session_id(); ?>');
+//	document.form3.passwordn1.value = js_myhash(document.form3.passwordn1.value);
+//	document.form3.passwordn2.value = js_myhash(document.form3.passwordn2.value);
 }
 </script>
 
@@ -424,6 +434,12 @@ if (isset($u)) {
         <td width="35%" align=right>Retype Password:</td>
         <td width="65%">
 	  <input type="password" name="passwordn2" value="" size="20" maxlength="200" />
+        </td>
+      </tr>
+      <tr> 
+        <td width="35%" align=right>Admin (this user) Password:</td>
+        <td width="65%">
+	  <input type="password" name="passwordo" value="" size="20" maxlength="200" />
         </td>
       </tr>
     </table>

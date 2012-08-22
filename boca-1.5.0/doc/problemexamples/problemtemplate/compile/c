@@ -21,7 +21,7 @@
 # $1 source_file
 # $2 exe_file (default run.exe)
 # $3 timelimit (optional, limit to run all the repetitions, by default only one repetition)
-# $4 maximum allowed memory (in MBytes)
+# $4 maximum allowed memory (in MBytes, default 512M)
 #
 # the output of the submission should be directed to the standard output
 #

@@ -216,11 +216,6 @@ function DBAllUserInfo($contest,$site=-1) {
 	$a = array();
 	for ($i=0;$i<$n;$i++) {
 		$a[$i] = DBRow($r,$i);
-		$a[$i]['changepassword']=true;
-		if(substr($a[$i]['userpassword'],0,1)=='!') {
-			$a[$i]['userpassword'] = substr($a[$i]['userpassword'],1);
-			$a[$i]['changepassword']=false;
-		}
 		$a[$i]['userpassword'] = myhash($a[$i]['userpassword'] . $a[$i]['usersessionextra']);
 	}
 	return $a;
@@ -354,10 +349,9 @@ function DBSiteLogoffAll($contest, $site) {
 	LOGLevel("Logoff all (contest=$contest,site=$site).",2);
 }
 
-function DBAllSiteInfo($contest, $c=null) {
+function DBAllSiteInfo($contest) {
 	$sql = "select * from sitetable where contestnumber=$contest";
-	if($c==null)
-		$c = DBConnect();
+	$c = DBConnect();
 	$r = DBExec ($c, $sql);
 	$n = DBnlines($r);
 	if ($n == 0) {
@@ -448,7 +442,6 @@ function DBSiteLogins ($contest, $site, $logins) {
 	$param['contestnumber']=$contest;
 	$param['sitenumber']=$site;
 	$param['sitepermitlogins']=$logins;
-	unset($param['updatetime']);
 	DBUpdateSite ($param);
 	LOGLevel("Site logins=$logins (contest=$contest)",2);
 }
@@ -668,11 +661,10 @@ function DBUpdateSite ($param,$c=null) {
 		$sql .= " sitescorelevel=$sitescorelevel where contestnumber=$contestnumber and sitenumber=$sitenumber " .
 			"and updatetime < $updatetime";
 		DBExec($c,$sql, "DBUpdateSite(update site)");
-		if($docommit) {
+		if($docommit) 	
 			DBExec($c, "commit work", "DBUpdateSite(commit-update)");	
-			LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . 
-					 " changed the site $sitenumber (contest=$contestnumber) settings.",2);
-		}
+		LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . 
+				 " changed the site $sitenumber (contest=$contestnumber) settings.",2);
 	} else {
 		if($docommit) 	
 			DBExec($c, "commit work", "DBUpdateSite(commit-noupdate)");
@@ -683,7 +675,7 @@ function DBUpdateContest ($param, $c=null) {
 	if(isset($param['contestnumber']) && !isset($param['number'])) $param['number']=$param['contestnumber'];
 
 	$ac=array('number');
-	$ac1=array('updatetime','atualizasites','scorelevel','mainsite','localsite','mainsiteurl','keys','unlockkey','name',
+	$ac1=array('updatetime','atualizasites','scorelevel','mainsite','localsite','mainsiteurl','keys','unlockkey',
 			   'active','lastmileanswer','lastmilescore','penalty','startdate', 'duration', 'maxfilesize');
 	$type['number']=1;
 	$type['scorelevel']=1;
@@ -756,7 +748,6 @@ function DBUpdateContest ($param, $c=null) {
 			   "DBUpdateContest(active)");
 		LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . " activated contest $number.",2);
 	}
-	$chd=false;
 	if($updatetime > $a['updatetime']) {
 		$ret=2;
 		$sql = "update contesttable set updatetime=".$updatetime;
@@ -805,7 +796,7 @@ function DBUpdateContest ($param, $c=null) {
 		}
 
 		if($atualizasites) {
-			$s = DBAllSiteInfo($number,$c);
+			$s = DBAllSiteInfo($number);
 			for($i=0; $i<count($s); $i++) {
 				$param = $s[$i];
 				$param['contestnumber']=$number;
@@ -817,7 +808,7 @@ function DBUpdateContest ($param, $c=null) {
 					$param['sitelastmileanswer']=$lastmileanswer;
 				if($lastmilescore > 0)
 					$param['sitelastmilescore']=$lastmilescore;
-				unset($param['updatetime']);
+				
 				DBUpdateSite ($param,$c);
 				
 				if($startdate > 0) {
@@ -829,13 +820,11 @@ function DBUpdateContest ($param, $c=null) {
 				}
 			}
 		}
-		$chd=true;
+		LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . " changed the contest $number settings.",2);
 	}
 	if($cw) {
 		DBExec($c, "commit work", "DBUpdateContest(commit)");
 	}
-	if($chd)
-		LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . " changed the contest $number settings.",2);
 	return $ret;
 }
 function DBRenewSiteTime($param, $c=null) {
@@ -1081,9 +1070,9 @@ function DBUserUpdate($contest, $site, $user, $username, $userfull, $userdesc, $
 		MSGError ("Incorrect password.");
 	}
 	else { 
-		if(!$a['changepassword']) {
-			MSGError('Password change is DISABLED'); return;
-		}
+		if($a['userpassword']
+		MSGError('Password change is DISABLED'); return;
+
 		if ($a["userpassword"] == "") $temp = myhash("");
 		else $temp = $a["userpassword"];
 		$lentmp = strlen($temp);
@@ -1205,7 +1194,6 @@ function DBNewUser($param, $c=null) {
 			MSGError("Site $site does not exist");
 			return false;
 		   }
-		   if($type=='team') $pass='!'.$pass;
 			$sql = "insert into usertable (contestnumber, usersitenumber, usernumber, username, usericpcid, userfullname, " .
 				"userdesc, usertype, userenabled, usermultilogin, userpassword, userpermitip) values " .
 				"($contest, $site, $user, '$username', '$usericpcid', '$userfull', '$userdesc', '$type', '$enabled', " .

@@ -24,6 +24,11 @@ if(is_readable('/etc/boca.conf')) {
 	$pif=parse_ini_file('/etc/boca.conf');
 	$bocadir = trim($pif['bocadir']) . $ds . 'src';
 } else {
+  if(is_readable('boca.conf')) {
+        $pif=parse_ini_file('boca.conf');
+        $bocadir = trim($pif['bocadir']) . $ds . 'src';
+  }
+  else
 	$bocadir = getcwd();
 }
 
@@ -44,11 +49,12 @@ ini_set('memory_limit','600M');
 ini_set('output_buffering','off');
 ini_set('implicit_flush','on');
 @ob_end_flush();
-
+/*
 if(system('test "`id -u`" -eq "0"',$retval)===false || $retval!=0) {
 	echo "Must be run as root\n";
 	exit;
 }
+*/
 if(count($argv) < 3 || !is_readable($argv[1])) {
 	echo "Usage: createproblemzip.php <problem_directory> <problem_zipfile> [<password>]\n";
 	exit;
@@ -85,8 +91,13 @@ if(is_dir(trim($argv[1]))) {
 	else
 		echo "ZIP Error $ret\n";
 	$encdata=encryptData(file_get_contents(trim($argv[2])),'#####'.$password1,false);
-} else
+	if($encdata=='')
+		$encdata=file_get_contents(trim($argv[2]));
+} else {
 	$encdata=encryptData(file_get_contents(trim($argv[1])),'#####'.$password1,true);
+	if($encdata=='')
+		$encdata=file_get_contents(trim($argv[1]));
+}
 
 file_put_contents(trim($argv[2]),$encdata);
 echo "Output file generated in " . $argv[2] . "\n";
