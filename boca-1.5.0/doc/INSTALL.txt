@@ -60,6 +60,13 @@ shared_buffers = 512MB      ## USE AROUND 1/3 OF YOUR RAM
 work_mem = 10MB
 effective_cache_size = 512MB     ## USE AROUND 1/3 OF YOUR RAM
 
+Note that for doing these changes you will need to increase the SHMMAX
+parameter of your kernel, e.g. in file /etc/sysctl.d/10-shmmax.conf 
+
+kernel.shmmax = 805416960
+kernel.shmall = 196635
+
+
 ********* /etc/postgresql/*/main/pg_hba.conf: *********
 #this is the access control file
 #restricting connections from unixsocket or localhost is
