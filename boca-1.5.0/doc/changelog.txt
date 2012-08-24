@@ -1,8 +1,31 @@
 version 1.5.0:
-2012/07/10
-- (ICPC Linux) updated scripts to create ICPC linux under ubuntu 12.04. Hopefully it will still work with
-   older versions of ubuntu.
-- (ICPC Linux) java version now is openjdk6 (it is getting harder to keep using sun java on new linux distributions)
+2012/08/24
+- (ICPC Linux) updated scripts to create ICPC linux under ubuntu
+   12.04. Hopefully it will still work with older versions of ubuntu.
+- (ICPC Linux) java version now is openjdk6 (it is getting harder to
+   keep using sun java on new linux distributions) 
+- Problems in BOCA are now defined by a problem package in ZIP format,
+   which can be encrypted.
+- private/score.sep file now allows also the specification of by-user
+   and by-site scoretables.
+- admin password need to change other users' passwords.
+- option to import users using the ICPC webpage formats (.tab and .tsv).
+- multi-site re-included in the system, with a centralized idea (one
+   main server and many local servers that connect to it). The
+   connection is done (encryptedly) via http and is handled by a new type of
+   user named type "site". 
+- main site can provide redundancy in case of failure, as it has a
+   copy of everything.
+- autojudging scheme has been improved, specially in terms of
+   safety. Scripts to judge are now inside the problem package.
+- examples of problem packages are included in doc/problemexamples/
+- option to delete and undelete problems included, so one can setup
+   the warmup and contest with all problems, delete some, undelete later.
+- bug fix in updating time of contest and sites (updating contest
+   didn't update sites).
+- options to insert keys and password in the tab contest in order to
+   unlock problems in case they are encrypted.
+- documentation files updated.
 
 version 1.4.2:
 2011/11/04

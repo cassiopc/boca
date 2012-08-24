@@ -1,13 +1,14 @@
 import-user.txt
 ---------------
-Last modified 05/aug/2012 by cassio@ime.usp.br
+Last modified 24/aug/2012 by cassio@ime.usp.br
 See Copyright below.
 
 To simplify the input of user's data, it is
 possible to put all information in a text
 file, according to three different formats. Two
 of them are based on the files generated from the
-ICPC website system, usually in TAB separated format.
+ICPC website system, usually in TAB separated format. Examples of such
+files are in this folder, named PC2_Team.tab and Teams.tsv
 The third possible format follows the example below:
 
 ************ users.txt: *************
@@ -15,8 +16,9 @@ The third possible format follows the example below:
 usernumber=2000
 usersitenumber=1
 username=cassio
-userfullname=Cassio Polpo de Campos
+userfullname=Cassio P. de Campos
 usertype=admin
+userpassword=secret
 
 usernumber=2001
 usersitenumber=1
@@ -36,24 +38,31 @@ userpassword=aBcDe
 
 usernumber=1
 usersitenumber=1
-userfullname=PUC-SP A
+userfullname=[PUC-SP A] Team A
+userdesc=[PUC-SP][Pontificial Universidade Catolica de SP] Nome1, Nome2, Nome3
 userip=192.168.0.1
 usericpcid=1234
 
 usernumber=2
 usersitenumber=1
-userfullname=PUC-SP B
+userfullname=[Team B] Full team B name
+userdesc=[InstitutionShortName] Long institution name
 userip=192.168.0.2
 usericpcid=1111
 
 usernumber=3
 usersitenumber=1
-userfullname=IME-USP C
+userfullname=[Shortname] Long team name
 userip=192.168.0.3
 
 **************************************
 Note that the "****" lines should not
-be included in the text file.
+be included in the text file, only what is between them. Consider
+using the ICPC data format, downloaded from the ICPC site, to input
+the information about the teams. Note that passwords will be
+automatically generated for the teams in such case, and you have to
+take note of those passwords. If you re-include the teams using those
+file formats, new passwords will be generated, and you must take note again.
 
 The users are defined per block of lines.
 Blank lines separate the definitions of the

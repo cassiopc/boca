@@ -34,69 +34,17 @@ and if the current working directory (ie, ".") is included
 in the PATH environment variable.
 
 $ sudo /bin/bash
-# cd /var/www/boca
-# php private/autojudging.php
-
-or alternatively
-$ sudo /var/www/boca/tools/autojudge.sh
+# cd /var/www/boca/src
+# /var/www/boca/tools/autojudge.sh
 
 The autojudging.php will stay running until CRTL+C is
 pressed or it's killed by some other way. Autojudging waits 
 for a new submission, takes it and executes the
-compiling/running script defined in BOCA for the
-corresponding language/problem (this script should be
-defined during language insertions). The following five
-arguments are passed to the compiling/running script:
-
-$1 base_filename
-$2 source_file
-$3 input_file
-$4 languagename
-$5 problemname
-
-Then, this script must perform the desired steps
-(commonly it compiles and runs the source code for
-the given input/language/problem) and:
-
-* the output of the execution should be directed to 
-  the standard output
-* the standard error may be used to print anything
-* the return code of the script shows what happened
-  during the script execution, following the rules:
-  FROM SAFEEXEC
-# 0 ok
-# 1 compile error
-# 2 runtime error
-# 3 timelimit exceeded
-# 4 internal error
-# 5 parameter error
-# 6 internal error
-# 7 memory limit exceeded
-# 8 security threat
-# 9 runtime error
-  other_codes are unknown to BOCA: in this case BOCA 
-              will present an unknown error status
-
-After the compiling/running script is executed, the
-autojudging calls the comparing script to verify if
-the output generated is correct. Now the arguments
-passed to comparing script are:
-
-$1 team_output
-$2 sol_output
-$3 languagename
-$4 problemname
-
-Basicly the comparing script compares the team
-output with the solution (correct) output. The last
-line of the standard output of the comparing script
-is read by BOCA which transmits it to judges (in
-fact this information is available when the judge 
-takes a submission to evaluate). Moreover, the compare
-script send the following codes to BOCA:
-  4 - YES, files match
-  5 - Presentation error
-  6 - Wrong answer
+compiling/running/comparing scripts defined in BOCA for the
+corresponding language/problem (this information is all included
+in the problem package for each problem). More details about them
+are in the ADMIN.txt file and in the examples of the folder
+doc/problemexamples/
 
 As long as the autojudging php script will execute
 code from teams, these codes may contain malicious
@@ -107,15 +55,21 @@ could eventually see important data which they should not
 be allowed. This computer must have the same requirements
 as the one running the BOCA web interface (but it
 does not need postgresql neither a running web server), 
-and it need to be configured properly. All the steps
+and it needs to be configured properly. All the steps
 described in INSTALL.txt applies to this new computer,
 but three important things should be noted:
 
-1) the computer must have a kind of firewall that
-only permits connections between it and the main BOCA 
-server (this is an important security issue).
+(ATTENTION: IF YOU ARE USING THE ICPC LINUX VIRTUAL
+MACHINE, THEN ALL THE FOLLOWING SHOULD ALREADY
+BE DONE FOR YOU...)
 
-2) the private/conf.php file must be configure properly
+1) the computer must have a firewall that
+only permits connections between it and the main BOCA 
+server (this is an important security issue). This is automatically
+done if you are using the ICPC linux virtual machine, which is in fact
+the best way to run the autojudging system.
+
+2) the src/private/conf.php file must be configure properly
 with the correct location of the boca database
 (probably it will be needed tcp/ip connection to
 the postgresql at the main BOCA server), the
@@ -129,7 +83,12 @@ be achieved inserting the line
 
 host  all  all  IPAUTOJUDGING  255.255.255.255  md5
 
-in the pg_hba.conf file at the main BOCA server.
+in the pg_hba.conf file at the main BOCA server, where IPAUTOJUDGING
+is to be replaced by the actual IP of the computer running the
+autojudging script. Note that if run within a virtual machine, one
+must take the IP of the host computer, not of the virtual machine for
+this configuration. If the postgresql server is already configured to
+accept incoming connections from all IPs, then this is not necessary.
 
 Talking a little bit more about the compiling/running
 script, it will be responsible for running the executable
@@ -139,11 +98,11 @@ control over the time spent by the team's code, the C
 source code safeexec.c (tools directory) should be used. 
 It was designed to execute other programs with lower 
 privilegies and with a time limit set. It is enough to 
-"gcc -o safexec safexec.c" for compiling and it is 
-necessary to make a setuid root: "chown root.root safexec" 
-and "chmod 4555 safeexec" for running. The files run.sh 
-and compare.sh are good examples.
-
+run "gcc -O2 -o safeexec safeexec.c" for compiling and it is 
+necessary to make a setuid root: "chown root.root safeexec" 
+and "chmod 4555 safeexec" for running. This safeexec must be 
+placed in a folder included in the path, usually copying it to
+/usr/bin will suffice: "cp -a safeexec /usr/bin" (note the -a)
 
 
 Contacts and Copyrights

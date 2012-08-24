@@ -1,6 +1,6 @@
 ICPC Linux installation script
 ----------------------------------
-Copyright (c) 2009 C. P. de Campos.                     
+Copyright (c) 2009-2012 BOCA System (bocasystem@gmail.com) and C. P. de Campos.
 Permission is granted to copy, distribute and/or modify this document
     under the terms of the GNU Free Documentation License, Version 1.3
     or any later version published by the Free Software Foundation;
@@ -8,7 +8,7 @@ Permission is granted to copy, distribute and/or modify this document
     A copy of the license is included in the section entitled "GNU
     Free Documentation License".
 ---------------------------------
-File last modified: 11/oct/2011
+File last modified: 24/aug/2012
 
 ==> The installv2.sh script is not necessary if you are using the virtual machine version. This is intended to those that
 want to install the system as the host of a computer, or desire to create again the virtual machine version from the beginning.
@@ -23,7 +23,11 @@ Take care with the following points during the installation of the ubuntu:
 3) Use the simplest partitioning option (that is, everything in a single partition) and choose at least 10GB for it.
 
 After installing ubuntu, the system reboots. Download the script installv2.sh to the home directory of icpcadmin,
-make it executable by chmod 755 installv2.sh, and run it as root: sudo ./installv2.sh
+make it executable by chmod 755 installv2.sh, and run it as root: 
+$ sudo /bin/bash
+# ./installv2.sh
+(if you already updated packages, then run ./installv2.sh alreadydone)
+
 and reboot the system to finish the configuration (such as setting passwords, IPs, etc).
 Note this is going to give you a system just like you would get from the box (the virtual machine version). If you
 want it to become a server, you must follow the same procedure that is indicated in the READMEvm.txt. This
