@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+<title>BOCA Team's Manual</title>
+</head>
+
+<body bgcolor="white" vlink="blue" link="blue">
+<font size="5"><b>BOCA Online Contest Administrator</b></font>
+<p><b>Reference Manual for teams<font size="5"> - </font>version
+October/2011 (BOCA version 1.4.1+)</b></p>
+
+<p><font size="1">Copyright (c) 2003-2010 Ulisses F. F. da Silva and Cassio
+P. de Campos.<br>
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.2 or any later
+version published by the Free Software Foundation; with no Invariant Sections,
+no Front-Cover Texts, and no Back-Cover Texts. A copy of the license may be
+found in <a
+href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a></font></p>
+
+<p>BOCA is a software for controlling a competition in the scope of the <i>ACM International
+Collegiate Programming Contest</i>. It has been developed in PHP and the interaction between teams
+and the system is performed using a <i>web browser</i>. In the following it is described
+this interface and its main functions.</p>
+
+<p><u>It is important that teams tested the system during the <i>warmup session</i>, before
+the official contest, so any issue can be addressed in time. The warmup has exactly this
+purpose. It is expected that teams submit correct and incorrect runs, as long as they <b>do not</b>
+try to perform malicious operations in the system. It is also expected that clarifications be
+submitted, and a small file to print.
+</u></p>
+
+<p>It is assumed here that the team has already logged in using the web browser and
+the URL address provided to access the BOCA system. The URL varies from contest to contest,
+so you have to ask the staff of your site about it. The login page contains the fields
+username and password, which are provided by the staff of the contest. Usually the
+username follows the format <b>teamX</b>, where <b>X</b> is the team number, but that is
+not mandatory (again, check with the staff). If not speficied, the initial password is empty.</p>
+
+<p>After the successful login, a page opens with the team identification in the upper-left
+corner, and the clock of the contest in the upper-right corner. During the contest,
+as the team gets YESes as balloons appear besides the team name.
+Just below this information, a vertical menu has the following options:
+<i>Problems, Runs, Score, Clarifications, Tasks, Backups, Options e Logout.</i></p>
+
+<p><font size="4"><b>Problems</b></font></p>
+<p>In this tab, the team sees the problems of the contest, together with the book of problem
+descriptions (if available online). In <i>in-loco</i> contests, this tab is less important
+given that a printed version of the booklet is distributed to the teams. Still, the column
+named <b>Basename</b> provides to teams the name of the file that has to be used for each problem.
+This is the name that has to be followed by the extension (depending on the language) and
+also as the <u>name of the class containing the <i>public main</i> procedure</u> in Java.
+Usually this information is also available in the booklet. Nevertheless, here the team can
+check if their name is correct.
+</p>
+
+<p><font size="4"><b>Runs</b></font></p>
+<p>This tab represents the actual information about the team's submissions, as well as provides
+the interface to submit new <i>runs</i>. It is important for the team to select the correct
+problem, language, and to choose the correct file for the submission. <b>Note that the file name
+must follow the specification</b> in the booklet, and which shall also be available in the tab <i>Problems</i>.
+Hence,
+<ol>
+  <li>Use in the source-code the filename defined in the column <b>Basename</b> of the tab <i>Problems</i>.
+  Take care with small typos and the proper extension according to the chosen language.
+  </li>
+  <li>Choose the correct language and problem. It is not uncommon to happen submissions with wrong filename, language or problem.
+  </li>
+  <li>Make sure your code reads the input from the <b>standard input</b> and writes the output to the
+  <b>standard output</b>. Avoid writing anything to the <b>standard error</b>. Furthermore, make your
+  program exit the code zero in the final return or exit(.) call. By default, this indicates that no
+  error has happened during its execution.
+  </li>
+</ol>
+
+<p>In order to see the judgements of runs, the team must click on
+the tab <i>Runs</i> and watch the list of submitted runs.
+However, do not stop working while waiting for the answers. Even if the judges
+are in the backstage working hard to reply to all submissions, this might take some time.
+In the last part of the competition, the scoreboard is not updated, neither the runs are answered back
+(the number of minutes from the end when this happens depends on the contest; usually it is something around
+15 minutes, but this is informed by the staff). For each run, there is a set of standard answers that
+exist in each contest (and they may vary depending on the contest). Still the common options are shown below:
+<table border="1">
+  <tr>
+    <td nowrap>Answer</td><td>Description</td>
+  </tr>
+  <tr>
+    <td nowrap>YES</td>
+    <td>Your code was properly compiled, run, and correctly generated the expected output for the problem.</td></tr>
+    <tr>
+      <td nowrap>NO: Wrong answer</td>
+      <td>Some times known as <i>Incorrect output</i>. It indicates that the code compiled and ran, however it
+		did not generated the expected output for the problem, given the input of the judges (which most certainly
+		is different from yours and is not available to you).</td>
+    </tr> 
+    <tr>
+      <td nowrap>NO: Time-limit Exceeded</td>
+      <td>The code compiled properly but spent more than the maximum amount of time defined for the given problem.
+		This time-limit is defined by the judges for each problem and is not disclosed to the teams.</td>
+    </tr>
+    <tr>
+      <td nowrap>NO: Runtime Error</td>
+      <td>The code compiled properly but achieved an error during its run, given the input of the judges. Some examples
+		of runtime error are: illegal memory access (seg. fault), illegal file access, excess of memory usage, etc.</td>
+    </tr>
+    <tr><td nowrap>NO: Compilation Error</td>
+      <td>The code has not compiled properly in the judges' computers. Note that you are expected to have compiled in your
+		own computer before submitting the code. So check the compilation options and versions in your
+		computer, and if you do not have a problem compiling it locally, ask a member of the staff for help.</td>
+    </tr>
+    <tr>
+      <td nowrap>NO: presentation Error</td>
+      <td>Also known as <i>output format error</i>, it means that your code compiled, ran, and generated the
+		expected output apart from some minor presentation issue, such as upper/lower-cases, acents or punctuations (the
+		definition of presentation error may vary in each contest and is defined by the judges who created the test set).</td>
+    </tr> 
+    <tr>
+      <td nowrap>NO: If possible, contact staff</td>
+      <td>This reply tells you to contact your local staff for help/asking about the issue, if at all possible.</td>
+    </tr>
+</table>
+
+<p></p>
+<p></p>
+<p><font size="4"><b>Score</b></font></p>
+<p>This tab shows the scoreboard of the contest. If running as a multi-site competition, the scoreboard might also
+contain teams from other sites, which can be identified by the <b>/X</b> after the team name, where <b>X</b> is the
+site number of the corresponding team. Note that the scoreboard is not updated during the last part of the competition.
+This is indicated accordingly.
+</p>
+
+<p><font size="4"><b>Clarifications</b></font></p>
+<p>This tab can be used by the team to submit questions to the judges concerning the problems, their descriptions,
+or any other aspect of the contest. If the question is specific to a problem of the test set, the team must select
+the problem from the combo list. Otherwise, the option <i>General</i> is to be used. The text box is used to
+write the question. It is also available in this tab all the replies to questions that were formulated by the
+team, as well as questions formulated by other teams but that judges decided that the reply should be made
+available to all the teams. Some facts:</p>
+
+<ol>
+  <li><b>Teams must make questions regarding the problems and test set using only this interface, and not directly
+  to the staff or judges.</b>
+  </li>
+  <li>It is the team's responsibility to check the tab about <i>clarifications</i> during the contest
+  to check for new replies. Judges may also send general clarifications to teams, and they will appear in this tab.
+  </li>
+</ol>
+
+<p>BOCA allows judges to use a particular button named <u><i>No response</i></u>. If you receive this
+reply it means that the question may not be answered by the judges, for instance because it is against
+the rules to disclose such information, or because the judges understand that the
+information asked is already available in the booklet of problem descriptions.</p>
+
+<p><font size="4"><b>Tasks</b></font></p>
+<p>This tab allows the team to send files for printing, as well as ask for help from a staff member (using
+the button <i>S.O.S.</i>. To print a file, just select it from the disk and click on <i>Send</i>.
+The help provided by the <i>staff</i> has to be only related to issues with the computers or other
+physical problem, while questions about the test set, problem descriptions, etc must be send to the
+judges using the tab <i>Clarifications</i>.</p>
+
+<p><font size="4"><b>Backups</b></font></p>
+<p>It is possible to send small files to BOCA in order to keep them safe in the server. This is
+particularly useful if some drastic issue happens with your computer. This tab provides a way
+for the teams to send and query back files that are stored in the server. Only very small files
+are allowed, so it is recommended that you backup only plain text files (source code, inputs, etc)
+and use a zip or tar.gz format to create a single file.
+</p>
+<br>
+
+<p><font size="4"><b>Options</b></font></p>
+<p>This tab shows the information of the team, such as <i>Username,
+User</i> <i>full name </i>,<i> User description</i>. It is possible
+for the team to update their password, although this is not necessary neither
+recommended. Instead it is recommended that the admin who created the users already
+specifies secret and safe password for all users.
+</p>
+<br>
+
+</p>
+<p><font size="4"><i><b>Logout</b></i></font></p>
+<p>Button to log out from the team interface.</p>
+
+<p><font size="4"><b>About BOCA and this document</b></font></p>
+<p>BOCA System and this document have been created by Cassio Polpo de Campos and can be found at
+<a href="http://www.ime.usp.br/~cassio/boca/">http://www.ime.usp.br/~cassio/boca/</a>.
+An initial version of this document was made by Ulisses Furquim Freire da Silva.
+</p>
+
+<hr>
+<p><a href="http://validator.w3.org/check?uri=referer"><img border="0"
+src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!" height="31"
+width="88"></a>
+</body>
+
+</html>

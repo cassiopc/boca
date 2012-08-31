@@ -1,0 +1,25 @@
+#!/bin/bash
+if [ ! -f /etc/icpc/.isserver ]; then
+if [ -x /etc/icpc/bocaserver.sh ]; then
+  .	/etc/icpc/bocaserver.sh
+fi	   
+/sbin/iptables -F INPUT
+/sbin/iptables -A INPUT -i lo -j ACCEPT
+/sbin/iptables -A INPUT -s 143.107.255.15 -j ACCEPT
+
+# just to make things easier, let's allow communication to/from BOCA servers
+/sbin/iptables -A INPUT -s 143.107.45.122 -j ACCEPT
+/sbin/iptables -A INPUT -s 50.116.19.221 -j ACCEPT
+
+if [ "$BOCASERVER" != "" ]; then
+  /sbin/iptables -A INPUT -s $BOCASERVER -j ACCEPT
+fi
+/sbin/iptables -A INPUT -m udp -p udp -s 0/0 --sport 67:68 --dport 67:68 -j ACCEPT
+/sbin/iptables -A INPUT -m udp -p udp -s 0/0 --sport 53 --dport 53 -j ACCEPT
+/sbin/iptables -A INPUT -m tcp -p tcp -s 0/0 --sport 53 --dport 53 -j ACCEPT
+/sbin/iptables -A INPUT -j REJECT
+else
+	if [ -x /etc/icpc/bocaserver.iptables ]; then
+	   . /etc/icpc/bocaserver.iptables
+    fi
+fi

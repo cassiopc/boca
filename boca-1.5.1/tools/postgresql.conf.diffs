@@ -1,0 +1,5 @@
+listen_addresses = '*'
+max_connections = 300			# (change requires restart)
+shared_buffers = 32MB			# min 128kB
+work_mem = 4MB
+maintenance_work_mem = 64MB		# min 1MB
