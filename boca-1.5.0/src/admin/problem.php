@@ -16,6 +16,9 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
 // Last modified 31/aug/2012 by cassio@ime.usp.br
+if ($_POST["confirmation"] != "confirm")
+	unset($_POST['noflush']);
+
 require('header.php');
 if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 	ForceLoad("../index.php");
@@ -31,19 +34,21 @@ if (isset($_GET["delete"]) && is_numeric($_GET["delete"]) && isset($_GET["input"
 	ForceLoad("problem.php");
 }
 
-if(isset($_POST['Submit5']=='Send') &&
-   isset($_POST['probleminput']) &&
-   isset($_POST['problemsol']) &&
-   isset($_POST['basename']) &&
-   isset($_POST['fullname']) &&
-   isset($_POST['timelimit'])) {
-	if ($_POST["confirmation"] == "confirm") {
+if(isset($_POST['Submit5']) && $_POST['Submit5']=='Build')
+	ForceLoad("buildproblem.php");
+
+if(isset($_POST['Submit5']) && $_POST['Submit5']=='Send') {
+	if(isset($_POST['basename']) &&
+	   isset($_POST['fullname']) &&
+	   isset($_POST['timelimit']) &&
+	   $_POST["confirmation"] == "confirm") {
 		if ($_FILES["probleminput"]["name"] != "") {
 			$type=myhtmlspecialchars($_FILES["probleminput"]["type"]);
 			$size=myhtmlspecialchars($_FILES["probleminput"]["size"]);
 			$name=myhtmlspecialchars($_FILES["probleminput"]["name"]);
 			$temp=myhtmlspecialchars($_FILES["probleminput"]["tmp_name"]);
 			if (!is_uploaded_file($temp)) {
+				ob_end_flush();
 				IntrusionNotify("file upload problem.");
 				ForceLoad("../index.php");
 			}
@@ -54,16 +59,18 @@ if(isset($_POST['Submit5']=='Send') &&
 			$name1=myhtmlspecialchars($_FILES["problemsol"]["name"]);
 			$temp1=myhtmlspecialchars($_FILES["problemsol"]["tmp_name"]);
 			if (!is_uploaded_file($temp1)) {
+				ob_end_flush();
 				IntrusionNotify("file upload problem.");
 				ForceLoad("../index.php");
 			}
 		} else $name1 = "";
 		if (isset($_FILES["problemdesc"]) && $_FILES["problemdesc"]["name"] != "") {
-			$type2=myhtmlspecialchars($_FILES["problemsol"]["type"]);
-			$size2=myhtmlspecialchars($_FILES["problemsol"]["size"]);
-			$name2=myhtmlspecialchars($_FILES["problemsol"]["name"]);
-			$temp2=myhtmlspecialchars($_FILES["problemsol"]["tmp_name"]);
+			$type2=myhtmlspecialchars($_FILES["problemdesc"]["type"]);
+			$size2=myhtmlspecialchars($_FILES["problemdesc"]["size"]);
+			$name2=myhtmlspecialchars($_FILES["problemdesc"]["name"]);
+			$temp2=myhtmlspecialchars($_FILES["problemdesc"]["tmp_name"]);
 			if (!is_uploaded_file($temp2)) {
+				ob_end_flush();
 				IntrusionNotify("file upload problem.");
 				ForceLoad("../index.php");
 			}
@@ -76,8 +83,9 @@ if(isset($_POST['Submit5']=='Send') &&
 		if($tmpdir[0] != $ds) $tmdir = $ds . "tmp";
 		if($tmpdir=="") $tmpdir = $ds . "tmp";
 		$locr = $_SESSION["locr"];
-		$dir = tempnam($tmpdir, "problem");
-		if(@mkdir($dir, 0700)) {
+		$tfile = tempnam($tmpdir, "problem");
+		if(@mkdir($tfile . "_d", 0700)) {
+			$dir = $tfile . "_d";
 			@mkdir($dir . $ds . 'limits');
 			@mkdir($dir . $ds . 'compare');
 			@mkdir($dir . $ds . 'compile');
@@ -90,18 +98,20 @@ if(isset($_POST['Submit5']=='Send') &&
 						   'compile' . $ds . 'c','compile' . $ds . 'cpp','compile' . $ds . 'java',
 						   'run' . $ds . 'c','run' . $ds . 'cpp','run' . $ds . 'java');
 			foreach($filea as $file) {
-				if(is_readable($locr . $ds . '..' . $ds . 'doc' . $ds . 'problemtemplate' . $ds . $file)) {
-					@copy($locr . $ds . '..' . $ds . 'doc' . $ds . 'problemtemplate' . $ds . $file, $dir . $ds . $file);
+				$rfile=$locr . $ds . '..' . $ds . 'doc' . $ds . 'problemexamples' . $ds . 'problemtemplate' . $ds . $file;
+				if(is_readable($rfile)) {
+					@copy($rfile, $dir . $ds . $file);
 				} else {
+					@unlink($tfile);
 					cleardir($dir);
 					ob_end_flush();
-					MSGError('Could not read problem template file ' . $file);
+					MSGError('Could not read problem template file ' . $rfile);
 					ForceLoad('problem.php');
 				}
 			}
-			$tl = explode('/',$_POST['timelimit']);
+			$tl = explode(',',$_POST['timelimit']);
 			if(!isset($tl[1]) || !is_numeric(trim($tl[1]))) $tl[1]='1';
-			$str = "echo " . trim($tl[0]) . "\necho " . trim($tl[1]) . "\necho 512\necho " . ($size1 / 512) . "\nexit 0\n";
+			$str = "echo " . trim($tl[0]) . "\necho " . trim($tl[1]) . "\necho 512\necho " . floor(10 + $size1 / 512) . "\nexit 0\n";
 			file_put_contents($dir . $ds . 'limits' . $ds . 'c',$str);
 			file_put_contents($dir . $ds . 'limits' . $ds . 'cpp',$str);
 			file_put_contents($dir . $ds . 'limits' . $ds . 'java',$str);
@@ -119,6 +129,7 @@ if(isset($_POST['Submit5']=='Send') &&
 				@copy($temp1, $dir . $ds . 'output' . $ds . 'file1');
 				@unlink($temp1);
 			} else {
+				@unlink($tfile);
 				cleardir($dir);
 				ob_end_flush();
 				MSGError('Could not read problem input/output files');
@@ -127,6 +138,7 @@ if(isset($_POST['Submit5']=='Send') &&
 			$ret=create_zip($dir, glob($dir . $ds . '*'),$dir . '.zip');
 			cleardir($dir);
 			if($ret <= 0) {
+				@unlink($tfile);
 				@unlink($dir . '.zip');
 				ob_end_flush();
 				MSGError('Could not write to zip file');
@@ -134,6 +146,7 @@ if(isset($_POST['Submit5']=='Send') &&
 			}
 			$str = file_get_contents($dir . '.zip');
 			@unlink($dir . '.zip');
+			@unlink($tfile);
 			header ("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 			header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 			header ("Cache-Control: no-cache, must-revalidate");
@@ -145,11 +158,12 @@ if(isset($_POST['Submit5']=='Send') &&
 			echo $str;
 			exit;
 		} else {
+			@unlink($tfile);
 			ob_end_flush();
 			MSGError('Could not write to temporary directory');
-			ForceLoad('problem.php');
 		}
 	}
+	ForceLoad('problem.php');
 }
 
 if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_POST["problemnumber"]) && 
@@ -285,9 +299,6 @@ To replace the data of a problem, proceed as if it did not exist (data will be r
   <input type=hidden name="confirmation" value="noconfirm" />
   <script language="javascript">
     function conf() {
-			if(document.form1.Submit5.value=="Build") {
-				document.location="buildproblem.php";
-			}
 			if(document.form1.problemname.value=="") {
 				alert('Sorry, mandatory fields are empty');
 			} else {
@@ -395,7 +406,7 @@ To replace the data of a problem, proceed as if it did not exist (data will be r
   </center>
 
 	 <br><br><br><center>To build a problem package from files, use this link:
-      <input type="submit" name="Submit5" value="Build" onClick="conf()">
+      <input type="submit" name="Submit5" value="Build">
 </center>
 </form>
 

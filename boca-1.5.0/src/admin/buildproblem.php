@@ -21,8 +21,9 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 	ForceLoad("../index.php");
 
 ?>
-<br><br><center<b>
-To build a problem package using standard script files, fill in the following fields.</b></center>
+<br><br><center><b><u>
+To build a problem package using standard script files, fill in the following fields.</u></b></center>
+<br><br>
 
 <form name="form1" enctype="multipart/form-data" method="post" action="problem.php">
   <input type=hidden name="noflush" value="true" />
