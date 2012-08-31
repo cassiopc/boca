@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 21/jul/2012 by cassio@ime.usp.br
+// Last modified 31/aug/2012 by cassio@ime.usp.br
 require('header.php');
 if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 	ForceLoad("../index.php");
@@ -29,6 +29,127 @@ if (isset($_GET["delete"]) && is_numeric($_GET["delete"]) && isset($_GET["input"
 		LogError('Error deleting problem');
 	}
 	ForceLoad("problem.php");
+}
+
+if(isset($_POST['Submit5']=='Send') &&
+   isset($_POST['probleminput']) &&
+   isset($_POST['problemsol']) &&
+   isset($_POST['basename']) &&
+   isset($_POST['fullname']) &&
+   isset($_POST['timelimit'])) {
+	if ($_POST["confirmation"] == "confirm") {
+		if ($_FILES["probleminput"]["name"] != "") {
+			$type=myhtmlspecialchars($_FILES["probleminput"]["type"]);
+			$size=myhtmlspecialchars($_FILES["probleminput"]["size"]);
+			$name=myhtmlspecialchars($_FILES["probleminput"]["name"]);
+			$temp=myhtmlspecialchars($_FILES["probleminput"]["tmp_name"]);
+			if (!is_uploaded_file($temp)) {
+				IntrusionNotify("file upload problem.");
+				ForceLoad("../index.php");
+			}
+		} else $name = "";
+		if ($_FILES["problemsol"]["name"] != "") {
+			$type1=myhtmlspecialchars($_FILES["problemsol"]["type"]);
+			$size1=myhtmlspecialchars($_FILES["problemsol"]["size"]);
+			$name1=myhtmlspecialchars($_FILES["problemsol"]["name"]);
+			$temp1=myhtmlspecialchars($_FILES["problemsol"]["tmp_name"]);
+			if (!is_uploaded_file($temp1)) {
+				IntrusionNotify("file upload problem.");
+				ForceLoad("../index.php");
+			}
+		} else $name1 = "";
+		if (isset($_FILES["problemdesc"]) && $_FILES["problemdesc"]["name"] != "") {
+			$type2=myhtmlspecialchars($_FILES["problemsol"]["type"]);
+			$size2=myhtmlspecialchars($_FILES["problemsol"]["size"]);
+			$name2=myhtmlspecialchars($_FILES["problemsol"]["name"]);
+			$temp2=myhtmlspecialchars($_FILES["problemsol"]["tmp_name"]);
+			if (!is_uploaded_file($temp2)) {
+				IntrusionNotify("file upload problem.");
+				ForceLoad("../index.php");
+			}
+		} else $name2 = "";
+
+		$ds = DIRECTORY_SEPARATOR;
+		if($ds=="") $ds = "/";
+		$tmpdir = getenv("TMP");
+		if($tmpdir=="") $tmpdir = getenv("TMPDIR");
+		if($tmpdir[0] != $ds) $tmdir = $ds . "tmp";
+		if($tmpdir=="") $tmpdir = $ds . "tmp";
+		$locr = $_SESSION["locr"];
+		$dir = tempnam($tmpdir, "problem");
+		if(@mkdir($dir, 0700)) {
+			@mkdir($dir . $ds . 'limits');
+			@mkdir($dir . $ds . 'compare');
+			@mkdir($dir . $ds . 'compile');
+			@mkdir($dir . $ds . 'run');
+			@mkdir($dir . $ds . 'input');
+			@mkdir($dir . $ds . 'output');
+			@mkdir($dir . $ds . 'tests');
+			@mkdir($dir . $ds . 'description');
+			$filea = array('compare' . $ds . 'c','compare' . $ds . 'cpp','compare' . $ds . 'java',
+						   'compile' . $ds . 'c','compile' . $ds . 'cpp','compile' . $ds . 'java',
+						   'run' . $ds . 'c','run' . $ds . 'cpp','run' . $ds . 'java');
+			foreach($filea as $file) {
+				if(is_readable($locr . $ds . '..' . $ds . 'doc' . $ds . 'problemtemplate' . $ds . $file)) {
+					@copy($locr . $ds . '..' . $ds . 'doc' . $ds . 'problemtemplate' . $ds . $file, $dir . $ds . $file);
+				} else {
+					cleardir($dir);
+					ob_end_flush();
+					MSGError('Could not read problem template file ' . $file);
+					ForceLoad('problem.php');
+				}
+			}
+			$tl = explode('/',$_POST['timelimit']);
+			if(!isset($tl[1]) || !is_numeric(trim($tl[1]))) $tl[1]='1';
+			$str = "echo " . trim($tl[0]) . "\necho " . trim($tl[1]) . "\necho 512\necho " . ($size1 / 512) . "\nexit 0\n";
+			file_put_contents($dir . $ds . 'limits' . $ds . 'c',$str);
+			file_put_contents($dir . $ds . 'limits' . $ds . 'cpp',$str);
+			file_put_contents($dir . $ds . 'limits' . $ds . 'java',$str);
+			$str = "basename=" . trim($_POST['basename']) . "\nfullname=" . trim($_POST['fullname']);
+			if($name2) {
+				@copy($temp2, $dir . $ds . 'description' . $ds . $name2);
+				@unlink($temp2);
+				$str .= "\ndescfile=" . $name2;
+			}
+			$str .= "\n";
+			file_put_contents($dir . $ds . 'description' . $ds . 'problem.info',$str);
+			if($name && $name1) {
+				@copy($temp, $dir . $ds . 'input' . $ds . 'file1');
+				@unlink($temp);
+				@copy($temp1, $dir . $ds . 'output' . $ds . 'file1');
+				@unlink($temp1);
+			} else {
+				cleardir($dir);
+				ob_end_flush();
+				MSGError('Could not read problem input/output files');
+				ForceLoad('problem.php');
+			}
+			$ret=create_zip($dir, glob($dir . $ds . '*'),$dir . '.zip');
+			cleardir($dir);
+			if($ret <= 0) {
+				@unlink($dir . '.zip');
+				ob_end_flush();
+				MSGError('Could not write to zip file');
+				ForceLoad('problem.php');
+			}
+			$str = file_get_contents($dir . '.zip');
+			@unlink($dir . '.zip');
+			header ("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
+			header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+			header ("Cache-Control: no-cache, must-revalidate");
+			header ("Pragma: no-cache");
+			header ("Content-transfer-encoding: binary\n");
+			header ("Content-type: application/force-download");
+			header ("Content-Disposition: attachment; filename=" . basename($dir . '.zip'));
+			ob_end_flush();
+			echo $str;
+			exit;
+		} else {
+			ob_end_flush();
+			MSGError('Could not write to temporary directory');
+			ForceLoad('problem.php');
+		}
+	}
 }
 
 if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_POST["problemnumber"]) && 
@@ -164,6 +285,9 @@ To replace the data of a problem, proceed as if it did not exist (data will be r
   <input type=hidden name="confirmation" value="noconfirm" />
   <script language="javascript">
     function conf() {
+			if(document.form1.Submit5.value=="Build") {
+				document.location="buildproblem.php";
+			}
 			if(document.form1.problemname.value=="") {
 				alert('Sorry, mandatory fields are empty');
 			} else {
@@ -269,6 +393,10 @@ To replace the data of a problem, proceed as if it did not exist (data will be r
       <input type="submit" name="Submit3" value="Send" onClick="conf()">
       <input type="reset" name="Submit4" value="Clear">
   </center>
+
+	 <br><br><br><center>To build a problem package from files, use this link:
+      <input type="submit" name="Submit5" value="Build" onClick="conf()">
+</center>
 </form>
 
 </body>

@@ -119,13 +119,13 @@ done
 for i in `ls /etc/postgresql/*/main/postgresql.conf`; do
 grep -q "^[^\#]*shared_buffers" $i
 if [ $? != 0 ]; then
-  echo "shared_buffers = 32MB" >> $i
+  echo "shared_buffers = 128MB" >> $i
 fi
 done
 for i in `ls /etc/postgresql/*/main/postgresql.conf`; do
 grep -q "^[^\#]*work_mem" $i
 if [ $? != 0 ]; then
-  echo "work_mem = 3MB" >> $i
+  echo "work_mem = 4MB" >> $i
 fi
 done
 
