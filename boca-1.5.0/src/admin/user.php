@@ -56,7 +56,8 @@ if (isset($_POST["username"]) && isset($_POST["userfullname"]) && isset($_POST["
 		MSGError('Admin password is incorrect');
 	} else {
 		if ($_POST["passwordn1"] == $_POST["passwordn2"]) {
-			$param['pass'] = bighexsub(htmlspecialchars($_POST["passwordn1"]),$a['userpassword']);
+		 $param['pass'] =htmlspecialchars($_POST["passwordn1"]);
+//	$param['pass'] = bighexsub(htmlspecialchars($_POST["passwordn1"]),$a['userpassword']);
 			DBNewUser($param);
 		}
 		else MSGError ("Passwords don't match.");
@@ -278,11 +279,11 @@ if (isset($_GET["site"]) && isset($_GET["user"]) && is_numeric($_GET["site"]) &&
 <script language="JavaScript">
 function computeHASH()
 {
-	document.form3.passwordn1.value = bighexsoma(js_myhash(document.form3.passwordn1.value),js_myhash(document.form3.passwordo.value));
-	document.form3.passwordn2.value = bighexsoma(js_myhash(document.form3.passwordn2.value),js_myhash(document.form3.passwordo.value));
+//	document.form3.passwordn1.value = bighexsoma(js_myhash(document.form3.passwordn1.value),js_myhash(document.form3.passwordo.value));
+//	document.form3.passwordn2.value = bighexsoma(js_myhash(document.form3.passwordn2.value),js_myhash(document.form3.passwordo.value));
 	document.form3.passwordo.value = js_myhash(js_myhash(document.form3.passwordo.value)+'<?php echo session_id(); ?>');
-//	document.form3.passwordn1.value = js_myhash(document.form3.passwordn1.value);
-//	document.form3.passwordn2.value = js_myhash(document.form3.passwordn2.value);
+	document.form3.passwordn1.value = js_myhash(document.form3.passwordn1.value);
+	document.form3.passwordn2.value = js_myhash(document.form3.passwordn2.value);
 }
 </script>
 
