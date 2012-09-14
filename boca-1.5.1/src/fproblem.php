@@ -82,7 +82,7 @@ function DBGetProblemData($contestnumber, $problemnumber, $c=null) {
 	$a = array();
 	for ($i=0;$i<$n;$i++) {
 		$a[$i] = DBRow($r,$i);
-
+		if(isset($_SESSION['locr'])) {
 		$ds = DIRECTORY_SEPARATOR;
 		if($ds=="") $ds = "/";
 		$nn = $a[$i]['number'];
@@ -91,6 +91,7 @@ function DBGetProblemData($contestnumber, $problemnumber, $c=null) {
 			$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
 			if($a[$i]['descfilename'] != '')
 				$a[$i]['descoid']=-1;
+		}
 		}
 	}
 	return $a;

@@ -192,6 +192,7 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		cleardir($dir . $ds . "problemdata");
 		continue;
 	}
+	if(isset($info['descfile']))
 	$descfile=trim(sanitizeText($info['descfile']));
 	$basename=trim(sanitizeText($info['basename']));
 	$fullname=trim(sanitizeText($info['fullname']));
