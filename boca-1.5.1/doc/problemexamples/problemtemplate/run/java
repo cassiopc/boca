@@ -15,7 +15,7 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-#Last modified: 22/aug/2012 by cassio@ime.usp.br
+#Last modified: 14/sept/2012 by cassio@ime.usp.br
 #
 # parameters are:
 # $1 main_class
@@ -164,6 +164,12 @@ else
     echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
     echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
     echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
+	java=`which java`
+	[ -x "$java" ] || java=/usr/bin/java
+	if [ ! -x $java ]; then
+		echo "$java not found or it's not executable"
+		exit 47
+	fi
 	$sf -r$nruns -t$time -T$ttime -istdin0 -F256 -u256 -U$bocau -G$bocag -ostdout0 -estderr0 -n0 -C. -d20000000 -m20000000 -- $java -cp run.jar -Xmx${maxm}K -Xms${maxm}K "$name"
 	ret=$?
 fi
