@@ -1,4 +1,8 @@
 #!/bin/bash
+if [ "`id -u`" != "0" ]; then
+  echo "Script must run as root"
+fi
+
 di=`date +%s`
 echo "==================================================="
 echo "=================== obtaining BOCA  ==============="
@@ -15,7 +19,7 @@ bocaver=`cat /tmp/.boca.tmp`
 else
 bocaver=$1
 fi
-echo "Looking for BOCA version $bocaver from http://www.ime.usp.br/~cassio/boca/"
+
 if [ "$2" == "" ]; then
 basedir=/var/www
 else
@@ -27,6 +31,16 @@ exit 1
 fi
 fi
 
+OK=y
+read -p "I will install boca at $basedir is it correct (otherwise, run this script as: $0 $bocaver <installdir> to choose the place) [Y/n]? " OK
+if [ "$OK" == "y" -o "$OK" == "Y" ]; then
+echo "Install directory is $basedir"
+else
+echo "Aborted"
+exit 1
+fi
+
+echo "Looking for BOCA version $bocaver from http://www.ime.usp.br/~cassio/boca/"
 cd $basedir
 rm -f boca-$bocaver.tgz
 wget -O boca-$bocaver.tgz "http://www.ime.usp.br/~cassio/boca/download.php?filename=boca-$bocaver.tgz"
@@ -55,7 +69,11 @@ echo "=================== EXTRACTING BOCA   ==============="
 echo "====================================================="
 
 OK=x
-if [ -f boca-$bocaver.$di/src/private/conf.php ]; then
+conffile=boca/src/private/conf.php
+if [ ! -f $conffile ]; then
+conffile=boca-$bocaver.$di/src/private/conf.php
+fi
+if [ -f $conffile ]; then
  echo "OLD CONFIG FILE EXISTS"
  OK=x
  while [ "$OK" != "y" -a "$OK" != "n" ]; do
@@ -65,6 +83,8 @@ if [ -f boca-$bocaver.$di/src/private/conf.php ]; then
  if [ "$OK" == "n" ]; then
    echo "You probably need to update the new file boca-$bocaver/src/private/conf.php with the correct passwords - PLEASE CHECK IT - NOT DONE AUTOMATICALLY"
  fi
+else
+  echo "OLD Config file not found -- you must set up the new private/conf.php file properly"
 fi
 
 apacheuser=
@@ -83,7 +103,7 @@ chmod -R g+rx,u+rwx boca-$bocaver/
 chmod 600 boca-$bocaver/src/private/*.php
 [ -f boca-$bocaver.$di/src/private/remotescores/otherservers ] && cp -f boca-$bocaver.$di/src/private/remotescores/otherservers boca-$bocaver/src/private/remotescores/otherservers
 if [ "$OK" == "y" ]; then
-  cp -f boca-$bocaver.$di/src/private/conf.php boca-$bocaver/src/private/conf.php
+  cp -f $conffile boca-$bocaver/src/private/conf.php
 fi
 chmod 700 boca-$bocaver/tools/*.sh
 

@@ -132,6 +132,7 @@ $strtmp .= "<br><br><center><b>To submit a program, just fill in the following f
 "        <td width=\"75%\">\n".
 "          <select name=\"problem\" onclick=\"Arquivo()\">\n";
 $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usertype"]=='judge');
+$strtmp .= "<option value=\"-1\"></option>\n";
 for ($i=0;$i<count($prob);$i++)
 	$strtmp .= "<option value=\"" . $prob[$i]["number"] . "\">" . $prob[$i]["problem"] . "</option>\n";
 $strtmp .= "	  </select>\n".
@@ -142,6 +143,7 @@ $strtmp .= "	  </select>\n".
 "        <td width=\"75%\"> \n".
 "          <select name=\"language\" onclick=\"Arquivo()\">\n";
 $lang = DBGetLanguages($_SESSION["usertable"]["contestnumber"]);
+$strtmp .= "<option value=\"-1\"></option>\n";
 for ($i=0;$i<count($lang);$i++)
 	$strtmp .= "<option value=\"" . $lang[$i]["number"] . "\">" . $lang[$i]["name"] . "</option>\n";
 $strtmp .= "	  </select>\n".
@@ -157,8 +159,12 @@ $strtmp .= "	  </select>\n".
 "  </center>\n".
 "  <script language=\"javascript\">\n".
 "    function conf() {\n".
-"      if (confirm(\"Confirm submission?\")) {\n".
+"      if (document.form1.problem.value != '-1' && document.form1.language.value != '-1') {\n".
+"       if (confirm(\"Confirm submission?\")) {\n".
 "        document.form1.confirmation.value='confirm';\n".
+"       }\n".
+"      } else {\n".
+"        alert('Invalid problem and/or language');\n".
 "      }\n".
 "    }\n".
 "  </script>\n".

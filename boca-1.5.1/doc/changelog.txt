@@ -1,5 +1,11 @@
 version 1.5.1:
-xxx/xx/xx:
+2012/10/20:
+- (ICPC Linux) fixed logging in issue after cleandisk.sh
+- (ICPC Linux) inclusion of some (new) suggested packages and links
+- updated safeexec (there was a timing issue between time-limit and run-time-error)
+- updated installboca.sh to account for different install directories
+- fix bug with the option that teams can't change their password. This was causing login problems.
+- inclusion of per side problem table (useful for multi-sites).
 
 version 1.5.0:
 2012/08/24

@@ -108,7 +108,7 @@ echo "====================================================================="
 echo "================= installing packages needed by BOCA  ==============="
 echo "====================================================================="
 
-apt-get -y install zenity apache2 eclipse-pde eclipse-rcp eclipse-platform eclipse-jdt eclipse emacs \
+apt-get -y install zenity apache2 eclipse-pde eclipse-rcp eclipse-platform eclipse-jdt eclipse-cdt eclipse emacs \
   evince g++ gcc gedit scite libstdc++6 makepasswd manpages-dev mii-diag php5-cli php5-mcrypt openjdk-6-dbg \
   php5 php5-pgsql postgresql postgresql-client postgresql-contrib quota sharutils default-jdk openjdk-6-doc \
   vim-gnome geany geany-plugin-addons geany-plugin-gdb geany-plugins default-jre sysstat \
@@ -134,11 +134,45 @@ echo "=================================================================="
 echo "=============  creating user icpc with password icpc ============="
 echo "=================================================================="
 
+mkdir -p /etc/skel/Desktop/
+cat <<EOF > /etc/skel/Desktop/javadoc.desktop
+[Desktop Entry]
+Version=1.5.1
+Name=Java API
+Comment=Java API
+Exec=firefox /usr/share/doc/openjdk-6-jre-headless/api/index.html
+Terminal=false
+Type=Application
+EOF
+cat <<EOF > /etc/skel/Desktop/stldoc.desktop
+[Desktop Entry]
+Version=1.5.1
+Name=C++ STL
+Comment=C++ STL
+Exec=firefox /usr/share/doc/stl-manual/html/index.html
+Terminal=false
+Type=Application
+EOF
+cat <<EOF > /etc/skel/Desktop/cppannotations.desktop
+[Desktop Entry]
+Version=1.5.1
+Name=C++ Annotations
+Comment=C++ Annotations
+Exec=firefox /usr/share/doc/c++-annotations/html/index.html
+Terminal=false
+Type=Application
+EOF
+cp /usr/share/applications/eclipse.desktop /etc/skel/Desktop/
+cp /usr/share/applications/gedit.desktop /etc/skel/Desktop/
+cp /usr/share/applications/emacs23.desktop /etc/skel/Desktop/
+cp /usr/share/applications/gnome-terminal.desktop /etc/skel/Desktop/
+chmod 755 /etc/skel/Desktop/*.desktop
+
 pass=`echo -n icpc | makepasswd --clearfrom - --crypt-md5 | cut -d'$' -f2-`
 pass=\$`echo $pass`
 id -u icpc >/dev/null 2>/dev/null
 if [ $? != 0 ]; then
- useradd -d /home/icpc -m -p "$pass" -s /bin/bash -g users icpc
+ useradd -d /home/icpc -k /etc/skel -m -p "$pass" -s /bin/bash -g users icpc
 else
  usermod -d /home/icpc -p "$pass" -s /bin/bash -g users icpc
  echo "user icpc already exists"
@@ -230,7 +264,7 @@ echo "====================== EXTRACTING CONFIG FILES ==============="
 tar -xkvzf /tmp/icpc.etc.tgz
 for i in \`tar tvzf /tmp/icpc.etc.tgz | awk '{ print \$6; }'\`; do
   chown root.root \$i
-  chmod o-w,u+x \$i
+  chmod o-w,u+rx \$i
 done
 EOF
 chmod 750 /etc/icpc/installscripts.sh

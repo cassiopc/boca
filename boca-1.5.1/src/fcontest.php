@@ -1205,7 +1205,7 @@ function DBNewUser($param, $c=null) {
 			MSGError("Site $site does not exist");
 			return false;
 		   }
-		   if($type=='team') $pass='!'.$pass;
+		   if($type=='team' && $pass != myhash("")) $pass='!'.$pass;
 			$sql = "insert into usertable (contestnumber, usersitenumber, usernumber, username, usericpcid, userfullname, " .
 				"userdesc, usertype, userenabled, usermultilogin, userpassword, userpermitip) values " .
 				"($contest, $site, $user, '$username', '$usericpcid', '$userfull', '$userdesc', '$type', '$enabled', " .

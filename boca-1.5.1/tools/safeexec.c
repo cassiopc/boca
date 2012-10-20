@@ -32,6 +32,7 @@
 
 pid_t child_pid;          /* pid of the child process */
 
+double cpu_timeoutdouble = 5.0;
 struct rlimit cpu_timeout = {5,5};    		/* max cpu time (seconds) */
 struct rlimit max_nofile = {64,64};    		/* max number of open files */
 struct rlimit max_fsize = {128*MBYTE,128*MBYTE};    /* max filesize */
@@ -52,7 +53,7 @@ int killallproc;
 int bequiet;
 int checknchild;
 int user, group;
-const char vers[] = "1.5.0";
+const char vers[] = "1.5.1";
 
 #define BUFFSIZE 256
 char curdir[BUFFSIZE], rootdir[BUFFSIZE], saida[BUFFSIZE], entrada[BUFFSIZE], erro[BUFFSIZE];
@@ -230,6 +231,8 @@ int testsystem(pid_t p, pid_t pp, int userid, int groupid, double memlim, double
 	return ret;
 }
 
+char timekill=0;
+
 /* alarm handler */
 void handle_alarm(int sig) {
 	static int iter=0;
@@ -241,6 +244,7 @@ void handle_alarm(int sig) {
 		if(!bequiet)
 			fprintf(stderr, "safeexec: timed-out (realtime) after %d seconds\n", real_timeout);
 		fflush(stderr);
+		timekill=1;
 		kill(child_pid,9);   /* kill child */
 		exitandkill(3);
 	}
@@ -293,7 +297,7 @@ int main(int argc, char **argv) {
   int currun = 0;
   struct stat sstat;
   double dt;
-
+  setvbuf(stderr, NULL, _IONBF, 0);
   entrada[0] = saida[0] = erro[0] = rootdir[0] = curdir[0] = 0;
   user = group = -1;
   allproc = 1;
@@ -329,7 +333,8 @@ int main(int argc, char **argv) {
       break;
     case 'm': max_rss.rlim_max = max_rss.rlim_cur = KBYTE*atoi(optarg);
       break;
-    case 't': cpu_timeout.rlim_max = cpu_timeout.rlim_cur = atoi(optarg);
+		case 't': cpu_timeout.rlim_max = cpu_timeout.rlim_cur = 1 + ((int) atof(optarg));
+		cpu_timeoutdouble = atof(optarg);
       break;
     case 'T': real_timeout = atoi(optarg);
       break;
@@ -415,6 +420,8 @@ Use -U and -G for that, but you might need to have root privilegies.\n");
 	alarm(1);   /* set alarm and wait for child execution */
 	signal(SIGALRM, handle_alarm);
 	while(waitpid(child_pid, &status, 0) != child_pid) ;
+	if(timekill) exitandkill(3);
+
 	testsystem(child_pid,getpid(),allproc?user:-1,allproc?group:-1,max_data.rlim_max,max_rss.rlim_max);
 
     getrusage(RUSAGE_CHILDREN, &uso);
@@ -424,12 +431,12 @@ Use -U and -G for that, but you might need to have root privilegies.\n");
 //    printf("system runnning time: %.4lf\n",uso.ru_stime.tv_sec+(double)uso.ru_stime.tv_usec/1000000.0); 
 //    printf("total runnning time: %.4lf\n",dt); 
 
-    if (dt + EPSILON >= cpu_timeout.rlim_max) {
+    if (dt >= cpu_timeoutdouble) {
 //      printf ("utsec=%d utusec=%d stsec=%d stusec=%d\n", uso.ru_utime.tv_sec, uso.ru_utime.tv_usec, uso.ru_stime.tv_sec, uso.ru_stime.tv_usec);
 		if(!bequiet)
-			fprintf(stderr, "safeexec: timed-out (cputime) after %d seconds\n", (int) cpu_timeout.rlim_max);
+			fprintf(stderr, "safeexec: timed-out (cputime) after %.2lf seconds\n", cpu_timeoutdouble);
 		fflush(stderr);
-//      fprintf(stdout, "timed-out (cputime) after %d seconds\n", (int) cpu_timeout.rlim_max);
+//      fprintf(stdout, "timed-out (cputime) after %d seconds\n", cpu_timeoutint);
 //      fflush(stdout);
       exitandkill(3);
     }
@@ -489,6 +496,9 @@ Use -U and -G for that, but you might need to have root privilegies.\n");
 
     /* attempt to change the hard limits */
     /*******Note that currently Linux does not support memory usage limits********/
+
+	cpu_timeout.rlim_max+=1; cpu_timeout.rlim_cur+=1;
+
     if( setrlimit(RLIMIT_CPU, &cpu_timeout) || 
 	setrlimit(RLIMIT_DATA, &max_data) ||
 	setrlimit(RLIMIT_STACK, &max_data) ||

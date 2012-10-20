@@ -74,7 +74,7 @@ if(!ValidSession()) {
 $loc = $_SESSION["loc"];
 if(!isset($detail)) $detail=true;
 if(!isset($final)) $final=false;
-$scoredelay["admin"] = 1;
+$scoredelay["admin"] = 2;
 $scoredelay["score"] = 30;
 $scoredelay["team"] = 30;
 $scoredelay["judge"] = 10;
@@ -95,33 +95,38 @@ if(file_exists($scoretmp)) {
 	}
 }
 
+if($_SESSION["usertable"]["usertype"]=='score' || (isset($_GET["remote"]) && is_numeric($_GET["remote"]))) {
+	$remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
+	$destination = $remotedir . $ds ."scores.zip";
+    if(is_writable($remotedir)) {
+	if($redo || !is_readable($destination)) {
+		if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
+			ForceLoad("index.php");
+		
+		$level=$s["sitescorelevel"];
+		$data0 = array();
+		if($level>0) {
+			list($score,$data0) = DBScoreSite($_SESSION["usertable"]["contestnumber"], 
+											  $_SESSION["usertable"]["usersitenumber"], 1, -1);
+		}
+		$ct=DBGetActiveContest();
+		$localsite=$ct['contestlocalsite'];
+		$fname = $remotedir . $ds . "score_site" . $localsite . "_" . md5($_SERVER['HTTP_HOST']);
+		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
+		@rename($fname . ".tmp",$fname . ".dat");
+		
+		if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$destination)!==true) {
+			LOGError("Cannot create score zip file");
+		} else {
+			@create_zip($remotedir,array(),$destination);
+		}
+	}
+	}
+}
+
 if(isset($_GET["remote"])) {
 	if(is_numeric($_GET["remote"])) {
 		if($_GET["remote"]==-42) {
-			$remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
-			$destination = $remotedir . $ds ."scores.zip";
-			if($redo || !is_readable($destination)) {
-				if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
-					ForceLoad("index.php");
-				
-				$level=$s["sitescorelevel"];
-				$data0 = array();
-				if($level>0) {
-					list($score,$data0) = DBScoreSite($_SESSION["usertable"]["contestnumber"], 
-													  $_SESSION["usertable"]["usersitenumber"], 1, -1);
-				}
-				$ct=DBGetActiveContest();
-				$localsite=$ct['contestlocalsite'];
-				$fname = $remotedir . $ds . "score_site" . $localsite . "_" . md5($_SERVER['HTTP_HOST']);
-				file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
-				rename($fname . ".tmp",$fname . ".dat");
-
-				if(create_zip($remotedir,glob($remotedir . '/*.dat'),$destination)!==true) {
-					LOGError("Cannot create score zip file");
-				} else {
-					create_zip($remotedir,array(),$destination);
-				}
-			}
 			echo file_get_contents($destination);
 		} else {
 			if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)

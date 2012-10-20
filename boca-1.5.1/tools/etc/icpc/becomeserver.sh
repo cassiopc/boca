@@ -95,6 +95,16 @@ for i in `ls /etc/postgresql/*/main/pg_hba.conf`; do
    echo "==> IF YOU HAVE MULTIPLE AUTOJUDGE MACHINES, WRITE ONE LINE FOR EACH IP ADDRESS THERE IN THE FILE <=="
    echo "############"
    echo "host bocadb bocauser 0/0 md5" >> $i
+  else
+   echo "############"
+   echo "IT SEEMS YOU ALREADY HAVE MODIFIED THE FILE $i WITH BOCA'S INFORMATION"
+   echo "I WOULD USE THE LINE:"
+   echo ""
+   echo -e "echo \"host bocadb bocauser 0/0 md5\" >> $i"
+   echo ""
+   echo "to give access to the database to other computers, but"
+   echo ">>> I'M NOT DOING IT -- PLEASE CHECK IT <<<"
+   echo "############"
   fi
 done
 

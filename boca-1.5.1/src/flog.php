@@ -123,7 +123,7 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	}
 	$a = DBGetRow("select * from usertable where username='$name' and contestnumber=".
 		$b["contestnumber"]." and " .
-				  "usersitenumber=".$b["contestlocalsite"], 0, null, "DBLogIn(get user)");
+ 	    "usersitenumber=".$b["contestlocalsite"], 0, null, "DBLogIn(get user)");
 	if ($a == null) {
 		if($msg) {
 			LOGLevel("User $name tried to log in contest $contest but it does not exist.",2);
@@ -131,12 +131,13 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 		}
 		return false;
 	}
+	$a = DBUserInfo($b["contestnumber"], $b["contestlocalsite"],$a['usernumber'],null,false);
 	$_SESSION['usertable'] = $a;
 	$p = myhash($a["userpassword"] . session_id());
 	$_SESSION['usertable']['userpassword'] = $p;
 	if ($a["userpassword"] != "" && $p != $pass) {
 		LOGLevel("User $name tried to log in contest $contest but password was incorrect.",2);
-		if($msg) MSGError("User does not exist or incorrect password.");
+		if($msg) MSGError("Incorrect password.");
 		unset($_SESSION["usertable"]);
 		return false;
 	}

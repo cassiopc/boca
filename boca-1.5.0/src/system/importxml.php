@@ -136,6 +136,68 @@ if(isset($_POST["Submit"])) {
 						   'userlastlogout'=>-1,
 						   'permitip'=>-1);
 
+		$ac['CLARREC']=array('site'=>-1
+					  'user'=>-1,
+					  'number'=>-1,
+					  'problem'=>-1,
+					  'question'=>-1,
+					  'clarnumber'=>-1,
+					  'clardate'=>-1,
+					  'clardatediff'=>-1,
+					  'clardatediffans'=>-1,
+					  'claranswer'=>-1,
+					  'clarstatus'=>-1,
+					  'clarjudge'=>-1,
+					  'clarjudgesite'=>-1,
+					  'updatetime'=>-1);
+		$ac['RUNREC']=array('site'=>-1,
+					 'user'=>-1,
+					 'number'=>-1,
+					 'runnumber'=>-1,
+					 'problem'=>-1,
+					 'lang'=>-1,
+					 'filename'=>-1,
+					 'filepath'=>-1,
+					 'rundate'=>-1,
+					 'rundatediff'=>-1,
+					 'rundatediffans'=>-1,
+					 'runanswer'=>-1,
+					 'runstatus'=>-1,
+					 'runjudge'=>-1,
+					 'runjudgesite'=>-1,
+					 'runjudge1'=>-1,
+					 'runjudgesite1'=>-1,
+					 'runanswer1'=>-1,
+					 'runjudge2'=>-1,
+					 'runjudgesite2'=>-1,
+					 'runanswer2'=>-1,
+					 'autoip'=>-1,
+					 'autobegindate'=>-1,
+					 'autoenddate'=>-1,
+					 'autoanswer'=>-1,
+					 'autostdout'=>-1,
+					 'autostderr'=>-1,
+					 'updatetime'=>-1);
+		$ac['TASKREC']=array(
+			'site'=>-1,
+			'user'=>-1,
+			'desc'=>-1,
+			'number'=>-1,
+			'tasknumber'=>-1,
+			'color'=>-1,
+			'colorname'=>-1,
+			'updatetime'=>-1,
+			'filename'=>-1,
+			'filepath'=>-1,
+			'sys'=>-1,
+			'status'=>-1,
+			'taskdate'=>-1,
+			'taskdatediff'=>-1,
+			'taskdatediffans'=>-1,
+			'taskstaffnumber'=>-1,
+			'taskstaffsite'=>-1);
+
+
 		if(strtoupper(substr($ar,0,5)) != '<XML>' && isset($_POST['password']) && strlen($_POST['password'])>20) {
 			echo "<br>Starting to create the contest<br>";
 			$str = strtok($ar," \n\t");
