@@ -86,6 +86,9 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 	if($ds=="") $ds = "/";
 	$probs=DBGetProblems($contest); $nprobs=count($probs);
 	foreach (glob($_SESSION['locr'] . $ds . "private" .$ds . "remotescores" . $ds . "score*.dat") as $fname) {
+		$namear=explode('_',$fname);
+		$overloadsite=-1;
+		if(isset($namear[3]) && is_numeric($namear[2])) $overloadsite=$namear[2];
 		$fc=file_get_contents($fname);
 		if(($arr = unserialize(base64_decode($fc)))===false) {
 			LOGError("File " . sanitizeText($fname) . " is not compatible");

@@ -141,8 +141,8 @@ function bighexsub ($hex1, $hex2) {
 			$r += 16;
 			$sobra = 1;
 		} else $sobra = 0;
-
-		$resultado = dechex($r) . $resultado;
+		if($x > 0 || dechex($r) != '0')
+			$resultado = dechex($r) . $resultado;
 	} 
 	return $sinal . $resultado;
 }

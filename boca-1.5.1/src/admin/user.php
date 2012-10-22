@@ -57,7 +57,8 @@ if (isset($_POST["username"]) && isset($_POST["userfullname"]) && isset($_POST["
 	} else {
 		if ($_POST["passwordn1"] == $_POST["passwordn2"]) {
 			$param['pass'] = bighexsub(htmlspecialchars($_POST["passwordn1"]),$a['userpassword']);
-			DBNewUser($param);
+			if($param['user'] != 1000)
+				DBNewUser($param);
 		}
 		else MSGError ("Passwords don't match.");
 	}
@@ -103,8 +104,12 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
 
 							$param['contest']=$_SESSION["usertable"]["contestnumber"];
 							if($_SESSION["usertable"]["usersitenumber"] == $param['site'] || $main)
-								if(DBNewUser($param))
+								if($param['usernumber'] != 1000 && DBNewUser($param)) {
 									$oklines++;
+								} else {
+									unset($userlist[$param['site'] . '-' . $param['usernumber']]);
+									break;
+								}
 						}
 					}
 					MSGError($oklines . ' users included/updated successfully');
@@ -130,8 +135,12 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
 							$param['pass']=myhash($userlist[$param['site'] . '-' . $param['usernumber']]);
 							$param['contest']=$_SESSION["usertable"]["contestnumber"];
 							if($_SESSION["usertable"]["usersitenumber"] == $param['site'] || $main)
-								if(DBNewUser($param))
+								if($param['usernumber'] != 1000 && DBNewUser($param)) {
 									$oklines++;
+								} else {
+									unset($userlist[$param['site'] . '-' . $param['usernumber']]);
+									break;
+								}
 						}
 					}
 					MSGError($oklines . ' users included/updated successfully');
@@ -163,7 +172,7 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
 							}
 							$param['contest']=$_SESSION["usertable"]["contestnumber"];
 							if($_SESSION["usertable"]["usersitenumber"] == $param['site'] || $main)
-								DBNewUser($param);
+								if($param['usernumber'] != 1000) DBNewUser($param);
                         }
 					}
 				}

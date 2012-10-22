@@ -15,7 +15,7 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# last modified 10/jul/2012 by cassio@ime.usp.br
+# last modified 22/oct/2012 by cassio@ime.usp.br
 
 if [ "$1" == "" -o "$2" == "" -o "$3" == "" -o "$4" == "" ]; then
   echo "Usage $0 <scorefile> <BOCAaddress> <user> <password> [<PC2site>]"
@@ -32,7 +32,7 @@ if [ "$5" != "" ]; then
 pc2=$5
 fi
 
-for i in wget tr perl md5sum cut; do
+for i in wget tr perl shasum cut; do
   p=`which $i`
   if [ -x "$p" ]; then
     echo -n ""
@@ -44,9 +44,9 @@ done
 
 if [ -r "$1" ]; then
 md=`wget -S -T3 -t3 $BOCASERVER/index.php -O /dev/null --save-cookies /tmp/.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1 | cut -f2 -d'=' | cut -f1 -d';'`
-res=`echo -n $pass | md5sum - | cut -f1 -d' '`
-res=`echo -n "${res}${md}" | md5sum - | cut -f1 -d' '`
-wget -T3 -t3 "$BOCASERVER/index.php?name=${user}&password=${res}" --load-cookies /tmp/.cookie.txt --keep-session-cookies --save-cookies /tmp/.cookie.txt -O /tmp/.temp.txt 2>/dev/null >/dev/null
+res=`echo -n $pass | shasum -a 256 - | cut -f1 -d' '`
+res=`echo -n "${res}${md}" | shasum -a 256 - | cut -f1 -d' '`
+wget -T3 -t3 "$BOCASERVER/index.php?name=${user}&password=${res}&action=scoretransfer" --load-cookies /tmp/.cookie.txt --keep-session-cookies --save-cookies /tmp/.cookie.txt -O /tmp/.temp.txt 2>/dev/null >/dev/null
 grep -qi incorrect /tmp/.temp.txt
 if [ $? == 0 ]; then 
   echo User or password incorrect

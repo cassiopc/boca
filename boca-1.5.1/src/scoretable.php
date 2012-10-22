@@ -95,7 +95,7 @@ if(file_exists($scoretmp)) {
 	}
 }
 
-if($_SESSION["usertable"]["usertype"]=='score' || (isset($_GET["remote"]) && is_numeric($_GET["remote"]))) {
+if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["usertype"]=='admin' || (isset($_GET["remote"]) && is_numeric($_GET["remote"]))) {
 	$remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
 	$destination = $remotedir . $ds ."scores.zip";
     if(is_writable($remotedir)) {
@@ -115,10 +115,12 @@ if($_SESSION["usertable"]["usertype"]=='score' || (isset($_GET["remote"]) && is_
 		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 		@rename($fname . ".tmp",$fname . ".dat");
 		
-		if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$destination)!==true) {
+		if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$fname . ".tmp") != 1) {
 			LOGError("Cannot create score zip file");
+			if(@create_zip($remotedir,array(),$fname . ".tmp") == 1)
+				@rename($fname . ".tmp",$destination);
 		} else {
-			@create_zip($remotedir,array(),$destination);
+			@rename($fname . ".tmp",$destination);
 		}
 	}
 	}

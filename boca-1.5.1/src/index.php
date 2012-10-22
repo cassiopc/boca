@@ -79,15 +79,17 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
 		if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 			ForceLoad("index.php");
 		if($ct["contestlocalsite"]==$ct["contestmainsite"]) $main=true; else $main=false;
-		if($main && $_SESSION["usertable"]["usertype"] == 'site') {
-			MSGError('Direct login of this user is not allowed');
-			unset($_SESSION["usertable"]);
-			ForceLoad("index.php");
-			exit;
+		if(!isset($_GET['action']) || $_GET['action'] != 'scoretransfer') {
+			if($main && $_SESSION["usertable"]["usertype"] == 'site') {
+				MSGError('Direct login of this user is not allowed');
+				unset($_SESSION["usertable"]);
+				ForceLoad("index.php");
+				exit;
+			}
+			echo "<script language=\"JavaScript\">\n";
+			echo "document.location='" . $_SESSION["usertable"]["usertype"] . "/index.php';\n";
+			echo "</script>\n";
 		}
-		echo "<script language=\"JavaScript\">\n";
-		echo "document.location='" . $_SESSION["usertable"]["usertype"] . "/index.php';\n";
-		echo "</script>\n";
 		exit;
 	}
   }

@@ -163,7 +163,8 @@ if(is_writable($_SESSION["locr"] . $remotedir)) {
 	fwrite($fout,$total,10000000);
 	fclose($fout);
 
-	if(@rename($fn, $_SESSION["locr"] . $remotedir . $ds . "score_" . $_SESSION["usertable"]["username"]  . "_" . md5(getIP()) . ".dat"))
+	if(@rename($fn, $_SESSION["locr"] . $remotedir . $ds . "score_" . $_SESSION["usertable"]["username"] . 
+			   "_" . $_SESSION["usertable"]["usericpcid"] . "_" . md5(getIP()) . ".dat"))
 		echo "SCORE UPLOADED OK\n";
 	else
 		echo "FAILED: UPDATE SCORE ERROR\n";
