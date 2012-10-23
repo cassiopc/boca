@@ -104,13 +104,13 @@ while /bin/true; do
 		echo -n "sending password..."
 		wget -t3 -T3 "$BOCASERVER/index.php?name=${user}&password=${res}" --load-cookies $tempdir/.cookie.txt --keep-session-cookies --save-cookies $tempdir/.cookie.txt -O $tempdir/.temp.txt 2>/dev/null >/dev/null
 		grep -qi incorrect $tempdir/.temp.txt
-		if [ $? != 0 ]; then
+		if [ "$?" != "0" ]; then
 			rm -f $tempdir/*
 			echo "downloading scoretable..."
 			wget -t3 -T3 "$BOCASERVER/scoretable.php?remote=-42" --load-cookies $tempdir/.cookie.txt --keep-session-cookies --save-cookies $tempdir/.cookie.txt -O $tempdir/score.zip 2>$tempdir/.bocascore.tmp >$tempdir/.bocascore.tmp
-			if [ $? == 0 ]; then
+			if [ "$?" == "0" ]; then
 				unzip -qq $tempdir/score.zip
-				if [ $? == 0 ]; then
+				if [ "$?" == "0" ]; then
 					for fscore in `ls $tempdir/*.dat`; do
 						chown $apacheuser.root "$tempdir/$fscore"
 						chmod 660 "$tempdir/$fscore"
