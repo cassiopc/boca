@@ -109,13 +109,14 @@ while /bin/true; do
 			echo "downloading scoretable..."
 			wget -t3 -T3 "$BOCASERVER/scoretable.php?remote=-42" --load-cookies $tempdir/.cookie.txt --keep-session-cookies --save-cookies $tempdir/.cookie.txt -O $tempdir/score.zip 2>$tempdir/.bocascore.tmp >$tempdir/.bocascore.tmp
 			if [ "$?" == "0" ]; then
-				unzip -qq $tempdir/score.zip
+				unzip -qq $tempdir/score.zip -d $tempdir
 				if [ "$?" == "0" ]; then
-					for fscore in `ls $tempdir/*.dat`; do
-						chown $apacheuser.root "$tempdir/$fscore"
-						chmod 660 "$tempdir/$fscore"
-						mv "$tempdir/$fscore" "$privatedir/score_$fscore"
-						echo "Score downloaded successfully into $privatedir/score_$fscore"
+					for fscore in `ls -d $tempdir/*.dat`; do
+						chown $apacheuser.root "$fscore"
+						chmod 660 "$fscore"
+						bfscore=`basename $fscore`
+						mv "$fscore" "$privatedir/score_$bfscore"
+						echo "Score downloaded successfully into $privatedir/score_$bfscore"
 					done
 				else
 					echo "Error: score file from $BOCASERVER is not a valid package"
