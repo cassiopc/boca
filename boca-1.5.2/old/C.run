@@ -1,0 +1,141 @@
+#!/bin/bash
+#//////////////////////////////////////////////////////////////////////////////////////////
+#//BOCA Online Contest Administrator. Copyright (c) 2003- Cassio Polpo de Campos.
+#//It may be distributed under the terms of the Q Public License version 1.0. A copy of the
+#//license can be found with this software or at http://www.opensource.org/licenses/qtpl.php
+#//
+#//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+#//INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+#//PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+#//OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR
+#//CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+#//PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+#//OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#///////////////////////////////////////////////////////////////////////////////////////////
+#Last modified: 17/oct/2011 by cassio@ime.usp.br
+#
+# parameters are:
+# $1 base_filename
+# $2 source_file
+# $3 input_file
+# $4 languagename
+# $5 problemname
+# $6 timelimit
+#
+# the output of the submission should be directed to the standard output
+#
+# the return code show what happened (according to safeexec):
+# 0 ok
+# 1 compile error
+# 2 runtime error
+# 3 timelimit exceeded
+# 4 internal error
+# 5 parameter error
+# 6 internal error
+# 7 memory limit exceeded
+# 8 security threat
+# 9 runtime error
+# other_codes are unknown to boca: in this case BOCA will present the
+#                                  last line of standard output to the judge
+
+umask 0022
+id -u bocajail >/dev/null 2>/dev/null
+if [ $? == 0 ]; then
+	bocau=`id -u bocajail`
+	bocag=`id -g bocajail`
+	chown bocajail.nogroup .
+else
+	bocau=`id -u nobody`
+	bocag=`id -g nobody`
+	chown nobody.nogroup .
+fi
+if [ "$bocau" == "" -o "$bocag" == "" ]; then
+	echo "error finding user to run script"
+	exit 43
+fi
+
+# this script makes use of safeexec to execute the code with less privilegies
+# make sure that directories below are correct.
+sf=`which safeexec`
+[ -x "$sf" ] || sf=/usr/bin/safeexec
+gcc=`which gcc`
+[ -x "$gcc" ] || gcc=/usr/bin/gcc
+
+if [ "$1" == "" -o "$2" == "" -o "$3" == "" ]; then
+    echo "parameter problem"
+    exit 43
+fi
+if [ ! -r $2 ]; then
+    echo "$2 not found or it's not readable"
+    exit 44
+fi
+if [ ! -r $3 ]; then
+    echo "$3 not found or it's not readable"
+    exit 45
+fi
+if [ ! -x $sf ]; then
+    echo "$sf not found or it's not executable"
+    exit 46
+fi
+if [ ! -x $gcc ]; then
+    echo "$gcc not found or it's not executable"
+    exit 47
+fi
+
+prefix=$1
+name=$2
+input=$3
+
+# setting up the timelimit according to the problem
+if [ "$6" == "" ]; then
+time=5
+else
+time=$6
+fi
+let ttime=$time+30
+
+$gcc -O2 -lm -o $prefix "$name"
+ret=$?
+if [ "$ret" != "0" ]; then
+	echo "Compilation Error: $ret"
+	exit 1
+else
+    cdir=`pwd`
+	echo "Current directory is $cdir" >&2
+	echo $cdir | grep -q "/bocajail"
+	if [ $? == 0 ]; then
+       cdir=`echo $cdir | sed "s/.*\/bocajail//"`
+       cat <<EOF > runit.sh
+#!/bin/bash
+[ -f /proc/cpuinfo ] || /bin/mount -t proc proc /proc
+#/bin/mount --bind /dev /dev
+[ -d /sys/kernel ] || /bin/mount -t sysfs sysfs /sys
+cd $cdir
+$sf -F10 -n0 -U$bocau -G$bocag -C. -ostdout0 -estderr0 -d512000 -m512000 -f20000 -t$time -T$ttime -i$input ./$prefix
+echo \$? > runit.retcode
+/bin/umount /proc 2>/dev/null
+#/bin/umount /dev
+/bin/umount /sys 2>/dev/null
+EOF
+       chmod 755 runit.sh
+       chroot /bocajail $cdir/runit.sh
+  	   ret=`cat runit.retcode`
+	   if [ "$ret" == "" ]; then
+		   echo "Execution error - check autojudging"
+		   exit 49
+	   fi
+    else
+       echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
+       echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
+       echo "CODE NOT BEING CHROOTED. DO NOT RUN THIS ON THE MAIN SERVER" >&2
+       $sf -F10 -n0 -C. -U$bocau -G$bocag -ostdout0 -estderr0 -d512000000 -m512000000 -t$time -T$ttime -i$input ./$prefix
+	   ret=$?
+    fi
+	if [ $ret -gt 10 ]; then
+		ret=0
+	fi
+fi
+if [ -f stdout0 ]; then
+  cat stdout0
+fi
+exit $ret

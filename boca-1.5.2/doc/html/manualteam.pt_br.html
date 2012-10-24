@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+<title>Manual do BOCA para as equipes</title>
+</head>
+
+<body bgcolor="white" vlink="blue" link="blue">
+<font size="5"><b>BOCA Online Contest Administrator - Sistema de Submiss&atilde;o</b></font>
+<p><b>Manual de Refer&ecirc;ncia para as equipes<font size="5"> - </font>vers&atilde;o
+setembro/2010 (para o BOCA vers&atilde;o 1.4.x)</b></p>
+
+<p><font size="1">Copyright (c) 2003-2010 Ulisses F. F. da Silva and Cassio
+P. de Campos.<br>
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.2 or any later
+version published by the Free Software Foundation; with no Invariant Sections,
+no Front-Cover Texts, and no Back-Cover Texts. A copy of the license may be
+found in <a
+href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a></font></p>
+
+<p>O BOCA &eacute; um <i>software</i> criado para controlar uma competi&ccedil;&atilde;o nos moldes
+da Maratona de Programa&ccedil;&atilde;o da SBC. Foi feito em PHP e a intera&ccedil;&atilde;o dos times
+com o sistema &eacute; feita usando-se um <i>browser</i>. A seguir descrevemos a
+interface dispon&iacute;vel no BOCA para as equipes e suas principais fun&ccedil;&otilde;es.</p>
+
+<p><b>&Eacute; interessante que todos os times testem essas op&ccedil;&otilde;es durante a<i>
+</i>sess&atilde;o de aquecimento <i>(warmup)</i></b> <b>que antecede a competi&ccedil;&atilde;o. O
+warmup tem exatamente esta fun&ccedil;&atilde;o, e assim espera-se que cada equipe submeta
+um problema correto, submeta um problema errado, fa&ccedil;a perguntas aos ju&iacute;zes
+atrav&eacute;s do sistema de <i>clarifications</i> e at&eacute; submeta um arquivo pequeno
+para impress&atilde;o.</b></p>
+
+<p>Neste texto ser&aacute; assumido que o time j&aacute; realizou o seu
+<i>login</i> na m&aacute;quina e abriu uma janela do navegador (leia
+as instru&ccedil;&otilde;es sobre o Maratona Linux ou sobre o sistema que
+estiver sendo utilizado). O BOCA &eacute; acessado atrav&eacute;s de uma
+<i>URL</i> (endere&ccedil;os comuns s&atilde;o 
+http://mainserver/boca/ ou http://bocaserver/boca/). Ao carregar a p&aacute;gina, o time dever&aacute; ver a
+tela de <i>login</i> do BOCA. Basta digitar o <i>login</i> do
+BOCA fornecido ao time e a sua senha correspondente (usualmente
+algo como <b>teamX</b>, onde <b>X</b>
+deve ser substitu&iacute;do pelo n&uacute;mero da equipe. A senha inicial &eacute;
+vazia caso n&atilde;o escolhida diferentemente).</p>
+
+<p>Ap&oacute;s realizar o <i>login</i> com sucesso, uma p&aacute;gina dever&aacute; ser aberta
+contendo a identifica&ccedil;&atilde;o do time no canto superior esquerdo. Durante a
+competi&ccedil;&atilde;o, conforme o time acerta os problemas, pequenos bal&otilde;es coloridos
+s&atilde;o apresentados pr&oacute;ximos ao nome do time.
+No canto superior
+direito haver&aacute; a informa&ccedil;&atilde;o sobre o estado da competi&ccedil;&atilde;o: ou ainda n&atilde;o
+come&ccedil;ou, ou j&aacute; acabou, ou est&aacute; parada, ou a competi&ccedil;&atilde;o est&aacute; em andamento e a
+quantidade de minutos restantes ser&aacute; mostrada. Mais abaixo dessas primeiras
+linhas estar&atilde;o sete op&ccedil;&otilde;es, que representam a interface propriamente dita do
+BOCA. Estas sete op&ccedil;&otilde;es s&atilde;o: <i>Problems, Runs,
+Score, Clarifications, Tasks, Backups, Options e Logout.</i></p>
+
+<p><font size="4"><b>Problems</b></font></p>
+<p>Ao entrar nessa op&ccedil;&atilde;o, o time poder&aacute; visualizar as quest&otilde;es da prova. Para
+cada quest&atilde;o, estar&aacute; dispon&iacute;vel um arquivo con sua descri&ccedil;&atilde;o (muitas vezes
+apenas um arquivo de descri&ccedil;&atilde;o &eacute; dado, contendo todas as quest&otilde;es da prova).
+Esta op&ccedil;&atilde;o &eacute; normalmente utilizada para competi&ccedil;&otilde;es n&atilde;o-presenciais como forma de
+distribuir a prova. Em competi&ccedil;&otilde;es presenciais, sua utilidade &eacute; reduzida.
+Ainda nesta tela &eacute; poss&iacute;vel visualizar as cores dos bal&otilde;es de cada problema.</p>
+
+<p><font size="4"><b>Runs</b></font></p>
+<p>Ao entrar nessa op&ccedil;&atilde;o, o time poder&aacute; submeter as suas solu&ccedil;&otilde;es e receber as
+respostas dos ju&iacute;zes. <b>Para submeter uma solu&ccedil;&atilde;o, o time dever&aacute; selecionar o
+problema para o qual a solu&ccedil;&atilde;o foi feita, a linguagem utilizada e depois
+carregar o arquivo contendo a solu&ccedil;&atilde;o.</b> Depois disso, basta clicar no bot&atilde;o
+<i>Send</i> para enviar sua solu&ccedil;&atilde;o. O bot&atilde;o <i>Clear</i> permite apagar os
+dados selecionados. Algumas observa&ccedil;&otilde;es importantes na hora de criar e
+submeter uma solu&ccedil;&atilde;o:</p>
+
+<ol>
+  <li>Crie o seu arquivo-fonte contendo a solu&ccedil;&atilde;o de um problema com o <b>nome
+      indicado</b> <b>no enunciado.</b> Cuidado com pequenos erros no nome e em sua extens&atilde;o.
+  </li>
+  <li>Escolha a <b>linguagem correta.</b> Note que seu fonte dever&aacute; ter a
+      extens&atilde;o correspondente para cada uma das linguagens aceitas (veja a folha
+      de quest&otilde;es da prova).
+  </li>
+  <li>Lembre-se de que sua solu&ccedil;&atilde;o deve <b>ler os dados da entrada padr&atilde;o e
+      escrever os</b> <b>resultados na sa&iacute;da padr&atilde;o.</b> <b>Nada</b> deve ser
+      escrito <b>na sa&iacute;da padr&atilde;o de erro.</b> Al&eacute;m disso, programas escritos em
+      linguagens que possibilitam o retorno de algum valor para o sistema
+      operacional devem retornar o valor 0 (zero), que por conven&ccedil;&atilde;o indica que
+      nenhum problema ocorreu na execu&ccedil;&atilde;o.
+  </li>
+</ol>
+
+<p>Para receber as respostas dos ju&iacute;zes, o time dever&aacute; clicar em <i>Runs</i> e
+esperar que a lista contendo as respostas recebidas para cada solu&ccedil;&atilde;o
+submetida seja atualizada (ainda assim, n&atilde;o perca tempo esperando. Voc&ecirc; pode
+produzir enquanto a resposta dos ju&iacute;zes n&atilde;o chega). Vale a pena lembrar que
+nos <b>&uacute;ltimos minutos os times que submeterem</b> <b>solu&ccedil;&otilde;es n&atilde;o receber&atilde;o
+mais as respostas dos ju&iacute;zes</b>
+(assim o suspense fica melhor, n&atilde;o? :-). Esse prazo &eacute; informado na
+competi&ccedil;&atilde;o. Cada competi&ccedil;&atilde;o tem seu conjunto de respostas poss&iacute;vel que as
+equipes podem receber. A seguir apresentamos apenas uma tabela exemplo com as
+respostas tradicionais. <b>Verifique as especialidades da sua
+competi&ccedil;&atilde;o</b>.</p>
+
+<table border="1">
+  <tr>
+    <td nowrap>Resposta</td><td>Descri&ccedil;&atilde;o</td>
+  </tr>
+  <tr>
+    <td nowrap>YES</td>
+    <td>Seu programa foi aceito, e voc&ecirc; receber&aacute; um bal&atilde;o da cor correspondente ao problema.</td></tr>
+    <tr>
+      <td nowrap>NO: Incorrect Output</td>
+      <td>Tamb&eacute;m conhecido como <i>Wrong Answer</i>. Indica que seu programa
+	  respondeu incorretamente a algum(ns) dos testes dos ju&iacute;zes.</td>
+    </tr> 
+    <tr>
+      <td nowrap>NO: Time-limit Exceeded</td>
+      <td>A execu&ccedil;&atilde;o do seu programa excedeu o tempo permitido pelos
+	  ju&iacute;zes. Esse limite de tempo usualmente n&atilde;o &eacute; divulgado aos times e pode variar
+	  para cada problema.</td>
+    </tr>
+    <tr>
+      <td nowrap>NO: Runtime Error</td>
+      <td>Durante o teste ocorreu um erro de execu&ccedil;&atilde;o (causado pelo seu
+	  programa) na m&aacute;quina dos ju&iacute;zes. Acesso a posi&ccedil;&otilde;es irregulares de
+	  mem&oacute;ria ou estouro dos limites da m&aacute;quina s&atilde;o os erros mais comuns.</td>
+    </tr>
+    <tr><td nowrap>NO: Compilation Error</td>
+      <td>Seu programa tem erros de sintaxe. Pode ser ainda que voc&ecirc; errou o
+	  nome do problema ou linguagem no momento da submiss&atilde;o.</td>
+    </tr>
+    <tr>
+      <td nowrap>NO: Output Format Error</td>
+      <td>Tamb&eacute;m conhecido como <i>Presentation Error</i>, indica que a sa&iacute;da
+	  do seu programa n&atilde;o segue a especifica&ccedil;&atilde;o exigida na folha de
+	  quest&otilde;es, apesar do "resultado" estar correto. Corrija para se
+	  adequar &agrave; especifica&ccedil;&atilde;o do problema.</td>
+    </tr> 
+    <tr>
+      <td nowrap>NO: Contact Staff</td>
+      <td>Voc&ecirc; deve pedir a presen&ccedil;a do pessoal de <i>staff</i>, pois algum
+	  erro incomum aconteceu.</td>
+    </tr>
+</table>
+
+<p></p>
+<p></p>
+<p><font size="4"><b>Score</b></font></p>
+<p>Nessa op&ccedil;&atilde;o ser&aacute; mostrado o placar atualizado da competi&ccedil;&atilde;o. Vale a pena
+lembrar que <b>o placar ser&aacute; congelado antes do final da competi&ccedil;&atilde;o</b>
+(suspense mantido :-). Esse prazo tamb&eacute;m &eacute; informado na competi&ccedil;&atilde;o, e o placar
+quando estiver congelado mostra um aviso sobre seu estado.</p>
+
+<p><font size="4"><b>Clarifications</b></font></p>
+<p>Essa op&ccedil;&atilde;o permite que o time fa&ccedil;a perguntas aos ju&iacute;zes a cerca de um
+problema espec&iacute;fico ou de algum aspecto geral da prova. O time dever&aacute;
+selecionar o problema relacionado &agrave; sua pergunta ou selecionar <i>General</i>,
+caso a pergunta n&atilde;o seja espec&iacute;fica. Logo abaixo dever&aacute; ser escrito o texto da
+<i>clarification</i>. Para enviar a <i>clarification</i> basta clicar no bot&atilde;o
+<i>Send.</i> O bot&atilde;o <i>Clear</i> apaga os dados selecionados. Para visualizar
+a resposta da <i>clarification</i>, o time dever&aacute; estar na op&ccedil;&atilde;o
+<i>Clarifications</i> e olhar na lista das <i>clarifications</i> submetidas se
+a resposta j&aacute; foi dada. Como j&aacute; foi mencionado, uma lista contendo as
+<i>clarifications</i> pertinentes a cada time ser&aacute; sempre mostrada nessa
+op&ccedil;&atilde;o. Algumas observa&ccedil;&otilde;es importantes sobre <i>clarifications</i>:</p>
+
+<ol>
+  <li><b>Os times devem fazer perguntas sobre a prova utilizando apenas essa
+      interface</b> <b>dispon&iacute;vel no BOCA!</b>
+  </li>
+  <li>O time dever&aacute; ficar atento &agrave;s <i>clarifications</i> durante toda a
+      prova, pois uma <i>clarification</i> feita por um time poder&aacute; ser respondida
+      para todos os outros. Os ju&iacute;zes tamb&eacute;m podem enviar clarifications a todos
+      os times se julgarem conveniente. Fiquem atentos.
+  </li>
+  <li>As respostas de clarifications n&atilde;o surgem na tela. Voc&ecirc; deve consultar esta p&aacute;gina para v&ecirc;-las.
+  </li>    
+</ol>
+
+<p>O sistema permite que o juiz respondendo uma d&uacute;vida utilize um bot&atilde;o chamado <u><i>No response</i></u>. Isso ocorre
+em geral porque a pergunta feita n&atilde;o deve ser respondida, pois sua resposta faz parte do 
+entendimento da quest&atilde;o ou da prova. Neste caso sugerimos ler com cuidado as quest&otilde;es e as 
+poss&iacute;veis <i>clarifications</i> relacionadas.</p>
+
+<p><font size="4"><b>Tasks</b></font></p>
+<p>Ao entrar nessa op&ccedil;&atilde;o, o time poder&aacute; enviar arquivos para impress&atilde;o. Para
+isso o arquivo deve ser selecionado e ent&atilde;o basta clicar no bot&atilde;o
+<i>Send</i>. O bot&atilde;o <i>Clear</i> permite apagar os dados selecionados. Outra
+op&ccedil;&atilde;o neste item &eacute; o bot&atilde;o <i>S.O.S.</i> que pode ser usado para chamar a
+ajuda do pessoal de <i>staff</i>. Essa ajuda deve estar relacionada apenas com
+problemas do computador ou semelhantes, j&aacute; que d&uacute;vidas sobre a prova devem ser
+enviadas pelo sistema BOCA na op&ccedil;&atilde;o <i>Clarifications</i>.</p>
+
+<p><font size="4"><b>Backups</b></font></p>
+<p>No sistema BOCA &eacute; poss&iacute;vel enviar pequenos arquivos para que sejam
+guardados no servidor em case de uma interrup&ccedil;&atilde;o do funcionamento do computador
+do time. Entrando nessa op&ccedil;&atilde;o poder&atilde;o ser vistos os arquivos j&aacute; enviados
+e mantidos no servidor, assim como enviar novos arquivos. Note que existe um limite usualmente
+pequeno na capacidade de armazenamento para que n&atilde;o hajam abusos. Um arquivo compactado &eacute;
+geralmente a melhor forma de guardar dados no servidor.<br>
+
+<p><font size="4"><b>Options</b></font></p>
+<p>Entrando nessa op&ccedil;&atilde;o poder&atilde;o ser vistas as informa&ccedil;&otilde;es: <i>Username,
+User</i> <i>full name </i>e<i> User description</i> do time.<i> </i>Tamb&eacute;m
+ser&aacute; poss&iacute;vel trocar a senha do time no BOCA digitando-se a senha antiga e a
+nova (duas vezes). Para efetuar a troca da senha, basta preencher os campos
+corretamente e clicar no bot&atilde;o <i>Send</i>.<br>
+
+</p>
+<p><font size="4"><i><b>Logout</b></i></font></p>
+<p>Essa op&ccedil;&atilde;o permite sair do BOCA.</p>
+
+<p><font size="4"><b>Sobre o BOCA e este documento</b></font></p>
+<p>O sistema BOCA foi criado por Cassio Polpo de Campos
+e pode ser encontrado em
+<a href="http://www.ime.usp.br/~cassio/boca">http://www.ime.usp.br/~cassio/boca</a>.
+Este manual, em sua vers&atilde;o inicial, foi feito por Ulisses Furquim Freire da Silva e
+complementado e atualizado por Cassio Polpo de Campos.</p>
+
+<hr>
+<p><a href="http://validator.w3.org/check?uri=referer"><img border="0"
+src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!" height="31"
+width="88"></a>
+</body>
+
+</html>

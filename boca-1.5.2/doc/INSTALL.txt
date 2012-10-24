@@ -1,0 +1,197 @@
+(Last modified 24/aug/2012 by cassio@ime.usp.br. See Copyright note below.)
+
+Requirements
+------------
+The system was tested with:
+* postgresql 8.2+ / 9.1+
+* apache 2.2+
+* php 5.3+
+(Please see the specific needs below.)
+
+Installation
+------------
+
+Before following the steps, you must be sure of:
+* your php system is integrated with your web server, 
+* the php extension module for the postgresql (e.g. php_pgsql.so)
+   is installed and configured,
+* the postgresql database management system is running.
+
+Usually that is true if you have installed the following ubuntu/debian 
+packages, as given by an apt-get example line:
+
+apt-get install \
+postgresql postgresql-contrib postgresql-client apache2 \
+libapache2-mod-php5 php5 php5-cli php5-cgi php5-gd \
+php5-mcrypt php5-pgsql
+
+It may be needed to configure some parameters in php.ini, 
+postgresql.conf and pg_hba.conf files. The following lines
+show some important attributes for BOCA:
+
+********* apache boca config file (to be created as /etc/apache2/conf.d/boca): **********
+<Directory /var/www/boca>
+       AllowOverride Options AuthConfig Limit
+       Order Allow,Deny
+       Allow from all
+       AddDefaultCharset utf-8
+</Directory>
+<Directory /var/www/boca/private>
+       AllowOverride None
+       Deny from all
+</Directory>
+<Directory /var/www/boca/doc>
+       AllowOverride None
+       Deny from all
+</Directory>
+<Directory /var/www/boca/tools>
+       AllowOverride None
+       Deny from all
+</Directory>
+
+********* /etc/postgresql/*/main/postgresql.conf: *********
+tcpip_socket = true #if using tcp to connect to database (older postgresqls)
+listen_addresses = '*' #newer postgresqls
+
+# THE FOLLOWING MAY BE GOOD FOR PERFORMANCE
+max_connections = 100
+maintenance_work_mem = 32MB 
+shared_buffers = 512MB      ## USE AROUND 1/3 OF YOUR RAM
+work_mem = 10MB
+effective_cache_size = 512MB     ## USE AROUND 1/3 OF YOUR RAM
+
+Note that for doing these changes you will need to increase the SHMMAX
+parameter of your kernel, e.g. in file /etc/sysctl.d/10-shmmax.conf 
+
+kernel.shmmax = 805416960
+kernel.shmall = 196635
+
+
+********* /etc/postgresql/*/main/pg_hba.conf: *********
+#this is the access control file
+#restricting connections from unixsocket or localhost is
+#the best choice, but it could not enough if the
+#database is not in the same machine.
+host    all   all 127.0.0.1 255.255.255.255 md5
+host    all   all 0.0.0.0   0.0.0.0         md5
+# this last line will allow connection from everywhere. If you
+# know the IP address of the machines that will serve as autojudging,
+# then you may restrict the access to only such machines. Anyway,
+# if you have a good password, that should not be a problem, as we
+# are not expecting this to be available on the internet but only on
+# the local net.
+
+***********
+*********** Steps for installing boca:
+
+1) Unpack the boca file into a internet world readable directory,
+according to the setting you chose in /etc/apache2/conf.d/boca,
+e.g.:
+# cd /var/www
+# tar xvzf boca-x.y.z.tar.gz
+# ln -s boca-x.y.z boca
+
+2) create a postgresql account with permission to create new
+databases (you need database admin privilegies to do that),
+e.g.:
+# psql -h 127.0.0.1 -U postgres -d template1
+template1=# create user bocauser with password 'boca' createdb;
+template1=# \q
+
+3) edit the file private/conf.php (placed where you unpacked boca), 
+in order to set up the correct values for your system. E.g.:
+  $conf["dblocal"]="false"; // use unix socket to connect?
+  $conf["dbhost"]="localhost"; // ip address of the db
+  $conf["dbname"]="bocadb"; // name of the boca database
+  $conf["dbuser"]="bocauser"; // unpriviligied boca user
+  $conf["dbpass"]="boca";     // unpriviligied boca password
+  $conf["dbsuperuser"]="bocauser"; // priviligied boca user
+  $conf["dbsuperpass"]="boca";	   // priviligied boca password
+       // note that it is just fine to use the same user for
+       // unpriv and priv access
+
+  // secret key to be used in HTTP headers
+  // you MUST set it with any random large enough sequence
+  // DONT LEAVE IT AS YOU GOT WHEN UNPACKED THE SOFTWARE
+  // CHOOSE ANOTHER NUMBER/STRING AND REPLACE BELOW
+  $conf["key"]="secretKey:23894091237589234759234723489";
+  
+  // initial password that is used for the user admin -- set it
+  // to something hard to guess if the server is available
+  // online even in the moment you are creating the contest
+  // In this way, the new accounts for system and admin that are
+  // eventually created come already with the password set to this
+  // value. It is your task later to update these passwords to
+  // some other values within the BOCA web interface.
+  $conf["basepass"]="boca";
+
+  // the following field is used by the autojudging script
+  // set it with IP address (or other short description)
+  // of the computer allocated for
+  // autojudging during the competition
+  // this is only useful for debug purposes when multiple 
+  // autojudges are being used
+  $conf["ip"]='10.10.10.10';
+
+4) run the php script to initialize the boca database. E.g.
+# cd /var/www/boca/src
+# php private/createdb.php
+
+5) It's all done. Now you have to manage the contest with a 
+browser and boca. Proceed to the ADMIN.TXT file.
+
+========
+==> DETAIL ABOUT MIGRATING FROM POSTGRES 8.x TO 9.1
+LARGE OBJECTS GET WRONG OWNERSHIP. TO FIX, RUN WITHIN psql:
+# su - postgres
+# psql -d bocadb
+
+do $$
+declare r record;
+begin
+for r in select loid from pg_catalog.pg_largeobject loop
+execute 'ALTER LARGE OBJECT ' || r.loid || ' OWNER TO bocauser';
+end loop;
+end$$;
+\q
+========
+
+========
+Security Issue when BOCA server is not exclusively dedicated to BOCA
+--------------------------
+It is strongly recommended that BOCA be installed on a computer
+with no other users. If the computer where you are installing BOCA
+is used by others (with command line shells), it is essential
+that you change the permission of the file src/private/conf.php to be
+readable just by the user which the apache server runs and set 
+safe_mode=On in the php.ini file (furthermore, the database access
+must be strictly restricted by passwords). Do it before configuring the 
+src/private/conf.php file, so no one will be able to see your passwords.
+Moreover, the src/private/conf.php file must be in a directory owned by the
+bocauser or www-data or apache (all this combination implies that the only 
+way to read the src/private/conf.php is from a php script owned by
+bocauser in the same directory). 
+========
+
+========
+Contacts and Copyrights
+-----------------------
+BOCA Copyright (c) 2003- Cassio Polpo de Campos (cassio@ime.usp.br)
+http://www.ime.usp.br/~cassio/boca
+
+////////////////////////////////////////////////////////////////////////////////
+//BOCA Online Contest Administrator
+//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+////////////////////////////////////////////////////////////////////////////////

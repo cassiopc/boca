@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+<title>Manual do BOCA para as equipes</title>
+</head>
+<body bgcolor="white" link="blue" vlink="blue">
+<font size="5"><b>BOCA Online Contest Administrator - Sistema de Submiss&atilde;o</b></font>
+<p><b>Manual de Refer&ecirc;ncia para os ju&iacute;zes<font size="5"> - </font>
+vers&atilde;o setembro/2010 (para o BOCA vers&atilde;o 1.4.x)</b>
+</p>
+
+<p><font size="1">Copyright (c) 2006-2010 Cassio P. de Campos (cassio@ime.usp.br).<br>
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.2 or any later
+version published by the Free Software Foundation; with no Invariant Sections,
+no Front-Cover Texts, and no Back-Cover Texts. A copy of the license may be
+found in <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a></font></p>
+
+<p>O BOCA &eacute; um <i>software</i> criado para controlar uma competi&ccedil;&atilde;o nos moldes
+da Maratona de Programa&ccedil;&atilde;o da SBC. Foi feito em PHP e a intera&ccedil;&atilde;o dos ju&iacute;zes
+com o sistema &eacute; feita usando-se um <i>browser</i>. A seguir descrevemos a
+interface dispon&iacute;vel no BOCA para os ju&iacute;zes e suas principais fun&ccedil;&otilde;es.</p>
+
+<p>Neste texto ser&aacute; assumido que o juiz j&aacute; realizou o seu
+<i>login</i> na m&aacute;quina e abriu uma janela do navegador (leia
+as instru&ccedil;&otilde;es sobre o Maratona Linux ou sobre o sistema que
+estiver sendo utilizado). O BOCA &eacute; acessado atrav&eacute;s de uma
+<i>URL</i> (usualmente a p&aacute;gina se chama
+http://mainserver/boca ou http://bocaserver/boca).
+Ao carregar a p&aacute;gina, o juiz dever&aacute; ver a
+tela de <i>login</i> do BOCA. Basta digitar o <i>login</i> do
+BOCA fornecido ao juiz e a sua senha correspondente.</p>
+
+<p>Ap&oacute;s realizar o <i>login</i> com sucesso, uma p&aacute;gina dever&aacute; ser aberta
+contendo a identifica&ccedil;&atilde;o do juiz no canto superior esquerdo. 
+No canto superior
+direito haver&aacute; a informa&ccedil;&atilde;o sobre o estado da competi&ccedil;&atilde;o: ou ainda n&atilde;o
+come&ccedil;ou, ou j&aacute; acabou, ou est&aacute; parada, ou a competi&ccedil;&atilde;o est&aacute; em andamento e a
+quantidade de minutos restantes ser&aacute; mostrada. Mais abaixo dessas primeiras
+linhas estar&atilde;o seis op&ccedil;&otilde;es, que representam a interface propriamente dita do
+BOCA. Estas seis op&ccedil;&otilde;es s&atilde;o: <i>Runs,
+Score, Clarifications, History, Options e Logout.</i>
+Existe ainda uma op&ccedil;&atilde;o extra para o juiz chefe (que deve ser previamente apontado atrav&eacute;s da
+interface do admin no sistema): <i>Chief</i>. Ela n&atilde;o est&aacute; dispon&iacute;vel para os demais ju&iacute;zes.
+</p>
+
+<p><font size="4"><b>Runs</b></font></p>
+<p>Ao entrar nessa op&ccedil;&atilde;o, o juiz poder&aacute; visualizar as submiss&otilde;es que ainda
+n&atilde;o foram corrigidas e devem ser processadas. Para corrigir uma submiss&atilde;o,
+o juiz deve clicar sobre seu n&uacute;mero (como &eacute; feito o tratamento de concorr&ecirc;ncia
+para que dois ou mais ju&iacute;zes n&atilde;o peguem a mesma <i>Run</i>, neste momento o juiz pode
+ser avisado que a <i>Run</i> acaba de ser pega por outro juiz). Ao clicar em uma 
+submiss&atilde;o, o juiz ver&aacute; os seguintes campos:
+<ol>
+<li><b>Site</b>: n&uacute;mero do site atual.</li>
+<li><b>Number</b>: n&uacute;mero da <i>Run</i> sendo julgada.</li>
+<li><b>Time</b>: minutos decorridos da competi&ccedil;&atilde;o para esta submiss&atilde;o.</li>
+<li><b>Problem</b> <i>X</i>: <i>X</i> &eacute; o nome do problema. Ao lado, existem
+links para fazer o download (clicando sobre o nome) ou simplesmente visualizar
+os arquivos de entrada e sa&iacute;da (clicando em <i>view</i>). Usando o esquema de
+autojudging, o importante &eacute; ficar atento &agrave; sa&iacute;da esperada, comparando-a com a
+sa&iacute;da que o programa da equipe gerou.</li>
+<li><b>Language</b> <i>Y</i>: <i>Y</i> &eacute; a linguagem escolhida pela equipe. Ao
+lado aparece o script para compila&ccedil;&atilde;o e execu&ccedil;&atilde;o nesta linguagem. Note que,
+utilizando o esquema de autojudging, n&atilde;o &eacute; necess&aacute;rio olhar para esse arquivo.</li>
+<li><b>Source code</b>: Aqui &eacute; poss&iacute;vel visualizar (<i>view</i>) ou fazer o
+download do arquivo submetido. Um ponto importante para o juiz &eacute; verificar se
+o nome e a extens&atilde;o desse arquivo est&atilde;o de acordo com o problema e a linguagem
+escolhidos.</li>
+<li><b>Answer</b>: Neste campo o juiz escolher&aacute; qual a resposta que ser&aacute; enviada
+para a equipe. Para tomar essa decis&atilde;o, ele tem &agrave; disposi&ccedil;&atilde;o os arquivos e bot&otilde;es
+j&aacute; mencionados e tamb&eacute;m, logo abaixo, os dados gerados pelo esquema de autojudging
+(se esse esquema estiver sendo utilizado).</li>
+<li><b>Autojudging answer</b>: Resposta sugerida pelo esquema de autojudging.
+Usualmente o autojudging acerta o que deve ser respondido &agrave;s equipes, mas pode
+falhar. Por exemplo, ele pode dizer que a resposta est&aacute; errada (<b>Incorrect Output</b>), 
+pois comparou os arquivos e n&atilde;o eram iguais, mas o &uacute;nico erro do programa da
+equipe foi na digita&ccedil;&atilde;o de um acento em uma palavra (usualmente isso &eacute; simplesmente
+um <b>Output format error</b>). Outros detalhes podem ocorrer, e o juiz deve
+estar atento aos pr&oacute;ximos demais dados fornecidos pelo autojudging.</li>
+<li><b>Autojudged by</b>: indica qual computador fez o autojudging, no
+caso de diversos autojudgings estarem sendo utilizados. Usualmente n&atilde;o essencial
+na corre&ccedil;&atilde;o.</li>
+<li><b>Standard output</b>: links para fazer o download ou visualizar a sa&iacute;da
+padr&atilde;o gerada pelo programa da equipe. Usualmente neste lugar deve estar a
+sa&iacute;da que foi gerada pela equipe e que deve ser comparada com a sa&iacute;da esperada,
+dispon&iacute;vel no item <b>Problem</b>. Caso haja algum problema, eventualmente
+pode ser poss&iacute;vel visualizar o erro aqui.</li>
+<li><b>Standard error</b>: links para fazer o download ou visualizar a sa&iacute;da de
+erro padr&atilde;o gerada pelo programa da equipe. Quando um problema acontece, por
+exemplo um erro em tempo de execu&ccedil;&atilde;o por causa de um acesso ilegal, a informa&ccedil;&atilde;o
+sobre o erro torna-se dispon&iacute;vel nesta sa&iacute;da de erro. Al&eacute;m de sempre 
+analisar essa sa&iacute;da, o juiz deve estar atento &agrave; sa&iacute;da padr&atilde;o, pois m&aacute;quinas virtuais
+como da linguagem Java podem escrever os erros na sa&iacute;da padr&atilde;o e/ou na sa&iacute;da
+de erro. Na sa&iacute;da de erro est&aacute; ainda o resultado do diff feito entre o arquivo
+    esperado e o arquivo gerado pelo programa submetido.
+</li>
+</ol>
+
+<p>Utilizando o bot&atilde;o <b>Judge</b> o juiz faz o julgamento da <i>Run</i>, e ap&oacute;s
+isso n&atilde;o tem mais acesso para alterar seu julgamento. &Eacute; poss&iacute;vel ainda devolver
+a <i>Run</i> para o <i>pool</i> de submiss&otilde;es a serem julgadas, utilizando o
+bot&atilde;o <b>Cancel</b>.</p>
+
+<p>Na tela de <i>Runs</i>, o juiz visualiza todas as submiss&otilde;es, mesmo aquelas que
+est&atilde;o sendo julgadas por outros ju&iacute;zes. Tais submiss&otilde;es aparecem com a cor
+azul. As submiss&otilde;es sendo julgados por ele pr&oacute;prio aparecem em vermelho, e somente
+ele tem acesso para julg&aacute;-las (ou o admin, claro).</p>
+
+<p></p>
+<p><font size="4"><b>Chief</b></font></p>
+<p>
+Al&eacute;m de poder atuar como um juiz <i>normal</i>, um juiz pode ser designado como <i>chief</i>. Nesta aba
+o juiz chefe tem a op&ccedil;&atilde;o de julgar <i>runs</i> que foram previamente julgadas mas obtiveram resultados
+diferentes dos diferentes ju&iacute;zes. A tela &eacute; similar &agrave;quela do juiz normal, s&oacute; que <i>runs</i>
+julgadas aqui s&atilde;o dadas como resposta final ao time, sem a necessidade de interven&ccedil;&atilde;o de outro juiz.
+Por esse motivo, &eacute; aconselh&aacute;vel que mesmo o juiz chefe, quando estiver julgando <i>runs</i> sem conflito, apenas
+utilize a aba <i>Runs</i>, e deixe para utilizar esta aba apenas para resolver os casos de <i>runs</i> que foram julgadas de
+forma diferente por diferente ju&iacute;zes. Al&eacute;m das informa&ccedil;&otilde;es da <i>run</i>, o juiz chefe possui
+(ao clicar sobre a <i>run</i>) as resposta contradit&oacute;rias que foram dados pelos ju&iacute;zes, de forma a desempatar
+a quest&atilde;o e enviar a resposta mais adequada ao time.
+</p>
+<p></p>
+
+<p></p>
+<p><font size="4"><b>Score</b></font></p>
+<p>Nessa op&ccedil;&atilde;o ser&aacute; mostrado o placar atualizado da competi&ccedil;&atilde;o. Vale a pena
+lembrar que o placar dispon&iacute;vel para os ju&iacute;zes &eacute; completo, e portanto
+deve ser mantido em <b>sigilo at&eacute; a divulga&ccedil;&atilde;o dos resultados finais da competi&ccedil;&atilde;o</b>
+(para manter o suspense :-). </p>
+
+<p><font size="4"><b>Clarifications</b></font></p>
+<p>Essa op&ccedil;&atilde;o permite que o juiz responda as <i>clarifications</i> enviadas
+pelas equipes a cerca de um problema espec&iacute;fico ou de algum aspecto geral da 
+prova. Para responder uma <i>clarification</i>, o juiz deve clicar sobre seu
+n&uacute;mero <b>Cuidado:</b> a caixa de texto dispon&iacute;vel na parte inferior n&atilde;o &eacute; para 
+responder perguntas, mas para elaborar uma pergunta. Isso serve para que um juiz
+crie uma pergunta, que ent&atilde;o poder&aacute; ser respondida por ele mesmo (ou por outros
+ju&iacute;zes) e enviada para todas as equipes, funcionando assim como uma forma de
+aviso geral.</p> 
+
+<p>Neste instante ele poder&aacute; visualizar informa&ccedil;&otilde;es sobre a <i>clarification</i>,
+como n&uacute;mero do site, n&uacute;mero da <i>clarification</i>, tempo em minutos desde o 
+in&iacute;cio da competi&ccedil;&atilde;o e problema sobre o qual
+a pergunta est&aacute; relacionada, al&eacute;m de duas caixas de texto: uma com a
+pergunta e outra onde ser&aacute; preenchida a resposta. Se julgar relevante, o juiz
+pode clicar nas sele&ccedil;&otilde;es <b>answer to all users in the site</b> para que esta pergunta seja
+respondida (enviada) para todas as equipes no site ou <b>answer to all users in all sites</b> 
+para que a resposta seja enviada para todas as equipes em todos os sites (no caso de
+uma competi&ccedil;&atilde;o executada no BOCA em um &uacute;nico site, n&atilde;o h&aacute; diferen&ccedil;a entre estas sele&ccedil;&otilde;es).</p>
+
+<p>O sistema tamb&eacute;m permite que o juiz utilize um bot&atilde;o chamado 
+<u><i>No response</i></u>. Isso ocorre
+em geral porque a pergunta feita n&atilde;o deve ser respondida, pois sua resposta faz parte do 
+entendimento da quest&atilde;o ou da prova, ou j&aacute; foi respondida anteriormente.
+Por fim, existe um bot&atilde;o onde o juiz pode devolver a <i>clarification</i> para que 
+outro juiz a responda.
+</p>
+
+<p><font size="4"><b>History</b></font></p>
+<p>Ao entrar nessa op&ccedil;&atilde;o, o juiz poder&aacute; visualizar as <i>Clarifications</i> e
+<i>Runs</i> que foram respondidas/corrigidas at&eacute; o momento. 
+N&atilde;o &eacute; poss&iacute;vel alterar nada, apenas visualizar.</p>
+
+<p><font size="4"><b>History</b></font></p>
+<p>Nesta aba o juiz pode atuar como uma equipe, submetendo <i>runs</i> para serem julgadas.
+O uso deste item se d&aacute; no momento de testar o sistema e o conjunto de problemas. Ju&iacute;zes
+podem submeter <i>runs</i> mesmo antes de iniciada a competi&ccedil;&atilde;o.
+</p>
+
+<p><font size="4"><b>Options</b></font></p>
+<p>Entrando nessa op&ccedil;&atilde;o poder&atilde;o ser vistas as informa&ccedil;&otilde;es: <i>Username,
+User</i> <i>full name </i>e<i> User description</i> do juiz.<i> </i>Tamb&eacute;m
+ser&aacute; poss&iacute;vel trocar a senha do juiz no BOCA digitando-se a senha antiga e a
+nova (duas vezes). Para efetuar a troca da senha, basta preencher os campos
+corretamente e clicar no bot&atilde;o <i>Send</i>. &Eacute; importante ter uma senha
+segura para um juiz.<br>
+
+</p>
+<p><font size="4"><i><b>Logout</b></i></font></p>
+<p>Essa op&ccedil;&atilde;o permite sair do BOCA.</p>
+
+<p><font size="4"><b>Dicas importantes</b></font></p>
+<p>Ao corrigir problemas, devemos tomar extremo cuidado. Ainda que seja poss&iacute;vel
+alterar a corre&ccedil;&atilde;o posteriormente (atrav&eacute;s do ambiente do administrador da competi&ccedil;&atilde;o),
+isso implica que a equipe receber&aacute; uma resposta e, depois de certo tempo, outra.
+Obviamente esse tipo de situa&ccedil;&atilde;o n&atilde;o &eacute; agrad&aacute;vel.</p>
+<p>Sempre que um dos ju&iacute;zes est&aacute; corrigindo um problema pela primeira vez (ou ainda nas
+demais vezes iniciais, isto &eacute;, at&eacute; o momento foram feitas poucas submiss&otilde;es
+desde problema),
+&eacute; interessante que todos participem e tenham cuidados especiais, analisando a
+submiss&atilde;o com calma. &Eacute; poss&iacute;vel que na primeira
+submiss&atilde;o de um dado problema possamos descobrir um defeito no
+sistema ou nos arquivos de entrada e sa&iacute;da (claro que torcemos para isso nunca aconte&ccedil;a :-).
+</p>
+<p>Para responder &agrave;s <i>clarifications</i>, &eacute; necess&aacute;rio que o juiz tenha lido com
+calma as quest&otilde;es e identifique se a pergunta &eacute; v&aacute;lida e deve ser respondida. Al&eacute;m disso,
+&eacute; necess&aacute;rio considerar se a resposta deve ser enviada para todas as equipes ou apenas
+para aquela que fez a pergunta. Perguntas t&iacute;picas que n&atilde;o s&atilde;o respondidas s&atilde;o:
+<i>Qual o tempo limite desse problema?</i>, <i>Dada essa entrada, qual a sa&iacute;da correta?</i>,
+etc. Al&eacute;m disso, perguntas cujas respostas est&atilde;o definidas nos enunciados normalmente 
+n&atilde;o s&atilde;o respondidas.
+Caso haja uma d&uacute;vida sobre o que se deve responder, o juiz deve procurar o juiz-chefe
+respons&aacute;vel pela prova.
+</p>
+
+<p><font size="4"><b>Sobre o BOCA e este documento</b></font></p>
+<p>O sistema BOCA foi criado por Cassio Polpo de Campos
+e pode ser encontrado em
+<a href="http://www.ime.usp.br/~cassio/boca/">http://www.ime.usp.br/~cassio/boca/</a>.
+Este manual foi feito por Cassio Polpo de Campos.</p>
+
+<hr>
+<p>
+<a href="http://validator.w3.org/check?uri=referer">
+<img src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!" border="0" height="31" width="88"></a>
+
+</p></body></html>

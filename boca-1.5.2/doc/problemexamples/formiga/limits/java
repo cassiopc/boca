@@ -1,0 +1,15 @@
+#!/bin/bash
+# this executable shall output the number of second of timelimit in the first line, for the given problem and with language according to this filename
+echo 4
+# and the number of repetitions to run within the given timelimit in the second line
+echo 10
+# and the maximum amount of memory per repetition in the third line (in Mbytes)
+echo 512
+# and the maximum file size in the fourth line (in kbytes)
+echo 1024
+# and shall return zero to indicate no failure
+exit 0
+# the idea is that this file will be executed by the autojudge in the first time the autojudge downloads a problem, so as it will be
+# able to decide the proper time limit for the machine where it is running. If one wants to fix a predefined time limit, then it is
+# enough to write a script like this one with the desired value. Otherwise, one can build any more sophisticated program that outputs
+# the value.
