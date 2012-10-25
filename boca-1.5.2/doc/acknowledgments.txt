@@ -1,0 +1,40 @@
+BOCA Acknowledgments
+-------------------
+(last updated 25/October/2012)
+
+This is a very important file of BOCA. It gives a list of people we must acknowledge
+for having in a way or another helping BOCA reach its current development situation.
+They certainly deserve more much thanks than only this file, but it is away a begining.
+Moreover, many names are probably still missing here, so if you identify such a case,
+please let us know as soon as possible so as to include them here! This file has been
+created much after the begining of BOCA, so there will be many many missing names,
+do not be shine and do help us to fill this list! Also if you see some incoherency on the
+lists, let us know! Thanks!
+
+I will divide the list into two section: those who effectively contributed in ideas for the 
+code, and those who found bugs and/or suggested modifications. Names are given in 
+no particular order.
+
+CODE
+- Cassio P. de Campos
+- Fabio A. Avellaneda Pachon
+- Flavio G. C. Rocha
+- Humberto Longo
+- Fabio D. Moreira
+- Bruno C. Ribas
+- Alejandro Sazo
+- Jorge Luis R. Alvarez
+- Vinicius K. Ruoso
+
+
+REPORTERS/COMMENTATORS
+- Guillermo Solis
+- Alejandro S. de Loma
+- Cristian Ruz
+- Rodolfo J. de Azevedo
+- Carlos E. Ferreira
+- Ricardo Anido
+- Juan Pablo G. Ibarra
+- Ricardo Dahab
+- Liliane Salgado
+
