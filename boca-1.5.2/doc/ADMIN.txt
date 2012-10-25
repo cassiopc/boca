@@ -142,7 +142,10 @@ create the warm-up problems e.g. using letters plus a dot,
 like A., B., and then the contest problem with A, B, C, D...
 Then, to run the warm-up, one might delete all the contest
 problems, which later can be undeleted for the real contest,
-while the warm-up problem deleted.
+while the warm-up problem deleted. Do not forget to delete all
+clarification, runs, tasks and bkps between warump and real
+contest. This can be done from the tab Site (there are four buttons
+there, one for deleting each of these items).
 
 * Problem package (ZIP): a zip file (encrypted or not) containing
 all information about the problem. See below for a description

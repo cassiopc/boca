@@ -37,7 +37,7 @@ if (isset($_GET["username"]) && isset($_GET["userfullname"]) && isset($_GET["use
 	DBUserUpdate($_SESSION["usertable"]["contestnumber"],
 				 $_SESSION["usertable"]["usersitenumber"],
 				 $_SESSION["usertable"]["usernumber"],
-				 $username,
+				 $_SESSION["usertable"]["username"], // $username, but users should not change their names
 				 $userfullname,
 				 $userdesc,
 				 $passwordo,
