@@ -3,6 +3,7 @@ version 1.5.2:
 - improve description of inbetween warmup and contest in ADMIN.txt
 - fix a bug that could allow an user to change their username
 - creation of an APACHE.txt doc about setting up apache configuration
+- force source files to have no spaces (warn a message in case they have)
 
 version 1.5.1:
 2012/10/20:

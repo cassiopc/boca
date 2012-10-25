@@ -38,6 +38,10 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Su
 			MSGError("File size exceeds the limit allowed.");
 			ForceLoad($runteam);
 		}
+		if(strpos($name,' ') === true || strpos($temp,' ') === true) {
+			MSGError("File name cannot contain spaces.");
+			ForceLoad($runteam);		
+		}
 		if (!is_uploaded_file($temp) || strlen($name)>100) {
 			IntrusionNotify("file upload problem.");
 			ForceLoad("../index.php");
