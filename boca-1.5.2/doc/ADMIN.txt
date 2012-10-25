@@ -423,6 +423,10 @@ will delete all clarifications and runs related to that
 problem. This way, it's not recommended to remove any of these 
 things during the contest.
 
+===
+=== IMPORTANT INFORMATION FOR SITES WITH MANY TEAMS ===
+===
+Please read the file APACHE.txt
 
 ===
 === IMPORTANT INFORMATION FOR MULTI-SITE CONTESTS ===
