@@ -151,6 +151,11 @@ cp -f safeexec /usr/bin
 chmod 4555 /usr/bin/safeexec
 [ -d /bocajail/usr/bin ] && cp -a /usr/bin/safeexec /bocajail/usr/bin/
 
+if [ -f /etc/icpc/installboca.sh ]; then
+  cp $basedir/boca/tools/etc/icpc/installboca.sh /etc/icpc/installboca.sh
+  chmod 700 /etc/icpc/installboca.sh
+fi
+
 echo "=================================================="
 echo "=================== SERVER SETUP   ==============="
 echo "=================================================="

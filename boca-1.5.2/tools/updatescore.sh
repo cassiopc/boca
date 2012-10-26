@@ -115,8 +115,12 @@ while /bin/true; do
 						chown $apacheuser.root "$fscore"
 						chmod 660 "$fscore"
 						bfscore=`basename $fscore`
-						mv "$fscore" "$privatedir/score_$bfscore"
-						echo "Score downloaded successfully into $privatedir/score_$bfscore"
+						hasscore=`echo $bfscore | cut -d'_' -f1`
+						if [ "$hasscore" != "score" ]; then
+							bfscore=score_$bfscore
+						fi
+						mv "$fscore" "$privatedir/$bfscore"
+						echo "Score downloaded successfully into $privatedir/$bfscore"
 					done
 				else
 					echo "Error: score file from $BOCASERVER is not a valid package"
