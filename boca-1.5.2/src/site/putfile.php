@@ -164,10 +164,10 @@ if(is_writable($_SESSION["locr"] . $remotedir)) {
 	fclose($fout);
 
 	// test the format of the file
-	$fc=file_get_contents($fout);
+	$fc=file_get_contents($fn);
 	if(($arr = unserialize(base64_decode($fc)))===false ||
 	   !is_array($arr) || !isset($arr['site'])) {
-		echo "FAILED: File " . $fout . " is not compatible\n";
+		echo "FAILED: File " . $fn . " is not compatible\n";
 	} else {
 		if(@rename($fn, $_SESSION["locr"] . $remotedir . $ds . "score_" . $_SESSION["usertable"]["username"] . 
 				   "_" . $_SESSION["usertable"]["usericpcid"] . "_" . md5(getIP()) . ".dat"))
