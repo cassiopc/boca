@@ -163,10 +163,17 @@ if(is_writable($_SESSION["locr"] . $remotedir)) {
 	fwrite($fout,$total,10000000);
 	fclose($fout);
 
-	if(@rename($fn, $_SESSION["locr"] . $remotedir . $ds . "score_" . $_SESSION["usertable"]["username"] . 
-			   "_" . $_SESSION["usertable"]["usericpcid"] . "_" . md5(getIP()) . ".dat"))
-		echo "SCORE UPLOADED OK\n";
-	else
-		echo "FAILED: UPDATE SCORE ERROR\n";
+	// test the format of the file
+	$fc=file_get_contents($fout);
+	if(($arr = unserialize(base64_decode($fc)))===false ||
+	   !is_array($arr) || !isset($arr['site'])) {
+		echo "FAILED: File " . $fout . " is not compatible\n";
+	} else {
+		if(@rename($fn, $_SESSION["locr"] . $remotedir . $ds . "score_" . $_SESSION["usertable"]["username"] . 
+				   "_" . $_SESSION["usertable"]["usericpcid"] . "_" . md5(getIP()) . ".dat"))
+			echo "SCORE UPLOADED OK\n";
+		else
+			echo "FAILED: UPDATE SCORE ERROR\n";
+	}
 } else echo "FAILED: PERMISSION DENIED IN THE SERVER\n";
 ?>
