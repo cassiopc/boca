@@ -96,6 +96,7 @@ if(file_exists($scoretmp)) {
 }
 
 if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["usertype"]=='admin' || (isset($_GET["remote"]) && is_numeric($_GET["remote"]))) {
+	$privatedir = $_SESSION['locr'] . $ds . "private";
 	$remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
 	$destination = $remotedir . $ds ."scores.zip";
     if(is_writable($remotedir)) {
@@ -107,11 +108,22 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		$data0 = array();
 		if($level>0) {
 			list($score,$data0) = DBScoreSite($_SESSION["usertable"]["contestnumber"], 
+											  $_SESSION["usertable"]["usersitenumber"], 0, -1);
+		}
+		$ct=DBGetActiveContest();
+		$localsite=$ct['contestlocalsite'];
+		$fname = $privatedir . $ds . "score_localsite_" . $localsite . "_" . md5($_SERVER['HTTP_HOST']);
+		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
+		@rename($fname . ".tmp",$fname . ".dat");
+
+		$data0 = array();
+		if($level>0) {
+			list($score,$data0) = DBScoreSite($_SESSION["usertable"]["contestnumber"], 
 											  $_SESSION["usertable"]["usersitenumber"], 1, -1);
 		}
 		$ct=DBGetActiveContest();
 		$localsite=$ct['contestlocalsite'];
-		$fname = $remotedir . $ds . "score_site" . $localsite . "_" . md5($_SERVER['HTTP_HOST']);
+		$fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_" . md5($_SERVER['HTTP_HOST']);
 		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 		@rename($fname . ".tmp",$fname . ".dat");
 		

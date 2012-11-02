@@ -21,7 +21,7 @@ elem.className = s;
 function toggleGroup(n) {
     //alert(n);
     var currentClass = document.getElementById("myscoretable");
-    for (var i=1; i<20; i++) {
+    for (var i=1; i<999; i++) {
       modifyClassName(currentClass,true,"sitehide"+i);
     }
     modifyClassName(currentClass,false,"sitehide"+n);

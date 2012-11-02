@@ -85,7 +85,11 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 	$ds = DIRECTORY_SEPARATOR;
 	if($ds=="") $ds = "/";
 	$probs=DBGetProblems($contest); $nprobs=count($probs);
-	foreach (glob($_SESSION['locr'] . $ds . "private" .$ds . "remotescores" . $ds . "score*.dat") as $fname) {
+
+	$scoreitems = glob($_SESSION['locr'] . $ds . "private" .$ds . "remotescores" . $ds . "score*.dat", GLOB_NOSORT);
+	array_multisort(array_map('filemtime', $scoreitems), SORT_NUMERIC, SORT_DESC, $scoreitems);
+
+	foreach ($scoreitems as $fname) {
 		$namear=explode('_',$fname);
 		$overloadsite=-1;
 		if(isset($namear[3]) && is_numeric($namear[2])) $overloadsite=$namear[2];
