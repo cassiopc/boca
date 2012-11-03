@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 02/nov/2012 by cassio@ime.usp.br
 
 ////////////////////////////funcoes para placar///////////////////////////////////////////////
 function ScoreCMP($a,$b) {
@@ -99,7 +99,7 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 		} else { 
 			if(is_array($arr)) {
 				if(isset($arr['site'])) {
-					$site=$arr['site'];
+					$site=$arr['site']; //if($overloadsite>0) $site=$overloadsite;
 					if(!in_array($site, $whichsites) && !in_array(0,$whichsites)) continue;
 					$fine=1;
 					reset($resp);
@@ -311,14 +311,15 @@ function DBScoreSite($contest, $site, $verifylastmile, $hor=-1, $data=null) {
 		$resp[$user]["problem"][$problem]["penalty"] = 0;
 		$resp[$user]["problem"][$problem]["count"] = 0;
 
-		while ($i<$n && $a[$i]["user"]==$user && $a[$i]["problem"]==$problem && $a[$i]["yes"]!='t') {
+		while ($i<$n && $a[$i]["anstime"] <= $ta && $a[$i]["user"]==$user && $a[$i]["problem"]==$problem && $a[$i]["yes"]!='t') {
 			$time += (int) (($ct["contestpenalty"])/60);
 			$k++;
 			$i++;
 		}
+		
 		$resp[$user]["problem"][$problem]["count"] = $k;
 		if ($i>=$n) break; 
-		if($a[$i]["user"]==$user && $a[$i]["problem"]==$problem && $a[$i]["yes"]=='t') {
+		if($a[$i]["anstime"] <= $ta && $a[$i]["user"]==$user && $a[$i]["problem"]==$problem && $a[$i]["yes"]=='t') {
 			$timet = (int) (($a[$i]["time"])/60);
 			if(!isset($resp[$user]["first"]) || $timet < $resp[$user]["first"])
 				$resp[$user]["first"] = $timet;

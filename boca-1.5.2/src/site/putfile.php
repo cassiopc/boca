@@ -15,9 +15,12 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 10/jul/2012 by cassio@ime.usp.br
+//Last updated 03/nov/2012 by cassio@ime.usp.br
 //
 //PC^2 integration developed by Fabio Antonio Avellaneda Pachon
+//
+//Now it is also the integration of scores of BOCA
+//
 $quiet=true;
 require 'header.php';
 $ds = DIRECTORY_SEPARATOR;
@@ -157,6 +160,13 @@ if(is_writable($_SESSION["locr"] . $remotedir)) {
 		$total=base64_encode(serialize($total));
 	} else
 		$total=$_POST['data'];
+	
+	if($_SESSION["usertable"]["usericpcid"] != '' && $_SESSION["usertable"]["usericpcid"] > 0)
+	{
+		$arr = unserialize(base64_decode($total));
+		$arr['site']=$_SESSION["usertable"]["usericpcid"];
+		$total=base64_encode(serialize($arr));
+	}
 
 	$fn = tempnam($_SESSION["locr"] . $remotedir,"score_");
 	$fout = fopen($fn,"wb");
@@ -169,6 +179,7 @@ if(is_writable($_SESSION["locr"] . $remotedir)) {
 	   !is_array($arr) || !isset($arr['site'])) {
 		echo "FAILED: File " . $fn . " is not compatible\n";
 	} else {
+
 		if(@rename($fn, $_SESSION["locr"] . $remotedir . $ds . "score_" . $_SESSION["usertable"]["username"] . 
 				   "_" . $_SESSION["usertable"]["usericpcid"] . "_" . md5(getIP()) . ".dat"))
 			echo "SCORE UPLOADED OK\n";

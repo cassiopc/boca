@@ -15,7 +15,7 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# last updated 06/aug/2012 by cassio@ime.usp.br
+# last updated 01/nov/2012 by cassio@ime.usp.br
 if [ "`id -u`" != "0" ]; then
   echo "Must be run as root"
   exit 1

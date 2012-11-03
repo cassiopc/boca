@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 10/jul/2012 by cassio@ime.usp.br
+//Last updated 02/nov/2012 by cassio@ime.usp.br
 require_once("db.php");
 
 $locr=$_SESSION["locr"];
@@ -245,8 +245,10 @@ if($redo) {
 					else if(strpos($grname[$k],'/') >= 1) {
 						$u1 = explode('/',$grname[$k]);
 						if(isset($u1[1]) && $score[$e]['user'] >= $u1[0] && $score[$e]['user'] <= $u1[1]) {
+							if(!isset($u1[2]) || $u1[2]==$score[$e]['site']) {
 							$score[$e]['classingroup'][$rfi]=$class;
 							$class++;
+							}
 						}
 					}
 
