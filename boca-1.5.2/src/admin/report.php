@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 07/nov/2012 by cassio@ime.usp.br
 
 require 'header.php';
 
@@ -53,6 +53,10 @@ if (isset($_GET)) {
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/icpc.php', ".
 		"'ICPC File','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
 		"resizable=yes')\">ICPC File</a><br />\n";
+
+      echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/webcast.php', ".
+		"'Webcast File','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
+		"resizable=yes')\">Webcast File</a><br />\n";
 
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/stat.php', ".
 		"'Problem Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".

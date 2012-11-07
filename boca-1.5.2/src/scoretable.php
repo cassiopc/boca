@@ -18,7 +18,10 @@
 //Last updated 02/nov/2012 by cassio@ime.usp.br
 require_once("db.php");
 
-$locr=$_SESSION["locr"];
+if(isset($_SESSION["locr"]))
+	$locr=$_SESSION["locr"];
+else
+	$locr='.';
 
 if(isset($_GET["clock"]) && $_GET["clock"]==1) {
 	ob_start();
