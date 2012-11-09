@@ -311,9 +311,12 @@ function match_network ($nets, $ip) {
 
         $ip_arr   = explode('/', $net);
         $net_long = ip2long(trim($ip_arr[0]));
+	if(trim($ip_arr[1]) != '') {
         $x        = ip2long(trim($ip_arr[1]));
         $mask     = long2ip($x) == ((int) trim($ip_arr[1])) ? $x : 0xffffffff << (32 - ((int) trim($ip_arr[1])));
-        $ip_long  = ip2long($ip);
+        } else { $mask=0xffffffff;
+	}
+	$ip_long  = ip2long($ip);
        
         if ($rev) {
             if (($ip_long & $mask) != ($net_long & $mask)) return true;

@@ -1015,8 +1015,7 @@ function exitmsg($retval) {
 		$retval = 3; // runtime error
 	}
 	else if($retval==9) {
-		$answer="Runtime error";
-		$retval = 3; // runtime error
+		$answer="Runtime error (or possible java class name mismatch)";
 	} else {
 		$answer="Unknown autojudge status";
 		$retval = 7;
