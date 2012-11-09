@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 21/jul/2012 by cassio@ime.usp.br
+// Last modified 09/nov/2012 by cassio@ime.usp.br
 require_once('db.php');
 define("dbcompat_1_4_1",true);
 
@@ -311,13 +311,14 @@ function match_network ($nets, $ip) {
 
         $ip_arr   = explode('/', $net);
         $net_long = ip2long(trim($ip_arr[0]));
-	if(trim($ip_arr[1]) != '') {
-        $x        = ip2long(trim($ip_arr[1]));
-        $mask     = long2ip($x) == ((int) trim($ip_arr[1])) ? $x : 0xffffffff << (32 - ((int) trim($ip_arr[1])));
-        } else { $mask=0xffffffff;
-	}
-	$ip_long  = ip2long($ip);
-       
+		if(trim($ip_arr[1]) != '') {
+			$x        = ip2long(trim($ip_arr[1]));
+			$mask     = long2ip($x) == ((int) trim($ip_arr[1])) ? $x : 0xffffffff << (32 - ((int) trim($ip_arr[1])));
+        } else { 
+			$mask=0xffffffff;
+		}
+		$ip_long  = ip2long($ip);
+		
         if ($rev) {
             if (($ip_long & $mask) != ($net_long & $mask)) return true;
         } else {
