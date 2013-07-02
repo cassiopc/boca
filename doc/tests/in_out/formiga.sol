@@ -1,0 +1,14 @@
+100%         0 Sul
+ 25%         1 Leste
+100%         3 Oeste
+  0%         0 Leste
+ 17%         0 Norte
+100%        15 Norte
+ 50%         7 Leste
+100%        15 Sul
+ 12%       159 Oeste
+100%    100041 Norte
+ 20%     20006 Leste
+100%    199995 Leste
+ 33%     66663 Sul
+  1%        16 Norte

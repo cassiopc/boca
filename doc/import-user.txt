@@ -1,0 +1,114 @@
+import-user.txt
+---------------
+Last modified 24/aug/2012 by cassio@ime.usp.br
+See Copyright below.
+
+To simplify the input of user's data, it is
+possible to put all information in a text
+file, according to three different formats. Two
+of them are based on the files generated from the
+ICPC website system, usually in TAB separated format. Examples of such
+files are in this folder, named PC2_Team.tab and Teams.tsv
+The third possible format follows the example below:
+
+************ users.txt: *************
+[user]
+usernumber=2000
+usersitenumber=1
+username=cassio
+userfullname=Cassio P. de Campos
+usertype=admin
+userpassword=secret
+
+usernumber=2001
+usersitenumber=1
+username=judge1
+usertype=judge
+userfullname=First judge name
+userenabled=f
+usermultilogin=t
+userip=10.0.0.5
+
+usernumber=2002
+usersitenumber=1
+username=staff1
+usertype=staff
+userfullname=Staff person name
+userpassword=aBcDe
+
+usernumber=1
+usersitenumber=1
+userfullname=[PUC-SP A] Team A
+userdesc=[PUC-SP][Pontificial Universidade Catolica de SP] Nome1, Nome2, Nome3
+userip=192.168.0.1
+usericpcid=1234
+
+usernumber=2
+usersitenumber=1
+userfullname=[Team B] Full team B name
+userdesc=[InstitutionShortName] Long institution name
+userip=192.168.0.2
+usericpcid=1111
+
+usernumber=3
+usersitenumber=1
+userfullname=[Shortname] Long team name
+userip=192.168.0.3
+
+**************************************
+Note that the "****" lines should not
+be included in the text file, only what is between them. Consider
+using the ICPC data format, downloaded from the ICPC site, to input
+the information about the teams. Note that passwords will be
+automatically generated for the teams in such case, and you have to
+take note of those passwords. If you re-include the teams using those
+file formats, new passwords will be generated, and you must take note again.
+
+The users are defined per block of lines.
+Blank lines separate the definitions of the
+users. The parameters not specified for a
+given user inside its block are set to 
+the default values.
+
+The parameters in the user's file are:
+usernumber: number of the user in the site
+usersitenumber: number of the user's site
+username: nickname of the user. If not
+	  specified, it's generated from
+	  the usernumber, ie, "team"+usernumber
+userfullname: institution name and team name or
+	      just the user name.
+userdesc: detailed description about the user.
+usertype: type of the user. If not specified,
+	  it's set to "team".
+userpassword: if not specified, it's left emtpy.
+userenabled: if not specified, the user is enabled.
+usericpcid: ID of user in the ICPC system. Not required.
+usermultilogin: if not specified, the user cannot
+		make simultaneous logins form distinct IPs.
+userip: from which IP number the user may connect. A list
+    of IPs separated by comma may be specified. IPs may
+    have netmasks, such as 10.0.0.0/16, or negations,
+    such as !143.107.0.0/16.
+
+Contacts and Copyrights
+-----------------------
+BOCA Copyright (c) 2003- Cassio Polpo de Campos (cassio@ime.usp.br)
+http://www.ime.usp.br/~cassio/boca
+
+////////////////////////////////////////////////////////////////////////////////
+//BOCA Online Contest Administrator
+//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+////////////////////////////////////////////////////////////////////////////////

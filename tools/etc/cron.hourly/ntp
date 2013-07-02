@@ -1,0 +1,2 @@
+#!/bin/bash
+ntpdate -u 143.107.255.15

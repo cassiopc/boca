@@ -1,0 +1,469 @@
+How to create a contest
+-----------------------
+(Last updated: 24/aug/2012 by cassio@ime.usp.br)
+
+(This file also explains details about problem packages, multi-site
+contests, and other relevant topics to run a contest. Please read it
+in full.)
+
+1) Log in as "system", empty password (or the password that is set in
+the file src/private/conf.php under name "basepass").
+
+2) Click on "Options" and change the password of
+the user "system" to something secret and safe.
+
+3a) (Most likely you don't want to do this item) 
+If you have an import file, click on "Import",
+choose the file, click to Send it and go to step 4.
+Note that many follow steps will be already complete.
+However, take a time to look at them and verify if
+everything is ok.
+
+3b) Click on "Contest" and create a new contest
+(do it by choosing the "new" item of the combo).
+
+4) Change/Verify the information of the new created
+contest and click on "Send". Then click on
+"Activate" to make the new contest activated
+(after that you will be automatically logged off).
+Here some explanation about available fields:
+* Name: name of the contest
+* Start date: when the contest will begin
+* Duration: how many minutes the contest have
+* Stop answering: number of minutes from which
+teams don't receive the information if their
+runs were accepted or not. Usually choose 285
+for fifteen minutes without answers to teams.
+* Stop scoreboard: number of minutes from which
+the scoreboard becomes frozen (to keep the winner
+secret :-). Usual value: 240.
+* Penalty: number of minutes a team is penalized
+for each time it submits a code that is not 
+accepted (this minutes are counted only if the
+team receives an YES for the corresponding problem,
+as done in ACM-ICPC like contests). Usual value: 20.
+* Max file size allowed for teams: for security reasons.
+If you know that source code files are larger, choose
+another value.
+* Contest main site number: which is the main site
+of the contest (in case of multi-site contests). Usually 1.
+IF RUNNING MULTIPLE SITES, BE SURE TO USE THE CORRECT
+NUMBERS HERE ASSIGNED BY WHOEVER IS COORDINATING
+THE MULTI-SITE CONTEST!!
+* Contest local site number: which is the number of the
+current site of the contest (in case of multi-site contests).
+IF RUNNING MULTIPLE SITES, BE SURE TO USE THE CORRECT
+NUMBERS HERE ASSIGNED BY WHOEVER IS COORDINATING
+THE MULTI-SITE CONTEST!!
+
+5) Log in as "admin", empty password (or the password that is set in
+the file src/private/conf.php under name "basepass").
+
+6) Click on "Options" and change the password of
+the user "admin" to something secret and SAFE!!
+
+7) (This can be probably skipped if they are already included, which
+is the case in the newest BOCA versions)
+Include any answers for submissions that you might
+like to have in addition to the standard ones.
+Click on "Answers" and use the two fields to input
+the answers. Already pre-included are:
+1 YES
+2 NO - Compilation error
+3 NO - Runtime error
+4 NO - Time limit exceeded
+5 NO - Presentation error
+6 NO - Wrong answer
+7 NO - If possible, contact staff
+Even the pre-included ones can be changed, but that is not
+recommended.
+
+If you make some mistake, you can re-insert the answer
+even without deleting it. Just fill up the fields again,
+repeating the answer number (first field). In this case
+the database record will be updated. But take care: any
+changes with the contest running will affect all records
+of the contest. Do not delete any record during the contest
+unless you really know what you are doing. The updates
+cascade on the database, removing or updating everywhere
+needed.
+
+8) (This can be probably skipped if they are already included, which
+is the case in the newest BOCA versions)
+Include the contest languages. Use the "Languages"
+item for it. Each language is defined by a number,
+a name and the extension of the source files in such language.
+(*** Note that BOCA versions prior to 1.5 had also the scripts for
+compiling and running the submitted codes, and one for verifying 
+if the output generated is equilavent to the judge's output. Ignore
+this comments if you are running BOCA 1.5 or later.
+The scripts should be any executable file permitted
+in the computer that will run the autojudging
+environment (pay attetion on CRs or CRLFs for EOLs.
+This causes problems in some systems).
+It's also possible to import the language
+information from a file. 
+The scripts are available together with BOCA in the
+"bits" example directory of the documentation. Usually
+values are:
+1 C C.run compare.sh
+2 C++ Cpp.run compare.sh
+3 Java Java.run compare.sh
+
+Remember, all these scripts are available on "bits" directory.
+Take some minutes to look into those script files, because
+they have path specifications for some executables, such as gcc,
+g++, javac, etc. These paths must be fixed (if needed) before
+uploading the file to BOCA. Usually the default values work
+just fine. This ends the part about BOCA prior to 1.5 **)
+
+For BOCA >= 1.5, all scripts to run the submission are inside the
+problem package. Please take a look into the examples in the directory
+doc/problemexamples/ and use them as basis for specifying new
+problems. Later on we discuss further how problems are specified.
+
+If you make some mistake, you can re-insert the language
+even without deleting it. Just fill up the fields again,
+repeating the language number (first field). In this case
+the database record will be updated. But take care: any
+changes with the contest running will affect all records
+of the contest. Do not delete any record during the contest
+unless you really know what you are doing. The updates
+cascade on the database, removing or updating everywhere
+necessary.
+
+
+9) Include the problems. Click on "Problems" and
+use the form available there. The fields are:
+* Number: number of the problem. Start with 1.
+* Name: nickname of the problem. Good choices are
+problem letters: A, B, C, D, etc. A good practice is to
+create the warm-up problems e.g. using letters plus a dot,
+like A., B., and then the contest problem with A, B, C, D...
+Then, to run the warm-up, one might delete all the contest
+problems, which later can be undeleted for the real contest,
+while the warm-up problem deleted. Do not forget to delete all
+clarification, runs, tasks and bkps between warump and real
+contest. This can be done from the tab Site (there are four buttons
+there, one for deleting each of these items).
+
+* Problem package (ZIP): a zip file (encrypted or not) containing
+all information about the problem. See below for a description
+of how this ZIP must be organized.
+* Color name: name of the color for this problem. It will
+be used if the balloon figure cannot be displayed.
+* Color (RGB): enter the rgb value, in the standard HTML
+format for colors, for this problem. E.g. 000000 is black,
+FFFFFF is white, FF0000 is red, 00FF00 is green and so on.
+Colors are interesting because BOCA presents the balloons
+with the problem colors. Nevertheless, they are not essential
+and can be left empty.
+
+If you make some mistake, you can re-insert the problem
+even without deleting it. Just fill up the fields again,
+repeating the problem number (first field). In this case
+the database record will be updated. But take care: any
+changes with the contest running will affect all records
+of the contest. Do not delete any record during the contest
+unless you really know what you are doing. The updates
+cascade on the database, removing or updating everywhere
+needed.
+
+===== ATTENTION: READ THIS CAREFULLY IF YOU ARE GOING
+===== TO CREATE YOUR OWN PROBLEM PACKAGE FILES. IF YOU
+===== ARE RUNNING A CONTEST THAT HAS THESE FILES ALREADY
+===== PREPARED FOR YOU, THEN THIS IS NOT SO IMPORTANT...
+PROBLEM PACKAGE: since BOCA 1.5, the problems are
+specified by a ZIP file, which shall have the following folders
+inside it:
+compare/
+compile/
+description/
+input/
+limits/
+output/
+run/
+tests/
+
+Inside compare/, compile/, limits/, runs/, there should be an
+executable (usually a shell script) with the name of each language
+extension that is configured in BOCA (within tab languages). The
+common files are c, cpp and java.
+Inside description/, there must exist a text file named problem.info,
+with the following lines:
+basename=shortfilename
+fullname=This is the problem full name
+descfile=desc.txt
+
+The left-side of this equalities are tags and must not be changed. The
+right-hand side are the values that must be specified.
+shortfilename is the name of the java class that must contain the main() 
+function. This is the name that appears in the booklet of problems 
+that is distributed to the teams. This is a mandatory field. 
+"This is the problem full name" is to be replaced by the full name of
+the problem, as it appears in the booklet of problems. This is also a 
+mandatory field. The line of descfile must contain the name of a file
+that will be made available for the teams in the BOCA interface. It is
+the description of the problem, and can have any format. Usual formats
+are .txt and .pdf files. This field is not mandatory, and this line
+can be removed if one does not want to make the problem description
+available inside BOCA.
+
+Inside input/ and output/ there must have files in a one-to-one
+correspondence and with the same filenames. Each file in input will be
+given as standard input to the code that has been submitted, and later
+the generated output will be compared to the file with same name that
+is in the output/ folder.
+
+The folder tests/ may contain any executable files that are meant to
+test the autojudge system in the first time it is run. To clarify all
+the steps, the workflow of the BOCA autojudge system, which dictates how
+the problem must be specified, is as follows:
+
+When a submission arrives for the first time for a given problem, the
+corresponding problem package is downloaded by the autojudge from the
+server. Then the autojudge reads the description/problem.info to
+obtain the basename of the problem, runs the scripts in the directory
+tests/ to check if everything is ok (the person who specified the
+problem package can include any desired code to be tested in such
+directory, and this code will be run and should return zero on success
+and non-zero otherwise), runs the scripts inside limits/ for each language
+to obtain the time-limits of the problem, and then proceeds to run the
+submission itself. If the problem had already been run by the
+autojudge, then these steps are not performed, but are cached and the
+information is reused later.
+
+To test a submission, the autojudge runs the script in the compile/
+folder corresponding to the language of the submission, which obtains
+an executable version of the code. Then the script of run/ for the
+given language is executed for each file in the input/ directory, and
+finally the script in compare/ is performed (again for the given
+language and every file in the output/ directory), checking if the
+results are correct.
+
+Take a look in the doc/problemexamples/.
+There is a script named gen_examples.sh with some command-lines
+to generated encrypted problem zip files. The main code for that is
+the script createproblemzip.php. If it is not to encrypt the problem
+file, then it is enough to zip the directory with the problem data as
+described, e.g. by doing:
+
+# cd doc/problemexamples
+# zip -r bits.zip bits/
+
+and the file bits.zip is to be included in the problem form of BOCA.
+
+
+10) Include the users. There are five types of users
+that can be used: admin, team, judge, staff and score.
+* admin: manage the contest. He(she) has access to every
+clarification, run, logs, tasks, etc of the contest.
+It is him(her) that starts and ends the competition
+(although it can be done automaticly by the system).
+You don't need to have more than one or two admin accounts. It is
+usually useful to have two admin accounts just in case you have any
+problem with one of them.
+* judge: responsible for judging the submission and
+answering the clarification. It's used to have from
+three to eight judges. Note that admins, judges and
+staff must have well formed complicated passwords.
+There is one judge, which is appointed by the admin using the tab
+"Site", which is designated as chief judge, and has some additional
+tasks such as fixing submission answers that are not in agreement
+among different judges.
+* staff: responsible for printing files, delivery
+balloons, helping teams with hardware problems, etc.
+Normally one staff account (for the chief staff person)
+is enough.
+* score: account with the scoreboard. It has no other
+privilegies. This account is good for making the coachs
+informed about the results and for making the results
+available to remote people. Usually a single score account is
+enough.
+* team: here is where the contest happens. These accounts
+are for the teams. It is safest to restrict the access of each team by
+IP addresses. The same thing may be done for the other users too
+(and it's a good practice to improve security).
+* site: the user of type site is only used as the means of
+communication between the main server and the local servers in a
+multi-site contest. On local sites, this user can be set up with
+standard data (and strong password). The details on how to step up a
+user of type site are usually given by the admin of the main site. The
+users of type "site" on the main server have an important
+characteristic: they are not allowed to directly log in to the main
+site, but connections are established from the local sites. On the
+main site, the ICPC ID (see below) of the user of type "site" must be
+a number corresponding to the site from which the connection will
+come. THIS IS AN IMPORTANT INFORMATION FOR MULTI-SITE CONTESTS ONLY.
+
+The users can be imported by a text file too. See
+IMPORT.txt for details.
+The fields presented in the "Users" item are:
+* User site number: number of the site of the user. Usually 1 in a
+single site contest. or the corresponding site number in a multi-site
+contest. PAY ATTENTION TO USE THE PROPER SITE NUMBER.
+* User number: number of the user (used internally
+by the system). Usually equals the team number, but doesn't have
+to. It only has to be a unique number among users.
+* Username: nickname of the user. Used to be
+team1, team2, team30, judge1, judge2, admin1, staff1, etc.
+It's possible to have the same usernumber and username
+in different sites. In a single site contest, all user numbers
+and usernames must be distinct.
+* ICPC ID: ID Number of team in the ICPC System. In case of users of
+type "site" for a multi-site contest, this field tells the site number
+of the user when connecting to the main server.
+* Type: type of the user (team, judge, staff, admin, score, site)
+* Enabled: is the user enabled? 
+* Multilogins: can the user make more than one connection
+at the same time? It's not a problem to allow that if
+the users are restricted by IP numbers.
+* User full name: complete name of the user. In case of teams,
+it's convinient to put a short name for the team between [ ] and then
+the full name of the team. This does not include the institution
+name. E.g.
+"[Best Ever] Best team name ever created in history"
+
+* User description: some detail about the user, like institution name
+and students names. The rule of thumb is to have a short institution
+name between [ ], then the full institution name between another pair [ ],
+then any additional description that you may want to include. E.g.
+"[IME-USP][Institute of Maths and Statistics] Person1, Person2, Person3"
+
+* User IP: if set, it restricts from where the user can log in
+the system. It is recommended to restrict the logins by IP numbers.
+Check the IP numbers of the computers where the teams are supposed to
+be. If using ICPC linux, do not check the IP inside the virtual
+machine, but the IP of the actual computer where the virtual machine
+is run.
+* Password: choose strong passwords!
+
+If you make some mistake, you can alter the user fields.
+Click on the user number in the table and proceed to its
+fields below in the page. Edit them and resubmit. Note that,
+if you do not fill a new password, the old password is kept.
+IMPORTANT WARNING: for users, it is possible to click on
+a number for editting the information. All other admin flips
+regarding problems, answers, languages, etc do not follow the
+same idea. If you click on those number, the corresponding
+record will be removed, together with all database information
+related to that record. So DO NOT REMOVE ANYTHING DURING
+THE CONTEST.
+
+
+11) Configure the site data in the "Site" item. The fields
+are:
+* Site number: number of the site, with a "new" item to create
+new sites. This is not necessary for single-site contests. In
+multi-site contest, be sure to have your site number correctly
+assigned to you by whoever is running the main site.
+* Name: name of the site
+* Start date, End date, stop answering, stop score: equivalent
+to admin's contest page. Usually the default values are enough.
+* Runs/clars that will be judged here: for multi-site contest,
+it defines which runs/clars will be judged in this site. It
+is a list of site numbers, separated by commas. For a single
+site contest, just leave the site number here.
+* Tasks that will be treated here: same meaning of the
+previous field. For single contests or multi-site contest
+it's used to have each site treating its tasks. So leave here
+the number of the local site.
+* Active: is the site active? I hope yes.
+* Autoend: should the contest ends automaticly at the defined
+* time? Usually yes.
+* Globalscore: site numbers of the teams that should be included in
+the scoreboard. Not needed for single-site contests. For multi-site,
+this defines which information to include in the local scoreboard.
+* Autojudge: do not use this option for a contest unless you tested
+it and are fine with the results. It basically tell the autojudge to
+take final decisions about the submissions. In a real contest, it is
+ideal that a human judge check each of the submissions before sending
+the result to the teams.
+* Scorelevel: detail level of information on the scoreboard.
+0 means no details while 4 means maximum detail. 2 is a good
+choice, although, for single contests, 3 and 4 are also ok and 
+more informative. A negative number means the same as its
+absolute value counterpart, but keeps the problem names hidden
+(useful when the same problem set is used in sites with very
+distinct start times).
+
+Furthermore, there are buttons for: start the contest,
+end the contest, delete completely (and without undo) the 
+runs, clarifications and tasks of the site, disable logins, 
+enable logins and force all users to log off.
+
+The start and stop buttons should not be used as the contest
+start and stop are automatic. They are just for special
+purpose, like a energy fault. In this case, you may, when
+energy supply become stable again, use the "Stop at" field and
+button to indicate when the contest should have stopped and
+then the "start now" button to re-start the contest. This will
+make the BOCA see this interval time as they never happened,
+and all penalty and time calculations will be made correctly.
+
+The "delete all" fields (delete all clars, delete all runs and
+delete all tasks, delete all bkps) are useful (AND IMPORTANT!) 
+for cleaning everything up just after finished the warmup. 
+Between the warmup and the real contest, you
+do not need to create another BOCA contest. Just delete all warmup
+problems, all clars, all tasks and all runs (keeping the languages,
+users and answers). Then undelete the problems of the real contest (if
+you have already included them), or enter them for the first time,
+reenter the contest information (start date and duration), and you are
+ready.
+
+12) It's all done.
+
+Important Note
+--------------
+Any deletion of problems, languages, answers, users, etc will 
+promptly delete all records related. So deleting an answer 
+will remove all runs with that answer. Deleting a problem 
+will delete all clarifications and runs related to that 
+problem. This way, it's not recommended to remove any of these 
+things during the contest.
+
+===
+=== IMPORTANT INFORMATION FOR SITES WITH MANY TEAMS ===
+===
+Please read the file APACHE.txt
+
+===
+=== IMPORTANT INFORMATION FOR MULTI-SITE CONTESTS ===
+===
+If you are participating in a multi-site contest as a local site, you
+may simply wait for the main site to set up languages and problems for
+you. If you connect to the main site (by logging in with the user of
+type site you have created) and the problems are already defined
+there in the main site, then they will be downloaded to your site
+automatically. Other information, such as time of contest, inclusion
+of users, languages, etc, can all be downloaded from the main site if
+this has already been specified there. So the natural procedure is to
+create a user type "site" and log in with it, then enter the
+credentials to the main site (it will be asked after the log in) and
+see what information is already downloaded from the main site, before
+spending time included everything by yourself.
+===
+===
+
+Contacts and Copyrights
+-----------------------
+BOCA Copyright (c) 2003- Cassio Polpo de Campos (cassio@ime.usp.br)
+http://www.ime.usp.br/~cassio/boca
+
+////////////////////////////////////////////////////////////////////////////////
+//BOCA Online Contest Administrator
+//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+////////////////////////////////////////////////////////////////////////////////

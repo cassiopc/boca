@@ -1,0 +1,88 @@
+COMMENTS ON THE CONFIGURATION OF APACHE FOR LARGE SITES
+-----------------------------------------------------
+(File last updated on 25/October/2012)
+
+If you have a large site, for instance with more than 50 teams, then
+the best practice is to decrease the number of threads/servers that
+apache starts (yes, I said to DECREASE). The problem is that the computers 
+are not so powerful, and apache is usually configured with too many of them. 
+If there are too many requests, instead of queuing them, apache tries to 
+answer all in parallel, and the server suffers a lot. This can be changed in the
+/etc/apache2/apache.conf file, as below (well, the exact values to use
+depend on your site, the original config has too high numbers):
+
+
+# prefork MPM
+# StartServers: number of server processes to start
+# MinSpareServers: minimum number of server processes which are kept spare
+# MaxSpareServers: maximum number of server processes which are kept spare
+# MaxClients: maximum number of server processes allowed to start
+# MaxRequestsPerChild: maximum number of requests a server process serves
+<IfModule mpm_prefork_module>
+    StartServers          3
+    MinSpareServers       3
+    MaxSpareServers      6
+    MaxClients          40
+    MaxRequestsPerChild   0
+</IfModule>
+
+# worker MPM
+# StartServers: initial number of server processes to start
+# MinSpareThreads: minimum number of worker threads which are kept spare
+# MaxSpareThreads: maximum number of worker threads which are kept spare
+# ThreadLimit: ThreadsPerChild can be changed to this maximum value during a
+#              graceful restart. ThreadLimit can only be changed by stopping
+#              and starting Apache.
+# ThreadsPerChild: constant number of worker threads in each server process
+# MaxClients: maximum number of simultaneous client connections
+# MaxRequestsPerChild: maximum number of requests a server process serves
+<IfModule mpm_worker_module>
+    StartServers          2
+    MinSpareThreads      10
+    MaxSpareThreads      30
+    ThreadLimit          32
+    ThreadsPerChild      10
+    MaxClients          40
+    MaxRequestsPerChild   0
+</IfModule>
+
+# event MPM
+# StartServers: initial number of server processes to start
+# MinSpareThreads: minimum number of worker threads which are kept spare
+# MaxSpareThreads: maximum number of worker threads which are kept spare
+# ThreadsPerChild: constant number of worker threads in each server process
+# MaxClients: maximum number of simultaneous client connections
+# MaxRequestsPerChild: maximum number of requests a server process serves
+<IfModule mpm_event_module>
+    StartServers          2
+    MinSpareThreads      10
+    MaxSpareThreads      30
+    ThreadLimit          32
+    ThreadsPerChild      10
+    MaxClients          40
+    MaxRequestsPerChild   0
+</IfModule>
+
+
+
+Contacts and Copyrights
+-----------------------
+BOCA Copyright (c) 2003- Cassio Polpo de Campos (cassio@ime.usp.br)
+http://www.ime.usp.br/~cassio/boca
+
+////////////////////////////////////////////////////////////////////////////////
+//BOCA Online Contest Administrator
+//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+////////////////////////////////////////////////////////////////////////////////
