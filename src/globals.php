@@ -108,6 +108,11 @@ function sanitizeText($text, $doamp=true)
     return $text; 
 }
 
+function unsanitizeText($text) {
+    $text = str_replace("&amp;", "&", $text);
+	return $text;
+}
+
 array_walk_recursive($_FILES, 'sanitizeVariables'); 
 array_walk_recursive($_POST, 'sanitizeVariables'); 
 array_walk_recursive($_GET, 'sanitizeVariables'); 

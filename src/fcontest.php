@@ -443,14 +443,16 @@ function DBSiteEndNow ($contest, $site, $w=0) {
 	return true;
 }
 function DBSiteLogins ($contest, $site, $logins) {
-	$s = DBSiteInfo($contest, $site);
+	if(($s = DBSiteInfo($contest, $site)) == null)
+		LOGError("DBSiteLogins: cant read site (contest=$contest,site=$site)");
+
 	$param = $s;
 	$param['contestnumber']=$contest;
 	$param['sitenumber']=$site;
 	$param['sitepermitlogins']=$logins;
 	unset($param['updatetime']);
 	DBUpdateSite ($param);
-	LOGLevel("Site logins=$logins (contest=$contest)",2);
+	LOGLevel("Site logins=$logins (contest=$contest,site=$site)",2);
 }
 function DBSiteDeleteAllClars ($contest, $site, $user, $usersite, $c=null) {
 	$cw=false;
@@ -591,10 +593,6 @@ function DBUpdateSite ($param,$c=null) {
 			}
 		}
 	}
-	$t = time();
-	if($updatetime <= 0)
-		$updatetime=$t;
-
 	if ($siteautoend != "t" && $siteautoend != "") $siteautoend = "f";
 	if ($siteactive != "t" && $siteactive != "") $siteactive = "f";
 	if ($siteautojudge != "t" && $siteautojudge != "") $siteautojudge = "f";
@@ -609,7 +607,6 @@ function DBUpdateSite ($param,$c=null) {
 		$docommit=true;
 	}
 	$a = DBGetRow ("select * from sitetable where contestnumber=$contestnumber and sitenumber=$sitenumber", 0, $c);
-	$ret=1;
 	if ($a == null) {
 		$ret=2;
 		$param['number']=$sitenumber;
@@ -622,6 +619,10 @@ function DBUpdateSite ($param,$c=null) {
 			return false;
 		}
 	}
+	$t = time();
+	if($updatetime <= 0)
+		$updatetime=$t;
+	$ret=1;
 	if($updatetime > $a['updatetime']) {
 		$ret=2;
 		if($sitenextrun==0)

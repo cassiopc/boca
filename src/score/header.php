@@ -58,7 +58,8 @@ echo "<img src=\"../images/smallballoontransp.png\" alt=\"\">";
 echo "<font color=\"#000000\">BOCA</font>";
 echo "</td><td bgcolor=\"#cc9966\" width=\"99%\">\n";
 echo "Username: " . $_SESSION["usertable"]["userfullname"] . " (site=".$_SESSION["usertable"]["usersitenumber"].")<br>\n";
-list($clockstr,$clocktype)=siteclock();
+//list($clockstr,$clocktype)=siteclock(); // THIS IS SLOW, WE NEED A BETTER OPTION
+$clockstr='';
 echo "</td><td bgcolor=\"#cc9966\" align=center nowrap>&nbsp;".$clockstr."&nbsp;</td></tr>\n";
 echo "</table>\n";
 if(!isset($_SESSION["scorenomenu"]) || !$_SESSION["scorenomenu"]) {

@@ -49,6 +49,19 @@ if (isset($_POST["username"]) && isset($_POST["userfullname"]) && isset($_POST["
 	$param['type'] = htmlspecialchars($_POST["usertype"]);
 	$param['permitip'] = htmlspecialchars($_POST["userip"]);
 	$param['contest'] = $_SESSION["usertable"]["contestnumber"];
+/*
+	$param['user'] = myhtmlspecialchars($_POST["usernumber"]);
+	$param['site'] = myhtmlspecialchars($_POST["usersitenumber"]);
+	$param['username'] = myhtmlspecialchars($_POST["username"]);
+	$param['usericpcid'] = myhtmlspecialchars($_POST["usericpcid"]);
+	$param['enabled'] = myhtmlspecialchars($_POST["userenabled"]);
+	$param['multilogin'] = myhtmlspecialchars($_POST["usermultilogin"]);
+	$param['userfull'] = unsanitizeText($_POST["userfullname"]); //myhtmlspecialchars($_POST["userfullname"]);
+	$param['userdesc'] = unsanitizeText($_POST["userdesc"]); //myhtmlspecialchars($_POST["userdesc"]);
+	$param['type'] = myhtmlspecialchars($_POST["usertype"]);
+	$param['permitip'] = myhtmlspecialchars($_POST["userip"]);
+*/
+
 
 	$passcheck = htmlspecialchars($_POST["passwordo"]);
 	$a = DBUserInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"], $_SESSION["usertable"]["usernumber"], null, false);
