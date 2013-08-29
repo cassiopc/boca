@@ -450,7 +450,7 @@ function DBSiteLogins ($contest, $site, $logins) {
 	$param['contestnumber']=$contest;
 	$param['sitenumber']=$site;
 	$param['sitepermitlogins']=$logins;
-	unset($param['updatetime']);
+	$param['updatetime']= -1;
 	DBUpdateSite ($param);
 	LOGLevel("Site logins=$logins (contest=$contest,site=$site)",2);
 }
@@ -556,6 +556,7 @@ function DBUpdateSite ($param,$c=null) {
 	$type['sitenextrun']=1;
 	$type['sitenexttask']=1;
 	$type['sitemaxtask']=1;
+	$type['sitescorelevel']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key])) {
 			MSGError("DBUpdateSite param error: $key is not set");
@@ -596,10 +597,12 @@ function DBUpdateSite ($param,$c=null) {
 	if ($siteautoend != "t" && $siteautoend != "") $siteautoend = "f";
 	if ($siteactive != "t" && $siteactive != "") $siteactive = "f";
 	if ($siteautojudge != "t" && $siteautojudge != "") $siteautojudge = "f";
-	if ($sitescorelevel == "" || !is_numeric($sitescorelevel)) $sitescorelevel = 0;
-	if ($sitescorelevel < -3) $sitescorelevel = -4;
-	if ($sitescorelevel > 3) $sitescorelevel = 4;
-
+	if ($sitescorelevel == "" || !is_numeric($sitescorelevel)) {
+		$sitescorelevel = -10;
+	} else {
+		if ($sitescorelevel < -3) $sitescorelevel = -4;
+		if ($sitescorelevel > 3) $sitescorelevel = 4;
+	}
 	$docommit=false;
 	if($c==null) {
 		$c = DBConnect();
@@ -632,7 +635,7 @@ function DBUpdateSite ($param,$c=null) {
 		if($sitenexttask==0)
 			DBSiteDeleteAllTasks($contestnumber,$sitenumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"],$c);
 
-		$sql = "update sitetable set sitename='$sitename', updatetime=".$updatetime.", ";
+		$sql = "update sitetable set sitename='$sitename', ";
 		if ($sitepermitlogins!="") $sql .= "sitepermitlogins='$sitepermitlogins', ";
 		if ($siteduration > 0)
 			$sql .= "siteduration=$siteduration, ";
@@ -666,7 +669,9 @@ function DBUpdateSite ($param,$c=null) {
 			$sql .= " sitelastmileanswer=$sitelastmileanswer, ";
 		if($sitelastmilescore > 0)
 			$sql .= " sitelastmilescore=$sitelastmilescore, ";
-		$sql .= " sitescorelevel=$sitescorelevel where contestnumber=$contestnumber and sitenumber=$sitenumber " .
+		if($sitescorelevel > -5)
+			$sql .= " sitescorelevel=$sitescorelevel, ";
+		$sql .= " updatetime=".$updatetime." where contestnumber=$contestnumber and sitenumber=$sitenumber " .
 			"and updatetime < $updatetime";
 		DBExec($c,$sql, "DBUpdateSite(update site)");
 		if($docommit) {
