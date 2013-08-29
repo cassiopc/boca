@@ -178,16 +178,14 @@ function DBBalloon($contest, $site, $user, $problem, $localsite=true, $c=null) {
 
 	$t = time();
 	$ta = $blocal["currenttime"];
-//	if ($verifylastmile)
-	$tf = $b["sitelastmilescore"];
-//	else {
-//		$tf = $b["siteduration"];
-//	}
+	$tf = $b["siteduration"];
 	$r = DBExec($c, "select r.rundatediff as time, a.yes as yes from " .
 		"runtable as r, answertable as a where r.runanswer=a.answernumber and " .
 		"a.contestnumber=$contest and r.usernumber=$user and r.runproblem=$problem and " .
 		"r.contestnumber=$contest and r.runsitenumber=$site and (r.runstatus ~ 'judged' or r.runstatus ~ 'judged+') and " .
-		"r.rundatediff>=0 and r.rundatediff<=$tf and r.rundatediffans<=$ta " . 
+		"r.rundatediff>=0 " . 
+				"and r.rundatediff<=$tf " .
+				"and r.rundatediffans<=$ta " . 
 		"order by r.rundatediff", "DBBalloon(get runs)");
 	$n = DBnlines($r);
 	for ($i=0;$i<$n;$i++) {

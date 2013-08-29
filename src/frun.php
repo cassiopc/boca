@@ -181,7 +181,7 @@ function DBUpdateRunC($contest, $usersite, $usernumber, $runsite, $runnumber, $a
 				return true;
 			$ta = $b["currenttime"]; 
 			$tf = $b["sitelastmileanswer"];
-			if ($ta < $tf) {
+			if ($ta < $tf || $ta > $b['siteduration']) {
 				$u = DBUserInfo ($contest, $runsite, $team, $c);
 				if($u['usertype']=='team') {
 					$p = DBGetProblemData ($contest, $temp["runproblem"],$c);
@@ -190,6 +190,8 @@ function DBUpdateRunC($contest, $usersite, $usernumber, $runsite, $runnumber, $a
 												 $p[0]["problemname"] . ": " . $p[0]["fullname"]), 
 								   "", "", "t", $p[0]["color"], $p[0]["colorname"], $c);
 				}
+			} else {
+				LOGError("DBUpdateRunC: HIDDEN: user=$team,site=$runsite,contest=$contest would have a balloon for problem=" .  $temp["runproblem"]);
 			}
 		} else if ($tinhabalao && !$tembalao) {
 			$u = DBUserInfo ($contest, $runsite, $team, $c);
