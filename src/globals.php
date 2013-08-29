@@ -213,10 +213,10 @@ function ValidSession() {
 }
 // grava erro no arquivo de log
 function LOGError($msg) {
-	LOGLevel($msg,0);
+	LOGLevel($msg,0,false);
 }
 // grava linha no arquivo de log com o nivel especificado
-function LOGLevel($msg,$level) {
+function LOGLevel($msg,$level,$dodb=true) {
 	$msga = sanitizeText(str_replace("\n", " ", $msg));
 	$msg = now() . ": ";
 	define_syslog_variables ();
@@ -244,7 +244,7 @@ function LOGLevel($msg,$level) {
 	openlog ("BOCA", LOG_ODELAY, LOG_USER);	
 	syslog ($prior, $msg);
 	closelog();
-	if (isset($_SESSION["usertable"]))
+	if ($dodb && isset($_SESSION["usertable"]))
 		DBNewLog($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"], 
 				 $_SESSION["usertable"]["usernumber"], $type, getIP(), $msga, "");
 }

@@ -671,8 +671,8 @@ function DBUpdateSite ($param,$c=null) {
 			$sql .= " sitelastmilescore=$sitelastmilescore, ";
 		if($sitescorelevel > -5)
 			$sql .= " sitescorelevel=$sitescorelevel, ";
-		$sql .= " updatetime=".$updatetime." where contestnumber=$contestnumber and sitenumber=$sitenumber " .
-			"and updatetime < $updatetime";
+		$sql .= " updatetime=".$updatetime." where contestnumber=$contestnumber and sitenumber=$sitenumber ";
+		//. "and updatetime < $updatetime";
 		DBExec($c,$sql, "DBUpdateSite(update site)");
 		if($docommit) {
 			DBExec($c, "commit work", "DBUpdateSite(commit-update)");	
