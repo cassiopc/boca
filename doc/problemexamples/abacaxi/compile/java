@@ -108,6 +108,10 @@ fi
 
 cdir=`pwd`
 echo "Current directory is $cdir" >&2
+mainname=`echo $name | cut -d'.' -f1`
+if [ "$mainname" == "" ]; then
+  mainname=Main
+fi
 
 cat <<EOF > compileit.sh
 #!/bin/bash
@@ -134,7 +138,7 @@ find . -name "*.java" | while read lin; do
   echo \$? > ../compileit.retcode
 done
 rm -f ../$jarfile
-\$jar cvf ../$jarfile *
+\$jar cvfe ../$jarfile $mainname *
 exit 0
 EOF
 chmod 755 compileit.sh

@@ -1128,7 +1128,7 @@ function DBNewUser($param, $c=null) {
 	if(isset($param['number']) && !isset($param['user'])) $param['user']=$param['number'];
 
 	$ac=array('contest','site','user');
-	$ac1=array('updatetime','username','usericpcid','userfull','userdesc','type','enabled','multilogin','pass','permitip',
+	$ac1=array('updatetime','username','usericpcid','userfull','userdesc','type','enabled','multilogin','pass','permitip','changepass',
 			   'userip','userlastlogin','userlastlogout','usersession','usersessionextra');
 
 	$typei['contest']=1;
@@ -1154,6 +1154,7 @@ function DBNewUser($param, $c=null) {
 	$userdesc='';
 	$type='team';
 	$enabled='f';
+	$changepass='f';
 	$multilogin='f';
 	$permitip='';
 	$usersession=null;
@@ -1177,8 +1178,10 @@ function DBNewUser($param, $c=null) {
 	if ($type != "chief" && $type != "judge" && $type != "admin" && 
 	    $type != "score" && $type != "staff" && $type != "site") 
 		$type = "team";
+	if ($type == "admin") $changepass = "t";
 	if ($enabled != "f") $enabled = "t";
 	if ($multilogin != "t") $multilogin = "f";
+	if ($changepass != "t") $changepass = "f";
 
 	$cw = false;
 	if($c == null) {
@@ -1194,6 +1197,7 @@ function DBNewUser($param, $c=null) {
 		MSGError("DBNewUser param error: site $site does not exist");
 		return false;
 	}
+	if($pass != myhash("") && $type != "admin" && $changepass != "t") $pass='!'.$pass;
 	$r = DBExec($c, "select * from usertable where username='$username' and usernumber!=$user and ".
 				"usersitenumber=$site and contestnumber=$contest", "DBNewUser(get user)");
 	$n = DBnlines ($r);
@@ -1211,7 +1215,6 @@ function DBNewUser($param, $c=null) {
 			MSGError("Site $site does not exist");
 			return false;
 		   }
-		   if($type=='team' && $pass != myhash("")) $pass='!'.$pass;
 			$sql = "insert into usertable (contestnumber, usersitenumber, usernumber, username, usericpcid, userfullname, " .
 				"userdesc, usertype, userenabled, usermultilogin, userpassword, userpermitip) values " .
 				"($contest, $site, $user, '$username', '$usericpcid', '$userfull', '$userdesc', '$type', '$enabled', " .

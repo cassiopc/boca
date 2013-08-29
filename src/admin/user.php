@@ -114,7 +114,7 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
 							$param['multilogin']='f';
 							$userlist[$param['site'] . '-' . $param['usernumber']] = randstr(6,'0123456789');
 							$param['pass']=myhash($userlist[$param['site'] . '-' . $param['usernumber']]);
-
+							$param['changepass']='t';
 							$param['contest']=$_SESSION["usertable"]["contestnumber"];
 							if($_SESSION["usertable"]["usersitenumber"] == $param['site'] || $main)
 								if($param['usernumber'] != 1000 && DBNewUser($param)) {
@@ -146,6 +146,7 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
 							$param['multilogin']='f';
 							$userlist[$param['site'] . '-' . $param['usernumber']] = randstr(6,'0123456789');
 							$param['pass']=myhash($userlist[$param['site'] . '-' . $param['usernumber']]);
+							$param['changepass']='t';
 							$param['contest']=$_SESSION["usertable"]["contestnumber"];
 							if($_SESSION["usertable"]["usersitenumber"] == $param['site'] || $main)
 								if($param['usernumber'] != 1000 && DBNewUser($param)) {
@@ -177,6 +178,7 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
 									case "userenabled":       $param['enabled']=trim($tmp[1]); break;
 									case "usermultilogin":    $param['multilogin']=trim($tmp[1]); break;
 									case "userpassword":      $param['pass']=myhash(trim($tmp[1])); break;
+									case "userchangepassword": $param['changepass']=trim($tmp[1]); break;
 									case "userip":            $param['permitip']=trim($tmp[1]); break;
 								}
 								$i++;
