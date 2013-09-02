@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Last modified 02/sep/2013 by cassio@ime.usp.br
 
-function scoretransfer() {
+function scoretransfer($putname) {
 	$ds = DIRECTORY_SEPARATOR;
 	if($ds=="") $ds = "/";
 	$privatedir = $_SESSION['locr'] . $ds . "private";
@@ -27,13 +27,14 @@ function scoretransfer() {
 		if(count($sitedata) < 3) continue;
 		$siteurl = $sitedata[0];
 		if(strpos($siteurl,'#') !== false) continue;
+		LOGError("scoretransfer: found site $siteurl");
 		if(substr($siteurl,0,7) != 'http://')
 			$siteurl = 'http://' . $siteurl;
 		$urldiv='/';
-		if(substr($siteurl,length($siteurl)-1,1) == '/')
+		if(substr($siteurl,strlen($siteurl)-1,1) == '/')
 			$urldiv = '';
 
-		$id = file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1");
+		$sess = file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1");
 		$user = $sitedata[1];
 		$res = myhash( myhash ($sitedata[2]) . $id);
 		$ok = file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=scoretransfer");
@@ -59,6 +60,27 @@ function scoretransfer() {
 				}
 				$zip->close();
 			}
+			LOGError("scoretransfer: download OK");
+		} else {
+			LOGError("scoretransfer: download failed");
+		}
+
+		if(is_readable($putname)) {
+			$data = @file_get_contents($putname);
+			$data_url = http_build_query(array('data' => $data,
+										 ));
+			$opts = array(
+				'http' => array(
+					'method' => 'POST',
+					'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
+					'content' => $data_url
+					));
+			$context = stream_context_create($opts);
+			$s = @file_get_contents($siteurl . $urldiv . "site/putfile.php", 0, $context);
+			if(strpos($s,'FAILED') === false)
+				LOGError("scoretransfer: upload OK");
+			else
+				LOGError("scoretransfer: upload failed");
 		}
 		break;
 	}

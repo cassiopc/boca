@@ -104,8 +104,6 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 	$destination = $remotedir . $ds ."scores.zip";
     if(is_writable($remotedir)) {
 	if($redo || !is_readable($destination)) {
-		scoretransfer();
-
 		if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
 			ForceLoad("index.php");
 		
@@ -139,6 +137,7 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		} else {
 			@rename($fname . ".tmp",$destination);
 		}
+		scoretransfer($destination);
 	}
 	}
 }
