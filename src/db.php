@@ -192,7 +192,7 @@ function DBExecNonStop($conn,$sql,$txt='') {
 //$txt eh um pequeno texto descrevendo o que esta sendo feito no sql
 function DBExec($conn,$sql,$txt='') {
 	if($txt=='') $txt='unknown at '. getFunctionName();
-	LOGLevel("DBExec: " . $sql, 3, false);
+//	LOGLevel("DBExec: " . $sql, 3, false);
 	$result = DB_pg_exec ($conn, $sql);
 	if (!$result) {
 		LOGError("Unable to exec SQL in the database ($txt). " .
