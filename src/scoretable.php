@@ -77,9 +77,9 @@ if(!ValidSession()) {
 $loc = $_SESSION["loc"];
 if(!isset($detail)) $detail=true;
 if(!isset($final)) $final=false;
-$scoredelay["admin"] = 2;
-$scoredelay["score"] = 30;
-$scoredelay["team"] = 30;
+$scoredelay["admin"] = 3;
+$scoredelay["score"] = 60;
+$scoredelay["team"] = 20;
 $scoredelay["judge"] = 10;
 $scoredelay["staff"] = 60;
 $actualdelay = 60;
@@ -99,11 +99,13 @@ if(file_exists($scoretmp)) {
 }
 
 if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["usertype"]=='admin' || (isset($_GET["remote"]) && is_numeric($_GET["remote"]))) {
-	$privatedir = $_SESSION['locr'] . $ds . "private";
-	$remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
-	$destination = $remotedir . $ds ."scores.zip";
-    if(is_writable($remotedir)) {
+  $privatedir = $_SESSION['locr'] . $ds . "private";
+  $remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
+  $destination = $remotedir . $ds ."scores.zip";
+  if(is_writable($remotedir)) {
 	if($redo || !is_readable($destination)) {
+	  if(($fp = @fopen($destination . ".lck",'x')) !== false) {
+
 		if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
 			ForceLoad("index.php");
 		
@@ -129,7 +131,7 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		$fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
 		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 		@rename($fname . ".tmp",$fname . ".dat");
-		scoretransfer($fname . ".dat");
+		scoretransfer($fname . ".dat", $localsite);
 		
 		if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$fname . ".tmp") != 1) {
 			LOGError("Cannot create score zip file");
@@ -138,8 +140,14 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		} else {
 			@rename($fname . ".tmp",$destination);
 		}
+		@fclose($fp); 
+		@unlink($destination . ".lck");
+	  } else {
+			if(file_exists($destination . ".lck",'x') && filemtime($destination . ".lck",'x') < time() - 180)
+				@unlink($destination . ".lck");
+	  }
 	}
-	}
+  }
 }
 
 if(isset($_GET["remote"])) {

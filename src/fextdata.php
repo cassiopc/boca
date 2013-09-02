@@ -17,11 +17,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Last modified 02/sep/2013 by cassio@ime.usp.br
 
-function scoretransfer($putname) {
+function scoretransfer($putname, $localsite) {
 	$ds = DIRECTORY_SEPARATOR;
 	if($ds=="") $ds = "/";
 	$privatedir = $_SESSION['locr'] . $ds . "private";
 	if(!is_readable($privatedir . $ds . 'remotescores' . $ds . "otherservers")) return;
+	$localfile = "score_site" . $localsite . "_" . $localsite . "_x.dat";
 	$remotesite = @file($privatedir . $ds . 'remotescores' . $ds . "otherservers");
 	for($i = 0; $i < count($remotesite); $i++) {
 		$sitedata = explode(' ', $remotesite[$i]);
@@ -68,7 +69,11 @@ function scoretransfer($putname) {
 					foreach(glob($privatedir . $ds . 'remotescores' . $ds . 'tmp' . $ds . '*.dat') as $file) {
 						@chown($file,"www-data");
 						@chmod($file,0660);
-						@rename($file, $privatedir . $ds . 'remotescores' . $ds . basename($file));
+						$bn = basename($file);
+						if($bn == $localfile)
+							@rename($file, $privatedir . $ds . 'remotescores' . $ds . "score_site" . $localsite . "__y.dat");
+						else
+							@rename($file, $privatedir . $ds . 'remotescores' . $ds . basename($file));
 					}
 					$zip->close();
 					LOGError("scoretransfer: download OK");
