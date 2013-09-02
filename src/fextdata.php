@@ -21,6 +21,7 @@ function scoretransfer($putname) {
 	$ds = DIRECTORY_SEPARATOR;
 	if($ds=="") $ds = "/";
 	$privatedir = $_SESSION['locr'] . $ds . "private";
+	if(!is_readable($privatedir . $ds . 'remotescores' . $ds . "otherservers")) return;
 	$remotesite = @file($privatedir . $ds . 'remotescores' . $ds . "otherservers");
 	for($i = 0; $i < count($remotesite); $i++) {
 		$sitedata = explode(' ', $remotesite[$i]);
