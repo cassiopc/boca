@@ -45,14 +45,13 @@ if (!isset($_GET["name"])) {
 	$_SESSION["locr"] = dirname(__FILE__);
 	if($_SESSION["locr"]=="/") $_SESSION["locr"] = "";
 }
-ob_end_flush();
-
-require_once('version.php');
-
 if(isset($_GET["getsessionid"])) {
 	echo session_id();
 	exit;
 }
+ob_end_flush();
+
+require_once('version.php');
 
 ?>
 <title>BOCA Online Contest Administrator <?php echo $BOCAVERSION; ?> - Login</title>
@@ -85,7 +84,7 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
 			ForceLoad("index.php");
 		if($ct["contestlocalsite"]==$ct["contestmainsite"]) $main=true; else $main=false;
 		if(isset($_GET['action']) && $_GET['action'] == 'scoretransfer') {
-			echo "OK";
+			echo "SCORETRANSFER OK";
 		} else {
 			if($main && $_SESSION["usertable"]["usertype"] == 'site') {
 				MSGError('Direct login of this user is not allowed');

@@ -141,7 +141,7 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 		unset($_SESSION["usertable"]);
 		return false;
 	}
-	if ($d["sitepermitlogins"]=="f" && $a["usertype"] != "admin" && $a["usertype"] != "judge") {
+	if ($d["sitepermitlogins"]=="f" && $a["usertype"] != "admin" && $a["usertype"] != "judge" && $a["usertype"] != "site") {
 		LOGLevel("User $name tried to login contest $contest but logins are denied.",2);
 		if($msg) MSGError("Logins are not allowed.");
 		unset($_SESSION["usertable"]);

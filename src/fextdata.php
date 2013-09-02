@@ -33,12 +33,22 @@ function scoretransfer($putname) {
 		$urldiv='/';
 		if(substr($siteurl,strlen($siteurl)-1,1) == '/')
 			$urldiv = '';
-
-		$sess = file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1");
-		$user = $sitedata[1];
-		$res = myhash( myhash ($sitedata[2]) . $id);
-		$ok = file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=scoretransfer");
-		if($ok == 'OK') {
+//		LOGError("url=" .$siteurl . $urldiv . "index.php?getsessionid=1");
+		$sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1");
+//		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
+		$user = trim($sitedata[1]);
+		$res = myhash( myhash (trim($sitedata[2])) . $sess);
+//		LOGError("url=" . $siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=scoretransfer");
+		$opts = array(
+			'http' => array(
+				'method' => 'GET',
+				'header' => 'Cookie: PHPSESSID=' . $sess
+				)
+			);
+		$context = stream_context_create($opts);
+		$ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=scoretransfer", 0, $context);
+//		LOGError("ok=" . $ok);
+		if(substr($ok,strlen($ok)-strlen('SCORETRANSFER OK'),strlen('SCORETRANSFER OK')) == 'SCORETRANSFER OK') {
 			$opts = array(
 				'http' => array(
 					'method' => 'GET',
@@ -46,23 +56,31 @@ function scoretransfer($putname) {
 					)
 				);
 			$context = stream_context_create($opts);
-			$res = file_get_contents($siteurl . $urldiv . "scoretable.php?remote=-42", 0, $context);
-			$zip = new ZipArchive;
-			if ($zip->open($privatedir . $ds . $run["inputname"]) === true) {
-				@mkdir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
-				cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
-				@mkdir($privatedir . $ds . 'remotescores' . $ds . 'tmp');	
-				$zip->extractTo($privatedir . $ds . 'remotescores' . $ds . 'tmp');
-				foreach(glob($privatedir . $ds . 'remotescores' . $ds . 'tmp' . $ds . '*.dat') as $file) {
-					@chown($file,"www-data");
-					@chmod($file,0660);
-					@rename($file, $privatedir . $ds . 'remotescores' . $ds . basename($file));
+			$res = @file_get_contents($siteurl . $urldiv . "scoretable.php?remote=-42", 0, $context);
+			@file_put_contents($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip', $res);
+			if(is_readable($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip')) {
+				$zip = new ZipArchive;
+				if ($zip->open($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip') === true) {
+					cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+					@mkdir($privatedir . $ds . 'remotescores' . $ds . 'tmp');	
+					$zip->extractTo($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+					foreach(glob($privatedir . $ds . 'remotescores' . $ds . 'tmp' . $ds . '*.dat') as $file) {
+						@chown($file,"www-data");
+						@chmod($file,0660);
+						@rename($file, $privatedir . $ds . 'remotescores' . $ds . basename($file));
+					}
+					$zip->close();
+					LOGError("scoretransfer: download OK");
+				} else {
+					LOGError("scoretransfer: download failed (2)");
 				}
-				$zip->close();
+				cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+				@unlink($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip');
+			} else {
+				LOGError("scoretransfer: download failed (3)");
 			}
-			LOGError("scoretransfer: download OK");
 		} else {
-			LOGError("scoretransfer: download failed");
+			LOGError("scoretransfer: download failed (1)");
 		}
 
 		if(is_readable($putname)) {
@@ -77,10 +95,10 @@ function scoretransfer($putname) {
 					));
 			$context = stream_context_create($opts);
 			$s = @file_get_contents($siteurl . $urldiv . "site/putfile.php", 0, $context);
-			if(strpos($s,'FAILED') === false)
+			if(strpos($s,'SCORE UPLOADED OK') !== false)
 				LOGError("scoretransfer: upload OK");
 			else
-				LOGError("scoretransfer: upload failed");
+				LOGError("scoretransfer: upload failed (" . $s . ")");
 		}
 		break;
 	}

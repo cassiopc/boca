@@ -168,7 +168,7 @@ if(is_writable($_SESSION["locr"] . $remotedir)) {
 		$total=base64_encode(serialize($arr));
 	}
 
-	$fn = tempnam($_SESSION["locr"] . $remotedir,"score_");
+	$fn = tempnam($_SESSION["locr"] . $remotedir,"tmp_");
 	$fout = fopen($fn,"wb");
 	fwrite($fout,$total,10000000);
 	fclose($fout);
@@ -181,7 +181,7 @@ if(is_writable($_SESSION["locr"] . $remotedir)) {
 	} else {
 
 		if(@rename($fn, $_SESSION["locr"] . $remotedir . $ds . "score_" . $_SESSION["usertable"]["username"] . 
-				   "_" . $_SESSION["usertable"]["usericpcid"] . "_" //. md5(getIP()) 
+				   "_" . $_SESSION["usertable"]["usericpcid"] . "_x" //. md5(getIP()) 
 				   . ".dat"))
 			echo "SCORE UPLOADED OK\n";
 		else

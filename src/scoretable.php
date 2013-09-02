@@ -64,7 +64,7 @@ if(isset($_GET['remote']) && is_numeric($_GET['remote'])) {
 		IntrusionNotify("scoretable1");
         ForceLoad("index.php");
 	}
-	if(!isset($_SESSION['usertable']['usertype']) || $_SESSION["usertable"]["usertype"] != "score") {
+	if(!isset($_SESSION['usertable']['usertype']) || ($_SESSION["usertable"]["usertype"] != "score" && $_SESSION["usertable"]["usertype"] != "site")) {
 		IntrusionNotify("scoretable2");
         ForceLoad("index.php");
 	}
@@ -115,7 +115,7 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		}
 		$ct=DBGetActiveContest();
 		$localsite=$ct['contestlocalsite'];
-		$fname = $privatedir . $ds . "score_localsite_" . $localsite . "_"; // . md5($_SERVER['HTTP_HOST']);
+		$fname = $privatedir . $ds . "score_localsite_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
 		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 		@rename($fname . ".tmp",$fname . ".dat");
 
@@ -126,9 +126,10 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		}
 		$ct=DBGetActiveContest();
 		$localsite=$ct['contestlocalsite'];
-		$fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_"; // . md5($_SERVER['HTTP_HOST']);
+		$fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
 		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 		@rename($fname . ".tmp",$fname . ".dat");
+		scoretransfer($fname . ".dat");
 		
 		if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$fname . ".tmp") != 1) {
 			LOGError("Cannot create score zip file");
@@ -137,7 +138,6 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		} else {
 			@rename($fname . ".tmp",$destination);
 		}
-		scoretransfer($destination);
 	}
 	}
 }
