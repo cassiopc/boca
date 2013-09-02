@@ -181,7 +181,8 @@ if(is_writable($_SESSION["locr"] . $remotedir)) {
 	} else {
 
 		if(@rename($fn, $_SESSION["locr"] . $remotedir . $ds . "score_" . $_SESSION["usertable"]["username"] . 
-				   "_" . $_SESSION["usertable"]["usericpcid"] . "_" . md5(getIP()) . ".dat"))
+				   "_" . $_SESSION["usertable"]["usericpcid"] . "_" //. md5(getIP()) 
+				   . ".dat"))
 			echo "SCORE UPLOADED OK\n";
 		else
 			echo "FAILED: UPDATE SCORE ERROR\n";

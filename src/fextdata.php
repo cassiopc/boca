@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,55 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 21/jul/2012 by cassio@ime.usp.br
+// Last modified 02/sep/2013 by cassio@ime.usp.br
+
+function scoretransfer() {
+	$ds = DIRECTORY_SEPARATOR;
+	if($ds=="") $ds = "/";
+	$privatedir = $_SESSION['locr'] . $ds . "private";
+	$remotesite = @file($privatedir . $ds . 'remotescores' . $ds . "otherservers");
+	for($i = 0; $i < count($remotesite); $i++) {
+		$sitedata = explode(' ', $remotesite[$i]);
+		if(count($sitedata) < 3) continue;
+		$siteurl = $sitedata[0];
+		if(strpos($siteurl,'#') !== false) continue;
+		if(substr($siteurl,0,7) != 'http://')
+			$siteurl = 'http://' . $siteurl;
+		$urldiv='/';
+		if(substr($siteurl,length($siteurl)-1,1) == '/')
+			$urldiv = '';
+
+		$id = file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1");
+		$user = $sitedata[1];
+		$res = myhash( myhash ($sitedata[2]) . $id);
+		$ok = file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=scoretransfer");
+		if($ok == 'OK') {
+			$opts = array(
+				'http' => array(
+					'method' => 'GET',
+					'header' => 'Cookie: PHPSESSID=' . $sess
+					)
+				);
+			$context = stream_context_create($opts);
+			$res = file_get_contents($siteurl . $urldiv . "scoretable.php?remote=-42", 0, $context);
+			$zip = new ZipArchive;
+			if ($zip->open($privatedir . $ds . $run["inputname"]) === true) {
+				@mkdir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+				cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+				@mkdir($privatedir . $ds . 'remotescores' . $ds . 'tmp');	
+				$zip->extractTo($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+				foreach(glob($privatedir . $ds . 'remotescores' . $ds . 'tmp' . $ds . '*.dat') as $file) {
+					@chown($file,"www-data");
+					@chmod($file,0660);
+					@rename($file, $privatedir . $ds . 'remotescores' . $ds . basename($file));
+				}
+				$zip->close();
+			}
+		}
+		break;
+	}
+}
+
 
 function getMainXML($username,$sess,$pass,$pass2) {
 	$c = DBConnect();

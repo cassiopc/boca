@@ -1,5 +1,8 @@
+version 1.5.3:
+- bug fixes
+- inclusion of automatic download of external scores from the first line of otherservers
+
 version 1.5.2:
-(THIS VERSION IS IN DEVEL AND CAN BE CHANGED AT ANY TIME)
 - improve description of inbetween warmup and contest in ADMIN.txt
 - fix a bug that could allow an user to change their username
 - creation of an APACHE.txt doc about setting up apache configuration

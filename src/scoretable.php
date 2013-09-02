@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2012 by BOCA System (bocasystem@gmail.com)
+//    Copyright (C) 2003-2013 by BOCA System (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 02/nov/2012 by cassio@ime.usp.br
+//Last updated 02/sep/2013 by cassio@ime.usp.br
 require_once("db.php");
 
 if(isset($_SESSION["locr"]))
@@ -104,6 +104,8 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 	$destination = $remotedir . $ds ."scores.zip";
     if(is_writable($remotedir)) {
 	if($redo || !is_readable($destination)) {
+		scoretransfer();
+
 		if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
 			ForceLoad("index.php");
 		
@@ -115,7 +117,7 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		}
 		$ct=DBGetActiveContest();
 		$localsite=$ct['contestlocalsite'];
-		$fname = $privatedir . $ds . "score_localsite_" . $localsite . "_" . md5($_SERVER['HTTP_HOST']);
+		$fname = $privatedir . $ds . "score_localsite_" . $localsite . "_"; // . md5($_SERVER['HTTP_HOST']);
 		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 		@rename($fname . ".tmp",$fname . ".dat");
 
@@ -126,7 +128,7 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		}
 		$ct=DBGetActiveContest();
 		$localsite=$ct['contestlocalsite'];
-		$fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_" . md5($_SERVER['HTTP_HOST']);
+		$fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_"; // . md5($_SERVER['HTTP_HOST']);
 		@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 		@rename($fname . ".tmp",$fname . ".dat");
 		
