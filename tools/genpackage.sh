@@ -31,6 +31,7 @@ echo "*** Processing version $ver"
 cd /tmp
 cp -a $bocadir boca-$ver
 rm -rf /tmp/boca-$ver/.git
+rm -f /tmp/boca-$ver/tools/boca-*.tgz
 if [ "$ver" != "" -a -d "boca-$ver" ]; then
 echo "boca-$ver" > boca-$ver/src/version
 echo -e "<?php\n\$BOCAVERSION='boca-$ver';\n\$YEAR='2013';\n?>\n" > boca-$ver/src/versionnum.php 
