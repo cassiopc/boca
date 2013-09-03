@@ -1,7 +1,7 @@
 #!/bin/bash
 # ////////////////////////////////////////////////////////////////////////////////
 # //BOCA Online Contest Administrator
-# //    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+# //    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
 # //
 # //    This program is free software: you can redistribute it and/or modify
 # //    it under the terms of the GNU General Public License as published by
@@ -15,11 +15,13 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 06/aug/2012 by cassio@ime.usp.br
+# // Last modified 03/sep/2013 by cassio@ime.usp.br
 #///////////////////////////////////////////////////////////////////////////////////////////
 echo "#############################################################"
-echo "### installv2.sh of 06/Aug/2012 (A) by cassio@ime.usp.br ###"
+echo "### installv2.sh of 03/Sept/2013 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
+
+apt-get install python-software-properties software-properties-common
 
 for i in id chown chmod cut awk tail grep cat sed mkdir rm mv sleep apt-get add-apt-repository update-alternatives; do
   p=`which $i`

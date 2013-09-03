@@ -17,13 +17,20 @@
 # ////////////////////////////////////////////////////////////////////////////////
 # // Last modified 03/sep/2013 by cassio@ime.usp.br
 cdir=`pwd`
+bocadir=$(dirname $cdir)
 basen=`basename $cdir`
 if [ ! -f "$cdir/genpackage.sh" -o "$basen" != "tools" ]; then
   echo "Please run this script from its own directory in tools/ of the BOCA directory"
 else
-ver=$(basename $(dirname $cdir) | cut -d'-' -f2-)
+if [ "$1" == "" ]; then
+  ver=$(basename $(dirname $cdir) | cut -d'-' -f2-)
+else
+  ver=$1
+fi
 echo "*** Processing version $ver"
-cd ../..
+cd /tmp
+cp -a $bocadir boca-$ver
+rm -rf /tmp/boca-$ver/.git
 if [ "$ver" != "" -a -d "boca-$ver" ]; then
 echo "boca-$ver" > boca-$ver/src/version
 echo -e "<?php\n\$BOCAVERSION='boca-$ver';\n\$YEAR='2013';\n?>\n" > boca-$ver/src/versionnum.php 
@@ -40,10 +47,11 @@ rm boca-$ver/.temp `find boca-$ver/ -name "*~"`
 touch boca-$ver/.temp
 rm boca-$ver/.temp `find boca-$ver/ -name ".\#*"`
 cd boca-$ver/tools/etc
-tar cvzf ../icpc.etc.tgz *
+tar czf ../icpc.etc.tgz *
 cd ../../..
-tar czf boca-$ver.tgz boca-$ver/
-echo "*** file generated: `pwd`/boca-$ver.tgz"
+tar czf $cdir/boca-$ver.tgz boca-$ver/
+rm -rf /tmp/boca-$ver
+echo "*** file generated: $cdir/boca-$ver.tgz"
 else
  echo "*** boca-$ver not found"
 fi
