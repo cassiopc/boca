@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 06/aug/2012 by cassio@ime.usp.br
+// Last modified 03/sep/2013 by cassio@ime.usp.br
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 
@@ -215,6 +215,8 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		chmod($file,0700);
 		$ex = escapeshellcmd($file);
 		$ex .= " >stdout 2>stderr";
+		@unlink('stdout');
+		@unlink('stderr');
 		echo "Executing INIT SCRIPT " . $ex . " at " . getcwd() . "\n";
 		if(system($ex, $retval)===false) $retval=-1;
 		if($retval != 0) {
@@ -231,6 +233,8 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		chmod($file,0700);
 		$ex = escapeshellcmd($file);
 		$ex .= " >stdout 2>stderr";
+		@unlink('stdout');
+		@unlink('stderr');
 		echo "Executing TEST SCRIPT " . $ex . " at " . getcwd() . "\n";
 		if(system($ex, $retval)===false) $retval=-1;
 		if($retval != 0) {
@@ -294,6 +298,8 @@ $ex = escapeshellcmd($script) ." ".
 	escapeshellarg(trim($limits[$basename][$run["extension"]][0]))." ".
 	escapeshellarg(trim($limits[$basename][$run["extension"]][2]));
 $ex .= " >stdout 2>stderr";
+@unlink('stdout');
+@unlink('stderr');
 echo "Executing " . $ex . " at " . getcwd() . "\n";
 if(system($ex, $retval)===false) $retval=-1;
 
@@ -380,6 +386,8 @@ if($retval != 0) {
 					escapeshellarg(trim($limits[$basename][$run["extension"]][2]))." ".
 					escapeshellarg(trim($limits[$basename][$run["extension"]][3]));
 				$ex .= " >stdout 2>stderr";
+				@unlink('stdout');
+				@unlink('stderr');
 				echo "Executing " . $ex . " at " . getcwd() . " for input " . $file . "\n";
 				if(system($ex, $retval)===false) $retval=-1;
 				foreach (glob($dir . $ds . '*') as $fne) {
@@ -421,6 +429,7 @@ if($retval != 0) {
 		foreach($outputlist as $file) {
 			$file = basename($file);
 			if(is_file($dir . $ds . 'output' . $ds . $file)) {
+				@unlink($dir . $ds . 'compout');
 				$ex = escapeshellcmd($script) ." ".
 					escapeshellarg($dir . $ds . "team" . $ds . $file)." ".
 					escapeshellarg($dir . $ds . "output" . $ds . $file)." ".
