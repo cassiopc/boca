@@ -27,7 +27,7 @@ function DBRunReport($contest,$site) {
 				    "l.langnumber=r.runlangnumber and a.answernumber=r.runanswer and " .
 				    "a.contestnumber=r.contestnumber and (r.runstatus = 'judged' or r.runstatus = 'judged+') and " .
 				    "u.usernumber=r.usernumber and u.contestnumber=$contest and " .
-			 	    "u.usersitenumber=r.runsitenumber";
+			 	    "u.usersitenumber=r.runsitenumber and u.usertype='team'";
 	if($site != "") $sql .= " and r.runsitenumber=$site";
 	$xdados = array();
 	$xuser = array();
@@ -37,13 +37,13 @@ function DBRunReport($contest,$site) {
 	$xproblemyes = array();
 
 	$xusername = array();
-        $r = DBExec($c, "select usernumber as un, username as name, userfullname as fullname ".
-		"from usertable where contestnumber=$contest ".
-		"and usersitenumber=$site and ".
+	$r = DBExec($c, "select usernumber as un, username as name, userfullname as fullname ".
+				"from usertable where contestnumber=$contest ".
+				"and usersitenumber=$site and ".
                 "usertype='team' and userlastlogin is not null and userenabled='t'", "DBRunReport(get users)");
-        $n = DBnlines($r);
-        for ($i=0;$i<$n;$i++) {
-                $a = DBRow($r,$i);
+	$n = DBnlines($r);
+	for ($i=0;$i<$n;$i++) {
+		$a = DBRow($r,$i);
 		$xusername[$a['un']] = $a['name'];
 		$xuserfull[$a['name']] = $a['fullname'];
 	}
