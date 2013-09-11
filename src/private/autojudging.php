@@ -352,6 +352,7 @@ if($retval != 0) {
 		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (9)");
 		continue;
 	}
+	chdir($dir);
 	chmod($script, 0700);
 	mkdir('team', 0755);
 	if($ninputlist == 0) {
@@ -386,21 +387,28 @@ if($retval != 0) {
 					escapeshellarg(trim($limits[$basename][$run["extension"]][2]))." ".
 					escapeshellarg(trim($limits[$basename][$run["extension"]][3]));
 				$ex .= " >stdout 2>stderr";
-				@unlink('stdout');
-				@unlink('stderr');
+
+				chdir($dir);
+				if(file_exists($dir . $ds . 'tmp')) {
+					cleardir($dir . $ds . 'tmp');
+				}
+				mkdir($dir . $ds . 'tmp', 0777);
+				@chown($dir . $ds . 'tmp',"nobody");
+				chdir($dir . $ds . 'tmp');
 				echo "Executing " . $ex . " at " . getcwd() . " for input " . $file . "\n";
 				if(system($ex, $retval)===false) $retval=-1;
-				foreach (glob($dir . $ds . '*') as $fne) {
+				foreach (glob($dir . $ds . 'tmp' . $ds . '*') as $fne) {
 					@chown($fne,"nobody");
 					@chmod($fne,0755);
 				}
 				if(is_readable('stderr0'))
-					system('cat stderr0 >> stderr');
-				system('echo ##### STDERR FOR FILE ' . escapeshellarg($file) . ' >> allerr');
-				system('cat stderr >> allerr');
-				system('cat stdout > team' . $ds . escapeshellarg($file));
-				system('echo ##### STDOUT FOR FILE ' . escapeshellarg($file) . ' >> allout');
-				system('cat stdout >> allout');
+					system('cat stderr0 >> ' . $dir . $ds . 'stderr');
+				system('echo ##### STDERR FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allerr');
+				system('cat stderr >> ' . $dir . $ds . 'allerr');
+				system('cat stdout > ' . $dir . $ds . 'team' . $ds . escapeshellarg($file));
+				system('echo ##### STDOUT FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allout');
+				system('cat stdout >> ' . $dir . $ds . 'allout');
+				chdir($dir);
 				if($retval != 0) {
 					list($retval,$answer) = exitmsg($retval);
 					$answer = "(WHILE RUNNING) " . $answer;
