@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 21/jul/2012 by cassio@ime.usp.br
+// Last modified 06/sep/2013 by cassio@ime.usp.br
 
 function DBDropRunTable() {
 	$c = DBConnect();
@@ -551,9 +551,9 @@ function DBOpenRunsSNS($contest,$site,$st,$order='run') {
 		"a.runanswer as answer, r.runfilename as filename, " .
 		"r.runanswer1 as answer1, r.runanswer2 as answer2, " .
 		"r.autobegindate as autobegin, r.autoenddate as autoend, r.autoanswer as autoanswer ".
-		"from runtable as r, problemtable as p, langtable as l, answertable as a " .
-		"where r.contestnumber=$contest and p.contestnumber=r.contestnumber and " .
-		"r.runproblem=p.problemnumber and l.contestnumber=r.contestnumber and " .
+		"from runtable as r, problemtable as p, langtable as l, answertable as a, usertable as u " .
+		"where r.contestnumber=$contest and p.contestnumber=r.contestnumber and u.contestnumber=r.contestnumber and " .
+		"r.runproblem=p.problemnumber and l.contestnumber=r.contestnumber and r.usernumber=u.usernumber and r.runsitenumber=u.usersitenumber and " .
 		"l.langnumber=r.runlangnumber and a.answernumber=r.runanswer and " .
 		"a.contestnumber=r.contestnumber";
 	if ($site != "x") {
@@ -576,6 +576,8 @@ function DBOpenRunsSNS($contest,$site,$st,$order='run') {
 			" (r.runjudge2!=". $_SESSION["usertable"]["usernumber"] . " or " .
 			"r.runjudgesite2!=". $_SESSION["usertable"]["usersitenumber"] . ") and " .
 			" (not (r.runjudge1 is null)) and (not (r.runjudge2 is null))))";
+		if ($order == 'report')
+			$sql .= " and (u.usertype != 'judge')";
 		$sql .= " and (not r.runstatus = 'judged') " .
 			" and not r.runstatus ~ 'deleted' order by ";
 	} else $sql .= " order by ";
@@ -595,7 +597,7 @@ function DBOpenRunsSNS($contest,$site,$st,$order='run') {
 	else if ($order == "user")
 		$sql .= "r.usernumber,r.runsitenumber,";
 
-	if ($st == 1 || $order == "normal")
+	if ($st == 1 || $order == "report")
 		$sql .= "r.runnumber";
 	else
 		$sql .= "r.rundatediff desc";

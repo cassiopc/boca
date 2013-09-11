@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 06/sep/2013 by cassio@ime.usp.br
 
 require('header.php');
 ?>
@@ -40,7 +40,7 @@ $s = $st;
 if (trim($s["sitejudging"])!="") $s["sitejudging"].=",".$_SESSION["usertable"]["usersitenumber"];
 else $s["sitejudging"]=$_SESSION["usertable"]["usersitenumber"];
 
-$run = DBAllRunsInSites($_SESSION["usertable"]["contestnumber"], $s["sitejudging"], 'normal');
+$run = DBAllRunsInSites($_SESSION["usertable"]["contestnumber"], $s["sitejudging"], 'report');
 
 for ($i=0; $i<count($run); $i++) {
   echo " <tr>\n";

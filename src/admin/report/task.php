@@ -33,7 +33,7 @@ require('header.php');
  </tr>
 <?php
 $s = $st;
-$task = DBAllTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"], 'normal');
+$task = DBAllTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"], 'report');
 $cf = globalconf();
 for ($i=0; $i<count($task); $i++) {
   $st = $task[$i]["status"];

@@ -15,10 +15,10 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 03/sep/2013 by cassio@ime.usp.br
+# // Last modified 11/sep/2013 by cassio@ime.usp.br
 #///////////////////////////////////////////////////////////////////////////////////////////
 echo "#############################################################"
-echo "### installv2.sh of 03/Sept/2013 (A) by cassio@ime.usp.br ###"
+echo "### installv2.sh of 11/Sept/2013 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
 
 apt-get install python-software-properties software-properties-common
@@ -73,9 +73,15 @@ apt-get -y purge libreoffice-common libreoffice-base-core bluez thunderbird \
   ubuntuone-client python-ubuntuone-client \
   ubuntuone-installer python-ubuntuone-storageprotocol
 
-sysvutils=sysvutils
-if [ "$DISTRIB_CODENAME" == "oneiric" -o "$DISTRIB_CODENAME" == "precise" ]; then 
-	sysvutils=sysvinit-utils
+echo "========= INSTALLING SYSVINIT-UTILS ==========="
+apt-get -y install sysvinit-utils
+if [ $? != 0 ]; then
+  apt-get -y install sysvutils
+  if [ $? != 0 ]; then
+    echo ""
+    echo "ERROR running the apt-get -- must check if all needed packages are available"
+    exit 1
+  fi
 fi
 
 echo "====================================================================="
@@ -114,7 +120,7 @@ apt-get -y install zenity apache2 eclipse-pde eclipse-rcp eclipse-platform eclip
   evince g++ gcc gedit scite libstdc++6 makepasswd manpages-dev mii-diag php5-cli php5-mcrypt openjdk-6-dbg \
   php5 php5-pgsql postgresql postgresql-client postgresql-contrib quota sharutils default-jdk openjdk-6-doc \
   vim-gnome geany geany-plugin-addons geany-plugin-gdb geany-plugins default-jre sysstat \
-  $sysvutils vim xfce4 $libCppdev $libCppdoc $libCppdbg php5-gd stl-manual gcc-doc debootstrap schroot c++-annotations
+  vim xfce4 $libCppdev $libCppdoc $libCppdbg php5-gd stl-manual gcc-doc debootstrap schroot c++-annotations
 if [ $? != 0 ]; then
   echo ""
   echo "ERROR running the apt-get -- must check if all needed packages are available"

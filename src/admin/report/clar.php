@@ -40,7 +40,7 @@ $s = $st;
 if (trim($s["sitejudging"])!="") $s["sitejudging"].=",".$_SESSION["usertable"]["usersitenumber"];
 else $s["sitejudging"]=$_SESSION["usertable"]["usersitenumber"];
 
-$clar = DBAllClarsInSites($_SESSION["usertable"]["contestnumber"], $s["sitejudging"], 'normal');
+$clar = DBAllClarsInSites($_SESSION["usertable"]["contestnumber"], $s["sitejudging"], 'report');
 
 for ($i=0; $i<count($clar); $i++) {
   echo " <tr>\n";
