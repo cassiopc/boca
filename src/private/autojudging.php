@@ -437,7 +437,7 @@ if($retval != 0) {
 		foreach($outputlist as $file) {
 			$file = basename($file);
 			if(is_file($dir . $ds . 'output' . $ds . $file)) {
-				@unlink($dir . $ds . 'compout');
+				@unlink($dir . $ds . 'compout'); 
 				$ex = escapeshellcmd($script) ." ".
 					escapeshellarg($dir . $ds . "team" . $ds . $file)." ".
 					escapeshellarg($dir . $ds . "output" . $ds . $file)." ".
