@@ -380,7 +380,7 @@ if($retval != 0) {
 				}
 
 				$ex = escapeshellcmd($script) ." ".
-					escapeshellarg($basename) . " ".
+					escapeshellarg($dir . $ds . $basename) . " ".
 					escapeshellarg($dir . $ds . "input" . $ds . $file)." ".
 					escapeshellarg(trim($limits[$basename][$run["extension"]][0]))." ".
 					escapeshellarg(trim($limits[$basename][$run["extension"]][1]))." ".
