@@ -1094,7 +1094,10 @@ function DBUserUpdate($contest, $site, $user, $username, $userfull, $userdesc, $
 		else $temp = $a["userpassword"];
 		$lentmp = strlen($temp);
 		$temp = bighexsub($passn, $temp);
-		$newpass = substr($temp, strlen($temp)-$lentmp);
+		if($lentmp > strlen($temp))
+			$newpass = '0' . $temp;
+		else
+			$newpass = substr($temp, strlen($temp)-$lentmp);
 
 		$c = DBConnect();
 		DBExec($c, "begin work");
