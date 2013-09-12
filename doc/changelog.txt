@@ -1,3 +1,7 @@
+version 1.5.5:
+- bug fix: some passwords didnt work because of an error in the calculations
+   with hex numbers
+
 version 1.5.4:
 - bug fix to allow for multiple input/output files
 - installv2 updated to try both sysvutils and sysvinit-utils
