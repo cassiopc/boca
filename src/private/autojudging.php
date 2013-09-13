@@ -174,6 +174,8 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		continue;
 	}
 	DBExec($c, "commit", "Autojudging(exportcommit)");
+	@chmod($dir . $ds . $run["inputname"], 0600);
+	@chown($dir . $ds . $run["inputname"],"root");
 
 	echo "Problem package downloaded -- running init scripts to obtain limits and other information\n";
 	$zip = new ZipArchive;
@@ -338,8 +340,18 @@ if($retval != 0) {
 				$outputlist[$noutputlist++] = 'output' . $ds . basename($filename,'.link');
 			}
 		}
-		$zip->extractTo($dir, array_merge(array("run" . $ds . $run["extension"]),$inputlist));
-		$zip->close();    
+		$zip->extractTo($dir, array_merge(array("run" . $ds . $run["extension"]),array("compare" . $ds . $run["extension"]),$inputlist,$outputlist));
+		$zip->close();
+		if(chmod($dir . $ds . 'output', 0700)==false || chown($dir . $ds . 'output','root') == false) {
+			echo "Failed to chown/chdir the output folder -- please check the system and problem package\n";
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: chown/chmod failed for output (99)");
+			continue;
+		}
+		if(chmod($dir . $ds . 'compare', 0700)==false || chown($dir . $ds . 'compare','root') == false) {
+			echo "Failed to chown/chdir the output folder -- please check the system and problem package\n";
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: chown/chmod failed for output (99)");
+			continue;
+		}
 	} else {
 		echo "Failed to unzip the file (inputs) -- please check the problem package\n";
 		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (8)");
@@ -355,6 +367,11 @@ if($retval != 0) {
 	chdir($dir);
 	chmod($script, 0700);
 	mkdir('team', 0755);
+
+	$scriptcomp = $dir . $ds . 'compare' . $ds . $run["extension"];
+	$answer='(Contact staff) nothing compared yet';
+	chmod($scriptcomp, 0700);
+
 	if($ninputlist == 0) {
 		echo "Failed to read input files from ZIP -- please check the problem package\n";
 		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (10)");
@@ -396,7 +413,7 @@ if($retval != 0) {
 				@chown($dir . $ds . 'tmp',"nobody");
 				chdir($dir . $ds . 'tmp');
 				echo "Executing " . $ex . " at " . getcwd() . " for input " . $file . "\n";
-				if(system($ex, $retval)===false) $retval=-1;
+				if(system($ex, $localretval)===false) $localretval=-1;
 				foreach (glob($dir . $ds . 'tmp' . $ds . '*') as $fne) {
 					@chown($fne,"nobody");
 					@chmod($fne,0755);
@@ -409,17 +426,74 @@ if($retval != 0) {
 				system('echo ##### STDOUT FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allout');
 				system('cat stdout >> ' . $dir . $ds . 'allout');
 				chdir($dir);
-				if($retval != 0) {
+				if($localretval != 0) {
 					list($retval,$answer) = exitmsg($retval);
 					$answer = "(WHILE RUNNING) " . $answer;
 					break;
 				}
+
+				if(is_file($dir . $ds . 'output' . $ds . $file)) {
+					@unlink($dir . $ds . 'compout');
+					$ex = escapeshellcmd($scriptcomp) ." ".
+						escapeshellarg($dir . $ds . "team" . $ds . $file)." ".
+						escapeshellarg($dir . $ds . "output" . $ds . $file)." ".
+						escapeshellarg($dir . $ds . "input" . $ds . $file) . " >compout";
+					echo "Executing " . $ex . " at " . getcwd() . " for output file $file\n";
+					if(system($ex, $localretval)===false)
+						$localretval = -1;
+
+					$fp = fopen($dir . $ds . "allerr", "a+");
+					fwrite($fp, "\n\n===OUTPUT OF COMPARING SCRIPT FOLLOWS FOR FILE " .$file ." (EMPTY MEANS NO DIFF)===\n");
+					$dif = file($dir . $ds . "compout");
+					$difi = 0;
+					for(; $difi < count($dif)-1 && $difi < 5000; $difi++)
+						fwrite($fp, $dif[$difi]);
+					if($difi >= 5000) fwrite($fp, "===OUTPUT OF COMPARING SCRIPT TOO LONG - TRUNCATED===\n");
+					else fwrite($fp, "===OUTPUT OF COMPARING SCRIPT ENDS HERE===\n");
+					$answertmp = trim($dif[count($dif)-1]);
+					fclose($fp);
+					foreach (glob($dir . $ds . '*') as $fne) {
+						@chown($fne,"nobody");
+						@chmod($fne,0755);
+					}
+					// retval 5 (presentation) and retval 6 (wronganswer) are already compatible with the compare script
+					if($localretval < 4 || $localretval > 6) {
+						// contact staff
+						$retval = 7;
+						$answer='(Contact staff)' . $answertmp;
+						break;
+					}
+					if($localretval == 6) {
+						$retval=$localretval;
+						$answer='(Wrong answer)'. $answertmp;
+						break;
+					}
+					if($localretval == 5) {
+						$retval=$localretval;
+						$answer='(Presentation error)'. $answertmp;
+					} else {
+						if($localretval != 4) {
+							$retval = 7;
+							$answer='(Contact staff)' . $answertmp;
+							break;
+						}
+						if($retval == 0) {
+							// YES!
+							$answer='(YES)' . $answertmp;
+							$retval = 1;
+						}
+					}
+				} else {
+					echo "==> ERROR reading output file " . $dir . $ds . 'output' . $ds . $file . " - skipping it!\n";
+				}
+
 			} else {
 				echo "==> ERROR reading input file " . $dir . $ds . "input" . $ds . $file . " - skipping it!\n";
 			}
 		}
 		if($errp==1) continue;
 	}
+/*
 	if($retval==0) {
 		echo "Processing results\n";
 		$zip = new ZipArchive;
@@ -493,6 +567,7 @@ if($retval != 0) {
 			}
 		}
 	}
+*/
 }
 if($retval == 0 || $retval > 9) {
 	$ans = file("allout");
