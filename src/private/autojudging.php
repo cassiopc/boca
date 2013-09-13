@@ -433,6 +433,7 @@ if($retval != 0) {
 		}
 		$script = $dir . $ds . 'compare' . $ds . $run["extension"];
 		$retval = 0;
+		$answer='(Contact staff) nothing compared yet';
 		chmod($script, 0700);
 		foreach($outputlist as $file) {
 			$file = basename($file);
@@ -454,7 +455,7 @@ if($retval != 0) {
 					fwrite($fp, $dif[$difi]);
 				if($difi >= 5000) fwrite($fp, "===OUTPUT OF COMPARING SCRIPT TOO LONG - TRUNCATED===\n");
 				else fwrite($fp, "===OUTPUT OF COMPARING SCRIPT ENDS HERE===\n");
-				$answer = trim($dif[count($dif)-1]);
+				$answertmp = trim($dif[count($dif)-1]);
 				fclose($fp);
 				foreach (glob($dir . $ds . '*') as $fne) {
 					@chown($fne,"nobody");
@@ -464,26 +465,26 @@ if($retval != 0) {
 				if($localretval < 4 || $localretval > 6) {
 					// contact staff
 					$retval = 7;
-					$answer='(Contact staff)' . $answer;
+					$answer='(Contact staff)' . $answertmp;
 					break;
 				}
 				if($localretval == 6) {
 					$retval=$localretval;
-					$answer='(Wrong answer)'. $answer;
+					$answer='(Wrong answer)'. $answertmp;
 					break;
 				}
 				if($localretval == 5) {
 					$retval=$localretval;
-					$answer='(Presentation error)'. $answer;
+					$answer='(Presentation error)'. $answertmp;
 				} else {
 					if($localretval != 4) {
 						$retval = 7;
-						$answer='(Contact staff)' . $answer;
+						$answer='(Contact staff)' . $answertmp;
 						break;
 					}
 					if($retval == 0) {
 						// YES!
-						$answer='(YES)' . $answer;
+						$answer='(YES)' . $answertmp;
 						$retval = 1;
 					}
 				}
