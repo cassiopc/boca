@@ -427,7 +427,7 @@ if($retval != 0) {
 				system('cat stdout >> ' . $dir . $ds . 'allout');
 				chdir($dir);
 				if($localretval != 0) {
-					list($retval,$answer) = exitmsg($retval);
+					list($retval,$answer) = exitmsg($localretval);
 					$answer = "(WHILE RUNNING) " . $answer;
 					break;
 				}
