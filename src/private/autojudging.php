@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 11/sep/2013 by cassio@ime.usp.br
+// Last modified 13/sep/2013 by cassio@ime.usp.br
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 
@@ -443,7 +443,8 @@ if($retval != 0) {
 					escapeshellarg($dir . $ds . "output" . $ds . $file)." ".
 					escapeshellarg($dir . $ds . "input" . $ds . $file) . " >compout";
 				echo "Executing " . $ex . " at " . getcwd() . " for output file $file\n";
-				$answer = system($ex, $localretval);
+				if(system($ex, $localretval)===false)
+					$localretval = -1;
 
 				$fp = fopen($dir . $ds . "allerr", "a+");
 				fwrite($fp, "\n\n===OUTPUT OF COMPARING SCRIPT FOLLOWS FOR FILE " .$file ." (EMPTY MEANS NO DIFF)===\n");
@@ -463,19 +464,27 @@ if($retval != 0) {
 				if($localretval < 4 || $localretval > 6) {
 					// contact staff
 					$retval = 7;
-					$answer='Contact staff';
+					$answer='(Contact staff)' . $answer;
+					break;
 				}
-				else if($retval==0) {
-					if($localretval==4) {
+				if($localretval == 6) {
+					$retval=$localretval;
+					$answer='(Wrong answer)'. $answer;
+					break;
+				}
+				if($localretval == 5) {
+					$retval=$localretval;
+					$answer='(Presentation error)'. $answer;
+				} else {
+					if($localretval != 4) {
+						$retval = 7;
+						$answer='(Contact staff)' . $answer;
+						break;
+					}
+					if($retval == 0) {
 						// YES!
-						$answer='YES';
+						$answer='(YES)' . $answer;
 						$retval = 1;
-					} else $retval=$localretval;
-				}
-				else if($retval==1) {
-					if($localretval!=4) {
-						$retval=$localretval;
-						$answer='Presentation error';
 					}
 				}
 			} else {
@@ -484,7 +493,7 @@ if($retval != 0) {
 		}
 	}
 }
-if($retval > 9) {
+if($retval == 0 || $retval > 9) {
 	$ans = file("allout");
 	$anstmp = trim(escape_string($ans[count($ans)-1]));
 	unset($ans);

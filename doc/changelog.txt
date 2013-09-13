@@ -1,3 +1,6 @@
+version 1.5.6:
+- reviewed way autojudge reply in the case of multiple input/output files
+
 version 1.5.5:
 - bug fix: some passwords didnt work because of an error in the calculations
    with hex numbers
