@@ -306,12 +306,12 @@ echo "Executing " . $ex . " at " . getcwd() . "\n";
 if(system($ex, $retval)===false) $retval=-1;
 
 if(is_readable('stdout')) {
-    system('echo ##### COMPILATION STDOUT: >> allerr');
-	system('cat stdout >> allerr');
+    system('/bin/echo ##### COMPILATION STDOUT: >> allerr');
+	system('/bin/cat stdout >> allerr');
 }
 if(is_readable('stderr')) {
-    system('echo ##### COMPILATION STDERR: >> allerr');
-	system('cat stderr >> allerr');
+    system('/bin/echo ##### COMPILATION STDERR: >> allerr');
+	system('/bin/cat stderr >> allerr');
 }
 
 if($retval != 0) {
@@ -419,12 +419,12 @@ if($retval != 0) {
 					@chmod($fne,0755);
 				}
 				if(is_readable('stderr0'))
-					system('cat stderr0 >> ' . $dir . $ds . 'stderr');
-				system('echo ##### STDERR FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allerr');
-				system('cat stderr >> ' . $dir . $ds . 'allerr');
-				system('cat stdout > ' . $dir . $ds . 'team' . $ds . escapeshellarg($file));
-				system('echo ##### STDOUT FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allout');
-				system('cat stdout >> ' . $dir . $ds . 'allout');
+					system('/bin/cat stderr0 >> stderr');
+				system('/bin/echo ##### STDERR FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allerr');
+				system('/bin/cat stderr >> ' . $dir . $ds . 'allerr');
+				system('/bin/cat stdout > ' . $dir . $ds . 'team' . $ds . escapeshellarg($file));
+				system('/bin/echo ##### STDOUT FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allout');
+				system('/bin/cat stdout >> ' . $dir . $ds . 'allout');
 				chdir($dir);
 				if($localretval != 0) {
 					list($retval,$answer) = exitmsg($localretval);
