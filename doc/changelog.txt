@@ -1,3 +1,6 @@
+version 1.5.7:
+- fixed java scripts for running with multiple inputs/outputs
+
 version 1.5.6:
 - reviewed way autojudge reply in the case of multiple input/output files
 
