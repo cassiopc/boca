@@ -397,7 +397,7 @@ if($retval != 0) {
 				}
 
 				$ex = escapeshellcmd($script) ." ".
-					escapeshellarg($dir . $ds . $basename) . " ".
+					escapeshellarg($basename) . " ".
 					escapeshellarg($dir . $ds . "input" . $ds . $file)." ".
 					escapeshellarg(trim($limits[$basename][$run["extension"]][0]))." ".
 					escapeshellarg(trim($limits[$basename][$run["extension"]][1]))." ".
@@ -411,6 +411,16 @@ if($retval != 0) {
 				}
 				mkdir($dir . $ds . 'tmp', 0777);
 				@chown($dir . $ds . 'tmp',"nobody");
+				if(is_readable($dir . $ds . $basename)) {
+					@copy($dir . $ds . $basename, $dir . $ds . 'tmp' . $ds . $basename);
+					@chown($dir . $ds . 'tmp' . $ds . $basename,"nobody");
+					@chmod($dir . $ds . 'tmp' . $ds . $basename,0755);
+				}
+				if(is_readable($dir . $ds . 'run.jar')) {
+					@copy($dir . $ds . 'run.jar', $dir . $ds . 'tmp' . $ds . 'run.jar');
+					@chown($dir . $ds . 'tmp' . $ds . 'run.jar',"nobody");
+					@chmod($dir . $ds . 'tmp' . $ds . 'run.jar',0755);
+				}
 				chdir($dir . $ds . 'tmp');
 				echo "Executing " . $ex . " at " . getcwd() . " for input " . $file . "\n";
 				if(system($ex, $localretval)===false) $localretval=-1;
