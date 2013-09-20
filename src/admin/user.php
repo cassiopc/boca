@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 20/sep/2013 by cassio@ime.usp.br
 require('header.php');
 
 if (isset($_GET["site"]) && isset($_GET["user"]) && is_numeric($_GET["site"]) && is_numeric($_GET["user"]) &&
@@ -165,6 +165,7 @@ else if (isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_FILES["imp
                         $x = trim($ar[$i]);
                         if (strpos($x, "user") !== false && strpos($x, "user") == 0) {
                         	$param = array();
+							$param['changepass']='t';
 							while (strpos($x, "user") !== false && strpos($x, "user") == 0) {
 								$tmp = explode ("=", $x, 2);
 								switch (trim($tmp[0])) {
