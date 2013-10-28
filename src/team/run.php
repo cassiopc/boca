@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 21/jul/2012 by cassio@ime.usp.br
+// Last modified 28/oct/2013 by cassio@ime.usp.br
 require('header.php');
 
 if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Submit"]) && isset($_POST["language"]) &&
@@ -136,7 +136,7 @@ $strtmp .= "<br><br><center><b>To submit a program, just fill in the following f
 "        <td width=\"75%\">\n".
 "          <select name=\"problem\" onclick=\"Arquivo()\">\n";
 $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usertype"]=='judge');
-$strtmp .= "<option value=\"-1\"></option>\n";
+$strtmp .= "<option value=\"-1\"> -- </option>\n";
 for ($i=0;$i<count($prob);$i++)
 	$strtmp .= "<option value=\"" . $prob[$i]["number"] . "\">" . $prob[$i]["problem"] . "</option>\n";
 $strtmp .= "	  </select>\n".
@@ -147,7 +147,7 @@ $strtmp .= "	  </select>\n".
 "        <td width=\"75%\"> \n".
 "          <select name=\"language\" onclick=\"Arquivo()\">\n";
 $lang = DBGetLanguages($_SESSION["usertable"]["contestnumber"]);
-$strtmp .= "<option value=\"-1\"></option>\n";
+$strtmp .= "<option value=\"-1\"> -- </option>\n";
 for ($i=0;$i<count($lang);$i++)
 	$strtmp .= "<option value=\"" . $lang[$i]["number"] . "\">" . $lang[$i]["name"] . "</option>\n";
 $strtmp .= "	  </select>\n".

@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 02/sep/2013 by cassio@ime.usp.br
+// Last modified 28/oct/2013 by cassio@ime.usp.br
 require('header.php');
 if(isset($_GET['mainuser']) && isset($_GET['mainpass']) && $_GET['mainuser']!="" && $_GET['mainpass']!="") {
 	$_SESSION['mainuser'] = $_GET['mainuser'];
@@ -31,6 +31,16 @@ $smu = isset($_SESSION['mainuser'])? $_SESSION['mainuser']: "";
 $smp = isset($_SESSION['mainpass'])? $_SESSION['mainpass']: "";
 $smc = isset($_SESSION['check'])? $_SESSION['check']: "";
 //MSGError("id=".$smi."   user=".$smu."  pass=".$smp. "  check=".$smc);
+
+$contest=$_SESSION["usertable"]["contestnumber"];
+if($contest != '' && is_numeric($contest)) {
+  $ct = DBContestInfo($contest);
+  $mainsiteurl = explode(' ',$ct['contestmainsiteurl']);
+//  if(count($mainsiteurl)==3) {
+//    if($smu == '') $smu = $mainsiteurl[1];
+//    if($smp == '') $smp = myhash($mainsiteurl[2]);
+//  }
+}
 
 echo "<html><head><title>Site Page</title>\n";
 echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
@@ -117,10 +127,8 @@ Cannot access main server. Check IP address,<br> password and internet connectio
                 <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="+1">
 			  <?php 
 			  if($id==$idextra) {
-				  $contest=$_SESSION["usertable"]["contestnumber"];
-				  $ct = DBContestInfo($contest);
 				  echo "Credentials to connect to main server<br>";
-				  echo "at URL: " . $ct['contestmainsiteurl'];
+				  echo "at URL: " . $mainsiteurl[0];
 			  } else
 				  echo "<u>Status</u>: initial connection established<br><br>To guarantee an encrypted connection, please type the same password again:";
 ?>
