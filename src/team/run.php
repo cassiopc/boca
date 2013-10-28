@@ -136,7 +136,7 @@ $strtmp .= "<br><br><center><b>To submit a program, just fill in the following f
 "        <td width=\"75%\">\n".
 "          <select name=\"problem\" onclick=\"Arquivo()\">\n";
 $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usertype"]=='judge');
-$strtmp .= "<option value=\"-1\"> -- </option>\n";
+$strtmp .= "<option selected value=\"-1\"> -- </option>\n";
 for ($i=0;$i<count($prob);$i++)
 	$strtmp .= "<option value=\"" . $prob[$i]["number"] . "\">" . $prob[$i]["problem"] . "</option>\n";
 $strtmp .= "	  </select>\n".
@@ -147,7 +147,7 @@ $strtmp .= "	  </select>\n".
 "        <td width=\"75%\"> \n".
 "          <select name=\"language\" onclick=\"Arquivo()\">\n";
 $lang = DBGetLanguages($_SESSION["usertable"]["contestnumber"]);
-$strtmp .= "<option value=\"-1\"> -- </option>\n";
+$strtmp .= "<option selected value=\"-1\"> -- </option>\n";
 for ($i=0;$i<count($lang);$i++)
 	$strtmp .= "<option value=\"" . $lang[$i]["number"] . "\">" . $lang[$i]["name"] . "</option>\n";
 $strtmp .= "	  </select>\n".
