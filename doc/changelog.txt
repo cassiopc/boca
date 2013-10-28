@@ -1,3 +1,7 @@
+version 1.5.8:
+- force empty language/problem as default selection of teams' runs
+- accept url+user+password at field main contest url to exchange scoreboards
+
 version 1.5.7:
 - fixed java scripts for running with multiple inputs/outputs
 
