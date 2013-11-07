@@ -219,7 +219,8 @@ function LOGError($msg) {
 function LOGLevel($msg,$level,$dodb=true) {
 	$msga = sanitizeText(str_replace("\n", " ", $msg));
 	$msg = now() . ": ";
-	define_syslog_variables ();
+    // if php version arrives to 5.10 then this will not work!!
+	if(strcmp(phpversion(),'5.4.0')<0) define_syslog_variables ();
 	$prior = LOG_CRIT;
 	switch ($level) {
 		case 0: $msg .= "ERROR: ";
