@@ -4,55 +4,80 @@ if [ "`id -u`" != "0" ]; then
 fi
 
 di=`date +%s`
-echo "==================================================="
-echo "=================== obtaining BOCA  ==============="
-echo "==================================================="
-
-wget -O /tmp/.boca.tmp "http://www.ime.usp.br/~cassio/boca/boca.date.txt"
-echo ">>>>>>>>>>"
-echo ">>>>>>>>>> Downloading boca release `cat /tmp/.boca.tmp`"
-echo ">>>>>>>>>>"
-
-if [ "$1" == "" ]; then
-wget -O /tmp/.boca.tmp "http://www.ime.usp.br/~cassio/boca/bocaver.txt"
-bocaver=`cat /tmp/.boca.tmp`
+local=0
+if [ "$1" == "local" ]; then
+  local=1
+  echo "==========USING LOCAL FILE $2==========="
+  if [ ! -r "$2" ]; then
+    echo "======NOT FOUND: $2==========="
+    exit 1
+  else
+    echo "USING LOCAL FILE: $2"
+	basedir=`dirname "$2"`
+	echo $basedir | grep -q '^/' 2> /dev/null
+    if [ $? == 0 ]; then
+      basenam=`basename "$2" .tgz`
+      bocaver=`echo $basenam | cut -d'-' -f2-`
+      echo "INSTALLING ON $basedir"
+      echo "INSTALLING VERSION $bocaver"
+      echo "=========="
+    else
+      echo "======YOU MUST PROVIDE FULL PATH OF FILE $2====="
+      exit 1
+    fi
+  fi
 else
-bocaver=$1
+  echo "==================================================="
+  echo "=================== obtaining BOCA  ==============="
+  echo "==================================================="
+
+  wget -O /tmp/.boca.tmp "http://www.ime.usp.br/~cassio/boca/boca.date.txt"
+  echo ">>>>>>>>>>"
+  echo ">>>>>>>>>> Downloading boca release `cat /tmp/.boca.tmp`"
+  echo ">>>>>>>>>>"
+
+  if [ "$1" == "" ]; then
+    wget -O /tmp/.boca.tmp "http://www.ime.usp.br/~cassio/boca/bocaver.txt"
+    bocaver=`cat /tmp/.boca.tmp`
+  else
+    bocaver=$1
+  fi
+  basedir=$2
 fi
 
-if [ "$2" == "" ]; then
-basedir=/var/www
-else
-if [ -d "$2" ]; then
-basedir=$2
-else
-echo "Directory $2 does not exist"
-exit 1
+if [ "$basedir" == "" ]; then
+  basedir=/var/www
 fi
+if [ ! -d "$basedir" ]; then
+  echo "Directory $2 does not exist"
+  exit 1
 fi
 
 OK=y
-read -p "I will install boca at $basedir is it correct (otherwise, run this script as: $0 $bocaver <installdir> to choose the place) [Y/n]? " OK
+read -p "I will install boca at $basedir is it correct (otherwise, run this script as: $0 $bocaver <installdir> to choose the place) [y/n]? " OK
 if [ "$OK" == "y" -o "$OK" == "Y" ]; then
-echo "Install directory is $basedir"
+  echo "Install directory is $basedir"
 else
-echo "Aborted"
-exit 1
+  echo "Aborted"
+  exit 1
 fi
 
-echo "Looking for BOCA version $bocaver from http://www.ime.usp.br/~cassio/boca/"
-cd $basedir
-rm -f boca-$bocaver.tgz
-wget -O boca-$bocaver.tgz "http://www.ime.usp.br/~cassio/boca/download.php?filename=boca-$bocaver.tgz"
-if [ "$?" != "0" -o ! -f boca-$bocaver.tgz ]; then
-  echo "ERROR downloading BOCA package version $bocaver. Aborting *****************"
-  exit 1
+if [ "$local" == "0" ]; then
+  echo "Looking for BOCA version $bocaver from http://www.ime.usp.br/~cassio/boca/"
+  cd $basedir
+  rm -f boca-$bocaver.tgz
+  wget -O boca-$bocaver.tgz "http://www.ime.usp.br/~cassio/boca/download.php?filename=boca-$bocaver.tgz"
+  if [ "$?" != "0" -o ! -f boca-$bocaver.tgz ]; then
+    echo "ERROR downloading BOCA package version $bocaver. Aborting *****************"
+    exit 1
+  fi
+  grep -qi "bad parameters" boca-$bocaver.tgz
+  if [ "$?" == "0" ]; then
+    echo "ERROR downloading BOCA package version $bocaver. Aborting *****************"
+    exit 1
+  fi
 fi
-grep -qi "bad parameters" boca-$bocaver.tgz
-if [ "$?" == "0" ]; then
-  echo "ERROR downloading BOCA package version $bocaver. Aborting *****************"
-  exit 1
-fi
+
 echo "==========================================================="
 echo "====================== BACKUPING OLD BOCA   ==============="
 echo "==========================================================="
@@ -165,9 +190,9 @@ echo "You can run at anytime later the script /etc/icpc/becomeserver.sh to prepa
 read -p "Do you want me to call the script to make this computer the server (don't do it if this install is for a team or autojudge) [y/N]? " OK
 if [ "$OK" == "y" -o "$OK" == "Y" ]; then
   OK=n
-  read -p "Do you really want to make this computer the server (you don't need to do it if you are only upgrading BOCA)? [y/N]? " OK
+  read -p "Do you really want to make this computer the server? (DONT DO IT if you are only upgrading BOCA) [y/N]? " OK
   if [ "$OK" == "y" -o "$OK" == "Y" ]; then
-  /etc/icpc/becomeserver.sh
+    /etc/icpc/becomeserver.sh
   fi
 fi
 
