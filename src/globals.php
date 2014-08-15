@@ -175,10 +175,13 @@ function getIPHost() {
 	$s='';
 	for($ipn=0;$ipn<count($ips);$ipn++) {
 		$ip = $ips[$ipn];
-		$host = @gethostbyaddr($ip);
-		if ($host != $ip && $host != "")
-			$s .= $ip . "(" . $host . ") ";
-		else
+//next lines where suggested to be removed by 
+//Mario Sanchez (Ing. de Sistemas y Computacion, Universidad de los Andes, Bogota, Colombia)
+//because they are very slow to run depending on the network
+//		$host = @gethostbyaddr($ip);
+//		if ($host != $ip && $host != "")
+//			$s .= $ip . "(" . $host . ") ";
+//		else
 			$s .= $ip . ' ';
 	}
 	return $s;
