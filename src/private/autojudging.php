@@ -421,6 +421,11 @@ if($retval != 0) {
 					@chown($dir . $ds . 'tmp' . $ds . 'run.jar',"nobody");
 					@chmod($dir . $ds . 'tmp' . $ds . 'run.jar',0755);
 				}
+				if(is_readable($dir . $ds . 'run.exe')) {
+					@copy($dir . $ds . 'run.exe', $dir . $ds . 'tmp' . $ds . 'run.exe');
+					@chown($dir . $ds . 'tmp' . $ds . 'run.exe',"nobody");
+					@chmod($dir . $ds . 'tmp' . $ds . 'run.exe',0755);
+				}
 				chdir($dir . $ds . 'tmp');
 				echo "Executing " . $ex . " at " . getcwd() . " for input " . $file . "\n";
 				if(system($ex, $localretval)===false) $localretval=-1;
