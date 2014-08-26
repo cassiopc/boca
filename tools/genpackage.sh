@@ -1,7 +1,7 @@
 #!/bin/bash
 # ////////////////////////////////////////////////////////////////////////////////
 # //BOCA Online Contest Administrator
-# //    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
+# //    Copyright (C) 2003- by BOCA Development Team (bocasystem@gmail.com)
 # //
 # //    This program is free software: you can redistribute it and/or modify
 # //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 03/sep/2013 by cassio@ime.usp.br
+# // Last modified 03/sep/2014 by cassio@ime.usp.br
 cdir=`pwd`
 bocadir=$(dirname $cdir)
 basen=`basename $cdir`
@@ -34,7 +34,7 @@ rm -rf /tmp/boca-$ver/.git
 rm -f /tmp/boca-$ver/tools/boca-*.tgz
 if [ "$ver" != "" -a -d "boca-$ver" ]; then
 echo "boca-$ver" > boca-$ver/src/version
-echo -e "<?php\n\$BOCAVERSION='boca-$ver';\n\$YEAR='2013';\n?>\n" > boca-$ver/src/versionnum.php 
+echo -e "<?php\n\$BOCAVERSION='boca-$ver';\n\$YEAR='2014';\n?>\n" > boca-$ver/src/versionnum.php 
 touch boca-$ver/src/private/runtmp/run0.php boca-$ver/src/private/scoretmp/0.php boca-$ver/src/private/remotescores/0.dat \
   boca-$ver/src/private/remotescores/0.tmp boca-$ver/src/private/problemtmp/problem0.tmp
 rm -f boca-$ver/src/balloons/*.png
@@ -47,6 +47,10 @@ touch boca-$ver/.temp
 rm boca-$ver/.temp `find boca-$ver/ -name "*~"`
 touch boca-$ver/.temp
 rm boca-$ver/.temp `find boca-$ver/ -name ".\#*"`
+touch boca-$ver/.temp
+rm boca-$ver/.temp `find boca-$ver/ -name ".DS*"`
+touch boca-$ver/.temp
+rm boca-$ver/.temp `find boca-$ver/ -name "._*"`
 cd boca-$ver/tools/etc
 tar czf ../icpc.etc.tgz *
 cd ../../..

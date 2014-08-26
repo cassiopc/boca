@@ -1,7 +1,7 @@
 #!/bin/bash
 # ////////////////////////////////////////////////////////////////////////////////
 # //BOCA Online Contest Administrator
-# //    Copyright (C) 2003-2012 by BOCA System (bocasystem@gmail.com)
+# //    Copyright (C) 2003-2014 by BOCA System (bocasystem@gmail.com)
 # //
 # //    This program is free software: you can redistribute it and/or modify
 # //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-#Last modified: 22/aug/2012 by cassio@ime.usp.br
+#Last modified: 21/aug/2014 by cassio@ime.usp.br
 #
 # parameters are:
 # $1 exe_file
@@ -74,7 +74,7 @@ if [ ! -r "$2" ]; then
     echo "$2 not found (or is not in the current dir) or it's not readable"
     exit 45
 fi
-if [ ! -x $sf ]; then
+if [ ! -x "$sf" ]; then
     echo "$sf not found or it's not executable"
     exit 46
 fi
@@ -117,7 +117,7 @@ fi
 
 cdir=`pwd`
 echo "Current directory is $cdir -- chrooting on it" >&2
-$sf -F10 -f$maxf -r$nruns -n1 -R$cdir -C. -U$bocau -G$bocag -ostdout0 -estderr0 -d$maxm -m$maxm -t$time -T$ttime -istdin0 ./run.exe
+"$sf" -F10 -f$maxf -r$nruns -n1 -R$cdir -C. -U$bocau -G$bocag -ostdout0 -estderr0 -d$maxm -m$maxm -t$time -T$ttime -istdin0 ./run.exe
 ret=$?
 if [ $ret -gt 10 ]; then
 	ret=0

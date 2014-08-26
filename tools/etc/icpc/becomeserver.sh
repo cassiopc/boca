@@ -1,7 +1,7 @@
 #!/bin/bash
 # ////////////////////////////////////////////////////////////////////////////////
 # //BOCA Online Contest Administrator
-# //    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+# //    Copyright (C) 2003-2014 by BOCA Development Team (bocasystem@gmail.com)
 # //
 # //    This program is free software: you can redistribute it and/or modify
 # //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 06/aug/2012 by cassio@ime.usp.br
+# // Last modified 15/aug/2014 by cassio@ime.usp.br
 for i in id chown chmod cut awk grep cat sed makepasswd ifconfig iptables php touch mkdir update-rc.d su rm mv; do
   p=`which $i`
   if [ -x "$p" ]; then
@@ -25,6 +25,15 @@ for i in id chown chmod cut awk grep cat sed makepasswd ifconfig iptables php to
     exit 1
   fi
 done
+bkpserver=0
+if [ "$1" == "bkp" ]; then
+  if [ "$2" == "" ]; then
+    echo "Usage $0 bkp <IP-number-of-main-server>"
+    exit 1
+  else
+    bkpserver=$2
+  fi
+fi
 
 if [ "`id -u`" != "0" ]; then
   echo "Must be run as root"
@@ -90,17 +99,21 @@ for i in `ls /etc/postgresql/*/main/pg_hba.conf`; do
    echo "For doing that, I am using the line:"
    echo ""
    echo -e "echo \"host bocadb bocauser 0/0 md5\" >> $i"
+   echo -e "echo \"host postgres replication 0/0 md5\" >> $i"
    echo ""
-   echo "==> IDEALLY FOR IMPROVED SECURITY, REPLACE THE 0/0 ABOVE (IN THAT FILE) WITH THE IP ADDRESS OF THE AUTOJUDGE MACHINE <=="
+   echo "==> IDEALLY FOR IMPROVED SECURITY, REPLACE THE FIRST 0/0 ABOVE (IN THAT FILE) WITH THE IP ADDRESS OF THE AUTOJUDGE MACHINE <=="
    echo "==> IF YOU HAVE MULTIPLE AUTOJUDGE MACHINES, WRITE ONE LINE FOR EACH IP ADDRESS THERE IN THE FILE <=="
+   echo "==> IDEALLY FOR IMPROVED SECURITY, REPLACE THE SECOND 0/0 ABOVE (FOR REPLICATION) WITH THE IP ADDRESS OF THE REPLICATION MACHINE <=="
    echo "############"
    echo "host bocadb bocauser 0/0 md5" >> $i
+   echo "host postgres replication 0/0 md5" >> $i
   else
    echo "############"
    echo "IT SEEMS YOU ALREADY HAVE MODIFIED THE FILE $i WITH BOCA'S INFORMATION"
    echo "I WOULD USE THE LINE:"
    echo ""
    echo -e "echo \"host bocadb bocauser 0/0 md5\" >> $i"
+   echo -e "echo \"host postgres replication 0/0 md5\" >> $i"
    echo ""
    echo "to give access to the database to other computers, but"
    echo ">>> I'M NOT DOING IT -- PLEASE CHECK IT <<<"
@@ -138,14 +151,49 @@ if [ $? != 0 ]; then
   echo "work_mem = 4MB" >> $i
 fi
 done
+for i in `ls /etc/postgresql/*/main/postgresql.conf`; do
+grep -q "^[^\#]*max_wal_senders" $i
+if [ $? != 0 ]; then
+  echo "max_wal_senders = 3" >> $i
+fi
+done
+for i in `ls /etc/postgresql/*/main/postgresql.conf`; do
+grep -q "^[^\#]*wal_level" $i
+if [ $? != 0 ]; then
+  echo "wal_level = hot_standby" >> $i
+fi
+done
+for i in `ls /etc/postgresql/*/main/postgresql.conf`; do
+grep -q "^[^\#]*wal_keep_segments" $i
+if [ $? != 0 ]; then
+  echo "wal_keep_segments = 100" >> $i
+fi
+done
+
+# for i in `ls /etc/postgresql/*/main/postgresql.conf`; do
+# grep -q "^[^\#]*archive_mode" $i
+# if [ $? != 0 ]; then
+#   echo "archive_mode = on" >> $i
+# fi
+# done
+# for i in `ls /etc/postgresql/*/main/postgresql.conf`; do
+# grep -q "^[^\#]*archive_command" $i
+# if [ $? != 0 ]; then
+#   echo "archive_command = 'test ! -f /var/www/pg_archive/%f.gz && gzip < %p > /var/www/pg_archive/%f.gz && chmod 640 /var/www/pg_archive/%f.gz''" >> $i
+# fi
+# done
+# mkdir -p /var/www/pg_archive
+# chown postgres:icpcadmin /var/www/pg_archive
+# chmod 6770 /var/www/pg_archive
 
 echo "You need to define a password to be used in the database."
+echo "IF THIS IS A BKP SERVER, PLEASE USE THE SAME AS IN THE MAIN SERVER."
 echo -n "It is possible generate a random one. Want a random password "
 read -p "[Y/n]? " OK
 if [ "$OK" = "n" ]; then
  read -p "Enter DB password: " -s PASS
 else
- PASS=`makepasswd --char 8`
+ PASS=`makepasswd --char 10`
  echo "The DB password is $PASS"
 fi
 echo "Keep the DB password safe!"
@@ -208,6 +256,18 @@ else
  echo "*** still, all data regarding BOCA in the database will be lost" 
 fi
 touch /etc/icpc/.isserver
+
+if [ "$bkpserver" != "0" ]; then
+ echo "Connecting to main server at $bkpserver to initialize the database -- pay attention in the following messages"
+ for i in `ls -d /var/lib/postgresql/*/main`; do
+  echo "standby_mode = \'on\'" > $i/recovery.conf
+  chmod 600 $i/recovery.conf
+  echo "primary_conninfo = \'host=$bkpserver port=5432 user=postgres password=$PASS\'" >> $i/recovery.conf
+  chown $postgresuser $i/recovery.conf
+  su - $postgresuser -c "pg_basebackup -D $i -w -R --xlog-method=stream --dbname=\'host=$bkpserver user=postgres port=5432 password=$PASS\'"
+ done
+ echo "=-=-=-= CHECK IF THE PREVIOUS MESSAGES HAVE NO ERRORS =-=-=-="
+fi
 
 echo "configuration finished. Boca should be available at http://localhost/boca/"
 echo "reboot might not be required, but is advised."

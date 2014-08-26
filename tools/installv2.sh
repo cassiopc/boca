@@ -1,7 +1,7 @@
 #!/bin/bash
 # ////////////////////////////////////////////////////////////////////////////////
 # //BOCA Online Contest Administrator
-# //    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
+# //    Copyright (C) 2003-2014 by BOCA Development Team (bocasystem@gmail.com)
 # //
 # //    This program is free software: you can redistribute it and/or modify
 # //    it under the terms of the GNU General Public License as published by
@@ -15,13 +15,21 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 11/sep/2013 by cassio@ime.usp.br
+# // Last modified 21/Aug/2014 by cassio@ime.usp.br
 #///////////////////////////////////////////////////////////////////////////////////////////
 echo "#############################################################"
-echo "### installv2.sh of 11/Sept/2013 (A) by cassio@ime.usp.br ###"
+echo "### installv2.sh of 21/Aug/2014 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
 
-apt-get install python-software-properties software-properties-common
+if [ "`id -u`" != "0" ]; then
+  echo "Must be run as root"
+  exit 1
+fi
+
+apt-get -y install python-software-properties 2>/dev/null
+apt-get -y install software-properties-common 2>/dev/null
+#apt-get -y install virtualbox-guest-utils virtualbox-guest-dkms 2>/dev/null
+#apt-get -y install virtualbox-guest-x11 2>/dev/null
 
 for i in id chown chmod cut awk tail grep cat sed mkdir rm mv sleep apt-get add-apt-repository update-alternatives; do
   p=`which $i`
@@ -38,11 +46,6 @@ echo "$0" | grep -q "install.*sh"
 if [ $? != 0 ]; then
   echo "Make the install script executable (using chmod) and run it directly, like ./installv2.sh"
 else  
-
-if [ "`id -u`" != "0" ]; then
-  echo "Must be run as root"
-  exit 1
-fi
 
 if [ "$1" != "alreadydone" ]; then
   echo "It is recommended that you run the commands"
@@ -69,9 +72,11 @@ sed -i 's/X-GNOME-Autostart-Delay=60/X-GNOME-Autostart-enabled=false/' /etc/xdg/
 echo "============================================================="
 echo "========= UNINSTALLING SOME UNNECESSARY PACKAGES  ==========="
 echo "============================================================="
-apt-get -y purge libreoffice-common libreoffice-base-core bluez thunderbird \
-  ubuntuone-client python-ubuntuone-client \
-  ubuntuone-installer python-ubuntuone-storageprotocol
+apt-get -y purge libreoffice-common libreoffice-base-core 
+apt-get -y purge bluez thunderbird
+apt-get -y purge unity-lens-shopping
+apt-get -y purge unity-webapps-common
+apt-get -y purge ubuntuone-client python-ubuntuone-client ubuntuone-installer python-ubuntuone-storageprotocol
 
 echo "========= INSTALLING SYSVINIT-UTILS ==========="
 apt-get -y install sysvinit-utils
@@ -111,15 +116,21 @@ if [ "$libCppdoc" == "" ]; then
   echo "libstdc++6-*-doc not found"
   exit 1
 fi
+geanydeb=`apt-cache search geany-plugin-gdb`
+if [ "$geanydeb" == "" ]; then
+  geanydeb=debugger
+else
+  geanydeb=gdb
+fi
 
 echo "====================================================================="
 echo "================= installing packages needed by BOCA  ==============="
 echo "====================================================================="
 
 apt-get -y install zenity apache2 eclipse-pde eclipse-rcp eclipse-platform eclipse-jdt eclipse-cdt eclipse emacs \
-  evince g++ gcc gedit scite libstdc++6 makepasswd manpages-dev mii-diag php5-cli php5-mcrypt openjdk-6-dbg \
+  evince g++ gcc gedit scite libstdc++6 makepasswd manpages-dev php5-cli php5-mcrypt openjdk-6-dbg \
   php5 php5-pgsql postgresql postgresql-client postgresql-contrib quota sharutils default-jdk openjdk-6-doc \
-  vim-gnome geany geany-plugin-addons geany-plugin-gdb geany-plugins default-jre sysstat \
+  vim-gnome geany geany-plugin-addons geany-plugins geany-plugin-${geanydeb} default-jre sysstat \
   vim xfce4 $libCppdev $libCppdoc $libCppdbg php5-gd stl-manual gcc-doc debootstrap schroot c++-annotations
 if [ $? != 0 ]; then
   echo ""
@@ -170,9 +181,10 @@ Exec=firefox /usr/share/doc/c++-annotations/html/index.html
 Terminal=false
 Type=Application
 EOF
-cp /usr/share/applications/eclipse.desktop /etc/skel/Desktop/
-cp /usr/share/applications/gedit.desktop /etc/skel/Desktop/
-cp /usr/share/applications/emacs23.desktop /etc/skel/Desktop/
+[ -f /usr/share/applications/eclipse.desktop ] && cp /usr/share/applications/eclipse.desktop /etc/skel/Desktop/
+[ -f /usr/share/applications/gedit.desktop ] && cp /usr/share/applications/gedit.desktop /etc/skel/Desktop/
+[ -f /usr/share/applications/emacs23.desktop ] && cp /usr/share/applications/emacs23.desktop /etc/skel/Desktop/
+[ -f /usr/share/applications/emacs24.desktop ] && cp /usr/share/applications/emacs24.desktop /etc/skel/Desktop/
 cp /usr/share/applications/gnome-terminal.desktop /etc/skel/Desktop/
 chmod 755 /etc/skel/Desktop/*.desktop
 

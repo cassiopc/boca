@@ -73,7 +73,7 @@ if [ "${name##*.}" == "zip" -a "${name##*.}" == "ZIP" ]; then
 		name=`basename $name .ZIP`
 	fi
 else
-	cp $name src
+	cp "$name" src
 fi
 chown -R $bocau src
 chmod -R 700 src

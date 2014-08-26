@@ -75,6 +75,7 @@ if [ $? == 0 -a "$BOCASERVER" == "localhost" ]; then
 	su - $postgresuser -c "echo drop user bocauser | psql -d template1 >/dev/null 2>/dev/null"
 	su - $postgresuser -c "echo create user bocauser createdb password \'$PASS\' | psql -d template1 2>/dev/null"
 	su - $postgresuser -c "echo alter user bocauser createdb password \'$PASS\' | psql -d template1"
+	su - $postgresuser -c "echo alter user postgres password \'$PASS\' | psql -d template1"
 	rm -f /tmp/.boca.tmp
 fi
 
