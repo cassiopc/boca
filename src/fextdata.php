@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2014 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,11 +15,26 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 28/oct/2013 by cassio@ime.usp.br
+// Last modified 04/sept/2014 by cassio@ime.usp.br
 
 function scoretransfer($putname, $localsite) {
 	$ds = DIRECTORY_SEPARATOR;
 	if($ds=="") $ds = "/";
+
+	if(is_readable('/etc/boca.conf')) {
+		$pif=parse_ini_file('/etc/boca.conf');
+		$bocaproxy = @trim($pif['proxy']);
+		if(substr($bocaproxy,0,6) != 'tcp://')
+			$bocaproxy = 'tcp://' . $bocaproxy;
+		$bocaproxylogin = @trim($pif['proxylogin']);
+		$bocaproxypass = @trim($pif['proxypassword']);
+		if($bocaproxylogin != "")
+			$bocaproxypass = base64_encode($bocaproxylogin . ":" . $bocaproxypass)
+	} else {
+		$bocaproxy = "";
+		$bocaproxypass = "";
+	}
+
 	$privatedir = $_SESSION['locr'] . $ds . "private";
 	if(!is_readable($privatedir . $ds . 'remotescores' . $ds . "otherservers")) return;
 	$localfile = "score_site" . $localsite . "_" . $localsite . "_x.dat";
@@ -55,20 +70,21 @@ function scoretransfer($putname, $localsite) {
 		$opts = array(
 			'http' => array(
 				'method' => 'GET',
+				'request_fulluri' => true, 
 				'header' => 'Cookie: PHPSESSID=' . $sess
 				)
 			);
+		if($bocaproxy != "")
+			$opts['http']['proxy'] = $bocaproxy;
+		if($bocapass != "")
+			$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocapass;
+
 		$context = stream_context_create($opts);
+
+
 		$ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=scoretransfer", 0, $context);
 //		LOGError("ok=" . $ok);
 		if(substr($ok,strlen($ok)-strlen('SCORETRANSFER OK'),strlen('SCORETRANSFER OK')) == 'SCORETRANSFER OK') {
-			$opts = array(
-				'http' => array(
-					'method' => 'GET',
-					'header' => 'Cookie: PHPSESSID=' . $sess
-					)
-				);
-			$context = stream_context_create($opts);
 			$res = @file_get_contents($siteurl . $urldiv . "scoretable.php?remote=-42", 0, $context);
 			@file_put_contents($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip', $res);
 			if(is_readable($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip')) {
@@ -104,12 +120,20 @@ function scoretransfer($putname, $localsite) {
 			$data = @file_get_contents($putname);
 			$data_url = http_build_query(array('data' => $data,
 										 ));
+
 			$opts = array(
 				'http' => array(
 					'method' => 'POST',
+					'request_fulluri' => true, 
 					'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
 					'content' => $data_url
-					));
+					)
+				);
+			if($bocaproxy != "")
+				$opts['http']['proxy'] = $bocaproxy;
+			if($bocapass != "")
+				$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocapass;
+
 			$context = stream_context_create($opts);
 			$s = @file_get_contents($siteurl . $urldiv . "site/putfile.php", 0, $context);
 			if(strpos($s,'SCORE UPLOADED OK') !== false)
