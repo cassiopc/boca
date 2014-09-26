@@ -240,7 +240,12 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		echo "Executing TEST SCRIPT " . $ex . " at " . getcwd() . "\n";
 		if(system($ex, $retval)===false) $retval=-1;
 		if($retval != 0) {
-			echo "Error running test script -- please check the problem package\n";
+			echo "Error running test script -- please check the problem package or your installation\n";
+			echo "=====stderr======\n";
+			echo file_get_contents('stderr');
+			echo "\n=====stdout======\n";
+			echo file_get_contents('stdout');
+			echo "\n===========\n";
 			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: internal test script failed (" . $file . ")");
 			$cont=true;
 			break;
