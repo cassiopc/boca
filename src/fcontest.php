@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2013 by BOCA System (bocasystem@gmail.com)
+//    Copyright (C) 2003-2014 by BOCA System (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,8 +15,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 12/sep/2013 by cassio@ime.usp.br
-
+//Last updated 26/oct/2014 by cassio@ime.usp.br
+//        inclusion of default extra language C++11
+//
 function DBDropContestTable() {
 	 $c = DBConnect();
 	 $r = DBExec($c, "drop table \"contesttable\"", "DBDropContestTable(drop table)");
@@ -989,6 +990,10 @@ function insertlanguages($n,$c=null) {
 	$param['number']=3;
 	$param['name']='Java';
 	$param['extension']='java';
+	DBNewLanguage($n, $param, $c);
+	$param['number']=4;
+	$param['name']='C++11';
+	$param['extension']='cc';
 	DBNewLanguage($n, $param, $c);
 }
 function insertanswers($n,$c) {
