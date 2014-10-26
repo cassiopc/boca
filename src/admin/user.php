@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2014 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 20/sep/2013 by cassio@ime.usp.br
+// Last modified 26/oct/2014 by cassio@ime.usp.br
+//   allow passwords to be changed by default
+//
 require('header.php');
 
 if (isset($_GET["site"]) && isset($_GET["user"]) && is_numeric($_GET["site"]) && is_numeric($_GET["user"]) &&
@@ -49,6 +51,7 @@ if (isset($_POST["username"]) && isset($_POST["userfullname"]) && isset($_POST["
 	$param['type'] = htmlspecialchars($_POST["usertype"]);
 	$param['permitip'] = htmlspecialchars($_POST["userip"]);
 	$param['contest'] = $_SESSION["usertable"]["contestnumber"];
+	$param['changepass']='t';
 /*
 	$param['user'] = myhtmlspecialchars($_POST["usernumber"]);
 	$param['site'] = myhtmlspecialchars($_POST["usersitenumber"]);
