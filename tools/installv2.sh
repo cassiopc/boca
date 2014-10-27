@@ -15,11 +15,11 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 26/Oct/2014 by cassio@ime.usp.br
+# // Last modified 27/Oct/2014 by cassio@ime.usp.br
 # //    inclusion of gcc-4.8 and update to Java 7
 #///////////////////////////////////////////////////////////////////////////////////////////
 echo "#############################################################"
-echo "### installv2.sh of 26/Oct/2014 (A) by cassio@ime.usp.br ###"
+echo "### installv2.sh of 27/Oct/2014 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
 
 if [ "`id -u`" != "0" ]; then
