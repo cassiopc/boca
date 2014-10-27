@@ -59,7 +59,6 @@ rm -rf /bocajail
 mkdir -p $homejail/tmp
 chmod 1777 $homejail/tmp
 ln -s $homejail /bocajail
-[ -x /usr/bin/safeexec ] && cp -a /usr/bin/safeexec /bocajail/usr/bin/
 #for i in usr lib var bin sbin etc dev; do
 #  [ -d $homejail/$i ] && rm -rf $homejail/$i
 #  cp -ar /$i $homejail
@@ -113,7 +112,9 @@ echo "*** Populating $homejail"
 cat <<EOF > /home/bocajail/tmp/populate.sh
 #!/bin/bash
 mount -t proc proc /proc
+add-apt-repository ppa:ubuntu-toolchain-r/test
 apt-get -y update
+apt-get -y upgrade
 apt-get -y install g++ gcc libstdc++6 sharutils default-jdk default-jre
 apt-get -y install gcc-4.8 g++-4.8
 apt-get -y install openjdk-7-jdk openjdk-7-jre
@@ -131,6 +132,8 @@ update-alternatives --install /usr/bin/javah javah /usr/lib/jvm/java-6-openjdk-*
 
 umount /proc
 EOF
+mkdir -p /bocajail/usr/bin
+[ -x /usr/bin/safeexec ] && cp -a /usr/bin/safeexec /bocajail/usr/bin/
 cp -f /etc/apt/sources.list $homejail/etc/apt/
 chmod 755 /home/bocajail/tmp/populate.sh
 cd / ; chroot $homejail /tmp/populate.sh
