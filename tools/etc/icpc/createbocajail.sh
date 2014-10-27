@@ -112,13 +112,14 @@ echo "*** Populating $homejail"
 cat <<EOF > /home/bocajail/tmp/populate.sh
 #!/bin/bash
 mount -t proc proc /proc
-add-apt-repository ppa:ubuntu-toolchain-r/test
+apt-get -y update
+apt-get -y install python-software-properties
+add-apt-repository -y ppa:ubuntu-toolchain-r/test
 apt-get -y update
 apt-get -y upgrade
 apt-get -y install g++ gcc libstdc++6 sharutils default-jdk default-jre
 apt-get -y install gcc-4.8 g++-4.8
 apt-get -y install openjdk-7-jdk openjdk-7-jre
-apt-get -y autoremove
 apt-get -y clean
 
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
