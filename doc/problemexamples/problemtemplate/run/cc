@@ -1,0 +1,128 @@
+#!/bin/bash
+# ////////////////////////////////////////////////////////////////////////////////
+# //BOCA Online Contest Administrator
+# //    Copyright (C) 2003-2014 by BOCA System (bocasystem@gmail.com)
+# //
+# //    This program is free software: you can redistribute it and/or modify
+# //    it under the terms of the GNU General Public License as published by
+# //    the Free Software Foundation, either version 3 of the License, or
+# //    (at your option) any later version.
+# //
+# //    This program is distributed in the hope that it will be useful,
+# //    but WITHOUT ANY WARRANTY; without even the implied warranty of
+# //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# //    GNU General Public License for more details.
+# //    You should have received a copy of the GNU General Public License
+# //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# ////////////////////////////////////////////////////////////////////////////////
+#Last modified: 21/aug/2014 by cassio@ime.usp.br
+#
+# parameters are:
+# $1 exe_file
+# $2 input_file
+# $3 timelimit (limit to run all the repetitions, by default only one repetition)
+# $4 number_of_repetitions_to_run (optional, can be used for better tuning the timelimit)
+# $5 maximum allowed memory (in MBytes)
+# $6 maximum allowed output size (in KBytes)
+#
+# the output of the submission should be directed to the standard output
+#
+# the return code show what happened (according to safeexec):
+# 0 ok
+# 1 compile error
+# 2 runtime error
+# 3 timelimit exceeded
+# 4 internal error
+# 5 parameter error
+# 6 internal error
+# 7 memory limit exceeded
+# 8 security threat
+# 9 runtime error
+# other_codes are unknown to boca: in this case BOCA will present the
+#                                  last line of standard output to the judge
+
+umask 0022
+id -u bocajail >/dev/null 2>/dev/null
+if [ $? == 0 ]; then
+	bocau=`id -u bocajail`
+	bocag=`id -g bocajail`
+	chown bocajail.nogroup .
+else
+	bocau=`id -u nobody`
+	bocag=`id -g nobody`
+	chown nobody.nogroup .
+fi
+if [ "$bocau" == "" -o "$bocag" == "" ]; then
+	echo "error finding user to run script"
+	exit 43
+fi
+
+# this script makes use of safeexec to execute the code with less privilegies
+# make sure that directories below are correct.
+sf=`which safeexec`
+[ -x "$sf" ] || sf=/usr/bin/safeexec
+
+if [ "$1" == "" -o "$2" == "" -o "$3" == "" ]; then
+    echo "parameter problem"
+    exit 43
+fi
+if [ ! -x "$1" ]; then
+    echo "$1 not found (or is not in the current dir) or it's not executable"
+    exit 44
+fi
+if [ ! -r "$2" ]; then
+    echo "$2 not found (or is not in the current dir) or it's not readable"
+    exit 45
+fi
+if [ ! -x "$sf" ]; then
+    echo "$sf not found or it's not executable"
+    exit 46
+fi
+
+time=$3
+if [ "$time" -gt "0" ]; then
+  let "ttime = $time + 30"
+else
+  time=1
+  ttime=30
+fi
+
+nruns=1
+if [ "$4" != "" ]; then
+  if [ "$4" -gt "0" ]; then
+    nruns=$4
+  fi
+fi
+maxm=512000
+if [ "$5" != "" ]; then
+  if [ "$5" -gt "0" ]; then
+    maxm=${5}000
+  fi
+fi
+maxf=1024
+if [ "$6" != "" ]; then
+  if [ "$6" -gt "0" ]; then
+    maxf=${6}
+  fi
+fi
+
+cp "$2" stdin0 2>/dev/null
+cp "$1" run.exe 2>/dev/null
+
+file run.exe | grep -iq "statically linked"
+if [ "$?" != "0" ]; then
+  echo "Aborting because $1 is not statically linked"
+  exit 47
+fi
+
+cdir=`pwd`
+echo "Current directory is $cdir -- chrooting on it" >&2
+"$sf" -F10 -f$maxf -r$nruns -n1 -R$cdir -C. -U$bocau -G$bocag -ostdout0 -estderr0 -d$maxm -m$maxm -t$time -T$ttime -istdin0 ./run.exe
+ret=$?
+if [ $ret -gt 10 ]; then
+	ret=0
+fi
+if [ -f stdout0 ]; then
+  cat stdout0
+fi
+exit $ret

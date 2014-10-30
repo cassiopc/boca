@@ -15,10 +15,11 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 21/Aug/2014 by cassio@ime.usp.br
+# // Last modified 27/Oct/2014 by cassio@ime.usp.br
+# //    inclusion of gcc-4.8 and update to Java 7
 #///////////////////////////////////////////////////////////////////////////////////////////
 echo "#############################################################"
-echo "### installv2.sh of 21/Aug/2014 (A) by cassio@ime.usp.br ###"
+echo "### installv2.sh of 27/Oct/2014 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
 
 if [ "`id -u`" != "0" ]; then
@@ -89,15 +90,19 @@ if [ $? != 0 ]; then
   fi
 fi
 
-echo "====================================================================="
-echo "============== CHECKING FOR canonical.com APT SERVER  ==============="
-echo "====================================================================="
-
+echo "=============================================================="
+echo "============== CHECKING FOR OTHER APT SERVERS  ==============="
+echo "=============================================================="
+echo "============== CHECKING FOR canonical.com APT SERVER  ========"
 cd 
 grep -q "^[^\#]*deb http://archive.canonical.com.* $DISTRIB_CODENAME .*partner" /etc/apt/sources.list
 if [ $? != 0 ]; then
   add-apt-repository "deb http://archive.canonical.com/ubuntu $DISTRIB_CODENAME partner"
 fi
+echo "=============================================================="
+echo "============== ADDING extra rep for C++11 ===================="
+add-apt-repository ppa:ubuntu-toolchain-r/test
+
 apt-get -y update
 apt-get -y upgrade
 
@@ -128,8 +133,8 @@ echo "================= installing packages needed by BOCA  ==============="
 echo "====================================================================="
 
 apt-get -y install zenity apache2 eclipse-pde eclipse-rcp eclipse-platform eclipse-jdt eclipse-cdt eclipse emacs \
-  evince g++ gcc gedit scite libstdc++6 makepasswd manpages-dev php5-cli php5-mcrypt openjdk-6-dbg \
-  php5 php5-pgsql postgresql postgresql-client postgresql-contrib quota sharutils default-jdk openjdk-6-doc \
+  evince g++ gcc gedit scite libstdc++6 makepasswd manpages-dev php5-cli php5-mcrypt openjdk-7-dbg openjdk-7-jdk \
+  php5 php5-pgsql postgresql postgresql-client postgresql-contrib quota sharutils default-jdk openjdk-7-doc \
   vim-gnome geany geany-plugin-addons geany-plugins geany-plugin-${geanydeb} default-jre sysstat \
   vim xfce4 $libCppdev $libCppdoc $libCppdbg php5-gd stl-manual gcc-doc debootstrap schroot c++-annotations
 if [ $? != 0 ]; then
@@ -137,6 +142,23 @@ if [ $? != 0 ]; then
   echo "ERROR running the apt-get -- must check if all needed packages are available"
   exit 1
 fi
+apt-get -y install gcc-4.8 g++-4.8
+if [ $? != 0 ]; then
+  echo ""
+  echo "ERROR running the apt-get for gcc 4.8 -- must check if all needed packages are available"
+  exit 1
+fi
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6
+
+update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-6-openjdk-*/jre/bin/java 10 
+update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-6-openjdk-*/bin/javac 10 
+update-alternatives --install /usr/bin/javadoc javadoc /usr/lib/jvm/java-6-openjdk-*/bin/javadoc 10 
+update-alternatives --install /usr/bin/javap javap /usr/lib/jvm/java-6-openjdk-*/bin/javap 10 
+update-alternatives --install /usr/bin/javah javah /usr/lib/jvm/java-6-openjdk-*/bin/javah 10 
+
+apt-get -y autoremove
+apt-get -y clean
 
 for i in makepasswd useradd update-rc.d; do
   p=`which $i`
@@ -159,7 +181,7 @@ cat <<EOF > /etc/skel/Desktop/javadoc.desktop
 Version=1.5.1
 Name=Java API
 Comment=Java API
-Exec=firefox /usr/share/doc/openjdk-6-jre-headless/api/index.html
+Exec=firefox /usr/share/doc/openjdk-7-jre-headless/api/index.html
 Terminal=false
 Type=Application
 EOF

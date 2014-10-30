@@ -1,3 +1,7 @@
+version 1.5.9:
+- allow password change as default (can be blocked by input users via file)
+- inclusion of default language C++11
+
 version 1.5.8:
 - force empty language/problem as default selection of teams' runs
 - accept url+user+password at field main contest url to exchange scoreboards
