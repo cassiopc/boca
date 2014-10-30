@@ -15,12 +15,21 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 27/Oct/2014 by cassio@ime.usp.br
+# // modified 30/Oct/2014 by cassio@ime.usp.br
+# //    inclusion of extra warning about losing your own files
+# // modified 27/Oct/2014 by cassio@ime.usp.br
 # //    inclusion of gcc-4.8 and update to Java 7
 #///////////////////////////////////////////////////////////////////////////////////////////
 echo "#############################################################"
-echo "### installv2.sh of 27/Oct/2014 (A) by cassio@ime.usp.br ###"
+echo "### installv2.sh of 30/Oct/2014 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
+
+echo "###"
+echo "####"
+echo "##### NEVER RUN installv2.sh in a computer that is not a FRESH ubuntu (you might lose stuff)"
+echo "####"
+echo "### press control-C to stop now or enter to proceed"
+read lin
 
 if [ "`id -u`" != "0" ]; then
   echo "Must be run as root"
