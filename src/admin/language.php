@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 08/aug/2015 by cassio@ime.usp.br
 require('header.php');
 
 if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
@@ -29,12 +29,17 @@ if (isset($_GET["delete"]) && is_numeric($_GET["delete"])) {
 
 if (isset($_POST["Submit3"]) && isset($_POST["langnumber"]) && is_numeric($_POST["langnumber"]) && 
     isset($_POST["langname"]) && $_POST["langname"] != "") {
+	if(strpos(trim($_POST["langname"]),' ')!==false) {
+		$_POST["confirmation"]='';
+		MSGError('Language name cannot have spaces');
+	} else {
 	if ($_POST["confirmation"] == "confirm") {
 		$param = array();
 		$param['number'] = $_POST['langnumber'];
-		$param['name'] = $_POST['langname'];
+		$param['name'] = trim($_POST['langname']);
 		$param['extension'] = $_POST['langextension'];
 		DBNewLanguage ($_SESSION["usertable"]["contestnumber"], $param);
+	}
 	}
 	ForceLoad("language.php");
 }

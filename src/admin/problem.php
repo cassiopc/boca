@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 31/aug/2012 by cassio@ime.usp.br
+// Last modified 08/aug/2015 by cassio@ime.usp.br
 if ($_POST["confirmation"] != "confirm")
 	unset($_POST['noflush']);
 
@@ -168,6 +168,10 @@ if(isset($_POST['Submit5']) && $_POST['Submit5']=='Send') {
 
 if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_POST["problemnumber"]) && 
     isset($_POST["problemname"]) && $_POST["problemname"] != "") {
+	if(strpos(trim($_POST["problemname"]),' ')!==false) {
+		$_POST["confirmation"]='';
+		MSGError('Problem short name cannot have spaces');
+	} else {
 	if ($_POST["confirmation"] == "confirm") {
 		if ($_FILES["probleminput"]["name"] != "") {
 			$type=myhtmlspecialchars($_FILES["probleminput"]["type"]);
@@ -182,13 +186,14 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
 
 		$param = array();
 		$param['number'] = $_POST["problemnumber"];
-		$param['name'] = $_POST["problemname"];
+		$param['name'] = trim($_POST["problemname"]);
 		$param['inputfilename'] = $name;
 		$param['inputfilepath'] = $temp;
 		$param['fake'] = 'f';
 		$param['colorname'] = $_POST["colorname"];
 		$param['color'] = $_POST["color"];
 		DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
+	}
 	}
 	ForceLoad("problem.php");
 }
@@ -340,7 +345,7 @@ To replace the data of a problem, proceed as if it did not exist (data will be r
         </td>
       </tr>
       <tr>
-	 <td width="35%" align=right>Short Name (usually a letter):</td>
+	 <td width="35%" align=right>Short Name (usually a letter, no spaces):</td>
         <td width="65%">
           <input type="text" name="problemname" value="" size="20" maxlength="20" />
         </td>

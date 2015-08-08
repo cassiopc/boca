@@ -15,15 +15,21 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 28/oct/2013 by cassio@ime.usp.br
+// Last modified 08/aug/2015 by cassio@ime.usp.br
 require('header.php');
+$ds = DIRECTORY_SEPARATOR;
+if($ds=="") $ds = "/";
 
 if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Submit"]) && isset($_POST["language"]) &&
     is_numeric($_POST["problem"]) && is_numeric($_POST["language"]) && $_FILES["sourcefile"]["name"]!="") {
 	if ($_POST["confirmation"] == "confirm") {
-		if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
+		if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null) {
+			if(isset($_POST['pastcode']) && $_POST['pastcode'] != '') {
+				echo "RESULT: CONTEST NOT FOUND";
+				exit;
+			}
 			ForceLoad("../index.php");
-
+		}
 		$prob = myhtmlspecialchars($_POST["problem"]);
 		$lang = myhtmlspecialchars($_POST["language"]);
 
@@ -35,14 +41,26 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Su
 		if ($size > $ct["contestmaxfilesize"]) {
 	                LOGLevel("User {$_SESSION["usertable"]["username"]} tried to submit file " .
 			"$name with $size bytes ({$ct["contestmaxfilesize"]} max allowed).", 1);
+			if(isset($_POST['pastcode']) && $_POST['pastcode'] != '') {
+				echo "RESULT: FILE TOO LARGE";
+				exit;
+			}
 			MSGError("File size exceeds the limit allowed.");
 			ForceLoad($runteam);
 		}
 		if(strpos($name,' ') === true || strpos($temp,' ') === true) {
+			if(isset($_POST['pastcode']) && $_POST['pastcode'] != '') {
+				echo "RESULT: FILE NAME CANNOT HAVE SPACES";
+				exit;
+			}
 			MSGError("File name cannot contain spaces.");
 			ForceLoad($runteam);		
 		}
 		if (!is_uploaded_file($temp) || strlen($name)>100) {
+			if(isset($_POST['pastcode']) && $_POST['pastcode'] != '') {
+				echo "RESULT: FILE UPLOAD PROBLEM";
+				exit;
+			}
 			IntrusionNotify("file upload problem.");
 			ForceLoad("../index.php");
 		}
@@ -59,14 +77,44 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Su
 					   'lang'=>$lang,
 					   'filename'=>$name,
 					   'filepath'=>$temp);
+
+		if(isset($_POST['pastcode']) && $_POST['pastcode'] != '') {
+			$pastcode = myhtmlspecialchars($_POST["pastcode"]);
+			if(isset($_POST["pasthash"]) && isset($_POST["pastval"])) {
+				$pasthash = myhtmlspecialchars($_POST["pasthash"]);
+				$pastval = myhtmlspecialchars($_POST["pastval"]);
+				$pastsubmission = myhash(@file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config') . $pastcode);
+				if($pastsubmission != $pasthash) {
+					echo "\nRESULT: INVALID SUBMISSION CODE";
+					exit;
+				}
+			} else {
+				$pastval = 0;
+			}
+			$verify = $pastcode . '-' .$_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
+			$fcname = $_SESSION["locr"] . $ds . "private" . $ds . 'laterun-submitted-' . $_SESSION["usertable"]["contestnumber"].'-'.
+				$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"].'.txt';
+			$codes = @file($fcname);
+			if(in_array($verify,$codes)) {
+				echo "\nRESULT: RUN ALREADY SUBMITTED";
+			} else {
+				if($pastval > 0) {
+					$param['rundate']=time() - $pastval;
+					$b = DBSiteInfo($contest, $site, $c);
+					$dif = $b["currenttime"]; 
+					$param['rundatediff']=$dif - $pastval;
+				}
+				if(DBNewRun ($param) == 2)
+					@file_put_contents($fcname, $verify . '\n', FILE_APPEND | LOCK_EX);
+				echo "\nRESULT: RUN SUBMITTED SUCCESSFULLY";
+			}
+			exit;
+		}
 		DBNewRun ($param);
 		$_SESSION['forceredo']=true;
 	}
 	ForceLoad($runteam);
 }
-
-$ds = DIRECTORY_SEPARATOR;
-if($ds=="") $ds = "/";
 
 $runtmp = $_SESSION["locr"] . $ds . "private" . $ds . "runtmp" . $ds . "run-contest" . $_SESSION["usertable"]["contestnumber"] . 
 	"-site". $_SESSION["usertable"]["usersitenumber"] . "-user" . $_SESSION["usertable"]["usernumber"] . ".php";
@@ -126,6 +174,23 @@ if($redo) {
 $strtmp .= "</table>";
 if (count($run) == 0) $strtmp .= "<br><center><b><font color=\"#ff0000\">NO RUNS AVAILABLE</font></b></center>";
 
+$linesubmission = @file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-using-command.config');
+if(trim($linesubmission) == '1') {
+$strtmp .= "<br><br><center><b>To submit a program, use the command-line tool:</b>\n<br><br>".
+	"<pre>boca-send-run USER PASSWORD PROBLEM LANGUAGE FILE</pre><br><br>".
+    "where <pre>USER</pre> is your username, <pre>PASSWORD</pre> is your password, <pre>FILE</pre> is your submission file,<br>".
+	"<pre>PROBLEM</pre> is one of { <pre>";
+
+$prob = DBGetProblems($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usertype"]=='judge');
+for ($i=0;$i<count($prob);$i++)
+	$strtmp .= $prob[$i]["problem"] . " ";
+$strtmp .= "</pre>} and<br><pre>LANGUAGE</pre> is one of { <pre>"
+$lang = DBGetLanguages($_SESSION["usertable"]["contestnumber"]);
+for ($i=0;$i<count($lang);$i++)
+	$strtmp .= $lang[$i]["name"] . " ";
+$strtmp .= "</pre>}<br><br>\n";
+} else {
+
 $strtmp .= "<br><br><center><b>To submit a program, just fill in the following fields:</b></center>\n".
 "<form name=\"form1\" enctype=\"multipart/form-data\" method=\"post\" action=\"". $runteam ."\">\n".
 "  <input type=hidden name=\"confirmation\" value=\"noconfirm\" />\n".
@@ -177,6 +242,7 @@ $strtmp .= "	  </select>\n".
 "      <input type=\"reset\" name=\"Submit2\" value=\"Clear\">\n".
 "  </center>\n".
 "</form>\n";
+}
     $conf=globalconf();
     $strtmp1 = "<!-- " . time() . " --> <?php exit; ?>\t" . encryptData($strcolors,$conf["key"],false) . "\n" . encryptData($strtmp,$conf["key"],false);
 	$randnum = session_id() . "_" . rand();
