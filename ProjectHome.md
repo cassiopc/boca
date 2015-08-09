@@ -1,0 +1,1 @@
+This is an administration system to held programming contests (e.g. ACM-ICPC, Maratona de Programação da SBC). The main desired features are: portability, concurrency control, multi-site and distributed contests, simple web interface.
