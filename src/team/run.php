@@ -177,7 +177,7 @@ if (count($run) == 0) $strtmp .= "<br><center><b><font color=\"#ff0000\">NO RUNS
 $linesubmission = @file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-using-command.config');
 if(trim($linesubmission) == '1') {
 $strtmp .= "<br><br><center><b>To submit a program, use the command-line tool:</b>\n<br><br>".
-	"<pre>boca-send-run USER PASSWORD PROBLEM LANGUAGE FILE</pre><br><br>".
+	"<pre>boca-submit-run USER PASSWORD PROBLEM LANGUAGE FILE</pre><br><br>".
     "where <pre>USER</pre> is your username, <pre>PASSWORD</pre> is your password, <pre>FILE</pre> is your submission file,<br>".
 	"<pre>PROBLEM</pre> is one of { <pre>";
 

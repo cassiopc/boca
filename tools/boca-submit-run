@@ -1,0 +1,55 @@
+#!/bin/bash
+
+[ -x /etc/icpc/bocaservers.sh ] && . /etc/icpc/bocaservers.sh
+[ -x /etc/icpc/bocaserver.sh ] && . /etc/icpc/bocaserver.sh
+if [ "$BOCASERVER" != "" ]; then
+	if [ "$BOCASERVERS" == "" ]; then
+		BOCASERVERS=$BOCASERVER
+	else
+		BOCASERVERS="$BOCASERVERS;$BOCASERVER"
+	fi
+fi
+
+if [ "$BOCASERVERS" == "" ]; then
+	echo "This computer has no configured BOCA server. Ask an admin to update /etc/icpc/bocaserver.sh (usually resetting everything is an easy way)"
+	exit 1
+fi
+
+
+for i in uuencode wget tr perl sha256sum cut; do
+  p=`which $i`
+  if [ -x "$p" ]; then
+    echo -n ""
+  else
+    echo "$i" not found
+    exit 1
+  fi
+done
+temp=/tmp/.temp.`date +%s%N`.txt
+
+if [ "$1" == "" ]; then
+	echo "Usage: $0 USER PASSWORD PROBLEM LANGUAGE FILE"
+	echo ""
+	echo "where USER is your username"
+	echo "PASSWORD is your password"
+	echo "FILE is your submission file"
+	echo "PROBLEM and LANGUAGE are according to defined in BOCA"
+	exit 1
+fi
+
+if [ -r "$5" ]; then
+	nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
+	for BOCASERVER in `echo $BOCASERVERS | cut -d';'`; do
+		echo "$BOCASERVER: time-out - this will automatically retry soon, you should not worry"
+		echo "BOCASERVER=$BOCASERVER" > $temp
+		echo "user=$user" >> $temp
+		echo "pass=$pass" >> $temp
+		echo "name=${nom}" >> $temp
+		echo -n "data=" >> $temp
+		uuencode -m zzzzzzzzzz < "$5" | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+		echo "" >> $temp
+		boca-submit-run-aux $temp
+	done
+else
+	echo "file $1 not found/readable"
+fi
