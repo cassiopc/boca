@@ -1,16 +1,9 @@
 #!/bin/bash
 
-[ -x /etc/icpc/bocaserver.sh ] && . /etc/icpc/bocaserver.sh
-if [ "$BOCASERVER" == "" ]; then
-  echo "This computer has no configured BOCA server. Ask an admin to update /etc/icpc/bocaserver.sh (usually resetting everything is an easy way)"
+[ -r "$1" ] && . "$1"
+if [ "$BOCASERVER" == "" -o "$user" == "" -o "$pass" == "" -o "$data" == "" -o "$name" == "" ]; then
+  echo "parameters missing in file $1"
   exit 1
-fi
-
-[ -x /etc/icpc/bocaservers.sh ] && . /etc/icpc/bocaservers.sh
-if [ "$BOCASERVERS" == "" ]; then
-	BOCASERVERS=$BOCASERVER
-else
-	BOCASERVERS="$BOCASERVER;$BOCASERVER"
 fi
 
 for i in uuencode wget tr perl sha256sum cut; do
@@ -24,50 +17,49 @@ for i in uuencode wget tr perl sha256sum cut; do
 done
 temp=/tmp/.temp.`date +%s%N`.txt
 
-if [ "$1" == "" ]; then
-	echo "Usage: $0 USER PASSWORD PROBLEM LANGUAGE FILE"
-	echo ""
-	echo "where USER is your username"
-	echo "PASSWORD is your password"
-	echo "FILE is your submission file"
-	echo "PROBLEM and LANGUAGE are according to defined in BOCA"
-	exit 1
-fi
-
-if [ -r "$5" ]; then
-	nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
-	for BOCASERVER in `echo $BOCASERVERS | cut -d';'`; do
-		md=`wget -t 2 -T 7 -S http://$BOCASERVER/boca/index.php -O /dev/null --save-cookies /tmp/.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
-		echo "$md" | grep -q PHPSESS
-		if [ "$?" == "0" ]; then
-			md=`echo $md | cut -f2 -d'=' | cut -f1 -d';'`
-			user=$1
-			pass=$2
-			res=`echo -n $pass | sha256sum - | cut -f1 -d' '`
-			res=`echo -n "${res}${md}" | sha256sum - | cut -f1 -d' '`
-			wget "http://$BOCASERVER/boca/index.php?name=${user}&password=${res}" --load-cookies /tmp/.cookie.txt --keep-session-cookies --save-cookies /tmp/.cookie.txt -O $temp 2>/dev/null >/dev/null
-			grep -qi incorrect $temp
-			if [ $? == 0 ]; then 
-				echo "$BOCASERVER: User or password incorrect"
-			else
-				echo -n "name=${nom}&data=" > $temp
-				uuencode -m zzzzzzzzzz < $1 | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
-				wget "http://$BOCASERVER/boca/team/getfile.php" --load-cookies /tmp/.cookie.txt --keep-session-cookies -O /dev/null --post-file=$temp >/dev/null 2>/dev/null
+md=`wget -t 2 -T 7 -S http://$BOCASERVER/boca/index.php -O /dev/null --save-cookies /tmp/.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
+echo "$md" | grep -q PHPSESS
+if [ "$?" == "0" ]; then
+	md=`echo $md | cut -f2 -d'=' | cut -f1 -d';'`
+	res=`echo -n $pass | sha256sum - | cut -f1 -d' '`
+	res=`echo -n "${res}${md}" | sha256sum - | cut -f1 -d' '`
+	wget -t 2 -T 7 "http://$BOCASERVER/boca/index.php?name=${user}&password=${res}" --load-cookies /tmp/.cookie.txt --keep-session-cookies --save-cookies /tmp/.cookie.txt -O $temp 2>/dev/null >/dev/null
+	grep -qi incorrect $temp
+	if [ $? == 0 ]; then 
+		echo "$BOCASERVER: User or password incorrect"
+		rm -f $temp
+		rm -f /tmp/.cookie.txt
+		exit 3
+	else
+		echo -n "name=${nom}" > $temp
+		if [ "$uniq" != "" ]; then
+			echo -n "&pastcode=$uniq" >> $temp
+			if [ "$code" != "" ]; then
+				echo -n "&pasthash=$code" >> $temp
+				if [ "$dateerr" != "" ]; then
+					let "dateerr = `date +%s` - $dateerr"
+					echo -n "&pastval=${dateerr}"
+				fi
 			fi
-			rm -f $temp
-			rm -f /tmp/.cookie.txt
-		else
-			echo "$BOCASERVER: time-out - this will automatically retry soon, you should not worry"
-			echo "BOCASERVER=$BOCASERVER" > $temp
-			echo "user=$user" >> $temp
-			echo "pass=$pass" >> $temp
-			echo "name=${nom}" >> $temp
-			echo -n "data=" >> $temp
-			uuencode -m zzzzzzzzzz < "$5" | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
-			echo "" >> $temp
-			boca-submit-run-root $temp
 		fi
-	done
+		
+		echo -n "&data=" >> $temp
+		uuencode -m zzzzzzzzzz < $1 | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+		wget -t 2 -T 7 "http://$BOCASERVER/boca/team/getfile.php" --load-cookies /tmp/.cookie.txt --keep-session-cookies -O /dev/null --post-file=$temp >${temp}.out 2>/dev/null
+
+		res=`tail -n1 ${temp}.out`
+		echo $res | grep -q "RESULT:"
+		if [ "$?" == "0" ]; then
+			echo "$BOCASERVER : run $uniq dateerr $dateerr : $res"
+			rm -f "$1"
+		else
+			echo "$BOCASERVER : run $uniq dateerr $dateerr : error to submit run (getfile.php), will try again"
+		fi
+		rm -f ${temp}.out
+	fi
+	rm -f $temp
+	rm -f /tmp/.cookie.txt
 else
-	echo "file $1 not found/readable"
+	exit 2
 fi
+exit 0

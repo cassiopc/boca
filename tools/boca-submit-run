@@ -49,6 +49,11 @@ if [ -r "$5" ]; then
 		uuencode -m zzzzzzzzzz < "$5" | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 		echo "" >> $temp
 		boca-submit-run-aux $temp
+		if [ "$?" == "2" ]; then
+			echo "$BOCASERVER: time-out - this will automatically retry soon, you should not worry"
+			boca-submit-run-root $temp
+		fi
+		rm $temp
 	done
 else
 	echo "file $1 not found/readable"
