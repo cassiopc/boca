@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for i in `ls /root/submissions/*.bocarun`; do
+	boca-submit-run-aux "$i"
+done

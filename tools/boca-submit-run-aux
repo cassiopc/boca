@@ -37,6 +37,7 @@ if [ "$?" == "0" ]; then
 			if [ "$code" != "" ]; then
 				echo -n "&pasthash=$code" >> $temp
 				if [ "$dateerr" != "" ]; then
+					echo -n "&pastabs=${dateerr}"
 					let "dateerr = `date +%s` - $dateerr"
 					echo -n "&pastval=${dateerr}"
 				fi

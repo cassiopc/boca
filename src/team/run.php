@@ -83,7 +83,8 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Su
 			if(isset($_POST["pasthash"]) && isset($_POST["pastval"])) {
 				$pasthash = myhtmlspecialchars($_POST["pasthash"]);
 				$pastval = myhtmlspecialchars($_POST["pastval"]);
-				$pastsubmission = myhash(@file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config') . $pastcode);
+				$pastabs = myhtmlspecialchars($_POST["pastabs"]);
+				$pastsubmission = myhash(@file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config') . $pastcode . $pastabs);
 				if($pastsubmission != $pasthash) {
 					echo "\nRESULT: INVALID SUBMISSION CODE";
 					exit;

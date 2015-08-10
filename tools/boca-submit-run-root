@@ -4,12 +4,13 @@ if [ "$1" != "" ]; then
 	mkdir -p /root/submissions
 	chown root /root/submissions
 	chmod 700 /root/submissions
-	cp "$1" /root/submissions
-	echo "dateerr=`date +%s`" >> "/root/submissions/$1"
+	nom=/root/submissions/`date +%s%N`.bocarun
+	cp "$1" "$nom"
+	echo "dateerr=`date +%s`" >> "$nom"
 	uniq=`date +%sN`-`sha256sum "$1"`
 	uniq=`echo $uniq | sha256sum - | cut -f1 -d' '`
 	code=`cat /root/submissions/code`
-	res=`echo -n "${code}${uniq}" | sha256sum - | cut -f1 -d' '`
-	echo "uniq=$uniq" >> "/root/submissions/$1"
-	echo "code=$res" >> "/root/submissions/$1"
+	res=`echo -n "${code}${uniq}${dateerr}" | sha256sum - | cut -f1 -d' '`
+	echo "uniq=$uniq" >> "$nom"
+	echo "code=$res" >> "$nom"
 fi
