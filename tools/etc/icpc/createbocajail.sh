@@ -47,6 +47,9 @@ if [ $? != 0 ]; then
  if [ -d /etc/gdm ]; then
    echo -e "[greeter]\nExclude=bocajail,nobody\n" >> /etc/gdm/custom.conf
  fi
+ if [ -d /etc/lightdm ]; then
+   echo "hidden-users=nobody nobody4 noaccess bocajail" >> /etc/lightdm/lightdm.conf
+ fi
  sleep 1
 else
   echo "user bocajail already exists"
@@ -77,7 +80,6 @@ fi
 cat <<FIM > /etc/schroot/chroot.d/bocajail.conf
 [bocajail]
 description=Jail
-location=$homejail
 directory=$homejail
 root-users=root
 type=directory
@@ -95,8 +97,7 @@ if [ $? == 0 ]; then
   echo "bocajail successfully installed at $homejail"
 else
   echo "*** some error has caused bocajail not to install properly -- I will try it again with different parameters"
-  grep -v "^location" /etc/schroot/chroot.d/bocajail.conf > /tmp/.boca.tmp
-  mv /tmp/.boca.tmp /etc/schroot/chroot.d/bocajail.conf
+  echo "location=$homejail" >> /etc/schroot/chroot.d/bocajail.conf
   debootstrap $DISTRIB_CODENAME $homejail
   schroot -l | grep -q bocajail
   if [ $? == 0 ]; then
@@ -114,22 +115,10 @@ cat <<EOF > /home/bocajail/tmp/populate.sh
 mount -t proc proc /proc
 apt-get -y update
 apt-get -y install python-software-properties
-add-apt-repository -y ppa:ubuntu-toolchain-r/test
-apt-get -y update
 apt-get -y upgrade
 apt-get -y install g++ gcc libstdc++6 sharutils default-jdk default-jre
-apt-get -y install gcc-4.8 g++-4.8
 apt-get -y install openjdk-7-jdk openjdk-7-jre
 apt-get -y clean
-
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6
-
-update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-6-openjdk-*/jre/bin/java 10 
-update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-6-openjdk-*/bin/javac 10 
-update-alternatives --install /usr/bin/javadoc javadoc /usr/lib/jvm/java-6-openjdk-*/bin/javadoc 10 
-update-alternatives --install /usr/bin/javap javap /usr/lib/jvm/java-6-openjdk-*/bin/javap 10 
-update-alternatives --install /usr/bin/javah javah /usr/lib/jvm/java-6-openjdk-*/bin/javah 10 
 
 umount /proc
 EOF
@@ -138,3 +127,5 @@ mkdir -p /bocajail/usr/bin
 cp -f /etc/apt/sources.list $homejail/etc/apt/
 chmod 755 /home/bocajail/tmp/populate.sh
 cd / ; chroot $homejail /tmp/populate.sh
+
+
