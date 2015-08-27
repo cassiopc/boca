@@ -378,8 +378,8 @@ if($retval != 0) {
 	chmod($scriptcomp, 0700);
 
 	if($ninputlist == 0) {
-		echo "Failed to read input files from ZIP -- please check the problem package\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (10)");
+		echo "WARN: There are NO input files in ZIP package -- should check the problem package?\n";
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging warning: problem package has no input files");
 		continue;
 	} else {
 		$errp=0;
