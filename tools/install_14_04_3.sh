@@ -26,7 +26,19 @@ if [ "`id -u`" != "0" ]; then
   exit 1
 fi
 
-apt-get -y remove update-manager
+## REMOVE NOTIFICATIONS
+# killall update-notifier
+# if [ ! -f /usr/bin/update-notifier.orig ]; then
+#   mv /usr/bin/update-notifier /usr/bin/update-notifier.orig
+# fi
+# echo "#!/bin/bash" >/usr/bin/update-notifier
+# find /usr/lib -name notify-osd | xargs chmod -x
+# killall notify-osd 2>/dev/null
+gconftool -s -t bool /apps/update-notifier/auto_launch false
+if [ -f /usr/share/dbus-1/services/org.freedesktop.Notifications.service ]; then
+  mv /usr/share/dbus-1/services/org.freedesktop.Notifications.service /usr/share/dbus-1/services/org.freedesktop.Notifications.service.disabled
+fi
+
 apt-get -y install python-software-properties 2>/dev/null
 
 for i in id chown chmod cut awk tail grep cat sed mkdir rm mv sleep apt-get add-apt-repository update-alternatives; do
@@ -64,10 +76,9 @@ echo "============================================================="
 echo "========= UNINSTALLING SOME UNNECESSARY PACKAGES  ==========="
 echo "============================================================="
 apt-get -y purge libreoffice-common libreoffice-base-core 
-apt-get -y purge bluez thunderbird
+apt-get -y purge thunderbird
 apt-get -y purge unity-lens-shopping
 apt-get -y purge unity-webapps-common
-apt-get -y purge unity-lens-applications
 apt-get -y install sysvinit-utils
 gsettings set com.canonical.Unity.Lenses disabled-scopes "['more_suggestions-amazon.scope', 'more_suggestions-u1ms.scope', 'more_suggestions-populartracks.scope', 'music-musicstore.scope', 'more_suggestions-ebay.scope', 'more_suggestions-ubuntushop.scope', 'more_suggestions-skimlinks.scope']" >/dev/null 2>&1
 apt-get -y autoremove
