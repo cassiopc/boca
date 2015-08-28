@@ -1,11 +1,23 @@
 #!/bin/bash
 
-if [ "$1" != "" ]; then
+if [ "`id -u`" != "0" ]; then
+  echo "Must be run as root"
+  exit 1
+fi
+
+if [ "$5" != "" ]; then
 	mkdir -p /root/submissions
 	chown root /root/submissions
 	chmod 700 /root/submissions
-	nom=/root/submissions/`date +%s%N`.bocarun
-	cp "$1" "$nom"
+	nom=/root/submissions/`date +%s%N`.bocarun.tmp
+
+	echo "BOCASERVER=`echo "$1" | tr -cd '[[:alnum:]]._-'`" > "$nom"
+	echo "user=`echo "$2" | tr -cd '[[:alnum:]]._-'`" >> "$nom"
+	echo "pass=`echo "$3" | tr -cd '[[:alnum:]]._-'`" >> "$nom"
+	echo "name=`echo "$4" | tr -cd '[[:alnum:]]._-'`" >> "$nom"
+	echo -n "data=" >> "$nom"
+	uuencode -m zzzzzzzzzz < `echo "$5" | tr -cd '[[:alnum:]]._-'` | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> "$nom"
+	echo "" >> "$nom"
 	echo "dateerr=`date +%s`" >> "$nom"
 	uniq=`date +%sN`-`sha256sum "$1"`
 	uniq=`echo $uniq | sha256sum - | cut -f1 -d' '`
@@ -13,4 +25,5 @@ if [ "$1" != "" ]; then
 	res=`echo -n "${code}${uniq}${dateerr}" | sha256sum - | cut -f1 -d' '`
 	echo "uniq=$uniq" >> "$nom"
 	echo "code=$res" >> "$nom"
+	mv "$nom" "/root/submissions/`basename $nom .tmp`"
 fi

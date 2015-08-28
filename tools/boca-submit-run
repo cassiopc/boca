@@ -36,6 +36,15 @@ if [ "$1" == "" ]; then
 	exit 1
 fi
 
+runaux=`which boca-submit-run-aux`
+if [ "$runaux" == "" ]; then
+	runaux=/var/www/boca/tools/boca-submit-run-aux
+fi
+runroot=`which boca-submit-run-root`
+if [ "$runroot" == "" ]; then
+	runroot=/var/www/boca/tools/boca-submit-run-root
+fi
+
 if [ -r "$5" ]; then
 	nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
 	for BOCASERVER in `echo $BOCASERVERS | cut -d';'`; do
@@ -47,10 +56,10 @@ if [ -r "$5" ]; then
 		echo -n "data=" >> $temp
 		uuencode -m zzzzzzzzzz < "$5" | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 		echo "" >> $temp
-		boca-submit-run-aux $temp
+		$runaux $temp
 		if [ "$?" == "2" ]; then
 			echo "$BOCASERVER: time-out - this will automatically retry soon, you should not worry"
-			boca-submit-run-root $temp
+			$runroot "$BOCASERVER" "$user" "$pass" "$nom" "$5"
 		fi
 		rm $temp
 	done

@@ -131,6 +131,12 @@ if [ "$OK" == "y" ]; then
   cp -f $conffile boca-$bocaver/src/private/conf.php
 fi
 chmod 700 boca-$bocaver/tools/*.sh
+chmod 755 boca-$bocaver/tools/boca-submit-run*
+chmod 700 boca-$bocaver/tools/boca-submit-run-cron
+
+chown root.root boca-$bocaver/tools/boca-submit-run-root
+chmod 4555 boca-$bocaver/tools/boca-submit-run-root
+echo "*/2 * * * * * root `pwd`/boca-$bocaver/tools/boca-submit-run-cron" > /etc/cron.d/boca
 
 cat > boca-$bocaver/src/.htaccess <<EOF
 php_flag output_buffering on
@@ -214,4 +220,4 @@ cat > /etc/apache2/conf.d/boca <<EOF
 Alias /boca $basedir/boca/src
 EOF
 
-ln -s /etc/apache2/conf.d/boca /etc/apache2/conf-enabled/boca.conf
+ln -s /etc/apache2/conf.d/boca /etc/apache2/conf-enabled/boca.conf 2>/dev/null

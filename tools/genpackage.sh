@@ -54,7 +54,7 @@ rm boca-$ver/.temp `find boca-$ver/ -name "._*"`
 cd boca-$ver/tools/etc
 tar czf ../icpc.etc.tgz *
 cd ../../..
-tar czf $cdir/boca-$ver.tgz boca-$ver/
+COPYFILE_DISABLE=1 tar czf $cdir/boca-$ver.tgz boca-$ver/
 rm -rf /tmp/boca-$ver
 echo "*** file generated: $cdir/boca-$ver.tgz"
 else

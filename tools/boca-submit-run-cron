@@ -1,5 +1,17 @@
 #!/bin/bash
 
-for i in `ls /root/submissions/*.bocarun`; do
-	boca-submit-run-aux "$i"
-done
+if [ "`id -u`" != "0" ]; then
+  echo "Must be run as root"
+  exit 1
+fi
+
+if [ -d /root/submissions ]; then
+	runaux=`which boca-submit-run-aux`
+	if [ "$runaux" == "" ]; then
+		runaux=/var/www/boca/tools/boca-submit-run-aux
+	fi
+
+	for i in `ls /root/submissions/*.bocarun`; do
+		$runaux "$i"
+	done
+fi
