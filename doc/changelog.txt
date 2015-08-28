@@ -1,3 +1,9 @@
+version 1.5.10:
+- script to submit run from command-line to multiple servers
+- allow empty problem packages
+- minor bug fixes
+- update installv2.sh to work with ubuntu 14.04.3
+
 version 1.5.9:
 - allow password change as default (can be blocked by input users via file)
 - inclusion of default language C++11

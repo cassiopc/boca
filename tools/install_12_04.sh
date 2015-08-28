@@ -15,27 +15,31 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-# // Last modified 26/Aug/2015 by cassio@ime.usp.br
+# // modified 30/Oct/2014 by cassio@ime.usp.br
+# //    inclusion of extra warning about losing your own files
+# // modified 27/Oct/2014 by cassio@ime.usp.br
+# //    inclusion of gcc-4.8 and update to Java 7
 #///////////////////////////////////////////////////////////////////////////////////////////
 echo "#############################################################"
-echo "### $0 by cassio@ime.usp.br for Ubuntu 14.04.3 ###"
+echo "### installv2.sh of 30/Oct/2014 (A) by cassio@ime.usp.br ###"
 echo "#############################################################"
+
+echo "###"
+echo "####"
+echo "##### NEVER RUN installv2.sh in a computer that is not a FRESH ubuntu (you might lose stuff)"
+echo "####"
+echo "### press control-C to stop now or enter to proceed"
+read lin
 
 if [ "`id -u`" != "0" ]; then
   echo "Must be run as root"
   exit 1
 fi
 
-## REMOVE NOTIFICATIONS
-# killall update-notifier
-# if [ ! -f /usr/bin/update-notifier.orig ]; then
-#   mv /usr/bin/update-notifier /usr/bin/update-notifier.orig
-# fi
-# echo "#!/bin/bash" >/usr/bin/update-notifier
-# find /usr/lib -name notify-osd | xargs chmod -x
-# killall notify-osd 2>/dev/null
 apt-get -y install python-software-properties 2>/dev/null
-gconftool -s -t bool /apps/update-notifier/auto_launch false
+apt-get -y install software-properties-common 2>/dev/null
+#apt-get -y install virtualbox-guest-utils virtualbox-guest-dkms 2>/dev/null
+#apt-get -y install virtualbox-guest-x11 2>/dev/null
 
 for i in id chown chmod cut awk tail grep cat sed mkdir rm mv sleep apt-get add-apt-repository update-alternatives; do
   p=`which $i`
@@ -50,7 +54,7 @@ sleep 2
 
 echo "$0" | grep -q "install.*sh"
 if [ $? != 0 ]; then
-  echo "Make the install script executable (using chmod) and run it directly, like ./install.sh"
+  echo "Make the install script executable (using chmod) and run it directly, like ./installv2.sh"
 else  
 
 if [ "$1" != "alreadydone" ]; then
@@ -69,15 +73,31 @@ fi
 . /etc/lsb-release
 
 echo "============================================================="
+echo "============== DISABLING AUTO-UPDATE POP-UPS  ==============="
+echo "============================================================="
+gconftool -s --type bool /apps/update-notifier/auto_launch false
+gsettings set com.ubuntu.update-notifier no-show-notifications true
+sed -i 's/X-GNOME-Autostart-Delay=60/X-GNOME-Autostart-enabled=false/' /etc/xdg/autostart/update-notifier.desktop
+
+echo "============================================================="
 echo "========= UNINSTALLING SOME UNNECESSARY PACKAGES  ==========="
 echo "============================================================="
 apt-get -y purge libreoffice-common libreoffice-base-core 
-apt-get -y purge thunderbird
+apt-get -y purge bluez thunderbird
 apt-get -y purge unity-lens-shopping
 apt-get -y purge unity-webapps-common
+apt-get -y purge ubuntuone-client python-ubuntuone-client ubuntuone-installer python-ubuntuone-storageprotocol
+
+echo "========= INSTALLING SYSVINIT-UTILS ==========="
 apt-get -y install sysvinit-utils
-gsettings set com.canonical.Unity.Lenses disabled-scopes "['more_suggestions-amazon.scope', 'more_suggestions-u1ms.scope', 'more_suggestions-populartracks.scope', 'music-musicstore.scope', 'more_suggestions-ebay.scope', 'more_suggestions-ubuntushop.scope', 'more_suggestions-skimlinks.scope']" >/dev/null 2>&1
-apt-get -y autoremove
+if [ $? != 0 ]; then
+  apt-get -y install sysvutils
+  if [ $? != 0 ]; then
+    echo ""
+    echo "ERROR running the apt-get -- must check if all needed packages are available"
+    exit 1
+  fi
+fi
 
 echo "=============================================================="
 echo "============== CHECKING FOR OTHER APT SERVERS  ==============="
@@ -88,7 +108,9 @@ grep -q "^[^\#]*deb http://archive.canonical.com.* $DISTRIB_CODENAME .*partner" 
 if [ $? != 0 ]; then
   add-apt-repository "deb http://archive.canonical.com/ubuntu $DISTRIB_CODENAME partner"
 fi
-apt-add-repository -y ppa:webupd8team/sublime-text-3
+echo "=============================================================="
+echo "============== ADDING extra rep for C++11 ===================="
+add-apt-repository ppa:ubuntu-toolchain-r/test
 
 apt-get -y update
 apt-get -y upgrade
@@ -108,6 +130,12 @@ if [ "$libCppdoc" == "" ]; then
   echo "libstdc++6-*-doc not found"
   exit 1
 fi
+geanydeb=`apt-cache search geany-plugin-gdb`
+if [ "$geanydeb" == "" ]; then
+  geanydeb=debugger
+else
+  geanydeb=gdb
+fi
 
 echo "====================================================================="
 echo "================= installing packages needed by BOCA  ==============="
@@ -116,14 +144,28 @@ echo "====================================================================="
 apt-get -y install zenity apache2 eclipse-pde eclipse-rcp eclipse-platform eclipse-jdt eclipse-cdt eclipse emacs \
   evince g++ gcc gedit scite libstdc++6 makepasswd manpages-dev php5-cli php5-mcrypt openjdk-7-dbg openjdk-7-jdk \
   php5 php5-pgsql postgresql postgresql-client postgresql-contrib quota sharutils default-jdk openjdk-7-doc \
-  vim-gnome geany geany-plugin-addons geany-plugins geany-plugin-debugger default-jre sysstat \
-  vim xfce4 $libCppdev $libCppdoc $libCppdbg php5-gd stl-manual gcc-doc debootstrap schroot c++-annotations \
-  sublime-text-installer libgnomekbd-common
+  vim-gnome geany geany-plugin-addons geany-plugins geany-plugin-${geanydeb} default-jre sysstat \
+  vim xfce4 $libCppdev $libCppdoc $libCppdbg php5-gd stl-manual gcc-doc debootstrap schroot c++-annotations
 if [ $? != 0 ]; then
   echo ""
   echo "ERROR running the apt-get -- must check if all needed packages are available"
   exit 1
 fi
+apt-get -y install gcc-4.8 g++-4.8
+if [ $? != 0 ]; then
+  echo ""
+  echo "ERROR running the apt-get for gcc 4.8 -- must check if all needed packages are available"
+  exit 1
+fi
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6
+
+update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-6-openjdk-*/jre/bin/java 10 
+update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-6-openjdk-*/bin/javac 10 
+update-alternatives --install /usr/bin/javadoc javadoc /usr/lib/jvm/java-6-openjdk-*/bin/javadoc 10 
+update-alternatives --install /usr/bin/javap javap /usr/lib/jvm/java-6-openjdk-*/bin/javap 10 
+update-alternatives --install /usr/bin/javah javah /usr/lib/jvm/java-6-openjdk-*/bin/javah 10 
+
 apt-get -y autoremove
 apt-get -y clean
 
@@ -145,7 +187,7 @@ echo "=================================================================="
 mkdir -p /etc/skel/Desktop/
 cat <<EOF > /etc/skel/Desktop/javadoc.desktop
 [Desktop Entry]
-Version=1
+Version=1.5.1
 Name=Java API
 Comment=Java API
 Exec=firefox /usr/share/doc/openjdk-7-jre-headless/api/index.html
@@ -154,7 +196,7 @@ Type=Application
 EOF
 cat <<EOF > /etc/skel/Desktop/stldoc.desktop
 [Desktop Entry]
-Version=1
+Version=1.5.1
 Name=C++ STL
 Comment=C++ STL
 Exec=firefox /usr/share/doc/stl-manual/html/index.html
@@ -163,7 +205,7 @@ Type=Application
 EOF
 cat <<EOF > /etc/skel/Desktop/cppannotations.desktop
 [Desktop Entry]
-Version=1
+Version=1.5.1
 Name=C++ Annotations
 Comment=C++ Annotations
 Exec=firefox /usr/share/doc/c++-annotations/html/index.html
@@ -187,31 +229,34 @@ else
  echo "user icpc already exists"
 fi
 
-lightdmfile=/etc/lightdm/lightdm.conf
-if [ -d "`dirname $lightdmfile`" ]; then
+if [ -f /etc/lightdm/lightdm.conf ]; then
   echo "=============================================================="
-  echo "====== disabling guest account on lightdm  ========"
+  echo "============ disabling guest account on lightdm.conf  ========"
   echo "=============================================================="
-  echo -e "[SeatDefaults]\n" > $lightdmfile
-  echo -e "allow-guest=false\ngreeter-hide-users=true\ngreeter-show-remote-login=false\ngreeter-show-manual-login=true\n" >> $lightdmfile
+  grep -q "^[^\#]*allow-guest" /etc/lightdm/lightdm.conf
+  if [ $? != 0 ]; then
+    echo "allow-guest=false" >> /etc/lightdm/lightdm.conf
+  fi
+  grep -q "^[^\#]*greeter-hide-users" /etc/lightdm/lightdm.conf
+  if [ $? != 0 ]; then
+    echo "greeter-hide-users=true" >> /etc/lightdm/lightdm.conf
+  fi
 fi
 
-# echo "====================================================================================="
-# echo "============ updating grub boot loader to make it password protected  ==============="
-# echo "====================================================================================="
+echo "====================================================================================="
+echo "============ updating grub boot loader to make it password protected  ==============="
+echo "====================================================================================="
 
-# grep -q "^[^\#]*password" /etc/grub.d/40_custom
-# if [ $? != 0 ]; then
-#   echo "updated with new password (if needed, see the password at /etc/grub.d/40_custom)"
-#   echo -e "set superusers=\"root\"" >> /etc/grub.d/40_custom
-#   echo -e "password root `makepasswd`" >> /etc/grub.d/40_custom
-#   chmod go-rw /etc/grub.d/40_custom
-#   grub-mkconfig > /boot/grub/grub.cfg
-#   chmod go-rw /boot/grub/grub.cfg
-# fi
-# echo "grub loader configured with password (if needed, see the password at /etc/grub.d/40_custom)"
-
-
+grep -q "^[^\#]*password" /etc/grub.d/40_custom
+if [ $? != 0 ]; then
+  echo "updated with new password (if needed, see the password at /etc/grub.d/40_custom)"
+  echo -e "set superusers=\"root\"" >> /etc/grub.d/40_custom
+  echo -e "password root `makepasswd`" >> /etc/grub.d/40_custom
+  chmod go-rw /etc/grub.d/40_custom
+  grub-mkconfig > /boot/grub/grub.cfg
+  chmod go-rw /boot/grub/grub.cfg
+fi
+echo "grub loader configured with password (if needed, see the password at /etc/grub.d/40_custom)"
 
 echo "=============================================================="
 echo "============= INSTALLING SCRIPTS at /etc/icpc  ==============="
@@ -306,7 +351,7 @@ echo "=============================================================="
 echo "================= UPDATING rc.local symlinks   ==============="
 echo "=============================================================="
 
-#update-rc.d rc.local defaults
+update-rc.d rc.local defaults
 update-rc.d -f cups remove
 apt-get -y clean
 
@@ -317,11 +362,11 @@ apt-get -y clean
 #/etc/icpc/setup.sh
 
 startscript="NOTOK"
-if [ -d "`dirname $lightdmfile`" ]; then
+if [ -f /etc/lightdm/lightdm.conf ]; then
   startscript="OK"
-  [ -f $lightdmfile ] && grep -q "^[^\#]*greeter-setup-script=/etc/icpc/setup.sh" $lightdmfile
+  grep -q "^[^\#]*display-setup-script=/etc/icpc/setup.sh" /etc/lightdm/lightdm.conf
   if [ $? != 0 ]; then
-    echo "greeter-setup-script=/etc/icpc/setup.sh" >> $lightdmfile
+    echo "display-setup-script=/etc/icpc/setup.sh" >> /etc/lightdm/lightdm.conf
   fi
 fi
 if [ -d /etc/gdm/Init ]; then

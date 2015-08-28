@@ -1,6 +1,5 @@
 #!/bin/bash
 
-[ -x /etc/icpc/bocaservers.sh ] && . /etc/icpc/bocaservers.sh
 [ -x /etc/icpc/bocaserver.sh ] && . /etc/icpc/bocaserver.sh
 if [ "$BOCASERVER" != "" ]; then
 	if [ "$BOCASERVERS" == "" ]; then

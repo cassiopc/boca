@@ -4,7 +4,7 @@ if [ ! -x /etc/icpc/bocaserver.sh ]; then
   OK=1
   while [ "$OK" != "0" ]; do
     IP=`zenity --title="Setting up the BOCA server IP number" --text="Enter the IP address of the server (format x.y.w.z)\n\
-If this is supposed to be the server, then leave it empty" --width=500 --height=100 --entry`
+If this is supposed to be the server, then leave it empty\nIf there are multiple servers, separate IPs by a semi-colon ;" --width=500 --height=100 --entry`
     [ "$IP" == "" ] && IP=LOCAL
     zenity --title="IP confirmation" --text="The chosen IP is $IP\nDo you confirm?" --question
     OK=$?
@@ -13,8 +13,12 @@ If this is supposed to be the server, then leave it empty" --width=500 --height=
     IP=127.0.0.1
     BOCASERVER=0/0
   fi
-  echo "BOCASERVER=$IP" > /etc/icpc/bocaserver.sh
-  echo "$IP boca boca" >> /etc/hosts
+  FIRSTBOCA=`echo $IP | cut -d';' -f1`
+  echo "BOCASERVER=$FIRSTBOCA" > /etc/icpc/bocaserver.sh
+  if [ "`echo $IP | cut -d';' -f2-`" != "" ]; then
+	  echo "BOCASERVERS=`echo $IP | cut -d';' -f2-`" >> /etc/icpc/bocaserver.sh
+  fi
+  echo "$FIRSTBOCA boca boca" >> /etc/hosts
   chmod 755 /etc/icpc/bocaserver.sh
 fi
 . /etc/icpc/bocaserver.sh

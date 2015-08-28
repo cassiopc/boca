@@ -147,7 +147,6 @@ chmod 755 boca-$bocaver/tools/.htaccess
 cp boca-$bocaver/tools/.htaccess boca-$bocaver/doc/.htaccess
 cp boca-$bocaver/tools/.htaccess boca-$bocaver/old/.htaccess
 cp boca-$bocaver/tools/.htaccess boca-$bocaver/src/private/.htaccess
-cp boca-$bocaver/tools/.htaccess boca-$bocaver/src/webcast/.htaccess
 
 chmod -R 770 boca-$bocaver/src/private
 chmod -R 775 boca-$bocaver/src/balloons
@@ -184,6 +183,7 @@ fi
 echo "=================================================="
 echo "=================== SERVER SETUP   ==============="
 echo "=================================================="
+ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/apache2/conf.d/20-mcrypt.ini 2>/dev/null
 
 OK=n
 echo "You can run at anytime later the script /etc/icpc/becomeserver.sh to prepare the computer to be the BOCA server"
@@ -213,3 +213,5 @@ cat > /etc/apache2/conf.d/boca <<EOF
 </Directory>
 Alias /boca $basedir/boca/src
 EOF
+
+ln -s /etc/apache2/conf.d/boca /etc/apache2/conf-enabled/boca.conf

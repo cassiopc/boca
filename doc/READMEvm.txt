@@ -145,7 +145,7 @@ any other TCP server in the ports 80 (http), 443 (https) and 5432 (postgres). Ot
 conflict when running the BOCA server in the VM with BRIDGE mode.
 Yet I point out that running the BOCA system in a server computer (without the VM) 
 is the mostly tested solution, but the VM version was used in many sites already. If you want to 
-run it natively, stop here, get a ubuntu 12.04, install it, and run the installv2.sh script over it. See the
+run it natively, stop here, get a ubuntu 14.04.3, install it, and run the installv2.sh script over it. See the
 file READMEubuntu.txt for more details. You will need a computer that you can format and reinstall.
 That is the simplest way of having a full ICPC linux server
 running apart from using the VM version itself, as explained here.
