@@ -33,6 +33,10 @@ if [ "$1" == "" ]; then
 	echo "PASSWORD is your password"
 	echo "FILE is your submission file"
 	echo "PROBLEM and LANGUAGE are according to defined in BOCA"
+	echo "==>>You can check at your BOCA interface to be sure<<=="
+	echo "PROBLEM is usually a single letter e.g. A or B or C etc"
+	echo "LANGUAGE is usually one of { c cpp cc java }"
+	echo "==>>You can check at your BOCA interface to be sure<<=="
 	exit 1
 fi
 

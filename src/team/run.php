@@ -33,6 +33,29 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Su
 		$prob = myhtmlspecialchars($_POST["problem"]);
 		$lang = myhtmlspecialchars($_POST["language"]);
 
+		$probs = DBGetProblems($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usertype"]=='judge');
+		$i = 0;
+		$ss = "";
+		for (;$i<count($probs);$i++) {
+			if($probs[$i]["problem"]==$prob) break;
+			$ss .= $probs[$i]["problem"] . " ";
+		}
+		if($i >= count($probs)) {
+				echo "RESULT: INVALID PROBLEM (options are: " . $ss . ")";
+				exit;
+		}
+		$langs = DBGetLanguages($_SESSION["usertable"]["contestnumber"]);
+		$i = 0;
+		$ss = "";
+		for (;$i<count($langs);$i++) {
+			if($langs[$i]["name"]==$lang) break;
+			$ss .= $langs[$i]["name"] . " ";
+		}
+		if($i >= count($langs)) {
+			echo "RESULT: INVALID LANGUAGE (options are: " . $ss . ")";
+			exit;
+		}
+
 		$type=myhtmlspecialchars($_FILES["sourcefile"]["type"]);
 		$size=myhtmlspecialchars($_FILES["sourcefile"]["size"]);
 		$name=myhtmlspecialchars($_FILES["sourcefile"]["name"]);

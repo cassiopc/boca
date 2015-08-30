@@ -46,7 +46,7 @@ if [ "$?" == "0" ]; then
 		
 		echo -n "&data=" >> $temp
 		uuencode -m zzzzzzzzzz < $1 | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
-		wget -t 2 -T 7 "http://$BOCASERVER/boca/team/getfile.php" --load-cookies /tmp/.cookie.txt --keep-session-cookies -O /dev/null --post-file=$temp >${temp}.out 2>/dev/null
+		wget -t 2 -T 7 "http://$BOCASERVER/boca/team/run.php" --load-cookies /tmp/.cookie.txt --keep-session-cookies -O /dev/null --post-file=$temp >${temp}.out 2>/dev/null
 
 		res=`tail -n1 ${temp}.out`
 		echo $res | grep -q "RESULT:"
@@ -54,7 +54,7 @@ if [ "$?" == "0" ]; then
 			echo "$BOCASERVER : run $uniq dateerr $dateerr : $res"
 			rm -f "$1"
 		else
-			echo "$BOCASERVER : run $uniq dateerr $dateerr : error to submit run (getfile.php), will try again"
+			echo "$BOCASERVER : run $uniq dateerr $dateerr : error to upload the run, will NOT try again, check details"
 		fi
 		rm -f ${temp}.out
 	fi
