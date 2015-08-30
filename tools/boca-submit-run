@@ -63,7 +63,7 @@ if [ -r "$5" ]; then
 		$runaux $temp
 		if [ "$?" == "2" ]; then
 			echo "$BOCASERVER: time-out - this will automatically retry soon, you should not worry"
-			$runroot "$BOCASERVER" "$user" "$pass" "$nom" "$5"
+			$runroot $temp
 		fi
 		rm $temp
 	done

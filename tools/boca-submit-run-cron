@@ -6,12 +6,15 @@ if [ "`id -u`" != "0" ]; then
 fi
 
 if [ -d /root/submissions ]; then
+	touch /root/submissions/placeholder.bocarun
 	runaux=`which boca-submit-run-aux`
 	if [ "$runaux" == "" ]; then
 		runaux=/var/www/boca/tools/boca-submit-run-aux
 	fi
 
 	for i in `ls /root/submissions/*.bocarun`; do
-		$runaux "$i"
+		if [ "$i" != "/root/submissions/placeholder.bocarun" ]; then
+			$runaux "$i"
+		fi
 	done
 fi
