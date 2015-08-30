@@ -25,8 +25,8 @@ if(($st = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertabl
 
 $fn = tempnam("/tmp","bkp-");
 $fout = fopen($fn,"wb");
-echo $_POST;
-echo $_POST['data'];
+//echo $_POST;
+//echo $_POST['data'];
 fwrite($fout,base64_decode($_POST['data']));
 fclose($fout);
 $size=filesize($fn);

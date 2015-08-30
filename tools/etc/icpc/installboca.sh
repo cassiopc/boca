@@ -128,15 +128,42 @@ chmod -R g+rx,u+rwx boca-$bocaver/
 chmod 600 boca-$bocaver/src/private/*.php
 [ -f boca-$bocaver.$di/src/private/remotescores/otherservers ] && cp -f boca-$bocaver.$di/src/private/remotescores/otherservers boca-$bocaver/src/private/remotescores/otherservers
 if [ "$OK" == "y" ]; then
-  cp -f $conffile boca-$bocaver/src/private/conf.php
+	cp -f $conffile boca-$bocaver/src/private/conf.php
+	[ -f boca-$bocaver.$di/src/private/run-using-command.config ] && cp -f boca-$bocaver.$di/src/private/run-using-command.config boca-$bocaver/src/private/run-using-command.config 
 fi
 chmod 700 boca-$bocaver/tools/*.sh
-chmod 755 boca-$bocaver/tools/boca-submit-run*
-chmod 700 boca-$bocaver/tools/boca-submit-run-cron
 
-chown root.root boca-$bocaver/tools/boca-submit-run-root
-chmod 4555 boca-$bocaver/tools/boca-submit-run-root
-echo "*/2 * * * * * root `pwd`/boca-$bocaver/tools/boca-submit-run-cron" > /etc/cron.d/boca
+if [ -f boca-$bocaver.$di/src/private/run-past.config ]; then
+	cp -f boca-$bocaver.$di/src/private/run-past.config boca-$bocaver/src/private/run-past.config
+else
+	echo "`date +%sN`-sha256sum-`date +%sN`" | sha256sum - | cut -d' ' -f1 > boca-$bocaver/src/private/run-past.config
+fi
+chmod 550 boca-$bocaver/src/private/run-past.config
+chown www-data.www-data boca-$bocaver/src/private/run-past.config
+
+cp boca-$bocaver/tools/boca-submit-run* /usr/bin/
+chmod 755 /usr/bin/boca-submit-run*
+chmod 700 /usr/bin/boca-submit-run-cron
+
+cat > /tmp/boca-submit-run-root-wrapper.c <<EOF
+#include<stdlib.h>
+#include<stdio.h>
+#include<sys/types.h>
+#include<unistd.h>
+char str[10000];
+int main(int argc, char **argv) {
+  if(argc != 8) return 1;
+  sprintf(str,"/usr/bin/boca-submit-run-root %1000s %1000s %1000s %1000s %1000s %1000s %1000s",argv[1],argv[2],argv[3],argv[4],argv[5],argv[6],argv[7]);
+  setuid(0);
+  system(str);
+  return 0;
+}
+EOF
+gcc -o /usr/bin/boca-submit-run-root-wrapper /tmp/boca-submit-run-root-wrapper.c
+rm -f /tmp/boca-submit-run-root-wrapper.c
+chown root.root /usr/bin/boca-submit-run-root-wrapper
+chmod 4555 /usr/bin/boca-submit-run-root-wrapper
+echo "*/2 * * * * root /usr/bin/boca-submit-run-cron >>/var/log/bocacron.out 2>>/var/log/bocacron.err" > /etc/cron.d/boca
 
 cat > boca-$bocaver/src/.htaccess <<EOF
 php_flag output_buffering on

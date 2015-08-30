@@ -15,7 +15,7 @@ if [ "$BOCASERVER" != "" ]; then
   /sbin/iptables -A INPUT -s $BOCASERVER -j ACCEPT
 fi
 if [ "$BOCASERVERS" != "" ]; then
-	for i in `echo $BOCASERVERS | cut -d';'`; do
+	for i in `echo $BOCASERVERS | tr ';' ' '`; do
 		/sbin/iptables -A INPUT -s $i -j ACCEPT
 	done
 fi

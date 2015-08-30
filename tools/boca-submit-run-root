@@ -5,18 +5,26 @@ if [ "`id -u`" != "0" ]; then
   exit 1
 fi
 
-fnam=`echo "$1" | tr -cd '[[:alnum:]]._-/'`
-if [ "$fnam" != "" -a -r "$fnam" ]; then
+if [ "$7" != "" ]; then
 	mkdir -p /root/submissions
 	chown root /root/submissions
 	chmod 700 /root/submissions
 	nom=/root/submissions/`date +%s%N`.bocarun.tmp
 
-	cat "$fnam" | tr -cd '[[:alnum:]]._+-/= ' > "$nom"
-	
-	echo "dateerr=`date +%s`" >> "$nom"
-	uniq=`date +%sN`-`sha256sum "$1"`
-	uniq=`echo $uniq | sha256sum - | cut -f1 -d' '`
+	echo "BOCASERVER=`echo $1 | tr -cd '[[:alnum:]]._+-/'`" > "$nom"
+	echo "user=`echo $2 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
+	echo "pass=`echo $3 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
+	echo "problem=`echo $4 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
+	echo "language=`echo $5 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
+	echo "name=`echo $6 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
+	echo -en "data=\"" >> "$nom"
+	uuencode -m zzzzzzzzzz < `echo "$7" | tr -cd '[[:alnum:]]._+-/'` | grep -v "begin-base64.*zzzzzzzzzz" >> "$nom"
+	echo "\"" >> "$nom"
+	dateerr=`date +%s`
+	echo "dateerr=$dateerr" >> "$nom"
+#	uniq=`date +%sN`-`sha256sum "$7"`
+#	uniq=`echo $uniq | sha256sum - | cut -f1 -d' '`
+	uniq=`sha256sum "$7" | cut -f1 -d' '`
 	code=`cat /root/submissions/code`
 	res=`echo -n "${code}${uniq}${dateerr}" | sha256sum - | cut -f1 -d' '`
 	echo "uniq=$uniq" >> "$nom"

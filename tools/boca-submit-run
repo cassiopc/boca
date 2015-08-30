@@ -42,30 +42,33 @@ fi
 
 runaux=`which boca-submit-run-aux`
 if [ "$runaux" == "" ]; then
-	runaux=/var/www/boca/tools/boca-submit-run-aux
+	runaux=/usr/bin/boca-submit-run-aux
 fi
-runroot=`which boca-submit-run-root`
+runroot=`which boca-submit-run-root-wrapper`
 if [ "$runroot" == "" ]; then
-	runroot=/var/www/boca/tools/boca-submit-run-root
+	runroot=/usr/bin/boca-submit-run-root-wrapper
 fi
 
 if [ -r "$5" ]; then
 	nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
-	for BOCASERVER in `echo $BOCASERVERS | cut -d';'`; do
-		echo "$BOCASERVER: time-out - this will automatically retry soon, you should not worry"
+	for BOCASERVER in `echo $BOCASERVERS | tr ';' ' '`; do
 		echo "BOCASERVER=$BOCASERVER" > $temp
-		echo "user=$user" >> $temp
-		echo "pass=$pass" >> $temp
-		echo "name=${nom}" >> $temp
-		echo -n "data=" >> $temp
-		uuencode -m zzzzzzzzzz < "$5" | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
-		echo "" >> $temp
+		echo "user=$1" >> $temp
+		echo "pass=$2" >> $temp
+		echo "problem=$3" >> $temp
+		echo "language=$4" >> $temp
+		echo "name=`basename $5`" >> $temp
+		uniq=`sha256sum "$5" | cut -f1 -d' '`
+		echo "uniq=$uniq" >> $temp
+		echo -en "data=\"" >> $temp
+		uuencode -m zzzzzzzzzz < "$5" | grep -v "begin-base64.*zzzzzzzzzz" >> $temp
+		echo -e "\"" >> $temp
 		$runaux $temp
 		if [ "$?" == "2" ]; then
 			echo "$BOCASERVER: time-out - this will automatically retry soon, you should not worry"
-			$runroot $temp
+			$runroot "$BOCASERVER" "$1" "$2" "$3" "$4" "`basename $5`" "$5"
 		fi
-		rm $temp
+		[ -f "$temp" ] && rm -f $temp
 	done
 else
 	echo "file $1 not found/readable"

@@ -15,7 +15,8 @@ If this is supposed to be the server, then leave it empty\nIf there are multiple
   fi
   FIRSTBOCA=`echo $IP | cut -d';' -f1`
   echo "BOCASERVER=$FIRSTBOCA" > /etc/icpc/bocaserver.sh
-  if [ "`echo $IP | cut -d';' -f2-`" != "" ]; then
+  echo $IP | grep -q ';'
+  if [ "$?" == "0" ]; then
 	  echo "BOCASERVERS=`echo $IP | cut -d';' -f2-`" >> /etc/icpc/bocaserver.sh
   fi
   echo "$FIRSTBOCA boca boca" >> /etc/hosts

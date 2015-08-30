@@ -35,7 +35,6 @@ fi
 # find /usr/lib -name notify-osd | xargs chmod -x
 # killall notify-osd 2>/dev/null
 apt-get -y install python-software-properties 2>/dev/null
-gconftool -s -t bool /apps/update-notifier/auto_launch false
 
 for i in id chown chmod cut awk tail grep cat sed mkdir rm mv sleep apt-get add-apt-repository update-alternatives; do
   p=`which $i`
@@ -176,6 +175,8 @@ EOF
 [ -f /usr/share/applications/emacs24.desktop ] && cp /usr/share/applications/emacs24.desktop /etc/skel/Desktop/
 cp /usr/share/applications/gnome-terminal.desktop /etc/skel/Desktop/
 chmod 755 /etc/skel/Desktop/*.desktop
+
+[ "`which gconftool`" == "" ] || gconftool -s -t bool /apps/update-notifier/auto_launch false
 
 pass=`echo -n icpc | makepasswd --clearfrom - --crypt-md5 | cut -d'$' -f2-`
 pass=\$`echo $pass`
