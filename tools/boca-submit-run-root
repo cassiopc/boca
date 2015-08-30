@@ -12,7 +12,7 @@ if [ "$fnam" != "" -a -r "$fnam" ]; then
 	chmod 700 /root/submissions
 	nom=/root/submissions/`date +%s%N`.bocarun.tmp
 
-	cat $fnam | tr -cd '[[:alnum:]]._+-/= ' > "$nom"
+	cat "$fnam" | tr -cd '[[:alnum:]]._+-/= ' > "$nom"
 	
 	echo "dateerr=`date +%s`" >> "$nom"
 	uniq=`date +%sN`-`sha256sum "$1"`
