@@ -176,7 +176,10 @@ EOF
 cp /usr/share/applications/gnome-terminal.desktop /etc/skel/Desktop/
 chmod 755 /etc/skel/Desktop/*.desktop
 
-[ "`which gconftool`" == "" ] || gconftool -s -t bool /apps/update-notifier/auto_launch false
+if [ "`which gconftool`" != "" ]; then
+	su - icpcadmin -c "gconftool -s -t bool /apps/update-notifier/auto_launch false"
+	su - icpc -c "gconftool -s -t bool /apps/update-notifier/auto_launch false"
+fi
 
 pass=`echo -n icpc | makepasswd --clearfrom - --crypt-md5 | cut -d'$' -f2-`
 pass=\$`echo $pass`

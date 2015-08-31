@@ -123,14 +123,16 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 				$pastvalhash = myhtmlspecialchars($_POST["pastvalhash"]);
 				$pastval = myhtmlspecialchars($_POST["pastval"]);
 				$pastabs = myhtmlspecialchars($_POST["pastabs"]);
-				$pastsubmission = myhash(trim(@file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config')) . $pastcode . $pastval);
-				if($pastsubmission != $pastvalhash) {
-					$pastsubmission = myhash(trim(@file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config')) . $pastcode . $pastabs);
-					if($pastsubmission != $pasthash) {
-						echo "\nRESULT: INVALID SUBMISSION CODE";
-						exit;
+				if(is_readable($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config')) {
+					$pastsubmission = myhash(trim(@file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config')) . $pastcode . $pastval);
+					if($pastsubmission != $pastvalhash) {
+						$pastsubmission = myhash(trim(@file_get_contents($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config')) . $pastcode . $pastabs);
+						if($pastsubmission != $pasthash) {
+							echo "\nRESULT: INVALID SUBMISSION CODE";
+							exit;
+						}
 					}
-				}
+				} else $pastval = 0;
 			} else {
 				$pastval = 0;
 			}
