@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 07/sep/2015 by cassio@ime.usp.br
 require('header.php');
 
 if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
@@ -67,8 +67,49 @@ if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"
 
 $task = DBOpenTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"]);
 
+$ds = DIRECTORY_SEPARATOR;
+if($ds=="") $ds = "/";
+$limittasks=false;
+if(is_readable($_SESSION["locr"] . $ds . 'private' . $ds . 'score.sep')) {
+	$limittasks=true;
+	$rf=file($_SESSION["locr"] . $ds . 'private' . $ds . 'score.sep');
+	for($rfi=1;$rfi<=count($rf);$rfi++) {
+		$lin = explode('#',trim($rf[$rfi-1]));
+		if(isset($lin[1]) && $_SESSION["usertable"]["usertype"]!='admin') {
+			$arr=explode(' ',trim($lin[1]));
+			for($arri=0;$arri<count($arr);$arri++)
+				if(preg_match($arr[$arri],$_SESSION["usertable"]["username"])) break;
+			if($arri>=count($arr)) continue;
+		}
+		$lin = trim($lin[0]);
+		if($lin=='') continue;
+		$grname=explode(' ',$lin);
+
+		for ($i=0; $i<count($task); $i++) {
+			for($k=1;$k<count($grname);$k++) {
+				if($task[$i]["site"]==$grname[$k]) {
+					$task[$i]["ok"]=true;
+					break;
+				}
+				else if(strpos($grname[$k],'/') >= 1) {
+					$u1 = explode('/',$grname[$k]);
+					if(isset($u1[1]) && $task[$i]["user"] >= $u1[0] && $task[$i]["user"] <= $u1[1]) {
+						if(!isset($u1[2]) || $u1[2]==$task[$i]["site"]) {
+							$task[$i]["ok"]=true;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+$anyprinted=false;
 for ($i=0; $i<count($task); $i++) {
-  $st = $task[$i]["status"];
+	if($limittasks && (!isset($task[$i]["ok"]) || $task[$i]["ok"]!=true)) continue;
+	$anyprinted=true;
+	$st = $task[$i]["status"];
 
   if($st == "processing" && $task[$i]["staff"]==$_SESSION["usertable"]["usernumber"] &&
 	 $task[$i]["staffsite"]==$_SESSION["usertable"]["usersitenumber"]) $mine=1;
@@ -121,7 +162,7 @@ for ($i=0; $i<count($task); $i++) {
   echo "&nbsp;</td>\n";
 }
 echo "</table>";
-if (count($task) == 0) echo "<br><center><b><font color=\"#ff0000\">NO TASKS FOUND</font></b></center>";
+if (!$anyprinted) echo "<br><center><b><font color=\"#ff0000\">NO TASKS FOUND</font></b></center>";
 
 ?>
 

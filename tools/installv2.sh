@@ -289,6 +289,11 @@ if [ $? != 0 ]; then
   sed "s/errors=remount-ro/quota,errors=remount-ro/" < /etc/fstab.bkp.$di.1 > /etc/fstab
 fi
 
+grep -q icpcadmin /etc/ssh/sshd_config
+if [ "$?" != "0" ]; then
+	echo "DenyUsers icpc icpcadmin" >> /etc/ssh/sshd_config
+fi
+
 echo "============================================================"
 echo "===================== SETTING UP USER QUOTA  ==============="
 echo "============================================================"
