@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 15/aug/2014 by cassio@ime.usp.br
+// Last modified 07/sep/2015 by cassio@ime.usp.br
 require_once('db.php');
 define("dbcompat_1_4_1",true);
 
@@ -205,13 +205,13 @@ function IntrusionNotify($where) {
 // verifica se a sessao esta aberta e ok
 function ValidSession() {
 	if (!isset($_SESSION["usertable"])) return(FALSE);
+	if ($_SESSION["usertable"]["usersession"] == session_id() || $_SESSION["usertable"]["usersessionextra"] == session_id()) return(TRUE);
+	if(($_SESSION["usertable"]["userip"] == getIP() && $_SESSION["usertable"]["usermultilogin"] == 't') ||
+	   $_SESSION["usertable"]["usertype"] == 'score') return(TRUE);	
 	$_SESSION["usertable"] = DBUserInfo($_SESSION["usertable"]["contestnumber"], 
 										$_SESSION["usertable"]["usersitenumber"], 
 										$_SESSION["usertable"]["usernumber"]);
-	if ($_SESSION["usertable"]["usersession"] != session_id() &&
-	    ($_SESSION["usertable"]["usermultilogin"] != 't' || 
- 	     $_SESSION["usertable"]["usertype"] != 'score'))
-		return(FALSE);
+	if ($_SESSION["usertable"]["usersession"] != session_id() && $_SESSION["usertable"]["usersessionextra"] != session_id()) return(FALSE);
 	return(TRUE);
 }
 // grava erro no arquivo de log
