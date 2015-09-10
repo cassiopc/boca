@@ -181,6 +181,15 @@ if [ "`which gconftool`" != "" ]; then
 	su - icpc -c "gconftool -s -t bool /apps/update-notifier/auto_launch false"
 fi
 
+grep -q icpcadmin /etc/ssh/sshd_config
+if [ "$?" != "0" ]; then
+	echo "DenyUsers icpc icpcadmin" >> /etc/ssh/sshd_config
+	ps auxw |grep sshd|grep -vq grep
+	if [ "$?" == "0" ]; then
+		service ssh reload
+	fi
+fi
+
 pass=`echo -n icpc | makepasswd --clearfrom - --crypt-md5 | cut -d'$' -f2-`
 pass=\$`echo $pass`
 id -u icpc >/dev/null 2>/dev/null
@@ -287,11 +296,6 @@ if [ $? != 0 ]; then
   cp -f /etc/fstab /etc/fstab.bkp.$di
   sed "s/relatime/quota,relatime/" < /etc/fstab.bkp.$di > /etc/fstab.bkp.$di.1
   sed "s/errors=remount-ro/quota,errors=remount-ro/" < /etc/fstab.bkp.$di.1 > /etc/fstab
-fi
-
-grep -q icpcadmin /etc/ssh/sshd_config
-if [ "$?" != "0" ]; then
-	echo "DenyUsers icpc icpcadmin" >> /etc/ssh/sshd_config
 fi
 
 echo "============================================================"
