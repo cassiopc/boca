@@ -4,7 +4,7 @@ if [ ! -x /etc/icpc/bocaserver.sh ]; then
   OK=1
   while [ "$OK" != "0" ]; do
     IP=`zenity --title="Setting up the BOCA server IP number" --text="Enter the IP address of the server (format x.y.w.z)\n\
-If this is supposed to be the server, then leave it empty\nIf there are multiple servers, separate IPs by a semi-colon ;" --width=500 --height=100 --entry`
+If this is supposed to be the server, then leave it empty\nIf there are multiple servers, separate IPs by a semi-colon ;" --entry`
     [ "$IP" == "" ] && IP=LOCAL
     zenity --title="IP confirmation" --text="The chosen IP is $IP\nDo you confirm?" --question
     OK=$?
@@ -94,3 +94,5 @@ fi
 if [ -x /etc/network/if-pre-up.d/boca ]; then
   . /etc/network/if-pre-up.d/boca
 fi
+
+exit 0

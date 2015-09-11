@@ -217,6 +217,7 @@ echo "=================================================="
 echo "=================== SERVER SETUP   ==============="
 echo "=================================================="
 ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/apache2/conf.d/20-mcrypt.ini 2>/dev/null
+ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/cli/conf.d/20-mcrypt.ini 2>/dev/null
 
 OK=n
 echo "You can run at anytime later the script /etc/icpc/becomeserver.sh to prepare the computer to be the BOCA server"

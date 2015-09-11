@@ -87,7 +87,7 @@ if(isset($scoredelay[$_SESSION["usertable"]["usertype"]])) $actualdelay = $score
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 
-$scoretmp = $_SESSION["locr"] . $ds . "private" . $ds . "scoretmp" . $ds . $_SESSION["usertable"]["usertype"] . ".php";
+$scoretmp = $_SESSION["locr"] . $ds . "private" . $ds . "scoretmp" . $ds . $_SESSION["usertable"]["usertype"] . '-' . $_SESSION["usertable"]["username"] . ".php";
 $redo = TRUE;
 if(file_exists($scoretmp)) {
 	if(($strtmp = file_get_contents($scoretmp,FALSE,NULL,-1,100000)) !== FALSE) {

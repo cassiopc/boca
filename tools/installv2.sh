@@ -181,6 +181,15 @@ if [ "`which gconftool`" != "" ]; then
 	su - icpc -c "gconftool -s -t bool /apps/update-notifier/auto_launch false"
 fi
 
+grep -q icpcadmin /etc/ssh/sshd_config
+if [ "$?" != "0" ]; then
+	echo "DenyUsers icpc icpcadmin" >> /etc/ssh/sshd_config
+	ps auxw |grep sshd|grep -vq grep
+	if [ "$?" == "0" ]; then
+		service ssh reload
+	fi
+fi
+
 pass=`echo -n icpc | makepasswd --clearfrom - --crypt-md5 | cut -d'$' -f2-`
 pass=\$`echo $pass`
 id -u icpc >/dev/null 2>/dev/null

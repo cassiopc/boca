@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 06/sep/2013 by cassio@ime.usp.br
+// Last modified 09/sep/2015 by cassio@ime.usp.br
 
 function DBDropRunTable() {
 	$c = DBConnect();
@@ -705,7 +705,7 @@ function DBNewRun($param,$c=null) {
 		DBExec($c, "rollback work", "DBNewRun(rollback-site)");
 		LOGError("Unable to find a unique site/contest in the database. SQL=(" . $sql . ")");
 		MSGError("Unable to find a unique site/contest in the database.");
-		exit;
+		return false;
 	}
 	$a = DBRow($r,0);
 	$n = $a["nextrun"] + 1;
@@ -735,13 +735,13 @@ function DBNewRun($param,$c=null) {
 			DBExec($c, "rollback work", "DBNewRun(rollback-started)");
 			LOGError("Tried to submit a run but the contest is not started. SQL=(" . $sql . ")");
 			MSGError("The contest is not started yet!");
-			return false;
+			return 0;
 		} }
 		if (!$b["siterunning"]) {
 			DBExec($c, "rollback work", "DBNewRun(rollback-over)");
 			LOGError("Tried to submit a run but the contest is over. SQL=(" . $sql . ")");
 			MSGError("The contest is over!");
-			return false;
+			return 0;
 		}
 	} else {
 		$dif = $rundatediff;
@@ -759,14 +759,14 @@ function DBNewRun($param,$c=null) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import stdout)");
 				LOGError("Unable to create a large object for file stdout (run=$runnumber,site=$site,contest=$contest).");
 				MSGError("problem importing stdout to database. Contact an admin now!");
-				exit;
+				return false;
 			}
 		} else {
 			if($autostdout != '') {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import stderr)");
 				LOGError("Unable to create a large object for file stdout that is not BASE64 (run=$runnumber,site=$site,contest=$contest).");
 				MSGError("problem importing stdout (not BASE64) to database. Contact an admin now!");
-				exit;
+				return false;
 			}
 			$oid1 = 'NULL';
 		}
@@ -778,14 +778,14 @@ function DBNewRun($param,$c=null) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import stderr)");
 				LOGError("Unable to create a large object for file stderr (run=$runnumber,site=$site,contest=$contest).");
 				MSGError("problem importing stderr to database. Contact an admin now!");
-				exit;
+				return false;
 			}
 		} else {
 			if($autostderr != '') {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import stderr)");
 				LOGError("Unable to create a large object for file stderr that is not BASE64 (run=$runnumber,site=$site,contest=$contest).");
 				MSGError("problem importing stderr (not BASE64) to database. Contact an admin now!");
-				exit;
+				return false;
 			}
 			$oid2 = 'NULL';
 		}
@@ -797,7 +797,7 @@ function DBNewRun($param,$c=null) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import)");
 				LOGError("DBNewRun: Unable to create a large object for file $filepath.");
 				MSGError("problem importing file $filepath to database. Contact an admin now!");
-				exit;
+				return false;
 			}
 		} else {
 			$filepath = base64_decode(substr($filepath,7));
@@ -805,7 +805,7 @@ function DBNewRun($param,$c=null) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import)");
 				LOGError("DBNewRun: Unable to create a large object for file.");
 				MSGError("problem importing file to database. Contact an admin now!");
-				exit;
+				return false;
 			}
 		}
 		DBExec($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .

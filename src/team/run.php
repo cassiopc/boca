@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 08/aug/2015 by cassio@ime.usp.br
+// Last modified 09/sep/2015 by cassio@ime.usp.br
 require('header.php');
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
@@ -136,7 +136,7 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 			} else {
 				$pastval = 0;
 			}
-			$verify = $pastcode . '-' .$_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
+			$verify = $pastcode . '-' .$name . '-'. $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
 			$fcname = $_SESSION["locr"] . $ds . "private" . $ds . 'laterun-submitted-' . $_SESSION["usertable"]["contestnumber"].'-'.
 				$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"].'.txt';
 			$codes = @file($fcname,FILE_IGNORE_NEW_LINES);
@@ -149,9 +149,15 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 					$dif = $b["currenttime"]; 
 					$param['rundatediff']=$dif - $pastval;
 				}
-				if(DBNewRun ($param) == 2)
+				$retv = DBNewRun ($param);
+				if($retv == 2) {
 					@file_put_contents($fcname, $verify . "\n", FILE_APPEND | LOCK_EX);
-				echo "\nRESULT: RUN SUBMITTED SUCCESSFULLY ($pastval)";
+					echo "\nRESULT: RUN SUBMITTED SUCCESSFULLY ($pastval)";
+				} else {
+					if($retv == 0) echo "\nRESULT: CONTEST NOT RUNNING";
+					else
+						echo "\nRESULT: UNKNOWN PROBLEM";
+				}
 			}
 			exit;
 		}
@@ -159,8 +165,11 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 		if(isset($_POST['name']) && $_POST['name'] != '') {
 			if($retv == 2)
 				echo "\nRESULT: RUN SUBMITTED SUCCESSFULLY";
-			else
-				echo "\nRESULT: UNKNOWN PROBLEM";
+			else {
+				if($retv == 0) echo "\nRESULT: CONTEST NOT RUNNING";
+				else
+					echo "\nRESULT: UNKNOWN PROBLEM";
+			}
 			exit;
 		}
 		$_SESSION['forceredo']=true;
@@ -234,7 +243,7 @@ $linesubmission = @file_get_contents($_SESSION["locr"] . $ds . "private" . $ds .
 if(trim($linesubmission) == '1') {
 $strtmp .= "<br><br><center><b>To submit a program, use the command-line tool:</b>\n<br>".
 	"<pre>boca-submit-run USER PASSWORD PROBLEM LANGUAGE FILE</pre><br>".
-    "where USER is your username, PASSWORD is your password, FILE is your submission file,<br>".
+    "where USER is your username, PASSWORD is your password, <br>".
 	"PROBLEM is one of { ";
 
 $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usertype"]=='judge');
@@ -244,7 +253,7 @@ $strtmp .= "} and<br>LANGUAGE is one of { ";
 $lang = DBGetLanguages($_SESSION["usertable"]["contestnumber"]);
 for ($i=0;$i<count($lang);$i++)
 	$strtmp .= $lang[$i]["name"] . " ";
-$strtmp .= "}<br><br>\n";
+$strtmp .= "}<br>FILE is your submission file<br><br>\n";
 } else {
 
 $strtmp .= "<br><br><center><b>To submit a program, just fill in the following fields:</b></center>\n".

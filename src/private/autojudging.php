@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 13/sep/2013 by cassio@ime.usp.br
+// Last modified 10/sep/2015 by cassio@ime.usp.br
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 
@@ -127,8 +127,8 @@ for($i=0; $i<5; $i++) {
 }
 if($i>=5) {
 	  echo "It was not possible to create a unique temporary directory\n";
-  	  LogLevel("Autojuging: Unable to create temp directory (run=$number, site=$site, contest=$contest)",1);
-	  DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem creating temp directory");
+  	  LogLevel("Autojudging: Unable to create temp directory (run=$number, site=$site, contest=$contest)",1);
+	  DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem creating temp directory");
 	  continue;
 }
 chdir($dir);
@@ -136,15 +136,15 @@ chdir($dir);
 echo "Using directory $dir (contest=$contest, site=$site, run=$number)\n";
 
 if($run["sourceoid"]=="" || $run["sourcename"]=="") {
-	LogLevel("Autojuging: Source file not defined (run=$number, site=$site, contest=$contest)",1);
+	LogLevel("Autojudging: Source file not defined (run=$number, site=$site, contest=$contest)",1);
 	echo "Source file not defined (contest=$contest, site=$site, run=$number)\n";
-	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: source file not defined");
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: source file not defined");
 	continue;
 }
 if($run["inputoid"]=="" || $run["inputname"]=="") {
-	LogLevel("Autojuging: problem package not defined (run=$number, site=$site, contest=$contest)",1);
+	LogLevel("Autojudging: problem package not defined (run=$number, site=$site, contest=$contest)",1);
 	echo "Package file not defined (contest=$contest, site=$site, run=$number)\n";
-	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file not defined");
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file not defined");
 	continue;
 }
 $c = DBConnect();
@@ -153,7 +153,7 @@ if(DB_lo_export($contest,$c, $run["sourceoid"], $dir . $ds . $run["sourcename"])
         DBExec($c, "rollback work", "Autojudging(rollback-source)");
 	LogLevel("Autojudging: Unable to export source file (run=$number, site=$site, contest=$contest)",1);
         echo "Error exporting source file ${run["sourcename"]} (contest=$contest, site=$site, run=$number)\n";
-	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: unable to export source file");
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: unable to export source file");
 	DBExec($c, "commit", "Autojudging(exportcommit)");
 	continue;
 }
@@ -169,7 +169,7 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
         DBExec($c, "rollback work", "Autojudging(rollback-input)");
 		LogLevel("Autojudging: Unable to export problem package file (run=$number, site=$site, contest=$contest)",1);
         echo "Error exporting problem package file ${run["inputname"]} (contest=$contest, site=$site, run=$number)\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: unable to export problem package file");
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: unable to export problem package file");
 		DBExec($c, "commit", "Autojudging(exportcommit)");
 		continue;
 	}
@@ -184,13 +184,13 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		$zip->close();
 	} else {
 		echo "Failed to unzip the package file -- please check the problem package (maybe it is encrypted?)\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (1)");
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (1)");
 		cleardir($dir . $ds . "problemdata");
 		continue;
 	}
 	if(($info=@parse_ini_file($dir . $ds . "problemdata" . $ds . "description" . $ds . 'problem.info'))===false) {
 		echo "Problem content missing (description/problem.info) -- please check the problem package\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (2)");
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (2)");
 		cleardir($dir . $ds . "problemdata");
 		continue;
 	}
@@ -200,14 +200,14 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 	$fullname=trim(sanitizeText($info['fullname']));
 	if($basename=='') {
 		echo "Problem content missing (description/problem.info) -- please check the problem package\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (3)");
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (3)");
 		cleardir($dir . $ds . "problemdata");
 		continue;
 	}
 	$basenames[$run['inputoid']. "." . $run["inputname"]]=$basename;
 	if(!is_dir($dir . $ds . "problemdata" . $ds . "limits")) {
 		echo "Problem content missing (limits) -- please check the problem package\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (4)");
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (4)");
 		cleardir($dir . $ds . "problemdata");
 		continue;
 	}
@@ -223,7 +223,7 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		if(system($ex, $retval)===false) $retval=-1;
 		if($retval != 0) {
 			echo "Error running script -- please check the problem package\n";
-			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (5)");
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (5)");
 			cleardir($dir . $ds . "problemdata");
 			continue;
 		}
@@ -246,7 +246,7 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 			echo "\n=====stdout======\n";
 			echo file_get_contents('stdout');
 			echo "\n===========\n";
-			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: internal test script failed (" . $file . ")");
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: internal test script failed (" . $file . ")");
 			$cont=true;
 			break;
 		}
@@ -264,7 +264,7 @@ if(!isset($limits[$basename][$run["extension"]][0]) || !is_numeric($limits[$base
    !isset($limits[$basename][$run["extension"]][2]) || !is_numeric($limits[$basename][$run["extension"]][2]) ||
    !isset($limits[$basename][$run["extension"]][3]) || !is_numeric($limits[$basename][$run["extension"]][3]) ) {
 	echo "Failed to find proper limits information for the problem -- please check the problem package\n";
-	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (6)");
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (6)");
 	continue;
 }
 
@@ -281,14 +281,14 @@ if ($zip->open($dir . $ds . $run["inputname"]) === true) {
 	$zip->close();
 } else {
 	echo "Failed to unzip the package file -- please check the problem package\n";
-	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (7)");
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (7)");
 	continue;
 }
 
 $script = $dir . $ds . 'compile' . $ds . $run["extension"];
 if(!is_file($script)) {
 	echo "Error (not found) compile script for ".$run["extension"]." -- please check the problem package\n";
-	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: compile script failed (".$run["extension"].")");
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: compile script failed (".$run["extension"].")");
 	continue;
 }
 
@@ -345,28 +345,33 @@ if($retval != 0) {
 				$outputlist[$noutputlist++] = 'output' . $ds . basename($filename,'.link');
 			}
 		}
+		if($ninputlist == 0) {
+			echo "WARN: There are NO input files in ZIP package -- should check the problem package?\n";
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "warning: problem package has no input files");
+			continue;
+		}
 		$zip->extractTo($dir, array_merge(array("run" . $ds . $run["extension"]),array("compare" . $ds . $run["extension"]),$inputlist,$outputlist));
 		$zip->close();
 		if(chmod($dir . $ds . 'output', 0700)==false || chown($dir . $ds . 'output','root') == false) {
 			echo "Failed to chown/chdir the output folder -- please check the system and problem package\n";
-			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: chown/chmod failed for output (99)");
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: chown/chmod failed for output (99)");
 			continue;
 		}
 		if(chmod($dir . $ds . 'compare', 0700)==false || chown($dir . $ds . 'compare','root') == false) {
 			echo "Failed to chown/chdir the output folder -- please check the system and problem package\n";
-			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: chown/chmod failed for output (99)");
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: chown/chmod failed for output (99)");
 			continue;
 		}
 	} else {
 		echo "Failed to unzip the file (inputs) -- please check the problem package\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (8)");
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (8)");
 		continue;
 	}
 	$retval = 0;
 	$script = $dir . $ds . 'run' . $ds . $run["extension"];
 	if(!is_file($script)) {
 		echo "Failed to unzip the run script -- please check the problem package\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (9)");
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (9)");
 		continue;
 	}
 	chdir($dir);
@@ -379,7 +384,7 @@ if($retval != 0) {
 
 	if($ninputlist == 0) {
 		echo "WARN: There are NO input files in ZIP package -- should check the problem package?\n";
-		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging warning: problem package has no input files");
+		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "warning: problem package has no input files");
 		continue;
 	} else {
 		$errp=0;
@@ -396,7 +401,7 @@ if($retval != 0) {
 						@copy($fnam,$dir . $ds . "input" . $ds . $file);
  					} else {
 						echo "Failed to read input files from link indicated in the ZIP -- please check the problem package\n";
-						DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (11) or missing files on the autojudge");
+						DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (11) or missing files on the autojudge");
 						$errp=1; break;
 					}
 				}
@@ -522,7 +527,7 @@ if($retval != 0) {
 			$zip->close();
 		} else {
 			echo "Failed to unzip the file (outputs) -- please check the problem package\n";
-			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: problem package file is invalid (12)");
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (12)");
 			continue;
 		}
 		$script = $dir . $ds . 'compare' . $ds . $run["extension"];
