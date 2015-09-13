@@ -58,8 +58,9 @@ if(isset($_GET['remote']) && is_numeric($_GET['remote'])) {
 	ob_end_flush();
 
 	if (isset($_SESSION["usertable"])) {
-        $_SESSION["usertable"] = DBUserInfo($_SESSION["usertable"]["contestnumber"],
-											$_SESSION["usertable"]["usersitenumber"], $_SESSION["usertable"]["usernumber"]);
+        $tmp = DBUserInfo($_SESSION["usertable"]["contestnumber"],
+						  $_SESSION["usertable"]["usersitenumber"], $_SESSION["usertable"]["usernumber"]);
+		$_SESSION["usertable"]['usersessionextra'] = $tmp['usersessionextra'];
 	} else {
 		IntrusionNotify("scoretable1");
         ForceLoad("index.php");
