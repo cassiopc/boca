@@ -34,16 +34,7 @@ echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
 echo "<link rel=stylesheet href=\"../Css.php\" type=\"text/css\">\n";
 echo "<meta http-equiv=\"refresh\" content=\"60\" />"; 
 
-$ret=1;
-if (!isset($_SESSION["usertable"])) $ret=0;
-else {
-        $_SESSION["usertable"] = DBUserInfo($_SESSION["usertable"]["contestnumber"],
-                                $_SESSION["usertable"]["usersitenumber"], $_SESSION["usertable"]["usernumber"]);
-        if ($_SESSION["usertable"]["usersession"] != session_id() && $_SESSION["usertable"]["usermultilogin"]!="t")
-                $ret=0;
-}
-
-if($ret==0) {
+if(!ValidSession()) {
 	InvalidSession("score/index.php");
         ForceLoad("../index.php");
 }

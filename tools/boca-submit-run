@@ -71,5 +71,5 @@ if [ -r "$5" ]; then
 		[ -f "$temp" ] && rm -f $temp
 	done
 else
-	echo "file $1 not found/readable"
+	echo "file $5 not found/readable"
 fi

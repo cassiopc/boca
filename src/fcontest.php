@@ -258,13 +258,13 @@ function DBUserInfo($contest, $site, $user, $c=null,$hashpass=true) {
 	}
 	if($hashpass)
 		$a['userpassword'] = myhash($a['userpassword'] . $a['usersessionextra']);
-	$inst = explode(']',$a['userfullname']);
-	if(isset($inst[1])) {
-		$a['userfullname'] = trim($inst[1]);
-		$inst = explode('[',$inst[0]);
-		if(isset($inst[1]))
-		   $a['usershortname'] = trim($inst[1]);
-	}
+	/* $inst = explode(']',$a['userfullname']); */
+	/* if(isset($inst[1])) { */
+	/* 	$a['userfullname'] = trim($inst[1]); */
+	/* 	$inst = explode('[',$inst[0]); */
+	/* 	if(isset($inst[1])) */
+	/* 	   $a['usershortname'] = trim($inst[1]); */
+	/* } */
 	$inst = explode(']',$a['userdesc']);
 	if(isset($inst[1])) {
 		$inst2 = explode('[',$inst[0]);
@@ -1265,6 +1265,11 @@ function siteclock() {
 	if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
 	        ForceLoad("../index.php");
 
+	///////CASO DE COMECAR MAIS TARDE NO CENTRALIZADO
+	if(substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
+		$s["currenttime"]=$s["currenttime"] - 60*10; // 10 minutos
+	}
+	
 	if ($s["siteactive"]!="t") 
 		return array("site is not active",-1000000000);
 	if (!$s["siterunning"])

@@ -133,6 +133,9 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	}
 	$a = DBUserInfo($b["contestnumber"], $b["contestlocalsite"],$a['usernumber'],null,false);
 	$_SESSION['usertable'] = $a;
+	$_SESSION['usertable']['usersession']='';
+	$_SESSION['usertable']['userip']='';
+
 	$p = myhash($a["userpassword"] . session_id());
 	$_SESSION['usertable']['userpassword'] = $p;
 	if ($a["userpassword"] != "" && $p != $pass) {
@@ -175,6 +178,8 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 			}
 		}
 	}
+	$_SESSION['usertable']['usersession']=session_id();
+	$_SESSION['usertable']['userip']=$gip;
 	$c = DBConnect();
 	$t = time();
 	if($a["usertype"] == "team" && $a["usermultilogin"] != "t" && $a["userpermitip"] == "") {

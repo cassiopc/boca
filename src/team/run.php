@@ -149,6 +149,12 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 					$dif = $b["currenttime"]; 
 					$param['rundatediff']=$dif - $pastval;
 				}
+
+				///////CASO DE COMECAR MAIS TARDE NO CENTRALIZADO
+				if(substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
+					$param['rundate']=$param['rundate'] - 60*10; // 10 minutos
+					$param['rundatediff']=$param['rundatediff'] - 60*10;
+				}
 				$retv = DBNewRun ($param);
 				if($retv == 2) {
 					@file_put_contents($fcname, $verify . "\n", FILE_APPEND | LOCK_EX);
@@ -160,6 +166,11 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 				}
 			}
 			exit;
+		}
+		///////CASO DE COMECAR MAIS TARDE NO CENTRALIZADO
+		if(substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
+			$param['rundate']=$param['rundate'] - 60*10; // 10 minutos
+			$param['rundatediff']=$param['rundatediff'] - 60*10;
 		}
 		$retv = DBNewRun ($param);
 		if(isset($_POST['name']) && $_POST['name'] != '') {

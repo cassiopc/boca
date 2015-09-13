@@ -205,13 +205,15 @@ function IntrusionNotify($where) {
 // verifica se a sessao esta aberta e ok
 function ValidSession() {
 	if (!isset($_SESSION["usertable"])) return(FALSE);
-	if ($_SESSION["usertable"]["usersession"] == session_id() || $_SESSION["usertable"]["usersessionextra"] == session_id()) return(TRUE);
-	if(($_SESSION["usertable"]["userip"] == getIP() && $_SESSION["usertable"]["usermultilogin"] == 't') ||
-	   $_SESSION["usertable"]["usertype"] == 'score') return(TRUE);	
-	$_SESSION["usertable"] = DBUserInfo($_SESSION["usertable"]["contestnumber"], 
-										$_SESSION["usertable"]["usersitenumber"], 
-										$_SESSION["usertable"]["usernumber"]);
-	if ($_SESSION["usertable"]["usersession"] != session_id() && $_SESSION["usertable"]["usersessionextra"] != session_id()) return(FALSE);
+	$gip = getIP();
+	if ($_SESSION["usertable"]["userip"] != $gip ||
+		$_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
+	if($_SESSION["usertable"]["usermultilogin"] == 't') return(TRUE);
+	
+	$tmp = DBUserInfo($_SESSION["usertable"]["contestnumber"], 
+					  $_SESSION["usertable"]["usersitenumber"], 
+					  $_SESSION["usertable"]["usernumber"]);
+	if ($tmp["userip"] != $gip) return(FALSE);
 	return(TRUE);
 }
 // grava erro no arquivo de log
