@@ -138,12 +138,6 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 
 	$p = myhash($a["userpassword"] . session_id());
 	$_SESSION['usertable']['userpassword'] = $p;
-	if ($a["userpassword"] != "" && $p != $pass) {
-		LOGLevel("User $name tried to log in contest $contest but password was incorrect.",2);
-		if($msg) MSGError("Incorrect password.");
-		unset($_SESSION["usertable"]);
-		return false;
-	}
 	if ($d["sitepermitlogins"]=="f" && $a["usertype"] != "admin" && $a["usertype"] != "judge" && $a["usertype"] != "site") {
 		LOGLevel("User $name tried to login contest $contest but logins are denied.",2);
 		if($msg) MSGError("Logins are not allowed.");
@@ -153,6 +147,12 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	if ($a["userenabled"] != "t") {
 		LOGLevel("User $name tried to log in contest $contest but it is disabled.",2);
 		if($msg) MSGError("User disabled.");
+		unset($_SESSION["usertable"]);
+		return false;
+	}
+	if ($a["userpassword"] != "" && $p != $pass) {
+		LOGLevel("User $name tried to log in contest $contest but password was incorrect.",2);
+		if($msg) MSGError("Incorrect password.");
 		unset($_SESSION["usertable"]);
 		return false;
 	}
