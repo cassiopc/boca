@@ -109,6 +109,10 @@ if($redo) {
 		}
 		else {
 			$strtmp .= "  <td>" . $run[$i]["answer"]; 
+			if(false) {
+				if(strpos($run[$i]["autoanswer"],"OKs") > 0)
+					$strtmp .= ' ' . substr($run[$i]["autoanswer"],strrpos($run[$i]["autoanswer"],'('));
+			}
 			if($run[$i]['yes']=='t') {
 				$strtmp .= " <img alt=\"".$run[$i]["colorname"]."\" width=\"15\" ".
 					"src=\"" . balloonurl($run[$i]["color"]) ."\" />";

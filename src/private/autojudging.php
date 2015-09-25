@@ -456,7 +456,7 @@ if($retval != 0) {
 					$answer = "(WHILE RUNNING) " . $answer;
 					break;
 				}
-
+				$ncor = 0;
 				if(is_file($dir . $ds . 'output' . $ds . $file)) {
 					@unlink($dir . $ds . 'compout');
 					$ex = escapeshellcmd($scriptcomp) ." ".
@@ -485,26 +485,27 @@ if($retval != 0) {
 					if($localretval < 4 || $localretval > 6) {
 						// contact staff
 						$retval = 7;
-						$answer='(Contact staff)' . $answertmp;
+						$answer='(Contact staff)' . $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 						break;
 					}
 					if($localretval == 6) {
 						$retval=$localretval;
-						$answer='(Wrong answer)'. $answertmp;
+						$answer='(Wrong answer)'. $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 						break;
 					}
 					if($localretval == 5) {
 						$retval=$localretval;
-						$answer='(Presentation error)'. $answertmp;
+						$answer='(Presentation error)'. $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 					} else {
 						if($localretval != 4) {
 							$retval = 7;
-							$answer='(Contact staff)' . $answertmp;
+							$answer='(Contact staff)' . $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 							break;
 						}
-						if($retval == 0) {
+						$ncor++;
+						if($retval == 0 || $retval == 1) {
 							// YES!
-							$answer='(YES)' . $answertmp;
+							$answer='(YES)' . $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 							$retval = 1;
 						}
 					}
@@ -593,6 +594,14 @@ if($retval != 0) {
 		}
 	}
 */
+}
+if($retval >= 7 && $retval <= 9) {
+	$ans = file("allout");
+	$anstmp = trim(escape_string($ans[count($ans)-1]));
+	unset($ans);
+	$answer = "(probably runtime error - unusual code: $retval) " . $anstmp;
+	// runtime error
+	$retval = 3;
 }
 if($retval == 0 || $retval > 9) {
 	$ans = file("allout");

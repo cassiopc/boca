@@ -487,7 +487,7 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 		return true;
 	}
 
-	echo "DEBUG: $contest, $site, " .$a["usernumber"].", $site, $number, $retval\n";
+	//echo "DEBUG: $contest, $site, " .$a["usernumber"].", $site, $number, $retval\n";
 	if(DBUpdateRunO($contest, $site, $a["usernumber"], $site, $number, $retval, $c)==false) {
 		DBExec($c, "rollback work", "DBUpdateRunAutoJudging(rollback)");
 		LOGError("Unable to automatically update a run answer (run=$number, site=$site, ".
@@ -868,7 +868,7 @@ function DBUserRuns($contest,$site,$user) {
 	     		"r.runfilename as filename, r.rundata as oid, " .
 				"p.problemcolorname as colorname, p.problemcolor as color, a.yes as yes, " .
 				"p.problemname as problem, r.runstatus as status, l.langname as language, l.langextension as extension, " .
-				"a.runanswer as answer, a.fake as ansfake, r.rundatediffans as anstime, " .
+				"a.runanswer as answer, a.fake as ansfake, r.rundatediffans as anstime, r.autoanswer as autoanswer, " .
 				"r.runanswer1 as answer1, r.runanswer2 as answer2 " .
 				"from runtable as r, problemtable as p, answertable as a, langtable as l " .
 				"where r.contestnumber=$contest and p.contestnumber=r.contestnumber and " .
