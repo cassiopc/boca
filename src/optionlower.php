@@ -38,7 +38,6 @@ if (isset($_GET["username"]) && isset($_GET["userfullname"]) && isset($_GET["use
 				 $_SESSION["usertable"]["usersitenumber"],
 				 $_SESSION["usertable"]["usernumber"],
 				 $_SESSION["usertable"]["username"], // $username, but users should not change their names
-				 $userfullname,
 				 $userdesc,
 				 $passwordo,
 				 $passwordn);
