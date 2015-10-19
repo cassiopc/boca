@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 10/sep/2015 by cassio@ime.usp.br
+// Last modified 19/Oct/2015 by cassio@ime.usp.br
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 
@@ -597,7 +597,7 @@ if($retval != 0) {
 }
 if($retval >= 7 && $retval <= 9) {
 	$ans = file("allout");
-	$anstmp = trim(escape_string($ans[count($ans)-1]));
+	$anstmp = substr(trim(escape_string($ans[count($ans)-1])),0,100);
 	unset($ans);
 	$answer = "(probably runtime error - unusual code: $retval) " . $anstmp;
 	// runtime error
@@ -605,7 +605,7 @@ if($retval >= 7 && $retval <= 9) {
 }
 if($retval == 0 || $retval > 9) {
 	$ans = file("allout");
-	$anstmp = trim(escape_string($ans[count($ans)-1]));
+	$anstmp = substr(trim(escape_string($ans[count($ans)-1])),0,100);
 	unset($ans);
 	LogLevel("Autojudging: Script returned unusual code: $retval ($anstmp)".
 			 "(run=$number, site=$site, contest=$contest)",1);
@@ -619,6 +619,7 @@ if($retval == 0 || $retval > 9) {
 echo "Sending results to server...\n";
 //echo "out==> "; system("tail -n1 ". $dir.$ds.'allout');
 //echo "err==> "; system("tail -n1 ". $dir.$ds.'allerr');
+$answer=substr($answer,0,200);
 DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $dir.$ds.'allout', $dir.$ds.'allerr', $retval);
 LogLevel("Autojudging: answered '$answer' (run=$number, site=$site, contest=$contest)",3);
 echo "Autojudging answered '$answer' (contest=$contest, site=$site, run=$number)\n";
