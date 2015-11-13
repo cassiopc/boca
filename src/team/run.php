@@ -151,7 +151,7 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 				}
 
 				///////CASO DE COMECAR MAIS TARDE NO CENTRALIZADO
-				if(substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
+				if(false && substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
 					$param['rundate']=$param['rundate'] - 60*10; // 10 minutos
 					$param['rundatediff']=$param['rundatediff'] - 60*10;
 				}
@@ -168,7 +168,7 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 			exit;
 		}
 		///////CASO DE COMECAR MAIS TARDE NO CENTRALIZADO
-		if(substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
+		if(false && substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
 			$param['rundate']=$param['rundate'] - 60*10; // 10 minutos
 			$param['rundatediff']=$param['rundatediff'] - 60*10;
 		}
