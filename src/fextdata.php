@@ -24,7 +24,7 @@ function scoretransfer($putname, $localsite) {
 	if(is_readable('/etc/boca.conf')) {
 		$pif=parse_ini_file('/etc/boca.conf');
 		$bocaproxy = @trim($pif['proxy']);
-		if(substr($bocaproxy,0,6) != 'tcp://')
+		if($bocaproxy != "" && substr($bocaproxy,0,6) != 'tcp://')
 			$bocaproxy = 'tcp://' . $bocaproxy;
 		$bocaproxylogin = @trim($pif['proxylogin']);
 		$bocaproxypass = @trim($pif['proxypassword']);
@@ -76,8 +76,8 @@ function scoretransfer($putname, $localsite) {
 			);
 		if($bocaproxy != "")
 			$opts['http']['proxy'] = $bocaproxy;
-		if($bocapass != "")
-			$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocapass;
+		if($bocaproxypass != "")
+			$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
 
 		$context = stream_context_create($opts);
 
@@ -131,8 +131,8 @@ function scoretransfer($putname, $localsite) {
 				);
 			if($bocaproxy != "")
 				$opts['http']['proxy'] = $bocaproxy;
-			if($bocapass != "")
-				$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocapass;
+			if($bocaproxypass != "")
+				$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
 
 			$context = stream_context_create($opts);
 			$s = @file_get_contents($siteurl . $urldiv . "site/putfile.php", 0, $context);
