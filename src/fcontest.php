@@ -15,8 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 26/oct/2014 by cassio@ime.usp.br
-//        inclusion of default extra language C++11
+//Last updated 11/nov/2015 by cassio@ime.usp.br
 //
 function DBDropContestTable() {
 	 $c = DBConnect();
@@ -991,10 +990,10 @@ function insertlanguages($n,$c=null) {
 	$param['name']='Java';
 	$param['extension']='java';
 	DBNewLanguage($n, $param, $c);
-	$param['number']=4;
-	$param['name']='C++11';
-	$param['extension']='cc';
-	DBNewLanguage($n, $param, $c);
+//	$param['number']=4;
+//	$param['name']='C++11';
+//	$param['extension']='cc';
+//	DBNewLanguage($n, $param, $c);
 }
 function insertanswers($n,$c) {
 	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".

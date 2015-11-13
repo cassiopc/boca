@@ -387,7 +387,7 @@ if($retval != 0) {
 		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "warning: problem package has no input files");
 		continue;
 	} else {
-		$errp=0;
+		$errp=0; $ncor=0;
 		foreach($inputlist as $file) {
 			$file = basename($file);
 			if(is_file($dir . $ds . "input" . $ds . $file)) {
@@ -456,7 +456,6 @@ if($retval != 0) {
 					$answer = "(WHILE RUNNING) " . $answer;
 					break;
 				}
-				$ncor = 0;
 				if(is_file($dir . $ds . 'output' . $ds . $file)) {
 					@unlink($dir . $ds . 'compout');
 					$ex = escapeshellcmd($scriptcomp) ." ".

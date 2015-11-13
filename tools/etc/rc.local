@@ -21,23 +21,15 @@ if [ $? != 0 ]; then
   echo "iface eth0 inet dhcp" >> /etc/network/interfaces
 fi
 
-grep -q "143.107.255.15.*ntp.usp.br.*ntp.usp.br" /etc/hosts
-if [ $? != 0 ]; then
-  echo "143.107.255.15 ntp.usp.br ntp.usp.br" >> /etc/hosts
-fi 
 grep -q "50.116.19.221.*www.bombonera.org.*www.bombonera.org" /etc/hosts
 if [ $? != 0 ]; then
   echo "50.116.19.221 www.bombonera.org www.bombonera.org" >> /etc/hosts
-fi 
-grep -q "45.33.30.235.*boca.bombonera.org.*boca.bombonera.org" /etc/hosts
-if [ $? != 0 ]; then
-  echo "45.33.30.235 boca.bombonera.org boca.bombonera.org" >> /etc/hosts
 fi 
 grep -q "143.107.45.22.*www.ime.usp.br.*www.ime.usp.br" /etc/hosts
 if [ $? != 0 ]; then
   echo "143.107.45.22 www.ime.usp.br www.ime.usp.br" >> /etc/hosts
 fi 
 
-ntpdate -u ntp.usp.br
-ntpdate -u ntp.usp.br
+ntpdate -u 198.60.22.240
+ntpdate -u 104.232.3.3
 exit 0
