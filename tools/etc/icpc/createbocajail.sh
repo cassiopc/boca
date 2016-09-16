@@ -114,10 +114,11 @@ cat <<EOF > /home/bocajail/tmp/populate.sh
 #!/bin/bash
 mount -t proc proc /proc
 apt-get -y update
-apt-get -y install python-software-properties
+apt-get -y install python-software-properties software-properties-common
+add-apt-repository -y ppa:brunoribas/ppa-maratona
+apt-get -y update
 apt-get -y upgrade
-apt-get -y install g++ gcc libstdc++6 sharutils default-jdk default-jre
-apt-get -y install openjdk-7-jdk openjdk-7-jre
+apt-get -y install maratona-linguagens --no-install-recommends --allow-unauthenticated
 apt-get -y clean
 
 umount /proc
