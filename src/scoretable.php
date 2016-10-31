@@ -314,7 +314,7 @@ if($redo) {
 		else {
 */
 			$_SESSION["scoreblink"][$score[$e]["username"]."-".$score[$e]["site"]]=0;
-			$strtmp .= "  <td nowrap>" . $score[$e]["username"]."/".$score[$e]["site"] . " ";
+			$strtmp .= "  <td nowrap>" . $score[$e]["username"]."/".$score[$e]["site"] . " </td>";
 			$strtmp .= "<td>" . $score[$e]["userfullname"];
 //		}
 		$_SESSION["scorepos"][$score[$e]["username"]."-".$score[$e]["site"]] = $cg2;
