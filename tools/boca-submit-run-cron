@@ -6,23 +6,23 @@ if [ "`id -u`" != "0" ]; then
 fi
 
 if [ -d /root/submissions ]; then
-	touch /root/submissions/placeholder.bocarun
-	runaux=`which boca-submit-run-aux`
-	if [ "$runaux" == "" ]; then
-		runaux=/var/www/boca/tools/boca-submit-run-aux
-	fi
-
+    touch /root/submissions/placeholder.bocarun
+    runaux=/usr/bin/boca-submit-run-aux
+    if [ ! -f "$runaux" ]; then
+	echo "Error: could not find aux script"
+    else
 	for i in `ls /root/submissions/*.bocarun`; do
 		if [ "$i" != "/root/submissions/placeholder.bocarun" ]; then
-			$runaux "$i"
+			$runaux "$i" > ${i}.result
 			res=$?
 			if [ "$res" == "2" ]; then
-				echo "$i: time-out - this will automatically retry soon"
+				echo "time-out - this will automatically retry soon" > ${i}.result
 			fi
 			if [ "$res" == "0" ]; then
 				mv "$i" "${i}.processed"
 			fi
 		fi
 	done
+    fi
 fi
 

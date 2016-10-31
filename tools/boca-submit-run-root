@@ -1,10 +1,41 @@
 #!/bin/bash
 
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+
 if [ "`id -u`" != "0" ]; then
   echo "Must be run as root"
   exit 1
 fi
 
+if [ "$1" == "list" ]; then
+    if [ -d /root/submissions ]; then
+	touch /root/submissions/placeholder.bocarun
+	if [ "$2" == "old" ]; then
+	    for i in `ls /root/submissions/*.bocarun.processed`; do
+		if [ "$i" != "/root/submissions/placeholder.bocarun" ]; then
+		    prob=`grep ^problem $i`
+		    lang=`grep ^language $i`
+		    nam=`grep ^name $i`
+		    res=""
+		    resf="/root/submissions/`basename ${i} .processed`.result"
+		    [ -r "$resf" ] && res=`cat "$resf"`
+		    echo "RUN DONE: $prob $lang $nam $res"
+		fi
+	    done
+	else
+	    for i in `ls /root/submissions/*.bocarun`; do
+		if [ "$i" != "/root/submissions/placeholder.bocarun" ]; then
+		    prob=`grep ^problem $i`
+		    lang=`grep ^language $i`
+		    nam=`grep ^name $i`
+		    res=""
+		    [ -r "${i}.result" ] && res=`cat ${i}.result`
+		    echo "RUN AWAITING: $prob $lang $nam $res"
+		fi
+	    done
+	fi
+    fi
+else
 if [ "$7" != "" ]; then
 	mkdir -p /root/submissions
 	chown root /root/submissions
@@ -18,7 +49,7 @@ if [ "$7" != "" ]; then
 	echo "language=`echo $5 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
 	echo "name=`echo $6 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
 	echo -en "data=\"" >> "$nom"
-	uuencode -m zzzzzzzzzz < `echo "$7" | tr -cd '[[:alnum:]]._+-/'` | grep -v "begin-base64.*zzzzzzzzzz" >> "$nom"
+	uuencode -m zzzzzzzzzz < `echo -n "$7" | tr -cd '[[:alnum:]]._+-/'` | grep -v "begin-base64.*zzzzzzzzzz" >> "$nom"
 	echo "\"" >> "$nom"
 	dateerr=`date +%s`
 	echo "dateerr=$dateerr" >> "$nom"
@@ -26,8 +57,21 @@ if [ "$7" != "" ]; then
 #	uniq=`echo $uniq | sha256sum - | cut -f1 -d' '`
 	uniq=`sha256sum "$7" | cut -f1 -d' '`
 	code=`cat /root/submissions/code`
-	res=`echo -n "${code}${uniq}${dateerr}" | sha256sum - | cut -f1 -d' '`
+	comp="error"
+	if [ -r /root/submissions/comp ]; then
+	    comp=`cat /root/submissions/comp`
+	fi
+	res=`echo -n "${code}${uniq}${comp}${dateerr}" | sha256sum - | cut -f1 -d' '`
 	echo "uniq=$uniq" >> "$nom"
 	echo "code=$res" >> "$nom"
-	mv "$nom" "/root/submissions/`basename $nom .tmp`"
+	echo "comp=$comp" >> "$nom"
+
+	/usr/bin/boca-submit-run-aux $nom
+	if [ "$?" == "2" ]; then
+ 	    mv "$nom" "/root/submissions/`basename $nom .tmp`"
+	    echo "Run submission included in the queue -- it shall appear in the system later when connection is available"
+	else
+	    [ -f "$nom" ] && rm -f $nom
+	fi
+fi
 fi

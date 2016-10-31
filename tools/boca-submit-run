@@ -1,18 +1,47 @@
 #!/bin/bash
 
-[ -x /etc/icpc/bocaserver.sh ] && . /etc/icpc/bocaserver.sh
-if [ "$BOCASERVER" != "" ]; then
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+
+if [[ ! -e /etc/bocaip ]] ; then
+  echo "O IP do servidor boca nao configurado. Abort."
+  exit 1
+fi
+
+#Check if this script is running in a user in sudo group or root
+if groups | egrep -q "(sudo|root)" ; then
+  echo "Este script deve ser executado por um usuario normal"
+  echo "Na Maratona este usuario, geralmente, é o 'icpc'"
+  exit 1
+fi
+
+runroot=`which boca-submit-run-root-wrapper`
+if [ "$runroot" == "" ]; then
+	runroot=/usr/bin/boca-submit-run-root-wrapper
+fi
+
+if [ "`basename $0`" == "boca-submit-oldlist" ]; then
+    $runroot list old list list list list list
+else
+
+if [ "`basename $0`" == "boca-submit-list" ]; then
+    $runroot list list list list list list list
+else
+
+    source /etc/bocaip
+    BOCASERVER=$BOCAIP
+
+    if [ "$BOCASERVER" != "" ]; then
 	if [ "$BOCASERVERS" == "" ]; then
 		BOCASERVERS=$BOCASERVER
 	else
 		BOCASERVERS="$BOCASERVERS;$BOCASERVER"
 	fi
-fi
+    fi
 
-if [ "$BOCASERVERS" == "" ]; then
+    if [ "$BOCASERVERS" == "" ]; then
 	echo "This computer has no configured BOCA server. Ask an admin to update /etc/icpc/bocaserver.sh (usually resetting everything is an easy way)"
 	exit 1
-fi
+    fi
 
 
 for i in uuencode wget tr perl sha256sum cut; do
@@ -24,7 +53,6 @@ for i in uuencode wget tr perl sha256sum cut; do
     exit 1
   fi
 done
-temp=/tmp/.temp.`date +%s%N`.txt
 
 if [ "$1" == "" ]; then
 	echo "Usage: $0 USER PASSWORD PROBLEM LANGUAGE FILE"
@@ -40,36 +68,14 @@ if [ "$1" == "" ]; then
 	exit 1
 fi
 
-runaux=`which boca-submit-run-aux`
-if [ "$runaux" == "" ]; then
-	runaux=/usr/bin/boca-submit-run-aux
-fi
-runroot=`which boca-submit-run-root-wrapper`
-if [ "$runroot" == "" ]; then
-	runroot=/usr/bin/boca-submit-run-root-wrapper
-fi
-
 if [ -r "$5" ]; then
 	nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
 	for BOCASERVER in `echo $BOCASERVERS | tr ';' ' '`; do
-		echo "BOCASERVER=$BOCASERVER" > $temp
-		echo "user=$1" >> $temp
-		echo "pass=$2" >> $temp
-		echo "problem=$3" >> $temp
-		echo "language=$4" >> $temp
-		echo "name=`basename $5`" >> $temp
-		uniq=`sha256sum "$5" | cut -f1 -d' '`
-		echo "uniq=$uniq" >> $temp
-		echo -en "data=\"" >> $temp
-		uuencode -m zzzzzzzzzz < "$5" | grep -v "begin-base64.*zzzzzzzzzz" >> $temp
-		echo -e "\"" >> $temp
-		$runaux $temp
-		if [ "$?" == "2" ]; then
-			echo "$BOCASERVER: time-out - this will automatically retry soon, you should not worry"
-			$runroot "$BOCASERVER" "$1" "$2" "$3" "$4" "`basename $5`" "$5"
-		fi
-		[ -f "$temp" ] && rm -f $temp
+		$runroot "$BOCASERVER" "$1" "$2" "$3" "$4" "`basename $5`" "$5"
 	done
 else
 	echo "file $5 not found/readable"
+fi
+
+fi
 fi
