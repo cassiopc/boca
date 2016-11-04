@@ -5,7 +5,7 @@ Maintainer: BOCA Development Team <bocasystem@gmail.com>
 Build-Depends: debhelper, build-essential
 
 Package: boca
-Architecture: all
+Architecture: amd64
 Depends: php-zip, debootstrap, schroot, quotatool, makepasswd, apache2, libapache2-mod-php, sharutils, wget, coreutils, php, php-cli, php-mcrypt, php-pgsql, php-gd, postgresql, postgresql-client
 Description: BOCA is a software created to control a contest with the ACM ICPC rules.
   BOCA is a software created to control a contest with the ACM International
