@@ -44,12 +44,10 @@ fi
 id -u bocajail >/dev/null 2>/dev/null
 if [ $? != 0 ]; then
  useradd -m -s /bin/bash -d $homejail -g users bocajail
- if [ -d /etc/gdm ]; then
-   echo -e "[greeter]\nExclude=bocajail,nobody\n" >> /etc/gdm/custom.conf
- fi
- if [ -d /etc/lightdm ]; then
-   echo "hidden-users=nobody nobody4 noaccess bocajail" >> /etc/lightdm/lightdm.conf
- fi
+ cat <<EOF > /var/lib/AccountsService/users/bocajail
+[User]
+SystemAccount=true
+EOF
  sleep 1
 else
   echo "user bocajail already exists"
