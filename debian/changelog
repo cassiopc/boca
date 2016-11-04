@@ -1,3 +1,10 @@
+boca (1.5.10-2) xenial; urgency=medium
+
+  * updated from git
+  * boca-submission-tools provided
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Fri, 04 Nov 2016 18:38:46 -0200
+
 boca (1.5.10-1) xenial; urgency=medium
 
   * Initial package release
