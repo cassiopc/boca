@@ -1,3 +1,9 @@
+boca (1.5.10-3) xenial; urgency=medium
+
+  * Virtual package maratona-boca, depends on boca
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Fri, 04 Nov 2016 19:07:48 -0200
+
 boca (1.5.10-2) xenial; urgency=medium
 
   * updated from git

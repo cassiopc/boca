@@ -4,6 +4,11 @@ Priority: optional
 Maintainer: BOCA Development Team <bocasystem@gmail.com>
 Build-Depends: debhelper, build-essential
 
+Package: maratona-boca
+Architecture: all
+Depends: boca
+Description: Virtual package that depends on BOCA
+
 Package: boca
 Architecture: amd64
 Depends: php-zip, debootstrap, schroot, quotatool, makepasswd, apache2, libapache2-mod-php, sharutils, wget, coreutils, php, php-cli, php-mcrypt, php-pgsql, php-gd, postgresql, postgresql-client
