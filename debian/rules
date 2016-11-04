@@ -1,4 +1,10 @@
 #! /usr/bin/make -f
 
+override_dh_auto_install:
+	mkdir -p debian/boca-submission-tools
+	make -j1 install-submission-tools DESTDIR=debian/boca-submission-tools
+	mkdir -p debian/boca
+	make -j1 install DESTDIR=debian/boca
+
 %:
 	dh $@

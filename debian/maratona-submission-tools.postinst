@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#Make sure wrapper is suid
+chmod 4555 /usr/bin/boca-submit-run-root-wrapper
+
