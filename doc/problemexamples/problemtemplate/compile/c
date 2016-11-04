@@ -135,7 +135,7 @@ cd "$cdir"
 [ -d /sys/kernel ] || /bin/mount -t sysfs sysfs /sys
 $sf -r1 -F1000 -n0 -U$bocau -G$bocag -C. -ostdout0 -estderr0 -d$maxm -m$maxm -f20000 -t$ttime -T$ttime ./compileit.sh
 echo \$? > runit.retcode
-if [ ! -d /bocajail ]; then
+if [ ! -e /bocajail ]; then
   /bin/umount /proc 2>/dev/null
   #/bin/umount /dev
   /bin/umount /sys 2>/dev/null
