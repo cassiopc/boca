@@ -111,6 +111,11 @@ echo "*** Populating $homejail"
 cat <<EOF > /home/bocajail/tmp/populate.sh
 #!/bin/bash
 mount -t proc proc /proc
+
+echo "LC_ALL=en_US.UTF-8" > /etc/default/locale
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+/usr/sbin/locale-gen
+/usr/sbin/update-locale
 apt-get -y update
 apt-get -y install python-software-properties software-properties-common
 add-apt-repository -y ppa:brunoribas/ppa-maratona
@@ -125,6 +130,8 @@ mkdir -p /bocajail/usr/bin
 [ -x /usr/bin/safeexec ] && cp -a /usr/bin/safeexec /bocajail/usr/bin/
 cp -f /etc/apt/sources.list $homejail/etc/apt/
 chmod 755 /home/bocajail/tmp/populate.sh
+
+export LC_ALL=en_US.UTF-8
 cd / ; chroot $homejail /tmp/populate.sh
 
 
