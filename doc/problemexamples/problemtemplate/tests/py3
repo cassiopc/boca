@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+# This file performs a test of the autojudge system. It can run whatever you feel important to test the autojudge
+# and the script files that are included in the problem package
+
+mkdir -p testdir
+cd testdir
+
+cat > test.py <<EOF
+#!/caminho/errado
+import sys
+
+for line in sys.stdin:
+  print(line)
+EOF
+cat > test.in <<EOF
+inputdata
+EOF
+
+TL=2
+REP=10
+chmod 755 ../../compile/py3
+../../compile/py3 test.py test.exe $TL
+chmod 755 ../../run/py3
+../../run/py3 test.exe test.in $TL $REP
+if [ -r stdout0 ]; then
+  output=`cat stdout0`
+  if [ "$output" != "inputdata" ]; then
+    echo "ERROR"
+    exit 1
+  fi
+else
+  echo "ERROR"
+  exit 1
+fi
+echo "TEST PASSED"
+cd ..
+exit 0
