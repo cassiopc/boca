@@ -2,6 +2,9 @@
 tools/safeexec: tools/safeexec.c
 	gcc tools/safeexec.c -o tools/safeexec
 
+tools/boca-submit-run-root-wrapper: tools/boca-submit-run-root-wrapper.c
+	gcc $^ -o $@
+
 install-bocawww:
 	mkdir -p  $(DESTDIR)/var/www/boca/
 	cp -r src $(DESTDIR)/var/www/boca/
@@ -25,3 +28,14 @@ install: install-bocawww install-bocaapache install-scripts tools/safeexec
 	cp tools/boca.conf $(DESTDIR)/etc/
 	install tools/safeexec $(DESTDIR)/usr/bin/safeexec
 	chmod 4555 $(DESTDIR)/usr/bin/safeexec
+
+install-submission-tools: tools/boca-submit-run-root-wrapper
+	mkdir -p $(DESTDIR)/usr/bin $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d
+	install tools/boca-auth-runs $(DESTDIR)/usr/sbin/
+	install tools/boca-submit-run $(DESTDIR)/usr/bin/
+	install tools/boca-submit-run-cron $(DESTDIR)/usr/bin/
+	install tools/boca-submit-run-aux $(DESTDIR)/usr/bin/
+	install tools/boca-submit-run-root $(DESTDIR)/usr/bin/
+	install tools/cron-submit $(DESTDIR)/etc/cron.d/
+	install tools/boca-submit-run-root-wrapper $(DESTDIR)/usr/bin/
+	chmod 4555 $(DESTDIR)/usr/bin/boca-submit-run-root-wrapper
