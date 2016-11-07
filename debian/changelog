@@ -1,3 +1,9 @@
+boca (1.5.10-4) xenial; urgency=medium
+
+  * Update to send full scoreboards to main server
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Mon, 07 Nov 2016 19:48:14 -0200
+
 boca (1.5.10-3) xenial; urgency=medium
 
   * Virtual package maratona-boca, depends on boca
