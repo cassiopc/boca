@@ -44,7 +44,7 @@ for ($i=0; $i<count($prob); $i++) {
   echo "  <td nowrap>" . $prob[$i]["fullname"] . "&nbsp;</td>\n";
   if (isset($prob[$i]["descoid"]) && $prob[$i]["descoid"] != null && isset($prob[$i]["descfilename"])) {
     echo "  <td nowrap><a href=\"../filedownload.php?" . filedownload($prob[$i]["descoid"], $prob[$i]["descfilename"]) .
-		"\">" . basename($prob[$i]["descfilename"]) . "</td>\n";
+		"\">" . basename($prob[$i]["descfilename"]) . "</a></td>\n";
   }
   else
     echo "  <td nowrap>no description file available</td>\n";
