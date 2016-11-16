@@ -1,3 +1,15 @@
+boca (1:1.5.10-6) xenial; urgency=medium
+
+  * Fix: chown and chmod in /var/www/boca
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Thu, 10 Nov 2016 14:16:38 -0200
+
+boca (1:1.5.10-5) xenial; urgency=medium
+
+  * Insert epoch 1 in version
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Tue, 08 Nov 2016 22:59:32 -0200
+
 boca (1.5.10-4) xenial; urgency=medium
 
   * Update to send full scoreboards to main server
