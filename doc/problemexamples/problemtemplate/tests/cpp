@@ -6,8 +6,10 @@
 mkdir -p testdir
 cd testdir
 
-cat > test.c <<EOF
+cat > test.cpp <<EOF
 #include<stdio.h>
+
+using namespace std;
 int main() {
   char s[100];
   scanf("%s", s);
@@ -21,10 +23,10 @@ EOF
 
 TL=2
 REP=10
-chmod 755 ../../compile/c
-../../compile/c test.c test.exe $TL
-chmod 755 ../../run/c
-../../run/c test.exe test.in $TL $REP
+chmod 755 ../../compile/cpp
+../../compile/cpp test.cpp test.exe $TL
+chmod 755 ../../run/cpp
+../../run/cpp test.exe test.in $TL $REP
 if [ -r stdout0 ]; then
   output=`cat stdout0`
   if [ "$output" != "inputdata" ]; then

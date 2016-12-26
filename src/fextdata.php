@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2014 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2016 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 04/sept/2014 by cassio@ime.usp.br
+// Last modified 07/nov/2016 by cassio@ime.usp.br
 
 function scoretransfer($putname, $localsite) {
 	$ds = DIRECTORY_SEPARATOR;
@@ -37,6 +37,7 @@ function scoretransfer($putname, $localsite) {
 
 	$privatedir = $_SESSION['locr'] . $ds . "private";
 	if(!is_readable($privatedir . $ds . 'remotescores' . $ds . "otherservers")) return;
+$superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
 	$localfile = "score_site" . $localsite . "_" . $localsite . "_x.dat";
 	$remotesite = @file($privatedir . $ds . 'remotescores' . $ds . "otherservers");
 
@@ -141,6 +142,32 @@ function scoretransfer($putname, $localsite) {
 			else
 				LOGError("scoretransfer: upload failed (" . $s . ")");
 		}
+                if(is_readable($superlfile)) {
+                        $data = @file_get_contents($superlfile);
+                        $data_url = http_build_query(array('data' => $data,
+                                                                                 ));
+
+                        $opts = array(
+                                'http' => array(
+                                        'method' => 'POST',
+                                        'request_fulluri' => true,
+                                        'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
+                                        'content' => $data_url
+                                        )
+                                );
+                        if($bocaproxy != "")
+                                $opts['http']['proxy'] = $bocaproxy;
+                        if($bocaproxypass != "")
+                                $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+
+                        $context = stream_context_create($opts);
+                        $s = @file_get_contents($siteurl . $urldiv . "site/putfilesuper.php", 0, $context);
+                        if(strpos($s,'SCORE UPLOADED OK') !== false)
+                                LOGError("scoretransfer: upload full OK");
+                        else
+                                LOGError("scoretransfer: upload full failed (" . $s . ")");
+                }
+
 		break;
 	}
 }

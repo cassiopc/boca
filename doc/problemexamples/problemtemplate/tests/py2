@@ -6,14 +6,12 @@
 mkdir -p testdir
 cd testdir
 
-cat > test.c <<EOF
-#include<stdio.h>
-int main() {
-  char s[100];
-  scanf("%s", s);
-  printf("%s\n",s);
-  return 0;
-}
+cat > test.py <<EOF
+#!/caminho/errado
+import sys
+
+for line in sys.stdin:
+  print line
 EOF
 cat > test.in <<EOF
 inputdata
@@ -21,10 +19,10 @@ EOF
 
 TL=2
 REP=10
-chmod 755 ../../compile/c
-../../compile/c test.c test.exe $TL
-chmod 755 ../../run/c
-../../run/c test.exe test.in $TL $REP
+chmod 755 ../../compile/py2
+../../compile/py2 test.py test.exe $TL
+chmod 755 ../../run/py2
+../../run/py2 test.exe test.in $TL $REP
 if [ -r stdout0 ]; then
   output=`cat stdout0`
   if [ "$output" != "inputdata" ]; then

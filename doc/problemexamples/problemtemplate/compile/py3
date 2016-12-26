@@ -15,13 +15,13 @@
 # //    You should have received a copy of the GNU General Public License
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
-#Last modified: 21/august/2014 by cassio@ime.usp.br
+#Last modified: 06/september/2016 by brunoribas@utfpr.edu.br
 #
 # parameters are:
 # $1 source_file
 # $2 exe_file (default run.exe)
 # $3 timelimit
-# $4 maximum allowed memory (in MBytes, default 512M)
+# $4 maximum allowed memory (in MBytes)
 #
 # the output of the submission should be directed to the standard output
 #
@@ -108,14 +108,15 @@ fi
 rm -f "$exe" compileit.retcode runit.retcode 2>/dev/null
 cat <<EOF > compileit.sh
 #!/bin/bash
-cc=\`which gcc\`
-[ -x "\$cc" ] || cc=/usr/bin/gcc
+cc=\`which python3\`
+[ -x "\$cc" ] || cc=/usr/bin/python3
 if [ ! -x "\$cc" ]; then
     echo "\$cc not found or it's not executable"
     exit 47
 fi
 cd src
-"\$cc" -static -O2 -o "../$exe" "$name" -lm
+echo "#!/usr/bin/python3" | cat - "$name" > "../$exe"
+chmod 755 "../$exe"
 echo \$? > ../compileit.retcode
 exit 0
 EOF
@@ -135,7 +136,7 @@ cd "$cdir"
 [ -d /sys/kernel ] || /bin/mount -t sysfs sysfs /sys
 $sf -r1 -F1000 -n0 -U$bocau -G$bocag -C. -ostdout0 -estderr0 -d$maxm -m$maxm -f20000 -t$ttime -T$ttime ./compileit.sh
 echo \$? > runit.retcode
-if [ ! -e /bocajail ]; then
+if [ ! -d /bocajail ]; then
   /bin/umount /proc 2>/dev/null
   #/bin/umount /dev
   /bin/umount /sys 2>/dev/null

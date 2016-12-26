@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+
 [ -r "$1" ] && . "$1"
 if [ "$BOCASERVER" == "" -o "$user" == "" -o "$pass" == "" -o "$data" == "" -o "$name" == "" ]; then
   echo "parameters missing in file $1"
@@ -35,7 +37,7 @@ if [ "$?" == "0" ]; then
 		rm -f ${temp}.cookie.txt
 		exit 3
 	else
-		echo -n "name=`echo $name | perl -MURI::Escape -lne 'print uri_escape($_)'`" > $temp
+		echo -n "name=`echo -n $name | perl -MURI::Escape -lne 'print uri_escape($_)'`" > $temp
 		if [ "$uniq" != "" ]; then
 			echo -n "&pastcode=$uniq" >> $temp
 			if [ "$code" != "" ]; then
@@ -45,33 +47,39 @@ if [ "$?" == "0" ]; then
 				echo -n "&pastabs=${dateerr}" >> $temp
 				let "dateerr = `date +%s` - $dateerr"
 				echo -n "&pastval=${dateerr}" >> $temp
+				comp="error"
+				if [ -r /root/submissions/comp ]; then
+				    comp=`cat /root/submissions/comp`
+				fi
+				echo -n "&comp=${comp}" >> $temp
 				if [ -r /root/submissions/code ]; then
 					code=`cat /root/submissions/code`
-					res=`echo -n "${code}${uniq}${dateerr}" | sha256sum - | cut -f1 -d' '`
+					res=`echo -n "${code}${uniq}${comp}${dateerr}" | sha256sum - | cut -f1 -d' '`
 					echo -n "&pastvalhash=${res}" >> $temp
 				fi
 			fi
 		fi
-		echo -n "&problem=`echo $problem | perl -MURI::Escape -lne 'print uri_escape($_)'`" >> $temp
-		echo -n "&language=`echo $language | perl -MURI::Escape -lne 'print uri_escape($_)'`" >> $temp
-		echo -n "&data=`echo $data | tr -d ' ' | perl -MURI::Escape -lne 'print uri_escape($_)'`" >> $temp
+		echo -n "&problem=`echo -n $problem | perl -MURI::Escape -lne 'print uri_escape($_)'`" >> $temp
+		echo -n "&language=`echo -n $language | perl -MURI::Escape -lne 'print uri_escape($_)'`" >> $temp
+		echo -n "&data=`echo -n $data | tr -d ' ' | perl -MURI::Escape -lne 'print uri_escape($_)'`" >> $temp
 		wget -t 2 -T 5 "http://$BOCASERVER/boca/team/run.php" --load-cookies ${temp}.cookie.txt --keep-session-cookies -O ${temp}.out --post-file=$temp >/dev/null 2>/dev/null
 
 		res=`tail -n1 ${temp}.out`
 		echo $res | grep -q "RESULT:"
 		if [ "$?" == "0" ]; then
-			if [ "$uniq" == "" ]; then
+#			if [ "$uniq" == "" ]; then
 				echo "$BOCASERVER : $res"
-			else
-				echo "$BOCASERVER : run $uniq dateerr $dateerr : $res"
-			fi
+#			else
+#				echo "$BOCASERVER : run code $uniq dateerr $dateerr : $res"
+#			fi
 		else
-			if [ "$uniq" == "" ]; then
-				echo "$BOCASERVER : error to upload the run, will NOT try again, check details"
-			else
-				echo "$BOCASERVER : run $uniq dateerr $dateerr : error to upload the run, will NOT try again, check details:"
-				cat ${temp}.out
-			fi
+#			if [ "$uniq" == "" ]; then
+				echo "$BOCASERVER : error to upload the run, will NOT try again, check details at /tmp/boca-submit.err"
+#			else
+#				echo "$BOCASERVER : run $uniq dateerr $dateerr : error to upload the run, will NOT try again, check details at /tmp/boca-submit.err"
+				cat ${temp}.out > /tmp/boca-submit.err
+				chmod 400 /tmp/boca-submit.err
+#			fi
 			rm -f ${temp}.out
 			exit 4
 		fi

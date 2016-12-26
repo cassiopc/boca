@@ -1,0 +1,36 @@
+boca (1:1.5.10-6) xenial; urgency=medium
+
+  * Fix: chown and chmod in /var/www/boca
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Thu, 10 Nov 2016 14:16:38 -0200
+
+boca (1:1.5.10-5) xenial; urgency=medium
+
+  * Insert epoch 1 in version
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Tue, 08 Nov 2016 22:59:32 -0200
+
+boca (1.5.10-4) xenial; urgency=medium
+
+  * Update to send full scoreboards to main server
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Mon, 07 Nov 2016 19:48:14 -0200
+
+boca (1.5.10-3) xenial; urgency=medium
+
+  * Virtual package maratona-boca, depends on boca
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Fri, 04 Nov 2016 19:07:48 -0200
+
+boca (1.5.10-2) xenial; urgency=medium
+
+  * updated from git
+  * boca-submission-tools provided
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Fri, 04 Nov 2016 18:38:46 -0200
+
+boca (1.5.10-1) xenial; urgency=medium
+
+  * Initial package release
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Thu, 16 Sep 2016 15:02:11 -0300

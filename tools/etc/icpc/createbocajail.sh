@@ -44,12 +44,10 @@ fi
 id -u bocajail >/dev/null 2>/dev/null
 if [ $? != 0 ]; then
  useradd -m -s /bin/bash -d $homejail -g users bocajail
- if [ -d /etc/gdm ]; then
-   echo -e "[greeter]\nExclude=bocajail,nobody\n" >> /etc/gdm/custom.conf
- fi
- if [ -d /etc/lightdm ]; then
-   echo "hidden-users=nobody nobody4 noaccess bocajail" >> /etc/lightdm/lightdm.conf
- fi
+ cat <<EOF > /var/lib/AccountsService/users/bocajail
+[User]
+SystemAccount=true
+EOF
  sleep 1
 else
   echo "user bocajail already exists"
@@ -113,11 +111,17 @@ echo "*** Populating $homejail"
 cat <<EOF > /home/bocajail/tmp/populate.sh
 #!/bin/bash
 mount -t proc proc /proc
+
+echo "LC_ALL=en_US.UTF-8" > /etc/default/locale
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+/usr/sbin/locale-gen
+/usr/sbin/update-locale
 apt-get -y update
-apt-get -y install python-software-properties
+apt-get -y install python-software-properties software-properties-common
+add-apt-repository -y ppa:brunoribas/ppa-maratona
+apt-get -y update
 apt-get -y upgrade
-apt-get -y install g++ gcc libstdc++6 sharutils default-jdk default-jre
-apt-get -y install openjdk-7-jdk openjdk-7-jre
+apt-get -y install maratona-linguagens --no-install-recommends --allow-unauthenticated
 apt-get -y clean
 
 umount /proc
@@ -126,6 +130,8 @@ mkdir -p /bocajail/usr/bin
 [ -x /usr/bin/safeexec ] && cp -a /usr/bin/safeexec /bocajail/usr/bin/
 cp -f /etc/apt/sources.list $homejail/etc/apt/
 chmod 755 /home/bocajail/tmp/populate.sh
+
+export LC_ALL=en_US.UTF-8
 cd / ; chroot $homejail /tmp/populate.sh
 
 
