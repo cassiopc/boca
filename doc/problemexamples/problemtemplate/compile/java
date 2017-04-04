@@ -87,13 +87,13 @@ if [ ! -x $sf ]; then
     exit 46
 fi
 
-time=$4
-if [ "$time" -gt "0" ]; then
-  let "ttime = $time + 30"
+# setting up the timelimit according to the problem
+if [ "$3" == "" ]; then
+  time=5
 else
-  time=1
-  ttime=30
+  time=$3
 fi
+let "ttime = $time + 30"
 
 maxm=512
 if [ "$4" != "" -a "$4" -gt "0" ]; then
