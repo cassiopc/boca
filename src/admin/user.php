@@ -410,7 +410,7 @@ if (isset($u)) {
 		<option <?php if(isset($u)) if($u["usertype"] == "admin") echo "selected"; ?> value="admin">Admin</option>
 		<option <?php if(isset($u)) if($u["usertype"] == "staff") echo "selected"; ?> value="staff">Staff</option>
 		<option <?php if(isset($u)) if($u["usertype"] == "score") echo "selected"; ?> value="score">Score</option>
-		<?php if(1 || $main) { ?>
+		<?php if($main) { ?>
         <option <?php if(isset($u)) if($u["usertype"] == "site") echo "selected"; ?> value="site">Site</option>
         <?php } ?>
 		</select>
