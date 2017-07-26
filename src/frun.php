@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 09/sep/2015 by cassio@ime.usp.br
+// Last modified 26/jul/2017 by cassio@ime.usp.br
 
 function DBDropRunTable() {
 	$c = DBConnect();
@@ -186,9 +186,9 @@ function DBUpdateRunC($contest, $usersite, $usernumber, $runsite, $runnumber, $a
 				if($u['usertype']=='team') {
 					$p = DBGetProblemData ($contest, $temp["runproblem"],$c);
 					DBNewTask_old ($contest, $runsite, $team, 
-								   escape_string("\"" . $u["username"] ."\" must have a balloon for problem " . 
-												 $p[0]["problemname"] . ": " . $p[0]["fullname"]), 
-								   "", "", "t", $p[0]["color"], $p[0]["colorname"], $c);
+						       escape_string("\"" . $u["username"] ."\" must have a balloon for problem " . 
+								     $p[0]["problemname"] . ": " . $p[0]["fullname"]), 
+						       "", "", "t", $p[0]["color"], $p[0]["colorname"], $c);
 				}
 			} else {
 				LOGError("DBUpdateRunC: HIDDEN: user=$team,site=$runsite,contest=$contest would have a balloon for problem=" .  $temp["runproblem"]);
@@ -198,9 +198,9 @@ function DBUpdateRunC($contest, $usersite, $usernumber, $runsite, $runnumber, $a
 			if($u['usertype']=='team') {
 				$p = DBGetProblemData ($contest, $temp["runproblem"],$c);
 				DBNewTask_old ($contest, $runsite, $team, escape_string("\"" . 
-																		$u["username"] ."\" must have _NO_ balloon for problem " . $p[0]["problemname"] . 
-																		": " . $p[0]["fullname"]). ". Please verify and remove it, if needed.", "", "", 
-							   "t", $p[0]["color"], $p[0]["colorname"], $c);
+											$u["username"] ."\" must have _NO_ balloon for problem " . $p[0]["problemname"] . 
+											": " . $p[0]["fullname"]). ". Please verify and remove it, if needed.", "", "", 
+					       "t", $p[0]["color"], $p[0]["colorname"], $c);
 			}
 		}
 //	}
@@ -279,8 +279,8 @@ function DBRunGiveUp($number,$site,$contest,$usernumber,$usersite) {
 		if($u['usertype']=='team') {
 			$p = DBGetProblemData ($contest, $temp["runproblem"],$c);
 			DBNewTask_old ($contest, $site, $temp["usernumber"], escape_string("\"" . 
-																			   $u["username"] ."\" must have _NO_ balloon for problem " . $p[0]["problemname"] . 
-																			   ": " . $p[0]["fullname"]), "", "", "t", $p[0]["color"], $p[0]["colorname"], $c);
+											   $u["username"] ."\" must have _NO_ balloon for problem " . $p[0]["problemname"] . 
+											   ": " . $p[0]["fullname"]), "", "", "t", $p[0]["color"], $p[0]["colorname"], $c);
 		}
 	}
 
@@ -316,8 +316,8 @@ function DBRunDelete($number,$site,$contest,$user,$usersite) {
 		if($u['usertype']=='team') {
 			$p = DBGetProblemData ($contest, $temp["runproblem"],$c);
 			DBNewTask_old ($contest, $site, $temp["usernumber"], escape_string("\"" . 
-																			   $u["username"] . "\" must have _NO_ balloon for problem " . $p[0]["problemname"] . 
-																			   ": " . $p[0]["fullname"]), "", "", "t", $p[0]["color"], $p[0]["colorname"], $c);
+											   $u["username"] . "\" must have _NO_ balloon for problem " . $p[0]["problemname"] . 
+											   ": " . $p[0]["fullname"]), "", "", "t", $p[0]["color"], $p[0]["colorname"], $c);
 		}
 	}
 
@@ -707,7 +707,7 @@ function DBNewRun($param,$c=null) {
 		MSGError("Unable to find a unique site/contest in the database.");
 		return false;
 	}
-	$a = DBRow($r,0);
+	$a = DBRow($r,0);	
 	$n = $a["nextrun"] + 1;
 	if($runnumber > 0) {
 		$sql = "select * from runtable as t where t.contestnumber=$contest and " .
@@ -724,9 +724,10 @@ function DBNewRun($param,$c=null) {
 				$oid2 = $lr['autostderr'];
 		}
 		$n = $runnumber;
-	} else
+	} else {
 		$runnumber = $n;
-
+	}
+	
 	if($rundatediff < 0) {
 		$b = DBSiteInfo($contest, $site, $c);
 		$dif = $b["currenttime"]; 
@@ -748,7 +749,7 @@ function DBNewRun($param,$c=null) {
 	}
 
 	if($updatetime > $t || $insert) {
-		DBExec($c, "update sitetable set sitenextrun=$runnumber, updatetime=".$t.
+		DBExec($c, "update sitetable set sitenextrun=$runnumber" .
 			   " where sitenumber=$site and contestnumber=$contest and sitenextrun<$runnumber", "DBNewRun(update site)");
 
 //	LOGError($autostdout);
@@ -808,14 +809,30 @@ function DBNewRun($param,$c=null) {
 				return false;
 			}
 		}
-		DBExec($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
-			   "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
-			   "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
-			   "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
-			   "VALUES ($contest, $site, $n, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
-			   "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
-			   "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
-			   "DBNewRun(insert run)");
+
+		$n = myunique();
+		$runinc = $n;
+		while(!DBExecNonStop($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
+				     "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
+				     "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
+				     "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
+				     "VALUES ($contest, $site, $n, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
+				     "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
+				     "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
+				     "DBNewRun(insert run)")) {
+		  $n++;
+		  if($n > $runinc + 3) break;
+		}
+		if($n > $runinc + 3) {
+		  DBExec($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
+			 "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
+			 "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
+			 "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
+			 "VALUES ($contest, $site, $n, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
+			 "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
+			 "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
+			 "DBNewRun(insert run)");
+		}
 		if($cw) {
 			DBExec($c, "commit work", "DBNewRun(commit)");
 			LOGLevel("User $user submitted a run (#$n) on site #$site " .

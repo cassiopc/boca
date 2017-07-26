@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 07/sep/2015 by cassio@ime.usp.br
+// Last modified 26/jul/2017 by cassio@ime.usp.br
 require_once('db.php');
 define("dbcompat_1_4_1",true);
 
@@ -253,6 +253,17 @@ function LOGLevel($msg,$level,$dodb=true) {
 	if ($dodb && isset($_SESSION["usertable"]))
 		DBNewLog($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"], 
 				 $_SESSION["usertable"]["usernumber"], $type, getIP(), $msga, "");
+}
+function mytime() {
+  return time();
+}
+function mymtime() {
+  list($usec, $sec) = explode(" ", microtime());
+  return (float) (((int) (1000*$usec))/1000 + $sec);
+}
+function myunique() {
+  list($usec, $sec) = explode(" ", microtime());
+  return (int) ((int)($usec * 100)) + ($sec % 1000000);
 }
 //retorna data e hora atuais
 function now () {

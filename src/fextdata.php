@@ -386,6 +386,7 @@ function importFromXML($ar,$contest,$site) {
 	    DBExec($conn,"rollback work");
 	  return false;
 	}			
+	/*
 	if(($ret=DBUpdateSite($param, $conn))) {
 	  if($ret==2) {
 	    echo "Site " . $param["sitenumber"] . " updated<br>";
@@ -394,7 +395,8 @@ function importFromXML($ar,$contest,$site) {
 	  if($conn != null)
 	    DBExec($conn,"rollback work");
 	  return false;
-	}
+	  }
+	*/
       }
       if($key == "usertable") {
 	if(($ret=DBNewUser($param, $conn))) {

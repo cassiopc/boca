@@ -279,10 +279,10 @@ function DBNewTask_old ($contest, $site, $user, $desc, $filename, $filepath, $sy
 				   'color'=>$color,
 				   'colorname'=>$colorname,
 				   'sys'=>$sys);
-	return DBNewTask($param,$c);
+	return DBNewTask($param,$c,true);
 }
 
-function DBNewTask($param, $c=null) {
+function DBNewTask($param, $c=null, $autotask=false) {
 	if(isset($param['contestnumber']) && !isset($param['contest'])) $param['contest']=$param['contestnumber'];
 	if(isset($param['sitenumber']) && !isset($param['site'])) $param['site']=$param['sitenumber'];
 	if(isset($param['usernumber']) && !isset($param['user'])) $param['user']=$param['usernumber'];
@@ -391,7 +391,7 @@ function DBNewTask($param, $c=null) {
 			$t = $lr['updatetime'];
 		}
 	}
-	DBExec($c, "update sitetable set sitenexttask=$tasknumber, updatetime=".$t.
+	DBExec($c, "update sitetable set sitenexttask=$tasknumber" .
 		   " where sitenumber=$site and contestnumber=$contest and sitenexttask<$tasknumber", "DBNewTask(update site)");
 	$ret=1;
 	if($insert) {
@@ -413,12 +413,28 @@ function DBNewTask($param, $c=null) {
 				}
 			}
 		} else $oid="NULL";
-		DBExec($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
+
+		$taskinc = myunique();
+		if(($taskinc % 2) == 0) $taskinc--;
+		if($autotask) $taskinc++;
+		$tasknumber = $taskinc;
+		while(!DBExecNonStop($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
 			   "taskdatediff, taskdatediffans, taskfilename, taskdata, taskstatus, taskdesc, tasksystem, ".
 			   "color, colorname, updatetime) " . 
 			   "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
 			   "'$desc', '$sys', '$color', '$colorname', $updatetime)",
-			   "DBNewTask(insert task)");
+				     "DBNewTask(insert task)")) {
+		  $tasknumber+=2;
+		  if($tasknumber > $taskinc + 6) break;
+		}
+		if($tasknumber > $taskinc + 6) {
+		  DBExec($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
+			 "taskdatediff, taskdatediffans, taskfilename, taskdata, taskstatus, taskdesc, tasksystem, ".
+			 "color, colorname, updatetime) " . 
+			 "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
+			 "'$desc', '$sys', '$color', '$colorname', $updatetime)",
+			 "DBNewTask(insert task)");
+		}
               if($sys=="t") $u="System";
                 else $u = "User $user";
   

@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 06/sep/2013 by cassio@ime.usp.br
+// Last modified 26/jul/2017 by cassio@ime.usp.br
 
 function DBDropClarTable() {
 	 $c = DBConnect();
@@ -306,7 +306,7 @@ function DBNewClar($param,$c=null) {
 		}
 		$n = $clarnumber;
 	}
-	DBExec($c, "update sitetable set sitenextclar=$clarnumber, updatetime=" . $t . 
+	DBExec($c, "update sitetable set sitenextclar=$clarnumber" .
 		   " where sitenumber=$site and contestnumber=$contest and sitenextclar<$clarnumber",
 		   "DBNewClar(update site)");
 
@@ -332,15 +332,27 @@ function DBNewClar($param,$c=null) {
 
 	$ret=1;
 	if($insert) {
-		DBExec($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
+	  $n = myunique();
+	  $clarinc = $n;
+	  while(!DBExecNonStop($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
 			   "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
 			   "($contest, $site, $n, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
 			   "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
-               "DBNewClar(insert clar)");
-		if($cw) DBExec($c, "commit work", "DBNewClar(commit-insert)");
-		LOGLevel("User $user submitted a clarification (#$n) on site #$site " .
-				 "(problem=$problem, contest=$contest).",2);
-		$ret=2;
+			       "DBNewClar(insert clar)")) {
+	    $n++;
+	    if($n > $clarinc + 3) break;
+	  }
+	  if($n > $clarinc + 3) {
+	    DBExec($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
+		   "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
+		   "($contest, $site, $n, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
+		   "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
+		   "DBNewClar(insert clar)");
+	  }
+	  if($cw) DBExec($c, "commit work", "DBNewClar(commit-insert)");
+	  LOGLevel("User $user submitted a clarification (#$n) on site #$site " .
+		   "(problem=$problem, contest=$contest).",2);
+	  $ret=2;
 	} else {
 		if($updatetime > $t) {
 			$ret=2;
