@@ -126,14 +126,12 @@ if (($a = DBGetClarToAnswer($clarnumber, $clarsitenumber,
           <input class=checkbox type=checkbox name="answersite" value="yes">
         </td>
       </tr>
-<!--
       <tr> 
         <td width="20%" align=right><b>Answer to all users in all sites</b></td>
         <td width="80%">
           <input class=checkbox type=checkbox name="answerall" value="yes">
         </td>
       </tr>
--->
     </table>
   </center>
   <script language="javascript">

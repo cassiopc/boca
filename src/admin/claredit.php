@@ -141,14 +141,12 @@ if (($a = DBChiefGetClarToAnswer($clarnumber, $clarsitenumber,
           <input class=checkbox type=checkbox <?php if ($a["status"] == "answeredsite") echo "checked"; ?> name="answersite" value="yes">
         </td>
       </tr>
-<!--
       <tr> 
         <td width="20%" align=right><b>Answer to all users in all sites</b></td>
         <td width="80%">
           <input class=checkbox type=checkbox <?php if ($a["status"] == "answeredall") echo "checked"; ?> name="answerall" value="yes">
         </td>
       </tr>
--->
     </table>
   </center>
   <script language="javascript">
