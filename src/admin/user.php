@@ -446,8 +446,11 @@ if (isset($u)) {
 	  <input type="text" name="userdesc" value="<?php if(isset($u)) { 
 if($u['usershortinstitution']!='')
   echo '[' . $u['usershortinstitution'] .']';
-if($u['userflag']!='')
-  echo '[' . $u['userflag'] .']';
+if($u['userflag']!='') {
+  echo '[' . $u['userflag'];
+  if($u['usersitename']!='') echo ',' . $u['usersitename'];
+  echo ']';
+}
 echo $u["userdesc"]; } ?>" size="50" maxlength="300" />
         </td>
       </tr>
