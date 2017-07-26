@@ -263,7 +263,7 @@ function mymtime() {
 }
 function myunique() {
   list($usec, $sec) = explode(" ", microtime());
-  return (int) ((int)($usec * 100)) + ($sec % 1000000);
+  return (int) (((int)($usec * 100)) + (((int)$sec) % 1000000));
 }
 //retorna data e hora atuais
 function now () {
