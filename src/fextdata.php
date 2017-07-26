@@ -219,8 +219,7 @@ function getMainXML() {
   $ti = time();
 
   $siteurl = $sitedata[0];
-  if(strpos($siteurl,'#') !== false) continue;
-  LOGError("getMainXML: found site $siteurl");
+  LOGError("getMainXML: site $siteurl");
   if(substr($siteurl,0,7) != 'http://')
     $siteurl = 'http://' . $siteurl;
   $urldiv='/';
