@@ -319,7 +319,10 @@ if($redo) {
 			    $score[$e]["userflag"] . ".png\"> " . $score[$e]["username"]."/".$score[$e]["site"] . " </td>";
 			else
 			  $strtmp .= "  <td nowrap>" . $score[$e]["username"]."/".$score[$e]["site"] . " </td>";
-			$strtmp .= "<td>" . $score[$e]["userfullname"];
+			if($score[$e]['usershortinstitution'] != '') 
+			  $strtmp .= "<td>[" . $score[$e]['usershortinstitution'] . '] ' . $score[$e]["userfullname"];
+			else
+			  $strtmp .= "<td>" . $score[$e]["userfullname"];
 //		}
 		$_SESSION["scorepos"][$score[$e]["username"]."-".$score[$e]["site"]] = $cg2;
 

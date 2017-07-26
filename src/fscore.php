@@ -264,6 +264,7 @@ function DBScoreSite($contest, $site, $verifylastmile, $hor=-1, $data=null) {
 			$resp[$a["usernumber"]]["username"]=$a["username"];
 			$resp[$a["usernumber"]]["usertype"]=$a["usertype"];
 			$resp[$a["usernumber"]]["userfullname"]=$a["userfullname"];
+			$resp[$a["usernumber"]]["usershortinstitution"]=$a["usershortinstitution"];
 			$resp[$a["usernumber"]]["userflag"]=$a["userflag"];
 			$resp[$a["usernumber"]]["totaltime"]=0;
 			$resp[$a["usernumber"]]["totalcount"]=0;
