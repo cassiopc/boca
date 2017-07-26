@@ -258,12 +258,10 @@ function mytime() {
   return time();
 }
 function mymtime() {
-  list($usec, $sec) = explode(" ", microtime(true));
-  return (float) (((int) (1000*$usec))/1000 + $sec);
+  return microtime(true);
 }
 function myunique() {
-  list($usec, $sec) = explode(" ", microtime(true));
-  return ((int)(100*$usec)) + 100*(((int)$sec) % 10000000);
+  return ((int)(100*microtime(true))) % 100000000;
 }
 //retorna data e hora atuais
 function now () {
