@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 11/nov/2015 by cassio@ime.usp.br
+//Last updated 26/jul/2017 by cassio@ime.usp.br
 //
 function DBDropContestTable() {
 	 $c = DBConnect();
@@ -1027,6 +1027,8 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 	if($ct==null) return false;
 
 	if(isset($param['sitenumber']) && !isset($param['number'])) $param['number']=$param['sitenumber'];
+	if(isset($param['siteduration']) && !isset($param['duration'])) $param['duration']=$param['siteduration'];
+
 	$ac=array('number','siteip','sitename','sitescorelevel','updatetime','startdate','duration');
 	$type=array();
 	$type['startdate']=1;
@@ -1048,7 +1050,10 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 		$number=$n;
 	} else {
 		$a = DBGetRow ("select * from sitetable where contestnumber=$contest and sitenumber=$number", 0, $c);
-		if($a != null) return 1;
+		if($a != null) {
+		  if($cw)	DBExec($c, "commit work");
+		  return 1;
+		}
 	}
 	if($duration=='') $duration = $ct["contestduration"];
 	if($startdate=='') $startdate=$ct["conteststartdate"];
@@ -1057,13 +1062,16 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 	if($sitescorelevel=="") $sitescorelevel=3;
 	$t=time();
 	if($updatetime=="") $updatetime=$t;
-	DBExec($c, "insert into sitetable (contestnumber, sitenumber, siteip, sitename, siteactive, sitepermitlogins, ".
-			"sitelastmileanswer, sitelastmilescore, siteduration, siteautoend, sitejudging, sitetasking, ".
-			"siteglobalscore, sitescorelevel, ".
-			"sitenextuser, sitenextclar, sitenextrun, sitenexttask, sitemaxtask, updatetime) values ".
-			"($contest, $number, '$siteip', '$sitename', 't', 't', ".
-                        $ct["contestlastmileanswer"].",".$ct["contestlastmilescore"].
-			", $duration, 't', '$number', '$number', '$number', $sitescorelevel, 0, 0, 0, 0, 10, $updatetime)");
+	if(!DBExecNonStop($c, "insert into sitetable (contestnumber, sitenumber, siteip, sitename, siteactive, sitepermitlogins, ".
+			  "sitelastmileanswer, sitelastmilescore, siteduration, siteautoend, sitejudging, sitetasking, ".
+			  "siteglobalscore, sitescorelevel, ".
+			  "sitenextuser, sitenextclar, sitenextrun, sitenexttask, sitemaxtask, updatetime) values ".
+			  "($contest, $number, '$siteip', '$sitename', 't', 't', ".
+			  $ct["contestlastmileanswer"].",".$ct["contestlastmilescore"].
+			  ", $duration, 't', '$number', '$number', '$number', $sitescorelevel, 0, 0, 0, 0, 10, $updatetime)")) {
+	  if($cw)	DBExec($c, "commit work");
+	  return 1;
+	}
 
 	$cf=globalconf();
 	$admpass = myhash($cf["basepass"]);
@@ -1134,9 +1142,19 @@ function DBUserUpdate($contest, $site, $user, $username, $userfull, $userdesc, $
 function DBNewUser($param, $c=null) {
 	if(isset($param['contestnumber']) && !isset($param['contest'])) $param['contest']=$param['contestnumber'];
 	if(isset($param['sitenumber']) && !isset($param['site'])) $param['site']=$param['sitenumber'];
+	if(isset($param['usersitenumber']) && !isset($param['site'])) $param['site']=$param['usersitenumber'];
 	if(isset($param['usernumber']) && !isset($param['user'])) $param['user']=$param['usernumber'];
 	if(isset($param['number']) && !isset($param['user'])) $param['user']=$param['number'];
 
+	if(isset($param['userpassword']) && !isset($param['pass'])) $param['pass']=$param['userpassword'];
+	if(isset($param['userenabled']) && !isset($param['enabled'])) $param['enabled']=$param['userenabled'];
+	if(isset($param['usermultilogin']) && !isset($param['multilogin'])) $param['multilogin']=$param['usermultilogin'];
+	if(isset($param['userpermitip']) && !isset($param['permitip'])) $param['permitip']=$param['userpermitip'];
+	if(isset($param['userfullname']) && !isset($param['userfull'])) $param['userfull']=$param['userfullname'];
+	if(isset($param['usertype']) && !isset($param['type'])) $param['type']=$param['usertype'];
+	if(isset($param['userpermitip']) && !isset($param['permitip'])) $param['permitip']=$param['userpermitip'];
+	if(isset($param['userpermitip']) && !isset($param['permitip'])) $param['permitip']=$param['userpermitip'];
+	
 	$ac=array('contest','site','user');
 	$ac1=array('updatetime','username','usericpcid','userfull','userdesc','type','enabled','multilogin','pass','permitip','changepass',
 			   'userip','userlastlogin','userlastlogout','usersession','usersessionextra');

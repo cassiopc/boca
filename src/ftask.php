@@ -288,6 +288,12 @@ function DBNewTask($param, $c=null, $autotask=false) {
 	if(isset($param['usernumber']) && !isset($param['user'])) $param['user']=$param['usernumber'];
 	if(isset($param['number']) && !isset($param['tasknumber'])) $param['tasknumber']=$param['number'];
 
+	if(isset($param['taskfilename']) && !isset($param['filename'])) $param['filename']=$param['taskfilename'];
+	if(isset($param['taskdata']) && !isset($param['filepath'])) $param['filepath']=$param['taskdata'];
+	if(isset($param['taskstatus']) && !isset($param['status'])) $param['status']=$param['taskstatus'];
+	if(isset($param['taskdesc']) && !isset($param['desc'])) $param['desc']=$param['taskdesc'];
+	if(isset($param['tasksystem']) && !isset($param['sys'])) $param['sys']=$param['tasksystem'];
+
 	$ac=array('contest','site','user','desc');
 	$ac1=array('color','colorname','updatetime','filename','filepath','sys','tasknumber','status',
 			   'taskdate','taskdatediff','taskdatediffans','taskstaffnumber','taskstaffsite');

@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 26/jul/2017 by cassio@ime.usp.br
 
 function DBDropAnswerTable() { 
 	 $c = DBConnect();
@@ -96,7 +96,10 @@ function DBNewAnswer($contest, $param, $c=null) {
 	if(isset($param["action"]) && $param["action"]=="delete") {
 		return DBDeleteAnswer($contestnumber, $param, $c);
 	}
-
+	
+	if(isset($ac['answernumber']) && !isset($ac['number'])) $ac['number']=$ac['answernumber'];
+	if(isset($ac['runanswer']) && !isset($ac['name'])) $ac['name']=$ac['runanswer'];
+	
 	$ac=array('number','name','yes');
 	$type['number']=1;
 	foreach($ac as $key) {

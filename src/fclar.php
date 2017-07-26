@@ -226,9 +226,13 @@ function DBClarDelete($number,$site,$contest,$user,$usersite) {
 function DBNewClar($param,$c=null) {
 	if(isset($param['contestnumber']) && !isset($param['contest'])) $param['contest']=$param['contestnumber'];
 	if(isset($param['sitenumber']) && !isset($param['site'])) $param['site']=$param['sitenumber'];
+	if(isset($param['clarsitenumber']) && !isset($param['site'])) $param['site']=$param['clarsitenumber'];
 	if(isset($param['usernumber']) && !isset($param['user'])) $param['user']=$param['usernumber'];
 	if(isset($param['number']) && !isset($param['clarnumber'])) $param['clarnumber']=$param['number'];
 
+	if(isset($param['clarproblem']) && !isset($param['problem'])) $param['problem']=$param['clarproblem'];
+	if(isset($param['clardata']) && !isset($param['question'])) $param['question']=$param['clardata'];
+	
 	$ac=array('contest','site','user','problem','question');
 	$ac1=array('clarnumber','clardate','clardatediff','clardatediffans','claranswer','clarstatus','clarjudge','clarjudgesite','updatetime');
 	$type['contest']=1;

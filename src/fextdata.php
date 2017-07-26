@@ -286,7 +286,7 @@ function getMainXML() {
   return true;
 }
 
-function importFromXML($ar,$contest,$site) {
+function importFromXML($ar,$contest,$site,$tomain=false) {
   $data = implode("",explode("\n",$ar));
   $parser = xml_parser_create();
   xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 1);
@@ -310,7 +310,7 @@ function importFromXML($ar,$contest,$site) {
   DBClose($conn); 
   $conn=null;
 
-  $tables = array('contesttable','answertable','langtable','problemtable','sitetable','usertable','clartable','runtable','tasktable');
+  $tables = array('answertable','langtable','problemtable','sitetable','usertable','clartable','runtable','tasktable');
 
   foreach($tables as $table) {
     foreach($tags as $key=>$val) {
@@ -341,7 +341,7 @@ function importFromXML($ar,$contest,$site) {
       if(count($param) < 2) continue;
       unset($param['number']);
 
-      if($key == "answertable") {
+      if(!$tomain && $key == "answertable") {
 	if(($ret=DBNewAnswer ($contest, $param, $conn))) {
 	  if($ret==2) {
 	    echo "Answer " . $param["answernumber"] . " updated<br>";
@@ -353,7 +353,7 @@ function importFromXML($ar,$contest,$site) {
 	  return false;
 	}
       }
-      if($key == "langtable") {
+      if(!$tomain && $key == "langtable") {
 	if(($ret=DBNewLanguage ($contest,$param, $conn))) {
 	  if($ret==2) {
 	    echo "Language " . $param['langnumber'] ." updated<br>";
@@ -365,7 +365,7 @@ function importFromXML($ar,$contest,$site) {
 	  return false;
 	}
       }
-      if($key == "problemtable") {
+      if(!$tomain && $key == "problemtable") {
 	if(($ret=DBNewProblem ($contest,$param, $conn))) {
 	  if($ret==2)
 	    echo "Problem " . $param['problemnumber'] ." updated<br>";
@@ -379,13 +379,12 @@ function importFromXML($ar,$contest,$site) {
       
       if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) continue;
       
-      if($key == "sitetable") {
+      if($tomain && $key == "sitetable") {
 	if(!DBNewSite($contest, $conn, $param)) {
 	  if($conn != null)
 	    DBExec($conn,"rollback work");
 	  return false;
-	}			
-	/*
+	}
 	if(($ret=DBUpdateSite($param, $conn))) {
 	  if($ret==2) {
 	    echo "Site " . $param["sitenumber"] . " updated<br>";
@@ -395,7 +394,6 @@ function importFromXML($ar,$contest,$site) {
 	    DBExec($conn,"rollback work");
 	  return false;
 	  }
-	*/
       }
       if($key == "usertable") {
 	if(($ret=DBNewUser($param, $conn))) {
@@ -447,9 +445,9 @@ function importFromXML($ar,$contest,$site) {
   return true;
 }
 
-function genSQLs() {
+function genSQLs($contest, $site, $updatetime) {
   $sql = array();
-  $sql['contesttable']="select * from contesttable where contestnumber=$contest and updatetime >= $updatetime";
+  //  $sql['contesttable']="select * from contesttable where contestnumber=$contest and updatetime >= $updatetime";
   $sql['sitetable']="select * from sitetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
   $sql['langtable']="select * from langtable where contestnumber=$contest and updatetime >= $updatetime";
@@ -463,7 +461,7 @@ function genSQLs() {
 }
 
 function generateSiteXML($contest,$site,$updatetime) {
-  $sql = genSQL();
+  $sql = genSQL($contest, $site, $updatetime);
   $c = DBConnect();
   if ($c==null) return null;
   DBExec($c, "begin work");

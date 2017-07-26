@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 21/jul/2012 by cassio@ime.usp.br
+// Last modified 26/jul/2017 by cassio@ime.usp.br
 
 function DBDropProblemTable() {
 	$c = DBConnect();
@@ -281,6 +281,16 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 		return DBDeleteProblem($contestnumber, $param);
 	}
 
+	if(isset($ac['problemnumber']) && !isset($ac['number'])) $ac['number']=$ac['problemnumber'];
+	if(isset($ac['problemname']) && !isset($ac['name'])) $ac['name']=$ac['problemname'];
+	if(isset($ac['problemfullname']) && !isset($ac['fullname'])) $ac['fullname']=$ac['problemfullname'];
+	if(isset($ac['problembasefilename']) && !isset($ac['basename'])) $ac['basename']=$ac['problembasefilename'];
+	if(isset($ac['problemcolorname']) && !isset($ac['colorname'])) $ac['colorname']=$ac['problemcolorname'];
+	if(isset($ac['problemcolor']) && !isset($ac['color'])) $ac['color']=$ac['problemcolor'];
+	if(isset($ac['probleminputfile']) && !isset($ac['inputfilepath'])) $ac['inputfilepath']=$ac['probleminputfile'];
+	if(isset($ac['probleminputfilename']) && !isset($ac['inputfilename'])) $ac['inputfilename']=$ac['probleminputfilename'];
+
+	
 	$ac=array('number','name');
 	$type['number']=1;
 	$type['updatetime']=1;

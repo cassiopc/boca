@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 26/jul/2017 by cassio@ime.usp.br
 function DBDropLangTable() {
 	$c = DBConnect();
 	$r = DBExec($c, "drop table \"langtable\"", "DBDropLangTable(drop table)");
@@ -97,6 +97,11 @@ function DBNewLanguage($contestnumber, $param, $c=null) {
 	if(isset($param["action"]) && $param["action"]=="delete") {
 		return DBDeleteLanguage($contestnumber, $param, $c);
 	}
+
+	if(isset($ac['langnumber']) && !isset($ac['number'])) $ac['number']=$ac['langnumber'];
+	if(isset($ac['langname']) && !isset($ac['name'])) $ac['name']=$ac['langname'];
+	if(isset($ac['langextension']) && !isset($ac['extension'])) $ac['extension']=$ac['langextension'];
+	
 	$ac=array('number','name');
 	$ac1=array('updatetime','extension');
 	$type['number']=1;
