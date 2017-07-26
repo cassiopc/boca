@@ -266,6 +266,10 @@ function DBScoreSite($contest, $site, $verifylastmile, $hor=-1, $data=null) {
 			$resp[$a["usernumber"]]["userfullname"]=$a["userfullname"];
 			$resp[$a["usernumber"]]["usershortinstitution"]=$a["usershortinstitution"];
 			$resp[$a["usernumber"]]["userflag"]=$a["userflag"];
+			if($a["usersitename"] == '')
+			  $resp[$a["usernumber"]]["usersitename"]=$a["usersitenumber"];
+			else
+			  $resp[$a["usernumber"]]["usersitename"]=$a["usersitename"];
 			$resp[$a["usernumber"]]["totaltime"]=0;
 			$resp[$a["usernumber"]]["totalcount"]=0;
 			$resp[$a["usernumber"]]["problem"]=array();
