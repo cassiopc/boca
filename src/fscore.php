@@ -258,12 +258,13 @@ function DBScoreSite($contest, $site, $verifylastmile, $hor=-1, $data=null) {
 					"usertype='team' and userlastlogin is not null and userenabled='t'", "DBScoreSite(get users)");
 		$n = DBnlines($r);
 		for ($i=0;$i<$n;$i++) {
-			$a = DBRow($r,$i);
+		  $a = cleanuserdesc(DBRow($r,$i));
 			$resp[$a["usernumber"]]["user"]=$a["usernumber"];
 			$resp[$a["usernumber"]]["site"]=$a["usersitenumber"];
 			$resp[$a["usernumber"]]["username"]=$a["username"];
 			$resp[$a["usernumber"]]["usertype"]=$a["usertype"];
 			$resp[$a["usernumber"]]["userfullname"]=$a["userfullname"];
+			$resp[$a["usernumber"]]["userflag"]=$a["userflag"];
 			$resp[$a["usernumber"]]["totaltime"]=0;
 			$resp[$a["usernumber"]]["totalcount"]=0;
 			$resp[$a["usernumber"]]["problem"]=array();

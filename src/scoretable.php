@@ -314,7 +314,11 @@ if($redo) {
 		else {
 */
 			$_SESSION["scoreblink"][$score[$e]["username"]."-".$score[$e]["site"]]=0;
-			$strtmp .= "  <td nowrap>" . $score[$e]["username"]."/".$score[$e]["site"] . " </td>";
+			if( $score[$e]["userflag"] != '')
+			  $strtmp .= "  <td nowrap><img alt=\"" .  $score[$e]["userflag"]. "\" width=\"18\" src=\"" . $loc. '/images/flags/' . 
+			    $score[$e]["userflag"] . ".png\"> " . $score[$e]["username"]."/".$score[$e]["site"] . " </td>";
+			else
+			  $strtmp .= "  <td nowrap>" . $score[$e]["username"]."/".$score[$e]["site"] . " </td>";
 			$strtmp .= "<td>" . $score[$e]["userfullname"];
 //		}
 		$_SESSION["scorepos"][$score[$e]["username"]."-".$score[$e]["site"]] = $cg2;

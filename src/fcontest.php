@@ -264,16 +264,19 @@ function DBUserInfo($contest, $site, $user, $c=null,$hashpass=true) {
 	/* 	if(isset($inst[1])) */
 	/* 	   $a['usershortname'] = trim($inst[1]); */
 	/* } */
+	return cleanuserdesc($a);
+}
+function cleanuserdesc($a) {
 	$inst = explode(']',$a['userdesc']);
 	if(isset($inst[1])) {
 		$inst2 = explode('[',$inst[0]);
 		if(isset($inst2[1]))
-			$a['usershortinstitution'] = trim($inst2[0]);
+			$a['usershortinstitution'] = trim($inst2[1]);
 		if(isset($inst[2])) {
 			$a['userdesc']=trim($inst[2]);
 			$inst = explode('[',$inst[1]);
 			if(isset($inst[1])) {
-				$a['userinstitution'] = trim($inst[1]);
+				$a['userflag'] = trim($inst[1]);
 			}
 		} else {
 			$a['userdesc']=trim($inst[1]);
