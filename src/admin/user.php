@@ -443,7 +443,12 @@ if (isset($u)) {
       <tr> 
         <td width="35%" align=right>User Description:</td>
         <td width="65%">
-	  <input type="text" name="userdesc" value="<?php if(isset($u)) echo $u["userdesc"]; ?>" size="50" maxlength="300" />
+	  <input type="text" name="userdesc" value="<?php if(isset($u)) { 
+if($u['usershortinstitution']!='')
+  echo '[' . $u['usershortinstitution'] .']';
+if($u['userflag']!='')
+  echo '[' . $u['userflag'] .']';
+echo $u["userdesc"]; } ?>" size="50" maxlength="300" />
         </td>
       </tr>
       <tr> 
