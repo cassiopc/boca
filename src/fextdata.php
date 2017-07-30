@@ -463,6 +463,7 @@ function genSQLs($contest, $site, $updatetime) {
 function generateSiteXML($contest,$site,$updatetime) {
   $sql = genSQLs($contest, $site, $updatetime);
   $c = DBConnect();
+  $str = "";
   if ($c==null) return null;
   DBExec($c, "begin work");
   foreach($sql as $kk => $vv) {
@@ -478,6 +479,8 @@ function generateSiteXML($contest,$site,$updatetime) {
 		if (($lo = DB_lo_open ($c, $val, "r")) !== false) {
 		  $str .= "  <" . $key . ">base64:" . base64_encode(DB_lo_read($contest,$lo)) . "</" . $key . ">\n";
 		  DB_lo_close($lo);
+		} else {
+		  LOGError("large object ($key,$val) not readable");
 		}
 	      } else {
 		$str .= "  <" . $key . ">" . $val . "</" . $key . ">\n";

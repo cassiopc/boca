@@ -28,7 +28,7 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null) {
 if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	$fromsite = $_SESSION["usertable"]["usericpcid"];
 	LOGLevel("Connection received from site=$fromsite PHPID=".$_COOKIE['PHPSESSID'].",extra=".$_SESSION['usertable']['usersessionextra'].
-			 ",session=".session_id().",name=".$getx['name'].", check=".$getx['check'],2);
+		 ",session=".session_id().",2);
 	if($fromsite != '' && is_numeric($fromsite) && $fromsite > 0) {
 	  if(isset($_POST)) {
 	    if(isset($_POST['xml'])) {
