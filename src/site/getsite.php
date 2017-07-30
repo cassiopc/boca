@@ -33,7 +33,7 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	  if(isset($_POST)) {
 	    if(isset($_POST['xml'])) {
 	      //		$fp=fopen('/tmp/aaa',"w"); fwrite($fp,$_POST['xml']); fclose($fp);
-	      $s = decryptData(rawurldecode($_POST['xml']),myhash($_SESSION["usertable"]["userpassword"]));
+	      $s = decryptData(rawurldecode($_POST['xml']),myhash($_SESSION["usertable"]["userpassword"]),'xml from local not ok');
 	      //		$fp=fopen('/tmp/aaa1',"w"); fwrite($fp,$s); fclose($fp);
 	      if(strtoupper(substr($s,0,5)) != "<XML>") {
 		echo "<!-- <ERROR8> ".session_id() . " " . session_id() . " -->\n";

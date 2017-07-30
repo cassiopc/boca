@@ -247,7 +247,7 @@ function getMainXML() {
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
 
-    $data = encryptData(generateSiteXML($contest, $localsite, $updatetime-30),myhash (trim($sitedata[2])));
+    $data = encryptData(generateSiteXML($contest, $localsite, $updatetime-30),myhash(myhash(trim($sitedata[2]))));
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
 				       ));
@@ -275,7 +275,7 @@ function getMainXML() {
     LOGError("xmltransfer: failed (" . $ok . ")");
   }
     
-  $s = decryptData($s,myhash (trim($sitedata[2])));
+  $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
   if(strtoupper(substr($s,0,5)) != "<XML>") {
     return false;
   }
