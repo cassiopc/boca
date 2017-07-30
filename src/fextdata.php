@@ -247,7 +247,7 @@ function getMainXML() {
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
 
-    $data = encryptData(generateSiteXML($contest, $localsite, $updatetime-30),myhash(myhash(trim($sitedata[2])) . $sess));
+    $data = encryptData(generateSiteXML($contest, $localsite, $updatetime-30),myhash(trim($sitedata[2])));
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
 				       ));
