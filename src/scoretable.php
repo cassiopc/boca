@@ -141,10 +141,13 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		} else {
 			@rename($fname . ".tmp",$destination);
 		}
-		@fclose($fp); 
+		@fclose($fp);
+
+		getMainXML();
+		
 		@unlink($destination . ".lck");
 	  } else {
-			if(file_exists($destination . ".lck",'x') && filemtime($destination . ".lck",'x') < time() - 180)
+			if(file_exists($destination . ".lck") && filemtime($destination . ".lck") < time() - 180)
 				@unlink($destination . ".lck");
 	  }
 	}
