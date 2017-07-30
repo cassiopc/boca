@@ -475,7 +475,7 @@ function generateSiteXML($contest,$site,$updatetime) {
 	    $atual = DBRow($r,$i);
 	    $str .= "<" . $kk . ">\n";
 	    foreach($atual as $key => $val) {
-	      if($meta[$key]['type'] == 'oid') {
+	      if($meta[$key]['type'] == 'oid' && $val != '') {
 		if (($lo = DB_lo_open ($c, $val, "r")) !== false) {
 		  $str .= "  <" . $key . ">base64:" . base64_encode(DB_lo_read($contest,$lo)) . "</" . $key . ">\n";
 		  DB_lo_close($lo);
@@ -484,7 +484,6 @@ function generateSiteXML($contest,$site,$updatetime) {
 		}
 	      } else {
 		$str .= "  <" . $key . ">" . $val . "</" . $key . ">\n";
-
 	      }
 	      $str .= "</" . $kk . ">\n";
 	    }
@@ -492,6 +491,7 @@ function generateSiteXML($contest,$site,$updatetime) {
 	}
 	$str .= "</XML>\n";
 	DBExec($c,"commit work","generateXML(commit)");
+	LOGError("xml data generated for contest $contest site $site at time $updatetime");
 	return $str;
 }
 
