@@ -63,7 +63,7 @@ function DBDeleteAnswer($contest,$param,$c=null) {
 	$ac=array('number');
 	foreach($ac as $key) {
 		if(!isset($param[$key])) return false;
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 	}
 
 	$cw = false;
@@ -106,7 +106,7 @@ function DBNewAnswer($contest, $param, $c=null) {
 			MSGError("DBNewAnswer param error: $key is not set");
 			return false;
 		}
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
 			MSGError("DBNewAnswer param error: $key is not numeric");
 			return false;

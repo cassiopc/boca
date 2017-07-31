@@ -255,7 +255,7 @@ function DBNewClar($param,$c=null) {
 			MSGError("DBNewClar param error: $key is not numeric");
 			return false;
 		}
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 	}
 	$t = time();
 	$clarnumber=-1;
@@ -269,7 +269,7 @@ function DBNewClar($param,$c=null) {
 	$clarstatus='openclar';
 	foreach($ac1 as $key) {
 		if(isset($param[$key])) {
-			$$key = sanitizeText($param[$key]);
+			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
 				MSGError("DBNewClar param error: $key is not numeric");
 				return false;

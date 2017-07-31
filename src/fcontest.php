@@ -558,7 +558,7 @@ function DBUpdateSiteTime($contest,$param,$dodelete=false,$c=null) {
       LOGError("DBUpdateSiteTime param error: $key is not set");
       return false;
     }
-    $$key = sanitizeText($param[$key]);
+    $$key = myhtmlspecialchars($param[$key]);
     if(isset($type[$key]) && !is_numeric($param[$key])) {
       LOGError("DBUpdateSiteTime param error: $key is not numeric");
       return false;
@@ -601,7 +601,7 @@ function DBUpdateSite ($param,$c=null) {
 			MSGError("DBUpdateSite param error: $key is not set");
 			return false;
 		}
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
 			MSGError("DBUpdateSite param error: $key is not numeric");
 			return false;
@@ -626,7 +626,7 @@ function DBUpdateSite ($param,$c=null) {
 	$siteactive='f';
 	foreach($ac1 as $key) {
 		if(isset($param[$key])) {
-			$$key = sanitizeText($param[$key]);
+			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
 				MSGError("DBUpdateSite param error: $key is not numeric");
 				return false;
@@ -757,7 +757,7 @@ function DBUpdateContest ($param, $c=null) {
 			MSGError("DBUpdateContest param error: $key is not set");
 			return false;
 		}
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
 			MSGError("DBUpdateContest param error: $key is not numeric");
 			return false;
@@ -780,7 +780,7 @@ function DBUpdateContest ($param, $c=null) {
 	$updatetime=-1;
 	foreach($ac1 as $key) {
 		if(isset($param[$key])) {
-			$$key = sanitizeText($param[$key]);
+			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
 				MSGError("DBUpdateContest param error: $key is not numeric");
 				return false;
@@ -990,7 +990,7 @@ function DBNewContest ($param=array(), $c=null) {
 	$unlockkey='';
 	foreach($ac as $key) {
 		if(isset($param[$key]) && (!isset($type[$key]) || is_numeric($param[$key])))
-			$$key = sanitizeText($param[$key]);
+			$$key = myhtmlspecialchars($param[$key]);
 		else
 			$$key = "";
 	}
@@ -1084,7 +1084,7 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 	$type['updatetime']=1;
 	foreach($ac as $key) {
 		if(isset($param[$key]) && (!isset($type[$key]) || is_numeric($param[$key])))
-			$$key = sanitizeText($param[$key]);
+			$$key = myhtmlspecialchars($param[$key]);
 		else
 			$$key = "";
 	}
@@ -1218,7 +1218,7 @@ function DBNewUser($param, $c=null) {
 			MSGError("DBNewUser param error: $key is not numeric");
 			return false;
 		}
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 	}
 	$username= "team" . $user;
 	$updatetime=-1;
@@ -1238,7 +1238,7 @@ function DBNewUser($param, $c=null) {
 	$userlastlogout=null;
 	foreach($ac1 as $key) {
 		if(isset($param[$key])) {
-			$$key = sanitizeText($param[$key]);
+			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($typei[$key]) && !is_numeric($param[$key])) {
 				MSGError("DBNewUser param error: $key is not numeric");
 				return false;

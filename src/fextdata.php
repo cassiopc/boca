@@ -333,7 +333,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  for($i=$v; $i < $val[$k+1]; $i++) {
 	    $p  = strtolower($values[$i]["tag"]);
 	    if($values[$i]["type"]=="complete" && isset($values[$i]["value"])) {
-	      $tmp = sanitizeText(trim(implode('',explode('\n',$values[$i]["value"]))));
+	      //	      $tmp = sanitizeText(base64_decode(trim(implode('',explode('\n',$values[$i]["value"])))),false);
+	      $tmp = base64_decode($values[$i]["value"]);
 	      $param[$p] = $tmp;
 	    }
 	  }
@@ -401,8 +402,10 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(isset($param['usersitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['usersitenumber'];              
 	  if(isset($param['clarsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['clarsitenumber'];              
 	  if(isset($param['runsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['runsitenumber'];              
-	  if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) continue;
-	  
+	  if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) {
+	    LOGError("importFromXML: site mismatch $site " . $param['sitenumber']);
+	    continue;
+	  }
 	  if($tomain && $table == "sitetable") {
 	    if(!DBNewSite($contest, $conn, $param)) {
 	      LOGError("importFromXML: error to update $table");
@@ -528,7 +531,7 @@ function generateSiteXML($contest,$site,$updatetime) {
 		  LOGError("large object ($key,$val) not readable");
 		}
 	      } else {
-		$str .= "  <" . $key . ">" . $val . "</" . $key . ">\n";
+		$str .= "  <" . $key . ">" . base64_encode($val) . "</" . $key . ">\n";
 	      }
 	    }
 	    $str .= "</" . $kk . ">\n";

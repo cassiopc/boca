@@ -107,6 +107,17 @@ function sanitizeText($text, $doamp=true)
     $text = addslashes($text); 
     return $text; 
 }
+function sanitizeFilename($text) 
+{
+  $text = str_replace("&", "", $text);
+  $text = str_replace("<", "", $text);
+  $text = str_replace(">", "", $text); 
+  $text = str_replace("\"", "", $text); 
+  $text = str_replace("'", "", $text);
+  $text = str_replace("`", "", $text);
+  $text = addslashes($text); 
+  return $text; 
+}
 
 function unsanitizeText($text) {
     $text = str_replace("&amp;", "&", $text);

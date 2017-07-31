@@ -195,8 +195,8 @@ if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
 		continue;
 	}
 	if(isset($info['descfile']))
-	$descfile=trim(sanitizeText($info['descfile']));
-	$basename=trim(sanitizeText($info['basename']));
+	$descfile=trim(sanitizeFilename($info['descfile']));
+	$basename=trim(sanitizeFilename($info['basename']));
 	$fullname=trim(sanitizeText($info['fullname']));
 	if($basename=='') {
 		echo "Problem content missing (description/problem.info) -- please check the problem package\n";

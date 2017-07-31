@@ -168,8 +168,8 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
 						if(!$failed) {
 							$descfile='';
 							if(isset($info['descfile']))
-								$descfile=trim(sanitizeText($info['descfile']));
-							$basename=trim(sanitizeText($info['basename']));
+								$descfile=trim(sanitizeFilename($info['descfile']));
+							$basename=trim(sanitizeFilename($info['basename']));
 							$fullname=trim(sanitizeText($info['fullname']));
 							if($basename=='' || $fullname=='')
 								$failed=3;
@@ -229,7 +229,7 @@ function DBDeleteProblem($contestnumber, $param, $c=null) {
 	$ac=array('number','inputfilename');
 	foreach($ac as $key) {
 		if(!isset($param[$key])) return false;
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 	}
 
 	$sql = "select * from problemtable where problemnumber=$number and contestnumber=$contestnumber and fake='f'";
@@ -289,6 +289,7 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 	if(isset($param['problemcolor']) && !isset($param['color'])) $param['color']=$param['problemcolor'];
 	if(isset($param['probleminputfile']) && !isset($param['inputfilepath'])) $param['inputfilepath']=$param['probleminputfile'];
 	if(isset($param['probleminputfilename']) && !isset($param['inputfilename'])) $param['inputfilename']=$param['probleminputfilename'];
+	$param['basename'] = sanitizeFilename($param['basename']);
 	
 	$ac=array('number','name');
 	$type['number']=1;
@@ -307,7 +308,7 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 			MSGError("DBNewProblem param error: $key is not numeric");
 			return false;
 		}
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 	}
 	$basename='';
 	$inputfilename='';
@@ -320,7 +321,7 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 				MSGError("DBNewProblem param error: $key is not numeric");
 				return false;
 			}
-			$$key = sanitizeText($param[$key]);
+			$$key = myhtmlspecialchars($param[$key]);
 		}
 	}
 	$t = time();

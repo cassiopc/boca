@@ -293,7 +293,9 @@ function DBNewTask($param, $c=null, $autotask=false) {
 	if(isset($param['taskstatus']) && !isset($param['status'])) $param['status']=$param['taskstatus'];
 	if(isset($param['taskdesc']) && !isset($param['desc'])) $param['desc']=$param['taskdesc'];
 	if(isset($param['tasksystem']) && !isset($param['sys'])) $param['sys']=$param['tasksystem'];
-
+	$param['filepath']=sanitizeFilename($param['filepath']);
+	$param['filename']=sanitizeFilename($param['filename']);
+	
 	$ac=array('contest','site','user','desc');
 	$ac1=array('color','colorname','updatetime','filename','filepath','sys','tasknumber','status',
 			   'taskdate','taskdatediff','taskdatediffans','taskstaffnumber','taskstaffsite');
@@ -316,7 +318,7 @@ function DBNewTask($param, $c=null, $autotask=false) {
 			MSGError("DBNewTask param error: $key is not numeric");
 			return false;
 		}
-		$$key = sanitizeText($param[$key]);
+		$$key = myhtmlspecialchars($param[$key]);
 	}
 	$taskstaffnumber=-1;
 	$taskstaffsite=-1;
@@ -334,7 +336,7 @@ function DBNewTask($param, $c=null, $autotask=false) {
 	$taskdatediff=-1;
 	foreach($ac1 as $key) {
 		if(isset($param[$key])) {
-			$$key = sanitizeText($param[$key]);
+			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
 				MSGError("DBNewTask param error: $key is not numeric");
 				return false;
