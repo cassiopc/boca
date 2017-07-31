@@ -222,8 +222,6 @@ echo $contest;
 		   <?php if(strlen($ct["contestunlockkey"]) > 1) echo "<b><= has been set</b>"; ?>
         </td>
       </tr>
-    <?php if($main) {
-    ?>
       <tr>
 							<td width="35%" align=right>Keys (only use it within a <b>secure network</b>):</td>
         <td width="65%">
@@ -231,8 +229,6 @@ echo $contest;
 		   <?php if(strlen($ct["contestkeys"]) > 32) echo "<b><= has been set</b>"; ?>
         </td>
       </tr>
-    <?php }
-    ?>
       <tr>
         <td width="35%" align=right>Contest main site number:</td>
         <td width="65%">

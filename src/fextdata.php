@@ -278,9 +278,10 @@ function getMainXML() {
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       return false;
     }
-    if(importFromXML($s, $contest, $localsite)) {
+    if(importFromXML($s, $contest, $localsite, 1+$ct['updatetime'])) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
-      $param = array('contestnumber' => $contest, 'mainsiteurl' => $str);
+      $ti = 2+$ct['updatetime'];
+      $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ti);
       DBUpdateContest ($param, null);
       return true;
     } else {
@@ -292,7 +293,7 @@ function getMainXML() {
   return false;
 }
 
-function importFromXML($ar,$contest,$site,$tomain=false) {
+function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
   LOGInfo("importFromXML: contest $contest site $site tomain $tomain");
   $data = implode("",explode("\n",$ar));
   $parser = xml_parser_create('');
@@ -343,6 +344,7 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  unset($param['number']);
 
 	  if(!$tomain && $table == "contesttable") {
+	    if($uptime > 0) $param['updatetime']=$uptime;
 	    if(($ret=DBUpdateContest ($param, $conn))) {
 	      if($ret==2) {
 		LOGInfo("importFromXML: Contest " . $param["contestnumber"] . " updated");
