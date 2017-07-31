@@ -109,6 +109,10 @@ function sanitizeText($text, $doamp=true)
 }
 function sanitizeFilename($text) 
 {
+  $text = str_replace("$", "", $text);
+  $text = str_replace(")", "", $text);
+  $text = str_replace("(", "", $text);
+  $text = str_replace(";", "", $text);
   $text = str_replace("&", "", $text);
   $text = str_replace("<", "", $text);
   $text = str_replace(">", "", $text); 
