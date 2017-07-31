@@ -220,6 +220,9 @@ function ValidSession() {
 function LOGError($msg) {
 	LOGLevel($msg,0,false);
 }
+function LOGInfo($msg) {
+	LOGLevel($msg,2,false);
+}
 // grava linha no arquivo de log com o nivel especificado
 function LOGLevel($msg,$level,$dodb=true) {
 	$msga = sanitizeText(str_replace("\n", " ", $msg));

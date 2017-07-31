@@ -294,7 +294,7 @@ function getMainXML() {
 }
 
 function importFromXML($ar,$contest,$site,$tomain=false) {
-  LOGError("importFromXML: contest $contest site $site tomain $tomain");
+  LOGInfo("importFromXML: contest $contest site $site tomain $tomain");
   $data = implode("",explode("\n",$ar));
   $parser = xml_parser_create('');
   xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 1);
@@ -318,7 +318,7 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
   DBClose($conn); 
   $conn=null;
   $firsttimetime=true;
-  $tables = array('answertable','langtable','problemtable','sitetable','sitetimetable','usertable','clartable','runtable','tasktable');
+  $tables = array('contesttable','answertable','langtable','problemtable','sitetable','sitetimetable','usertable','clartable','runtable','tasktable');
 
   foreach($tables as $table) {
     foreach($tags as $key=>$val) {
@@ -342,14 +342,31 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  $param['contest'] = $contest;
 	  if(count($param) < 2) continue;
 	  unset($param['number']);
-	  //	  LOGError("$key params " .print_r( $param,true));
-	  if(!$tomain && $table == "answertable") {
-	    if(($ret=DBNewAnswer ($contest, $param, $conn))) {
+
+	  if(!$tomain && $table == "contesttable") {
+	    if(($ret=DBUpdateContest ($param, $conn))) {
 	      if($ret==2) {
-		LOGError("Answer " . $param["answernumber"] . " updated");
+		LOGInfo("importFromXML: Contest " . $param["contestnumber"] . " updated");
 	      }
 	    }
 	    else {
+	      LOGError("importFromXML: error to update $table ". $param["contestnumber"]);
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
+	  }
+
+	  
+	  //	  LOGInfo("importFromXML: $key params " .print_r( $param,true));
+	  if(!$tomain && $table == "answertable") {
+	    if(($ret=DBNewAnswer ($contest, $param, $conn))) {
+	      if($ret==2) {
+		LOGInfo("importFromXML: Answer " . $param["answernumber"] . " updated");
+	      }
+	    }
+	    else {
+	      LOGError("importFromXML: error to update $table ". $param["answernumber"]);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
@@ -358,10 +375,11 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  if(!$tomain && $table == "langtable") {
 	    if(($ret=DBNewLanguage ($contest,$param, $conn))) {
 	      if($ret==2) {
-		LOGError("Language " . $param['langnumber'] ." updated");
+		LOGInfo("importFromXML: Language " . $param['langnumber'] ." updated");
 	      }
 	    }
 	    else {
+	      LOGError("importFromXML: error to update $table ". $param['langnumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
@@ -370,9 +388,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  if(!$tomain && $table == "problemtable") {
 	    if(($ret=DBNewProblem ($contest,$param, $conn))) {
 	      if($ret==2)
-		LOGError("Problem " . $param['problemnumber'] ." updated");
+		LOGInfo("importFromXML: Problem " . $param['problemnumber'] ." updated");
 	    }
 	    else {
+	      LOGError("importFromXML: error to update $table " . $param['problemnumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
@@ -383,15 +402,17 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  
 	  if($tomain && $table == "sitetable") {
 	    if(!DBNewSite($contest, $conn, $param)) {
+	      LOGError("importFromXML: error to update $table");
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
 	    }
 	    if(($ret=DBUpdateSite($param, $conn))) {
 	      if($ret==2) {
-		LOGError("Site " . $param["sitenumber"] . " updated");
+		LOGInfo("importFromXML: Site " . $param["sitenumber"] . " updated");
 	      }
 	    } else {
+	      LOGError("importFromXML: error to update $table ". $param["sitenumber"]);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
@@ -399,20 +420,22 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  }
 	  if($tomain && $table == "sitetimetable") {
 	    if(!DBUpdateSiteTime($contest, $param, $firsttimetime, $conn)) {
+	      LOGError("importFromXML: error to update $table");
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
 	    } else {
-	      LOGError("SiteTime updated");
+	      LOGInfo("importFromXML: SiteTime updated");
 	    }
 	    $firsttimetime=false;
 	  }
 	  if($table == "usertable") {
 	    if(($ret=DBNewUser($param, $conn))) {
 	      if($ret==2) {
-		LOGError("User " . $param["usernumber"]."/".$param['sitenumber']. " updated");
+		LOGInfo("importFromXML: User " . $param["usernumber"]."/".$param['sitenumber']. " updated");
 	      }
 	    } else {
+	      LOGError("importFromXML: error to update $table ". $param["usernumber"]."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
@@ -421,9 +444,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  if($table == "tasktable") {
 	    if(($ret=DBNewTask ($param, $conn))) {
 	      if($ret==2)
-		LOGError("Task " . $param['tasknumber']."/".$param['sitenumber']." updated");
+		LOGInfo("importFromXML: Task " . $param['tasknumber']."/".$param['sitenumber']." updated");
 	    }
 	    else {
+	      LOGError("importFromXML: error to update $table " . $param['tasknumber']."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
@@ -432,9 +456,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  if($table == "clartable") {
 	    if(($ret=DBNewClar ($param, $conn))) {
 	      if($ret==2)
-		LOGError("Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated");
+		LOGInfo("importFromXML: Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated");
 	    }
 	    else {
+	      LOGError("importFromXML: error to update $table ". $param['clarnumber']."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
@@ -443,9 +468,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  if($table == "runtable") {
 	    if(($ret=DBNewRun ($param, $conn))) {
 	      if($ret==2)
-		LOGError("Run " . $param['runnumber'] ."/".$param['sitenumber']." updated");
+		LOGInfo("importFromXML: Run " . $param['runnumber'] ."/".$param['sitenumber']." updated");
 	    }
 	    else {
+	      LOGError("importFromXML: error to update $table ". $param['runnumber'] ."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
@@ -461,7 +487,9 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 
 function genSQLs($contest, $site, $updatetime) {
   $sql = array();
-  //  $sql['contesttable']="select * from contesttable where contestnumber=$contest and updatetime >= $updatetime";
+  $sql['contesttable']="select contestnumber, contestname, conteststartdate, contestduration, contestlastmileanswer," .
+    "contestlastmilescore, contestpenalty, contestmaxfilesize, contestactive, contestmainsite, contestkeys " .
+    "from contesttable where contestnumber=$contest"; // and updatetime >= $updatetime";
   $sql['sitetable']="select * from sitetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
   $sql['langtable']="select * from langtable where contestnumber=$contest and updatetime >= $updatetime";
@@ -509,223 +537,3 @@ function generateSiteXML($contest,$site,$updatetime) {
 	return $str;
 }
 
-/*
-function generateXML($contest,$localsite=0,$sites=null,$reduced=false) {
-	$str = "<XML>\n";
-	$ac['CONTESTREC']=array('number'=>'contestnumber', 
-							'name'=>'contestname', 
-							'startdate'=>'conteststartdate', 
-							'duration'=>'contestduration', 
-							'lastmileanswer'=>'contestlastmileanswer',
-							'lastmilescore'=>'contestlastmilescore',
-							'penalty'=>'contestpenalty',
-							'maxfilesize'=>'contestmaxfilesize',
-							'updatetime'=>'updatetime',
-							'mainsite'=>'contestmainsite',
-							'mainsiteurl'=>'contestmainsiteurl',
-							'keys'=>'contestkeys',
-							'unlockkey'=>'contestunlockkey',
-							'updatetime'=>'updatetime');
-	if($localsite > 0)
-		$ac['CONTESTREC']['localsite'] = array($localsite,2);
-	$sql['CONTESTREC']="select * from contesttable where contestnumber=$contest";
-	$ac['ANSWERREC']=array('number'=>'answernumber',
-						'name'=>'runanswer',
-						'yes'=>'yes',
-						'updatetime'=>'updatetime');
-	$sql['ANSWERREC']="select * from answertable where contestnumber=$contest and fake='f'";
-
-	$ac['LANGUAGEREC']=array('number'=>'langnumber',
-						  'name'=>'langname',
-						  'updatetime'=>'updatetime');
-	$sql['LANGUAGEREC']="select * from langtable where contestnumber=$contest";
-	
-	$ac['PROBLEMREC']=array('number'=>'problemnumber',
-						 'name'=>'problemname',
-						 'fullname'=>'problemfullname',
-						 'basename'=>'problembasefilename',
-						 'inputfilename'=>'probleminputfilename',
-						 'inputfilepath'=>array('probleminputfile',1),
-						 'solfilename'=>'problemsolfilename',
-						 'solfilepath'=>array('problemsolfile',1),
-						 'descfilename'=>'problemdescfilename',
-						 'descfilepath'=>array('problemdescfile',1),
-						 'tl'=>'problemtimelimit',
-						 'colorname'=>'problemcolorname',
-						 'color'=>'problemcolor',
-						 'fake'=>'fake',
-						 'updatetime'=>'updatetime');
-	$sql['PROBLEMREC']="select * from problemtable where contestnumber=$contest and fake='f'";
-
-	$sql['SITEREC']="select * from sitetable where contestnumber=$contest";
-	$ac['SITEREC']=array('sitenumber'=>'sitenumber',
-					  'site'=>'sitenumber',
-					  'number'=>'sitenumber',
-					  'sitename'=>'sitename',
-					  'siteip'=>'siteip',
-					  'siteduration'=>'siteduration',
-					  'sitelastmileanswer'=>'sitelastmileanswer',
-					  'sitelastmilescore'=>'sitelastmilescore',
-					  'sitejudging'=>'sitejudging',
-					  'sitetasking'=>'sitetasking',
-					  'siteautoend'=>'siteautoend',
-					  'siteglobalscore'=>'siteglobalscore',
-					  'siteactive'=>'siteactive',
-					  'sitescorelevel'=>'sitescorelevel',
-					  'sitepermitlogins'=>'sitepermitlogins',
-					  'siteautojudge'=>'siteautojudge',
-					  'sitenextuser'=>'sitenextuser',
-					  'sitenextclar'=>'sitenextclar',
-					  'sitenextrun'=>'sitenextrun',
-					  'sitenexttask'=>'sitenexttask',
-					  'sitemaxtask'=>'sitemaxtask',
-					  'sitechiefname'=>'sitechiefname',
-					  'updatetime'=>'updatetime');
-	$sql['SITETIME']="select * from sitetimetable where contestnumber=$contest";
-	$ac['SITETIME']=array('site'=>'sitenumber',
-						  'number'=>'sitenumber',
-						  'start'=>'sitestartdate',
-						  'enddate'=>'siteenddate',
-						  'updatetime'=>'updatetime');
-
-	$sql['USERREC']="select * from usertable where contestnumber=$contest";
-	$ac['USERREC']=array('site'=>'usersitenumber',
-					  'user'=>'usernumber',
-					  'number'=>'usernumber',
-					  'username'=>'username',
-					  'updatetime'=>'updatetime',
-					  'usericpcid'=>'usericpcid',
-					  'userfull'=>'userfullname',
-					  'userdesc'=>'userdesc',
-					  'type'=>'usertype',
-					  'enabled'=>'userenabled',
-					  'multilogin'=>'usermultilogin',
-//					  'pass'=>'userpassword',
-//					  'usersession'=>'usersession',
-					  'userip'=>'userip',
-					  'userlastlogin'=>'userlastlogin',
-					  'userlastlogout'=>'userlastlogout',
-					  'permitip'=>'userpermitip',
-					  'updatetime'=>'updatetime');
-
-	if(!$reduced) {
-		$sql['CLARREC']="select * from clartable where contestnumber=$contest";
-		$ac['CLARREC']=array('site'=>'clarsitenumber',
-							 'user'=>'usernumber',
-							 'number'=>'clarnumber',
-							 'problem'=>'clarproblem',
-							 'question'=>'clardata',
-							 'clarnumber'=>'clarnumber',
-							 'clardate'=>'clardate',
-							 'clardatediff'=>'clardatediff',
-							 'clardatediffans'=>'clardatediffans',
-							 'claranswer'=>'claranswer',
-							 'clarstatus'=>'clarstatus',
-							 'clarjudge'=>'clarjudge',
-							 'clarjudgesite'=>'clarjudgesite',
-							 'updatetime'=>'updatetime');
-
-		$sql['RUNREC']="select * from runtable where contestnumber=$contest";
-		if(is_array($sites)) {
-			$sql['RUNREC'] .= " and (1=0";
-			foreach($sites as $k => $v) {
-				$sql['RUNREC'] .= " or runsitenumber=$v";
-			}
-			$sql['RUNREC'] .= ")";
-		}
-		$ac['RUNREC']=array('site'=>'runsitenumber',
-					 'user'=>'usernumber',
-					 'number'=>'runnumber',
-					 'runnumber'=>'runnumber',
-					 'problem'=>'runproblem',
-					 'lang'=>'runlangnumber',
-					 'filename'=>'runfilename',
-					 'filepath'=>array('rundata',1),
-					 'rundate'=>'rundate',
-					 'rundatediff'=>'rundatediff',
-					 'rundatediffans'=>'rundatediffans',
-					 'runanswer'=>'runanswer',
-					 'runstatus'=>'runstatus',
-					 'runjudge'=>'runjudge',
-					 'runjudgesite'=>'runjudgesite',
-					 'runjudge1'=>'runjudge1',
-					 'runjudgesite1'=>'runjudgesite1',
-					 'runanswer1'=>'runanswer1',
-					 'runjudge2'=>'runjudge2',
-					 'runjudgesite2'=>'runjudgesite2',
-					 'runanswer2'=>'runanswer2',
-					 'autoip'=>'autoip',
-					 'autobegindate'=>'autobegindate',
-					 'autoenddate'=>'autoenddate',
-					 'autoanswer'=>'autoanswer',
-					 'autostdout'=>array('autostdout',1),
-					 'autostderr'=>array('autostderr',1),
-					 'updatetime'=>'updatetime');
-		$sql['TASKREC']="select * from tasktable where contestnumber=$contest";
-		if(is_array($sites)) {
-			$sql['TASKREC'] .= " and (1=0";
-			foreach($sites as $k => $v) {
-				$sql['TASKREC'] .= " or sitenumber=$v";
-			}
-			$sql['TASKREC'] .= ")";
-		}
-		$ac['TASKREC']=array(
-			'site'=>'sitenumber',
-			'user'=>'usernumber',
-			'desc'=>'taskdesc',
-			'number'=>'tasknumber',
-			'tasknumber'=>'tasknumber',
-			'color'=>'color',
-			'colorname'=>'colorname',
-			'updatetime'=>'updatetime',
-			'filename'=>'taskfilename',
-			'filepath'=>array('taskdata',1),
-			'sys'=>'tasksystem',
-			'status'=>'taskstatus',
-			'taskdate'=>'taskdate',
-			'taskdatediff'=>'taskdatediff',
-			'taskdatediffans'=>'taskdatediffans',
-			'taskstaffnumber'=>'taskstaffnumber',
-			'taskstaffsite'=>'taskstaffsite');
-	}
-	$c = DBConnect();
-    if ($c==null) return null;
-	DBExec($c, "begin work");
-	foreach($ac as $kk => $vv) {
-		$r = DBExec ($c, $sql[$kk], "generateXML($kk)");
-		$n = DBnLines ($r);
-		for($i=0; $i<$n; $i++) {
-			$atual = DBRow($r,$i);
-			$str .= "<" . $kk . ">\n";
-			foreach($vv as $key => $val) {
-				if(is_array($val)) {
-					if(is_array($val[0])) {
-						if(!isset($atual['site']) || in_array($atual['site'],$val[0]))
-							if(isset($atual[$val[1]])) 
-								$str .= "  <" . $key . ">" . $atual[$val[1]] . "</" . $key . ">\n";
-					}
-					if($val[1]==2) {
-						$str .= "  <" . $key . ">" . $val[0] . "</" . $key . ">\n";
-					}
-					if($val[1]==1) {
-						if(isset($atual[$val[0]]) && $atual[$val[0]]!='') {
-							if (($lo = DB_lo_open ($c, $atual[$val[0]], "r")) !== false) {
-								$str .= "  <" . $key . ">base64:" . base64_encode(DB_lo_read($contest,$lo)) . "</" . $key . ">\n";
-								DB_lo_close($lo);
-							}
-						}
-					}
-				} else {
-					if(isset($atual[$val])) 
-						$str .= "  <" . $key . ">" . $atual[$val] . "</" . $key . ">\n";
-				}
-			}
-			$str .= "</" . $kk . ">\n";
-		}
-	}
-	$str .= "</XML>\n";
-	DBExec($c,"commit work","generateXML(commit)");
-	return $str;
-}
-*/
-?>

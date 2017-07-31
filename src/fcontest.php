@@ -725,7 +725,17 @@ function DBUpdateSite ($param,$c=null) {
 	return $ret;
 }
 function DBUpdateContest ($param, $c=null) {
-	if(isset($param['contestnumber']) && !isset($param['number'])) $param['number']=$param['contestnumber'];
+  if(isset($param['contestnumber']) && !isset($param['number'])) $param['number']=$param['contestnumber'];
+  if(isset($param['contestname']) && !isset($param['name'])) $param['name']=$param['contestname'];
+  if(isset($param['conteststartdate']) && !isset($param['startdate'])) $param['startdate']=$param['conteststartdate'];
+  if(isset($param['contestduration']) && !isset($param['duration'])) $param['duration']=$param['contestduration'];
+  if(isset($param['contestlastmileanswer']) && !isset($param['lastmileanswer'])) $param['lastmileanswer']=$param['contestlastmileanswer'];
+  if(isset($param['contestlastmilescore']) && !isset($param['lastmilescore'])) $param['lastmilescore']=$param['contestlastmilescore'];
+  if(isset($param['contestpenalty']) && !isset($param['penalty'])) $param['penalty']=$param['contestpenalty'];
+  if(isset($param['contestmaxfilesize']) && !isset($param['maxfilesize'])) $param['maxfilesize']=$param['contestmaxfilesize'];
+  if(isset($param['contestactive']) && !isset($param['active'])) $param['active']=$param['contestactive'];
+  if(isset($param['contestmainsite']) && !isset($param['mainsite'])) $param['mainsite']=$param['contestmainsite'];
+  if(isset($param['contestkeys']) && !isset($param['keys'])) $param['keys']=$param['contestkeys'];
 
 	$ac=array('number');
 	$ac1=array('updatetime','atualizasites','scorelevel','mainsite','localsite','mainsiteurl','keys','unlockkey','name',
