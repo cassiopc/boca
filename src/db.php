@@ -84,7 +84,7 @@ function DB_lo_import($conn, $file) {
 function DB_lo_import_text($conn, $text) {
   if(($oid = DB_lo_create($conn))===false) return false;
   if(($handle = DB_lo_open($conn, $oid, "w"))===false) return false;
-  if(DB_lo_write($handle, "large object data")===false) $oid=false;
+  if(DB_lo_write($handle, $text)===false) $oid=false;
   DB_lo_close($handle);
   return $oid;
 }
