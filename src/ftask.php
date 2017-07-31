@@ -386,6 +386,12 @@ function DBNewTask($param, $c=null, $autotask=false) {
 			exit;
 		}
 		$tasknumber = $a["nexttask"] + 1;
+		DBExec($c, "update sitetable set sitenexttask=$tasknumber" .
+		       " where sitenumber=$site and contestnumber=$contest and sitenexttask<$tasknumber", "DBNewTask(update site)");
+		$taskinc = myunique();
+		if(($taskinc % 2) == 0) $taskinc--;
+		if($autotask) $taskinc++;
+		$tasknumber = $taskinc;
 	} else {
 		$sql = "select * from tasktable as t where t.contestnumber=$contest and " .
 			"t.sitenumber=$site and t.tasknumber=$tasknumber";
@@ -396,9 +402,9 @@ function DBNewTask($param, $c=null, $autotask=false) {
 			$lr = DBRow($r,0);
 			$t = $lr['updatetime'];
 		}
+		$taskinc = $tasknumber - 1;
 	}
-	DBExec($c, "update sitetable set sitenexttask=$tasknumber" .
-		   " where sitenumber=$site and contestnumber=$contest and sitenexttask<$tasknumber", "DBNewTask(update site)");
+
 	$ret=1;
 	if($insert) {
 		if($filename!="" && $filepath!="") {
@@ -420,28 +426,37 @@ function DBNewTask($param, $c=null, $autotask=false) {
 			}
 		} else $oid="NULL";
 
-		$taskinc = myunique();
-		if(($taskinc % 2) == 0) $taskinc--;
-		if($autotask) $taskinc++;
-		$tasknumber = $taskinc;
-		while(!DBExecNonStop($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
-			   "taskdatediff, taskdatediffans, taskfilename, taskdata, taskstatus, taskdesc, tasksystem, ".
-			   "color, colorname, updatetime) " . 
-			   "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
-			   "'$desc', '$sys', '$color', '$colorname', $updatetime)",
-				     "DBNewTask(insert task)")) {
-		  $tasknumber+=2;
-		  if($tasknumber > $taskinc + 6) break;
+		if($taskinc >= $tasknumber) {
+		  while(!DBExecNonStop($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
+				       "taskdatediff, taskdatediffans, taskfilename, taskdata, taskstatus, taskdesc, tasksystem, ".
+				       "color, colorname, updatetime) " . 
+				       "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
+				       "'$desc', '$sys', '$color', '$colorname', $updatetime)",
+				       "DBNewTask(insert task)")) {
+		    $tasknumber+=2;
+		    if($tasknumber > $taskinc + 6) {
+		      DBExec($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
+			     "taskdatediff, taskdatediffans, taskfilename, taskdata, taskstatus, taskdesc, tasksystem, ".
+			     "color, colorname, updatetime) " . 
+			     "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
+			     "'$desc', '$sys', '$color', '$colorname', $updatetime)",
+			     "DBNewTask(insert task)");
+		      break;
+		    }
+		  }
+		} else {
+		  if(!DBExecNonStop($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
+				       "taskdatediff, taskdatediffans, taskfilename, taskdata, taskstatus, taskdesc, tasksystem, ".
+				       "color, colorname, updatetime) " . 
+				       "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
+				       "'$desc', '$sys', '$color', '$colorname', $updatetime)",
+				    "DBNewTask(insert task)")) {
+		    if($cw)
+		      DBExec($c, "commit work", "DBNewTask(commit-insert-error)");
+		    return false;
+		  }
 		}
-		if($tasknumber > $taskinc + 6) {
-		  DBExec($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
-			 "taskdatediff, taskdatediffans, taskfilename, taskdata, taskstatus, taskdesc, tasksystem, ".
-			 "color, colorname, updatetime) " . 
-			 "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
-			 "'$desc', '$sys', '$color', '$colorname', $updatetime)",
-			 "DBNewTask(insert task)");
-		}
-              if($sys=="t") $u="System";
+		if($sys=="t") $u="System";
                 else $u = "User $user";
   
 		if($cw) {

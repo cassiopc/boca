@@ -712,8 +712,7 @@ function DBNewRun($param,$c=null) {
 		MSGError("Unable to find a unique site/contest in the database.");
 		return false;
 	}
-	$a = DBRow($r,0);	
-	$n = $a["nextrun"] + 1;
+	$a = DBRow($r,0);
 	if($runnumber > 0) {
 		$sql = "select * from runtable as t where t.contestnumber=$contest and " .
 			"t.runsitenumber=$site and t.runnumber=$runnumber";
@@ -728,9 +727,16 @@ function DBNewRun($param,$c=null) {
 			if(isset($lr['autostderr']))
 				$oid2 = $lr['autostderr'];
 		}
-		$n = $runnumber;
+		$runinc = $runnumber - 1;
+		//		if($updatetime > $t) {
+		//DBExec($c, "update sitetable set sitenextrun=$runnumber" .
+		//	 " where sitenumber=$site and contestnumber=$contest and sitenextrun<$runnumber", "DBNewRun(update site)");
 	} else {
-		$runnumber = $n;
+	  $runnumber = $a["nextrun"] + 1;
+	  DBExec($c, "update sitetable set sitenextrun=$runnumber" .
+		 " where sitenumber=$site and contestnumber=$contest and sitenextrun<$runnumber", "DBNewRun(update site)");
+	  $runnumber = myunique();
+	  $runinc = $runnumber;
 	}
 	
 	if($rundatediff < 0) {
@@ -752,10 +758,6 @@ function DBNewRun($param,$c=null) {
 	} else {
 		$dif = $rundatediff;
 	}
-
-	if($updatetime > $t || $insert) {
-		DBExec($c, "update sitetable set sitenextrun=$runnumber" .
-			   " where sitenumber=$site and contestnumber=$contest and sitenextrun<$runnumber", "DBNewRun(update site)");
 
 //	LOGError($autostdout);
 		if(substr($autostdout,0,7)=="base64:") {
@@ -815,32 +817,45 @@ function DBNewRun($param,$c=null) {
 			}
 		}
 
-		$n = myunique();
-		$runinc = $n;
-		while(!DBExecNonStop($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
-				     "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
-				     "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
-				     "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
-				     "VALUES ($contest, $site, $n, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
-				     "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
-				     "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
-				     "DBNewRun(insert run)")) {
-		  $n++;
-		  if($n > $runinc + 3) break;
-		}
-		if($n > $runinc + 3) {
-		  DBExec($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
-			 "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
-			 "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
-			 "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
-			 "VALUES ($contest, $site, $n, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
-			 "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
-			 "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
-			 "DBNewRun(insert run)");
+		if($runinc >= $runnumber) {
+		  while(!DBExecNonStop($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
+				       "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
+				       "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
+				       "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
+				       "VALUES ($contest, $site, $runnumber, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
+				       "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
+				       "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
+				       "DBNewRun(insert run)")) {
+		    $runnumber++;
+		    if($runnumber > $runinc + 3) break;
+		  }
+		  if($runnumber > $runinc + 3) {
+		    DBExec($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
+			   "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
+			   "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
+			   "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
+			   "VALUES ($contest, $site, $runnumber, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
+			   "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
+			   "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
+			   "DBNewRun(insert run)");
+		  }
+		} else {
+		  if(!DBExecNonStop($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
+				       "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
+				       "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
+				       "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
+				       "VALUES ($contest, $site, $runnumber, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
+				       "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
+				       "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
+				       "DBNewRun(insert run)")) {
+		    if($cw)
+		      DBExec($c, "commit work", "DBNewRun(commit-error)");
+		    return false;
+		  }
 		}
 		if($cw) {
 			DBExec($c, "commit work", "DBNewRun(commit)");
-			LOGLevel("User $user submitted a run (#$n) on site #$site " .
+			LOGLevel("User $user submitted a run (#$runnumber) on site #$site " .
 					 "(problem=$problem,filename=$filename,lang=$lang,contest=$contest,date=$t,datedif=$dif,oid=$oid).",2);
 		}
 		$ret=2;
@@ -868,7 +883,7 @@ function DBNewRun($param,$c=null) {
    @mkdir("/tmp/boca");
    if (!move_uploaded_file ($filepath,
    "/tmp/boca/contest${contest}.site${site}.run${n}.user${user}.problem${problem}.time${t}.${filename}"))
-   LOGLevel("Run not saved as file (run=$n,site=$site,contest=$contest", 1);
+   LOGLevel("Run not saved as file (run=$runnumber,site=$site,contest=$contest", 1);
 */
 }
 //recebe o numero do contest, o numero do site e o numero do usuario

@@ -296,8 +296,12 @@ function DBNewClar($param,$c=null) {
 			exit;
 		}
 		$a = DBRow($r,0);
-		$n = $a["nextclar"] + 1;
-		$clarnumber = $n;
+		$clarnumber = $a["nextclar"] + 1;
+		DBExec($c, "update sitetable set sitenextclar=$clarnumber" .
+		       " where sitenumber=$site and contestnumber=$contest and sitenextclar<$clarnumber",
+		       "DBNewClar(update site)");
+		$clarnumber = myunique();
+		$clarinc = $clarnumber;
 	} else {
 		$sql = "select * from clartable as t where t.contestnumber=$contest and " .
 			"t.clarsitenumber=$site and t.clarnumber=$clarnumber";
@@ -308,11 +312,8 @@ function DBNewClar($param,$c=null) {
 			$lr = DBRow($r,0);
 			$t = $lr['updatetime'];
 		}
-		$n = $clarnumber;
+		$clarinc = $clarnumber - 1;
 	}
-	DBExec($c, "update sitetable set sitenextclar=$clarnumber" .
-		   " where sitenumber=$site and contestnumber=$contest and sitenextclar<$clarnumber",
-		   "DBNewClar(update site)");
 
 	if($clardatediff < 0) {
 		$b = DBSiteInfo($contest, $site, $c);
@@ -336,25 +337,34 @@ function DBNewClar($param,$c=null) {
 
 	$ret=1;
 	if($insert) {
-	  $n = myunique();
-	  $clarinc = $n;
-	  while(!DBExecNonStop($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
-			   "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
-			   "($contest, $site, $n, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
-			   "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
-			       "DBNewClar(insert clar)")) {
-	    $n++;
-	    if($n > $clarinc + 3) break;
-	  }
-	  if($n > $clarinc + 3) {
-	    DBExec($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
-		   "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
-		   "($contest, $site, $n, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
-		   "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
-		   "DBNewClar(insert clar)");
+	  if($clarinc >= $clarnumber) {
+	    while(!DBExecNonStop($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
+				 "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
+				 "($contest, $site, $clarnumber, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
+				 "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
+				 "DBNewClar(insert clar)")) {
+	      $clarnumber++;
+	      if($clarnumber > $clarinc + 3) break;
+	    }
+	    if($clarnumber > $clarinc + 3) {
+	      DBExec($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
+		     "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
+		     "($contest, $site, $clarnumber, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
+		     "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
+		     "DBNewClar(insert clar)");
+	    }
+	  } else {
+	    if(!DBExecNonStop($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
+				 "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
+				 "($contest, $site, $clarnumber, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
+				 "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
+				 "DBNewClar(insert clar)")) {
+	      if($cw) DBExec($c, "commit work", "DBNewClar(commit-insert-error)");
+	      return false;
+	    }
 	  }
 	  if($cw) DBExec($c, "commit work", "DBNewClar(commit-insert)");
-	  LOGLevel("User $user submitted a clarification (#$n) on site #$site " .
+	  LOGLevel("User $user submitted a clarification (#$clarnumber) on site #$site " .
 		   "(problem=$problem, contest=$contest).",2);
 	  $ret=2;
 	} else {
@@ -377,7 +387,7 @@ function DBNewClar($param,$c=null) {
 		fwrite($fp, $question);
 		fclose($fp);
 	} else
-		 LOGLevel("Clarification not saved as file (clar=$n,site=$site,contest=$contest)", 1);
+		 LOGLevel("Clarification not saved as file (clar=$clarnumber,site=$site,contest=$contest)", 1);
 */
 }
 //pega uma clarification para responder. Recebe o numero da clar, o numero do site e o numero do contest.
