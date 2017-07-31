@@ -216,7 +216,7 @@ function getMainXML() {
     $updatetime=0;
   } else
     $updatetime=trim($sitedata[3]);
-  $ti = time();
+  $ti = mytime();
 
   $siteurl = $sitedata[0];
   LOGError("getMainXML: site $siteurl");
@@ -280,7 +280,8 @@ function getMainXML() {
     }
     if(importFromXML($s, $contest, $localsite)) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
-      $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ct['updatetime']);
+      $ti = 1+$ct['updatetime'];
+      $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ti);
       DBUpdateContest ($param, null);
       return true;
     } else {
@@ -341,7 +342,7 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  $param['contest'] = $contest;
 	  if(count($param) < 2) continue;
 	  unset($param['number']);
-	  LOGError("$key params " .print_r( $param,true));
+	  //	  LOGError("$key params " .print_r( $param,true));
 	  if(!$tomain && $table == "answertable") {
 	    if(($ret=DBNewAnswer ($contest, $param, $conn))) {
 	      if($ret==2) {
