@@ -336,123 +336,118 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	      $param[$p] = $tmp;
 	    }
 	  }
-	}
-      }
-      //		  echo "\nKEY KEY KEY\n";
-      //		  print_r($key);
-      //		  echo "\nVAL VAL VAL\n";
-      //		  print_r($val);
-      //		  echo "\n";
-      //				print_r($param);
-      $param['contestnumber'] = $contest;
-      $param['contest'] = $contest;
-      if(count($param) < 2) continue;
-      unset($param['number']);
-LOGError("$key $val params " .print_r( $param,true));
-      if(!$tomain && $table == "answertable") {
-	if(($ret=DBNewAnswer ($contest, $param, $conn))) {
-	  if($ret==2) {
-	    LOGError("Answer " . $param["answernumber"] . " updated");
+
+	  $param['contestnumber'] = $contest;
+	  $param['contest'] = $contest;
+	  if(count($param) < 2) continue;
+	  unset($param['number']);
+	  LOGError("$key params " .print_r( $param,true));
+	  if(!$tomain && $table == "answertable") {
+	    if(($ret=DBNewAnswer ($contest, $param, $conn))) {
+	      if($ret==2) {
+		LOGError("Answer " . $param["answernumber"] . " updated");
+	      }
+	    }
+	    else {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
 	  }
-	}
-	else {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
-	}
-      }
-      if(!$tomain && $table == "langtable") {
-	if(($ret=DBNewLanguage ($contest,$param, $conn))) {
-	  if($ret==2) {
-	    LOGError("Language " . $param['langnumber'] ." updated");
+	  if(!$tomain && $table == "langtable") {
+	    if(($ret=DBNewLanguage ($contest,$param, $conn))) {
+	      if($ret==2) {
+		LOGError("Language " . $param['langnumber'] ." updated");
+	      }
+	    }
+	    else {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
 	  }
-	}
-	else {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
-	}
-      }
-      if(!$tomain && $table == "problemtable") {
-	if(($ret=DBNewProblem ($contest,$param, $conn))) {
-	  if($ret==2)
-	    LOGError("Problem " . $param['problemnumber'] ." updated");
-	}
-	else {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
-	}
-      }
-      if(isset($param['usersitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['usersitenumber'];              
-      if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) continue;
-      
-      if($tomain && $table == "sitetable") {
-	if(!DBNewSite($contest, $conn, $param)) {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
-	}
-	if(($ret=DBUpdateSite($param, $conn))) {
-	  if($ret==2) {
-	    LOGError("Site " . $param["sitenumber"] . " updated");
+	  if(!$tomain && $table == "problemtable") {
+	    if(($ret=DBNewProblem ($contest,$param, $conn))) {
+	      if($ret==2)
+		LOGError("Problem " . $param['problemnumber'] ." updated");
+	    }
+	    else {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
 	  }
-	} else {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
+	  if(isset($param['usersitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['usersitenumber'];              
+	  if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) continue;
+	  
+	  if($tomain && $table == "sitetable") {
+	    if(!DBNewSite($contest, $conn, $param)) {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
+	    if(($ret=DBUpdateSite($param, $conn))) {
+	      if($ret==2) {
+		LOGError("Site " . $param["sitenumber"] . " updated");
+	      }
+	    } else {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
 	  }
-      }
-      if($tomain && $table == "sitetimetable") {
-	if(!DBUpdateSiteTime($contest, $param, $firsttimetime, $conn)) {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
-	}
-	$firsttimetime=false;
-      }
-      if($table == "usertable") {
-	if(($ret=DBNewUser($param, $conn))) {
-	  if($ret==2) {
-	    LOGError("User " . $param["usernumber"]."/".$param['sitenumber']. " updated");
+	  if($tomain && $table == "sitetimetable") {
+	    if(!DBUpdateSiteTime($contest, $param, $firsttimetime, $conn)) {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
+	    $firsttimetime=false;
 	  }
-	} else {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
-	}
-      }
-      if($table == "tasktable") {
-	if(($ret=DBNewTask ($param, $conn))) {
-	  if($ret==2)
-	    LOGError("Task " . $param['tasknumber']."/".$param['sitenumber']." updated");
-	}
-	else {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
-	}
-      }
-      if($table == "clartable") {
-	if(($ret=DBNewClar ($param, $conn))) {
-	  if($ret==2)
-	    LOGError("Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated");
-	}
-	else {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
-	}
-      }
-      if($table == "runtable") {
-	if(($ret=DBNewRun ($param, $conn))) {
-	  if($ret==2)
-	    LOGError("Run " . $param['runnumber'] ."/".$param['sitenumber']." updated");
-	}
-	else {
-	  if($conn != null)
-	    DBExec($conn,"rollback work");
-	  return false;
+	  if($table == "usertable") {
+	    if(($ret=DBNewUser($param, $conn))) {
+	      if($ret==2) {
+		LOGError("User " . $param["usernumber"]."/".$param['sitenumber']. " updated");
+	      }
+	    } else {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
+	  }
+	  if($table == "tasktable") {
+	    if(($ret=DBNewTask ($param, $conn))) {
+	      if($ret==2)
+		LOGError("Task " . $param['tasknumber']."/".$param['sitenumber']." updated");
+	    }
+	    else {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
+	  }
+	  if($table == "clartable") {
+	    if(($ret=DBNewClar ($param, $conn))) {
+	      if($ret==2)
+		LOGError("Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated");
+	    }
+	    else {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
+	  }
+	  if($table == "runtable") {
+	    if(($ret=DBNewRun ($param, $conn))) {
+	      if($ret==2)
+		LOGError("Run " . $param['runnumber'] ."/".$param['sitenumber']." updated");
+	    }
+	    else {
+	      if($conn != null)
+		DBExec($conn,"rollback work");
+	      return false;
+	    }
+	  }
 	}
       }
     }
