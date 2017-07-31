@@ -273,7 +273,7 @@ function getMainXML() {
       LOGError("xmltransfer: failed (" . $s . ")");
 
     $s = substr($s, strpos($s, "\n") + 1);
-    LOGError("string: " . substr($s,0,50));
+    //    LOGError("string: " . substr($s,0,50));
     $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       return false;

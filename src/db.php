@@ -81,6 +81,13 @@ function DB_lo_import($conn, $file) {
 	else
 		return pg_lo_import ($conn, $file);
 }
+function DB_lo_import_text($conn, $text) {
+  $oid = DB_lo_create($conn);
+  $handle = DB_lo_open($conn, $oid, "w");
+  DB_lo_write($handle, "large object data");
+  DB_lo_close($handle);
+}
+
 function DB_lo_export($contest, $conn, $oid, $file) {
 	if (strcmp(phpversion(),'4.2.0')<0)
 		$stat= pg_loexport ($oid, $file, $conn);
