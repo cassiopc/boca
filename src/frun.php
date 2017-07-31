@@ -618,10 +618,8 @@ function DBNewRun($param,$c=null) {
 	if(isset($param['number']) && !isset($param['runnumber'])) $param['runnumber']=$param['number'];
 	if(isset($param['runlangnumber']) && !isset($param['lang'])) $param['lang']=$param['runlangnumber'];
 	if(isset($param['runproblem']) && !isset($param['problem'])) $param['problem']=$param['runproblem'];
-
 	if(isset($param['runfilename']) && !isset($param['filename'])) $param['filename']=$param['runfilename'];
 	if(isset($param['rundata']) && !isset($param['filepath'])) $param['filepath']=$param['rundata'];
-	if(isset($param['runlangnumber']) && !isset($param['lang'])) $param['lang']=$param['runlangnumber'];	
 
 	$ac=array('contest','site','user','problem','lang','filename','filepath');
 	$ac1=array('runnumber','rundate','rundatediff','rundatediffans','runanswer','runstatus','runjudge','runjudgesite',
