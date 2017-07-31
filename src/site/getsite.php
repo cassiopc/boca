@@ -32,7 +32,7 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	if($fromsite != '' && is_numeric($fromsite) && $fromsite > 0) {
 	  if(isset($_POST)) {
 	    if(isset($_POST['xml'])) {
-	      $u = DBUserInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["sitenumber"], $_SESSION["usertable"]["usernumber"],null,false);
+	      $u = DBUserInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"], $_SESSION["usertable"]["usernumber"],null,false);
 	      //		$fp=fopen('/tmp/aaa',"w"); fwrite($fp,$_POST['xml']); fclose($fp);
 	      $s = decryptData(rawurldecode($_POST['xml']),$u["userpassword"],'xml from local not ok');
 	      //		$fp=fopen('/tmp/aaa1',"w"); fwrite($fp,$s); fclose($fp);

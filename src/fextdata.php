@@ -287,6 +287,7 @@ function getMainXML() {
 }
 
 function importFromXML($ar,$contest,$site,$tomain=false) {
+  LOGError("importFromXML: contest $contest site $site tomain $tomain");
   $data = implode("",explode("\n",$ar));
   $parser = xml_parser_create();
   xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 1);
@@ -463,7 +464,7 @@ function genSQLs($contest, $site, $updatetime) {
 function generateSiteXML($contest,$site,$updatetime) {
   $sql = genSQLs($contest, $site, $updatetime);
   $c = DBConnect();
-  $str = "";
+  $str = "<XML>\n";
   if ($c==null) return null;
   DBExec($c, "begin work");
   foreach($sql as $kk => $vv) {
@@ -485,8 +486,8 @@ function generateSiteXML($contest,$site,$updatetime) {
 	      } else {
 		$str .= "  <" . $key . ">" . $val . "</" . $key . ">\n";
 	      }
-	      $str .= "</" . $kk . ">\n";
 	    }
+	    $str .= "</" . $kk . ">\n";
 	  }
 	}
 	$str .= "</XML>\n";
