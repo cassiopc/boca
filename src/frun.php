@@ -728,9 +728,6 @@ function DBNewRun($param,$c=null) {
 				$oid2 = $lr['autostderr'];
 		}
 		$runinc = $runnumber - 1;
-		//		if($updatetime > $t) {
-		//DBExec($c, "update sitetable set sitenextrun=$runnumber" .
-		//	 " where sitenumber=$site and contestnumber=$contest and sitenextrun<$runnumber", "DBNewRun(update site)");
 	} else {
 	  $runnumber = $a["nextrun"] + 1;
 	  DBExec($c, "update sitetable set sitenextrun=$runnumber" .
@@ -758,6 +755,8 @@ function DBNewRun($param,$c=null) {
 	} else {
 		$dif = $rundatediff;
 	}
+
+	if($updatetime > $t || $insert) {
 
 //	LOGError($autostdout);
 		if(substr($autostdout,0,7)=="base64:") {
