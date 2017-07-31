@@ -22,7 +22,7 @@ header ("Content-transfer-encoding: binary\n");
 ob_end_flush();
 
 if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null) {
-	echo "<!-- <ERROR4> ".session_id() . " " . session_id() . " -->\n";
+	echo "<!-- <ERROR4> ".session_id() . " -->\n";
 	exit;
 }
 if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
@@ -40,9 +40,9 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 		echo "<!-- <ERROR8> ".session_id() . " -->\n";
 	      } else {
 		if(importFromXML($s,$_SESSION["usertable"]["contestnumber"],$fromsite,true))
-		  echo "<!-- <OK> -->";
+		  echo "<!-- <OK> -->\n";
 		else
-		  echo "<!-- <NOTOK> -->";
+		  echo "<!-- <NOTOK> -->\n";
 	      }
 	    }
 	    if(isset($_POST['updatetime']) && is_numeric($_POST['updatetime'])) {
@@ -50,10 +50,10 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	      echo encryptData($xml,$u["userpassword"]);
 	    }
 	  } else { 
-	    echo "<!-- <ERROR3> ".session_id() . " " . session_id() . " -->\n";
+	    echo "<!-- <ERROR3> ".session_id() . " -->\n";
 	  }
 	} else {
-	  echo "<!-- <ERROR9> ".session_id() . " " . session_id() . " -->\n";
+	  echo "<!-- <ERROR9> ".session_id() . " -->\n";
 	  exit;
 	}
 }
