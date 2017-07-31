@@ -95,10 +95,9 @@ function DBDeleteAnswer($contest,$param,$c=null) {
 function DBNewAnswer($contest, $param, $c=null) {
 	if(isset($param["action"]) && $param["action"]=="delete") {
 		return DBDeleteAnswer($contestnumber, $param, $c);
-	}
-	
-	if(isset($ac['answernumber']) && !isset($ac['number'])) $ac['number']=$ac['answernumber'];
-	if(isset($ac['runanswer']) && !isset($ac['name'])) $ac['name']=$ac['runanswer'];
+	}	
+	if(isset($param['answernumber']) && !isset($param['number'])) $param['number']=$param['answernumber'];
+	if(isset($param['runanswer']) && !isset($param['name'])) $param['name']=$param['runanswer'];
 	
 	$ac=array('number','name','yes');
 	$type['number']=1;

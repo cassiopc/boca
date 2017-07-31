@@ -281,15 +281,14 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 		return DBDeleteProblem($contestnumber, $param);
 	}
 
-	if(isset($ac['problemnumber']) && !isset($ac['number'])) $ac['number']=$ac['problemnumber'];
-	if(isset($ac['problemname']) && !isset($ac['name'])) $ac['name']=$ac['problemname'];
-	if(isset($ac['problemfullname']) && !isset($ac['fullname'])) $ac['fullname']=$ac['problemfullname'];
-	if(isset($ac['problembasefilename']) && !isset($ac['basename'])) $ac['basename']=$ac['problembasefilename'];
-	if(isset($ac['problemcolorname']) && !isset($ac['colorname'])) $ac['colorname']=$ac['problemcolorname'];
-	if(isset($ac['problemcolor']) && !isset($ac['color'])) $ac['color']=$ac['problemcolor'];
-	if(isset($ac['probleminputfile']) && !isset($ac['inputfilepath'])) $ac['inputfilepath']=$ac['probleminputfile'];
-	if(isset($ac['probleminputfilename']) && !isset($ac['inputfilename'])) $ac['inputfilename']=$ac['probleminputfilename'];
-
+	if(isset($param['problemnumber']) && !isset($param['number'])) $param['number']=$param['problemnumber'];
+	if(isset($param['problemname']) && !isset($param['name'])) $param['name']=$param['problemname'];
+	if(isset($param['problemfullname']) && !isset($param['fullname'])) $param['fullname']=$param['problemfullname'];
+	if(isset($param['problembasefilename']) && !isset($param['basename'])) $param['basename']=$param['problembasefilename'];
+	if(isset($param['problemcolorname']) && !isset($param['colorname'])) $param['colorname']=$param['problemcolorname'];
+	if(isset($param['problemcolor']) && !isset($param['color'])) $param['color']=$param['problemcolor'];
+	if(isset($param['probleminputfile']) && !isset($param['inputfilepath'])) $param['inputfilepath']=$param['probleminputfile'];
+	if(isset($param['probleminputfilename']) && !isset($param['inputfilename'])) $param['inputfilename']=$param['probleminputfilename'];
 	
 	$ac=array('number','name');
 	$type['number']=1;

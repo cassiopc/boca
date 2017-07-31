@@ -98,9 +98,9 @@ function DBNewLanguage($contestnumber, $param, $c=null) {
 		return DBDeleteLanguage($contestnumber, $param, $c);
 	}
 
-	if(isset($ac['langnumber']) && !isset($ac['number'])) $ac['number']=$ac['langnumber'];
-	if(isset($ac['langname']) && !isset($ac['name'])) $ac['name']=$ac['langname'];
-	if(isset($ac['langextension']) && !isset($ac['extension'])) $ac['extension']=$ac['langextension'];
+	if(isset($param['langnumber']) && !isset($param['number'])) $param['number']=$param['langnumber'];
+	if(isset($param['langname']) && !isset($param['name'])) $param['name']=$param['langname'];
+	if(isset($param['langextension']) && !isset($param['extension'])) $param['extension']=$param['langextension'];
 	
 	$ac=array('number','name');
 	$ac1=array('updatetime','extension');
