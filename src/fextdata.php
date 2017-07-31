@@ -334,7 +334,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	    $p  = strtolower($values[$i]["tag"]);
 	    if($values[$i]["type"]=="complete" && isset($values[$i]["value"])) {
 	      //	      $tmp = sanitizeText(base64_decode(trim(implode('',explode('\n',$values[$i]["value"])))),false);
-	      $tmp = base64_decode($values[$i]["value"]);
+	      $tmp = base64_decode(trim(implode('',explode('\n',$values[$i]["value"]))));
 	      $param[$p] = $tmp;
 	    }
 	  }
@@ -525,7 +525,7 @@ function generateSiteXML($contest,$site,$updatetime) {
 	    foreach($atual as $key => $val) {
 	      if($meta[$key]['type'] == 'oid' && $val != '') {
 		if (($lo = DB_lo_open ($c, $val, "r")) !== false) {
-		  $str .= "  <" . $key . ">base64:" . base64_encode(DB_lo_read($contest,$lo)) . "</" . $key . ">\n";
+		  $str .= "  <" . $key . ">" . base64_encode("base64:" . base64_encode(DB_lo_read($contest,$lo))) . "</" . $key . ">\n";
 		  DB_lo_close($lo);
 		} else {
 		  LOGError("large object ($key,$val) not readable");
