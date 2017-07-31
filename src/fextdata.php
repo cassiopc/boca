@@ -278,11 +278,14 @@ function getMainXML() {
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       return false;
     }
-    importFromXML($s, $contest, $localsite);
-    $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
-    $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ct['updatetime']);
-    DBUpdateContest ($param, $c);
-    return true;
+    if(importFromXML($s, $contest, $localsite)) {
+      $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
+      $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ct['updatetime']);
+      DBUpdateContest ($param, null);
+      return true;
+    } else {
+      LOGError("error importing xml");
+    }
   } else {
     LOGError("xmltransfer: failed (" . $ok . ")");
   }
@@ -345,7 +348,7 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
       $param['contest'] = $contest;
       if(count($param) < 2) continue;
       unset($param['number']);
-
+LOGError("$key $val params " .print_r( $param,true));
       if(!$tomain && $table == "answertable") {
 	if(($ret=DBNewAnswer ($contest, $param, $conn))) {
 	  if($ret==2) {
