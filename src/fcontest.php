@@ -547,6 +547,37 @@ function DBSiteDeleteAllRuns ($contest, $site, $user, $usersite,$c=null) {
 	}
 	return true;
 }
+function DBUpdateSiteTime($contest,$param,$dodelete=false,$c=null) {
+  $ac=array('sitenumber','sitestartdate','siteenddate','updatetime');
+  $type['sitenumber']=1;
+  $type['updatetime']=1;
+  $type['sitestartdate']=1;
+  $type['siteenddate']=1;
+  foreach($ac as $key) {
+    if(!isset($param[$key])) {
+      LOGError("DBUpdateSiteTime param error: $key is not set");
+      return false;
+    }
+    $$key = sanitizeText($param[$key]);
+    if(isset($type[$key]) && !is_numeric($param[$key])) {
+      LOGError("DBUpdateSiteTime param error: $key is not numeric");
+      return false;
+    }
+  }
+  if($c==null) {
+    $c = DBConnect();
+    DBExec($c, "begin work", "DBUpdateSiteTime(begin)");
+    $docommit=true;
+  }
+  if($dodelete)
+    DBExec($c, "delete from sitetimetable where contestnumber=$contest and sitenumber=$sitenumber", "DBUpdateSiteTime(delete)");
+  DBExec($c, "insert into sitetimetable (contestnumber, sitenumber, sitestartdate, siteenddate, updatetime) ".
+	 "values ($contest,$sitenumber,$sitestartdate,$siteenddate,$updatetime)", "DBRenewSiteTime(insert)"); 
+  if($docommit) 	
+    DBExec($c, "commit work", "DBUpdateSiteTime(commit-noupdate)");
+  return true;
+}
+	
 function DBUpdateSite ($param,$c=null) {
 	$ac=array('contestnumber','sitenumber','sitename','sitepermitlogins','sitescorelevel');
 	$ac1=array('updatetime','siteautoend','siteglobalscore','siteip','siteactive','siteduration','sitelastmileanswer','sitelastmilescore',

@@ -271,25 +271,28 @@ function getMainXML() {
       LOGError("xmltransfer: OK");
     else
       LOGError("xmltransfer: failed (" . $s . ")");
+
+    $s = substr($s, strpos($s, "\n") + 1);
+    LOGError("string: " . substr($s,0,50));
+    $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
+    if(strtoupper(substr($s,0,5)) != "<XML>") {
+      return false;
+    }
+    importFromXML($s, $contest, $localsite);
+    $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
+    $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ct['updatetime']);
+    DBUpdateContest ($param, $c);
+    return true;
   } else {
     LOGError("xmltransfer: failed (" . $ok . ")");
   }
-    
-  $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
-  if(strtoupper(substr($s,0,5)) != "<XML>") {
-    return false;
-  }
-  importFromXML($s, $contest, $localsite);
-  $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
-  $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ct['updatetime']);
-  DBUpdateContest ($param, $c);
-  return true;
+  return false;
 }
 
 function importFromXML($ar,$contest,$site,$tomain=false) {
   LOGError("importFromXML: contest $contest site $site tomain $tomain");
   $data = implode("",explode("\n",$ar));
-  $parser = xml_parser_create();
+  $parser = xml_parser_create('');
   xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 1);
   xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
   xml_parse_into_struct($parser, $data, $values, $tags);
@@ -302,7 +305,7 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 //	DBExec($conn,"lock","importFromXML(lock)");
   $r = DBExec($conn, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
-    echo "Unable to find the contest $contest in the database.\n";
+    LOGError("importFromXML: Unable to find the contest $contest in the database.");
     //    DBExec($conn,"rollback work");
     return false;
   }
@@ -310,14 +313,14 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 
   DBClose($conn); 
   $conn=null;
-
-  $tables = array('answertable','langtable','problemtable','sitetable','usertable','clartable','runtable','tasktable');
+  $firsttimetime=true;
+  $tables = array('answertable','langtable','problemtable','sitetable','sitetimetable','usertable','clartable','runtable','tasktable');
 
   foreach($tables as $table) {
     foreach($tags as $key=>$val) {
       if($values[$val[0]]['type'] != 'open') continue;
       if($key == "XML") continue;
-      if($key != $table) continue;
+      if($key != strtoupper($table)) continue;
 
       foreach($val as $k=>$v) {
 	if($values[$v]['type'] != 'open') continue;
@@ -339,13 +342,14 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
       //		  echo "\n";
       //				print_r($param);
       $param['contestnumber'] = $contest;
+      $param['contest'] = $contest;
       if(count($param) < 2) continue;
       unset($param['number']);
 
-      if(!$tomain && $key == "answertable") {
+      if(!$tomain && $table == "answertable") {
 	if(($ret=DBNewAnswer ($contest, $param, $conn))) {
 	  if($ret==2) {
-	    echo "Answer " . $param["answernumber"] . " updated<br>";
+	    LOGError("Answer " . $param["answernumber"] . " updated");
 	  }
 	}
 	else {
@@ -354,10 +358,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  return false;
 	}
       }
-      if(!$tomain && $key == "langtable") {
+      if(!$tomain && $table == "langtable") {
 	if(($ret=DBNewLanguage ($contest,$param, $conn))) {
 	  if($ret==2) {
-	    echo "Language " . $param['langnumber'] ." updated<br>";
+	    LOGError("Language " . $param['langnumber'] ." updated");
 	  }
 	}
 	else {
@@ -366,10 +370,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  return false;
 	}
       }
-      if(!$tomain && $key == "problemtable") {
+      if(!$tomain && $table == "problemtable") {
 	if(($ret=DBNewProblem ($contest,$param, $conn))) {
 	  if($ret==2)
-	    echo "Problem " . $param['problemnumber'] ." updated<br>";
+	    LOGError("Problem " . $param['problemnumber'] ." updated");
 	}
 	else {
 	  if($conn != null)
@@ -377,10 +381,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  return false;
 	}
       }
-      
+      if(isset($param['usersitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['usersitenumber'];              
       if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) continue;
       
-      if($tomain && $key == "sitetable") {
+      if($tomain && $table == "sitetable") {
 	if(!DBNewSite($contest, $conn, $param)) {
 	  if($conn != null)
 	    DBExec($conn,"rollback work");
@@ -388,7 +392,7 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	}
 	if(($ret=DBUpdateSite($param, $conn))) {
 	  if($ret==2) {
-	    echo "Site " . $param["sitenumber"] . " updated<br>";
+	    LOGError("Site " . $param["sitenumber"] . " updated");
 	  }
 	} else {
 	  if($conn != null)
@@ -396,10 +400,18 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  return false;
 	  }
       }
-      if($key == "usertable") {
+      if($tomain && $table == "sitetimetable") {
+	if(!DBUpdateSiteTime($contest, $param, $firsttimetime, $conn)) {
+	  if($conn != null)
+	    DBExec($conn,"rollback work");
+	  return false;
+	}
+	$firsttimetime=false;
+      }
+      if($table == "usertable") {
 	if(($ret=DBNewUser($param, $conn))) {
 	  if($ret==2) {
-	    echo "User " . $param["usernumber"]."/".$param['sitenumber']. " updated<br>";
+	    LOGError("User " . $param["usernumber"]."/".$param['sitenumber']. " updated");
 	  }
 	} else {
 	  if($conn != null)
@@ -407,10 +419,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  return false;
 	}
       }
-      if($key == "tasktable") {
+      if($table == "tasktable") {
 	if(($ret=DBNewTask ($param, $conn))) {
 	  if($ret==2)
-	    echo "Task " . $param['tasknumber']."/".$param['sitenumber']." updated<br>";
+	    LOGError("Task " . $param['tasknumber']."/".$param['sitenumber']." updated");
 	}
 	else {
 	  if($conn != null)
@@ -418,10 +430,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  return false;
 	}
       }
-      if($key == "clartable") {
+      if($table == "clartable") {
 	if(($ret=DBNewClar ($param, $conn))) {
 	  if($ret==2)
-	    echo "Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated<br>";
+	    LOGError("Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated");
 	}
 	else {
 	  if($conn != null)
@@ -429,10 +441,10 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	  return false;
 	}
       }
-      if($key == "runtable") {
+      if($table == "runtable") {
 	if(($ret=DBNewRun ($param, $conn))) {
 	  if($ret==2)
-	    echo "Run " . $param['runnumber'] ."/".$param['sitenumber']." updated<br>";
+	    LOGError("Run " . $param['runnumber'] ."/".$param['sitenumber']." updated");
 	}
 	else {
 	  if($conn != null)
@@ -453,7 +465,7 @@ function genSQLs($contest, $site, $updatetime) {
   $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
   $sql['langtable']="select * from langtable where contestnumber=$contest and updatetime >= $updatetime";
   $sql['problemtable']="select * from problemtable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
-  //  $sql['sitetimetable']="select * from sitetimetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
+  $sql['sitetimetable']="select * from sitetimetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   $sql['usertable']="select * from usertable where contestnumber=$contest and usersitenumber=$site and updatetime >= $updatetime";
   $sql['clartable']="select * from clartable where contestnumber=$contest and clarsitenumber=$site and updatetime >= $updatetime";
   $sql['runtable']="select * from runtable where contestnumber=$contest and runsitenumber=$site and updatetime >= $updatetime";
