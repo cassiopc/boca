@@ -402,6 +402,8 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 	      if($conn != null)
 		DBExec($conn,"rollback work");
 	      return false;
+	    } else {
+	      LOGError("SiteTime updated");
 	    }
 	    $firsttimetime=false;
 	  }
