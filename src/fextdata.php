@@ -218,7 +218,7 @@ function getMainXML() {
     $updatetime=trim($sitedata[3]);
 
   $siteurl = $sitedata[0];
-  LOGError("getMainXML: site $siteurl");
+  LOGInfo("getMainXML: site $siteurl");
   if(substr($siteurl,0,7) != 'http://')
     $siteurl = 'http://' . $siteurl;
   $urldiv='/';
@@ -268,7 +268,7 @@ function getMainXML() {
     $context = stream_context_create($opts);
     $s = @file_get_contents($siteurl . $urldiv . "site/getsite.php", 0, $context);
     if(strpos($s,'<OK>') !== false)
-      LOGError("xmltransfer: OK");
+      LOGInfo("xmltransfer: OK");
     else
       LOGError("xmltransfer: failed (" . $s . ")");
 
@@ -278,7 +278,7 @@ function getMainXML() {
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       return false;
     }
-    if(importFromXML($s, $contest, $localsite, 1+$ct['updatetime'])) {
+    if(importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime'])) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
       $ti = 2+$ct['updatetime'];
       $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ti);
@@ -534,7 +534,7 @@ function generateSiteXML($contest,$site,$updatetime) {
 	}
 	$str .= "</XML>\n";
 	DBExec($c,"commit work","generateXML(commit)");
-	LOGError("xml data generated for contest $contest site $site at time $updatetime");
+	LOGInfo("xml data generated for contest $contest site $site at time $updatetime");
 	return $str;
 }
 
