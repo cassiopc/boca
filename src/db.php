@@ -82,10 +82,11 @@ function DB_lo_import($conn, $file) {
 		return pg_lo_import ($conn, $file);
 }
 function DB_lo_import_text($conn, $text) {
-  $oid = DB_lo_create($conn);
-  $handle = DB_lo_open($conn, $oid, "w");
-  DB_lo_write($handle, "large object data");
+  if(($oid = DB_lo_create($conn))===false) return false;
+  if(($handle = DB_lo_open($conn, $oid, "w"))===false) return false;
+  if(DB_lo_write($handle, "large object data")===false) $oid=false;
   DB_lo_close($handle);
+  return $oid;
 }
 
 function DB_lo_export($contest, $conn, $oid, $file) {
