@@ -733,7 +733,7 @@ function DBUpdateContest ($param, $c=null) {
   if(isset($param['contestlastmilescore']) && !isset($param['lastmilescore'])) $param['lastmilescore']=$param['contestlastmilescore'];
   if(isset($param['contestpenalty']) && !isset($param['penalty'])) $param['penalty']=$param['contestpenalty'];
   if(isset($param['contestmaxfilesize']) && !isset($param['maxfilesize'])) $param['maxfilesize']=$param['contestmaxfilesize'];
-  if(isset($param['contestactive']) && !isset($param['active'])) $param['active']=$param['contestactive'];
+  //  if(isset($param['contestactive']) && !isset($param['active'])) $param['active']=$param['contestactive'];
   if(isset($param['contestmainsite']) && !isset($param['mainsite'])) $param['mainsite']=$param['contestmainsite'];
   if(isset($param['contestkeys']) && !isset($param['keys'])) $param['keys']=$param['contestkeys'];
 

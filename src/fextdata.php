@@ -216,7 +216,6 @@ function getMainXML() {
     $updatetime=0;
   } else
     $updatetime=trim($sitedata[3]);
-  $ti = mytime();
 
   $siteurl = $sitedata[0];
   LOGError("getMainXML: site $siteurl");
@@ -244,6 +243,7 @@ function getMainXML() {
   
   $context = stream_context_create($opts);
   $ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
+  $ti = mytime();
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
 
@@ -280,8 +280,7 @@ function getMainXML() {
     }
     if(importFromXML($s, $contest, $localsite)) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
-      $ti = 1+$ct['updatetime'];
-      $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ti);
+      $param = array('contestnumber' => $contest, 'mainsiteurl' => $str);
       DBUpdateContest ($param, null);
       return true;
     } else {
@@ -488,7 +487,7 @@ function importFromXML($ar,$contest,$site,$tomain=false) {
 function genSQLs($contest, $site, $updatetime) {
   $sql = array();
   $sql['contesttable']="select contestnumber, contestname, conteststartdate, contestduration, contestlastmileanswer," .
-    "contestlastmilescore, contestpenalty, contestmaxfilesize, contestactive, contestmainsite, contestkeys " .
+    "contestlastmilescore, contestpenalty, contestmaxfilesize, contestmainsite, contestkeys " .
     "from contesttable where contestnumber=$contest"; // and updatetime >= $updatetime";
   $sql['sitetable']="select * from sitetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
