@@ -210,6 +210,11 @@ echo $contest;
           <input type="text" name="mainsiteurl" value="<?php echo $ct["contestmainsiteurl"]; ?>" size="40" maxlength="200" />
         </td>
       </tr>
+<?php
+  $exd = explode(' ',$ct["contestmainsiteurl"]);
+  if(count($exd) >= 4 && is_numeric($exd[3]) && $exd[3] > 0)
+    echo "<tr><td width=\"35%\" align=right>Last update from mainsite:</td><td width=\"65%\">" . dateconv($exd[3]) . "</td></tr>\n";
+?>
       <tr>
 							<td width="35%" align=right>Unlock password (only use it within a <b>secure network</b>):</td>
         <td width="65%">
