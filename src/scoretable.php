@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 02/sep/2013 by cassio@ime.usp.br
+//Last updated 31/jul/2017 by cassio@ime.usp.br
 require_once("db.php");
 
 if(isset($_SESSION["locr"]))

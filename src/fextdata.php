@@ -63,7 +63,10 @@ $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
 		if(substr($siteurl,strlen($siteurl)-1,1) == '/')
 			$urldiv = '';
 //		LOGError("url=" .$siteurl . $urldiv . "index.php?getsessionid=1");
-		$sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1");
+		$opts = array();
+		$opts['http']['timeout'] = 5;
+		$context = stream_context_create($opts);		  
+		$sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1", 0, $context);
 //		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
 		$user = trim($sitedata[1]);
 		$res = myhash( myhash (trim($sitedata[2])) . $sess);
@@ -79,9 +82,8 @@ $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
 			$opts['http']['proxy'] = $bocaproxy;
 		if($bocaproxypass != "")
 			$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-
+		$opts['http']['timeout'] = 5;
 		$context = stream_context_create($opts);
-
 
 		$ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
 //		LOGError("ok=" . $ok);
@@ -134,7 +136,7 @@ $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
 				$opts['http']['proxy'] = $bocaproxy;
 			if($bocaproxypass != "")
 				$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-
+			$opts['http']['timeout'] = 5;
 			$context = stream_context_create($opts);
 			$s = @file_get_contents($siteurl . $urldiv . "site/putfile.php", 0, $context);
 			if(strpos($s,'SCORE UPLOADED OK') !== false)
@@ -159,7 +161,7 @@ $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
                                 $opts['http']['proxy'] = $bocaproxy;
                         if($bocaproxypass != "")
                                 $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-
+			$opts['http']['timeout'] = 5;
                         $context = stream_context_create($opts);
                         $s = @file_get_contents($siteurl . $urldiv . "site/putfilesuper.php", 0, $context);
                         if(strpos($s,'SCORE UPLOADED OK') !== false)
@@ -225,7 +227,10 @@ function getMainXML() {
   if(substr($siteurl,strlen($siteurl)-1,1) == '/')
     $urldiv = '';
   //		LOGError("url=" .$siteurl . $urldiv . "index.php?getsessionid=1");
-  $sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1");
+  $opts = array();
+  $opts['http']['timeout'] = 5;
+  $context = stream_context_create($opts);		  
+  $sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1", 0, $context);
   //		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
   $user = trim($sitedata[1]);
   $res = myhash( myhash (trim($sitedata[2])) . $sess);
@@ -240,7 +245,7 @@ function getMainXML() {
     $opts['http']['proxy'] = $bocaproxy;
   if($bocaproxypass != "")
     $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-  
+  $opts['http']['timeout'] = 5;  
   $context = stream_context_create($opts);
   $ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
   $ti = mytime();
@@ -264,7 +269,7 @@ function getMainXML() {
       $opts['http']['proxy'] = $bocaproxy;
     if($bocaproxypass != "")
       $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-
+    $opts['http']['timeout'] = 5;
     $context = stream_context_create($opts);
     $s = @file_get_contents($siteurl . $urldiv . "site/getsite.php", 0, $context);
     if(strpos($s,'<OK>') !== false)
