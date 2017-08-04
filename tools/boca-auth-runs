@@ -10,9 +10,13 @@ if [ "$BOCASERVER" == "" ]; then
 fi
 user="$1"
 if [ "$user" == "" ]; then
-  echo "parameter user missing"
+  echo "parameter user missing. Usage: $0 <user> [<optional-server-address>]"
   exit 1
 fi
+if [ "$2" != "" ]; then
+    BOCASERVER=$2
+fi
+echo "Server at $BOCASERVER"
 read -s -p "Password: " pass
 
 for i in wget sha256sum cut; do
