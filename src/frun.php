@@ -481,7 +481,7 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 
 	$b = DBSiteInfo($contest, $site, $c);
 
-	if($b["siteautojudge"]!="t") {
+	if($b["siteautojudge"]!="t") { // && $retval != 1 && $retval != 6) { //cassiopc incluir automatic judging of some codes 1:YES WA:6
 		DBExec($c, "commit work", "DBUpdateRunAutojudging(commit)");
 		LOGLevel("Autojudging answered a run (run=$number, site=$site, contest=$contest, answer='$answer', retval=$retval)", 3);
 		return true;
@@ -753,7 +753,14 @@ function DBNewRun($param,$c=null) {
 			return 0;
 		}
 	} else {
+		$b = DBSiteInfo($contest, $site, $c);
 		$dif = $rundatediff;
+                if ($dif >= $b['siteduration']) {
+                        DBExec($c, "rollback work", "DBNewRun(rollback-over)");
+                        LOGError("Tried to submit a run but the contest is over. SQL=(" . $sql . ")");
+                        MSGError("The contest is over!");
+                        return 0;
+                }
 	}
 
 	if($updatetime > $t || $insert) {

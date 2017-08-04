@@ -65,7 +65,8 @@ if (isset($_GET["done"]) && is_numeric($_GET["done"]) && isset($_GET["site"]) &&
 if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
         ForceLoad("../index.php");
 
-$task = DBOpenTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"]);
+//$task = DBOpenTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"]);
+$task = DBAllTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"], 'task');
 
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
@@ -78,7 +79,7 @@ if(is_readable($_SESSION["locr"] . $ds . 'private' . $ds . 'score.sep')) {
 		if(isset($lin[1]) && $_SESSION["usertable"]["usertype"]!='admin') {
 			$arr=explode(' ',trim($lin[1]));
 			for($arri=0;$arri<count($arr);$arri++)
-				if(preg_match($arr[$arri],$_SESSION["usertable"]["username"])) break;
+				if($arr[$arri] != '' && preg_match($arr[$arri],$_SESSION["usertable"]["username"])) break;
 			if($arri>=count($arr)) continue;
 		}
 		$lin = trim($lin[0]);

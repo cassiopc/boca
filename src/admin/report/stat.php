@@ -300,7 +300,7 @@ while (list($keya, $val) = each($d['timestamp'])) {
 $str="Runs by Time Period" . chr(1) . $m;
 $atual=0;
 for($pos=0; $pos<$vezes; $pos++) {
-  if($res[$pos]=="") $res[$pos] = 0;
+  if(!isset($res[$pos]) || $res[$pos]=="") $res[$pos] = 0;
   $q = (int) ($atual/60);
   $atual += $passo;
   $qq = (int) ($atual/60);
@@ -330,7 +330,7 @@ while (list($keya, $val) = each($d['timestampyes'])) {
 $str="Accepted Runs by Time Period" . chr(1) . $m;
 $atual=0;
 for($pos=0; $pos<$vezes; $pos++) {
-  if($res[$pos]=="") $res[$pos] = 0;
+  if(!isset($res[$pos]) || $res[$pos]=="") $res[$pos] = 0;
   $q = (int) ($atual/60);
   $atual += $passo;
   $qq = (int) ($atual/60);

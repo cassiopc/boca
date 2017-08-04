@@ -16,7 +16,7 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
 // Last modified 08/aug/2015 by cassio@ime.usp.br
-if ($_POST["confirmation"] != "confirm")
+if (!isset($_POST["confirmation"]) || $_POST["confirmation"] != "confirm")
 	unset($_POST['noflush']);
 
 require('header.php');

@@ -157,6 +157,26 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 		}
 	      }
 	    }
+
+                                                if(true) {
+                                                $arrori = $arr;
+                                                reset($arrori);  //cassio cassiopc
+                                                $pname = array('A','B','C','D','E','F','G','H','I','J','K');
+                                                while(list($ee,$cc) = each($arrori)) {
+                                                  for($pi=0; $pi < 11; $pi++) unset($arr[$ee]['problem'][$pi+1]);
+                                                  reset($arrori[$ee]["problem"]);
+                                                  while(list($e2,$c2) = each($arrori[$ee]["problem"])) {
+                                                        for($pi=0; $pi < 11; $pi++)
+                                                          if(isset($arrori[$ee]['problem'][$e2]['name']) && trim($arrori[$ee]['problem'][$e2]['name']) == $pname[$pi]) break;
+                                                        if($pi < 11) {
+                                                          $arr[$ee]['problem'][$pi+1] = $arrori[$ee]['problem'][$e2];
+                                                        }
+                                                  }
+                                                }
+                                                }
+
+
+
 	    $resp = array_merge($resp, $arr);
 	  }
 	} else {
