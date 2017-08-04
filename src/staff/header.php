@@ -59,12 +59,13 @@ echo "</table>\n";
 if(($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"])) == null)
         ForceLoad("../index.php");
 
-$task = DBOpenTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"]);
-$nr=count($task);
+//$task = DBOpenTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"]);
+//$nr=count($task);
 
 echo "<table border=0 width=\"100%\" align=center>\n";
 echo " <tr>\n";
-echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=task.php>Tasks ($nr)</a></td>\n";
+echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=task.php>Tasks</a></td>\n";
+//echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=task.php>Tasks ($nr)</a></td>\n";
 echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=score.php>Score</a></td>\n";
 echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=run.php>Runs</a></td>\n";
 echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=option.php>Options</a></td>\n";

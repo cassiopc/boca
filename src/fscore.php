@@ -49,47 +49,47 @@ function ScoreCMP($a,$b) {
 }
 function ordena($a) {
   /*
-  $n = count($a);
-  $r = array();
-  for ($i=0; $i<$n; $i++) {
+    $n = count($a);
+    $r = array();
+    for ($i=0; $i<$n; $i++) {
     $max=null;
     foreach($a as $e => $c) {
-      if ($c != null && ($max==null || ScoreCMP($c,$max) > 0)) {
-	//			     $j=0;
-	//	     for(;$j<$i;$j++)
-	//	       if($r[$j]['user']==$a[$e]['user'] && $r[$j]['site']==$a[$e]['site']) break;
-	//	     if($j>=$i) {
-	$max = $c;
-	$maxe = $e;
-	//	     }
-      }
+    if ($c != null && ($max==null || ScoreCMP($c,$max) > 0)) {
+    //			     $j=0;
+    //	     for(;$j<$i;$j++)
+    //	       if($r[$j]['user']==$a[$e]['user'] && $r[$j]['site']==$a[$e]['site']) break;
+    //	     if($j>=$i) {
+    $max = $c;
+    $maxe = $e;
+    //	     }
+    }
     }
     if ($max==null) break;
     $r[$i] = $max;
     $a[$maxe] = null;
-  }
+    }
   */
   uasort($a, "ScoreCMPinv");
   return $a;
   /*
-  $r = array();
-  $j = 0;
-  foreach($a as $k => $v) {
+    $r = array();
+    $j = 0;
+    foreach($a as $k => $v) {
     $r[$j] = $v;
     $j++;
-  }
-  $j = 0;
-  $r = array();
-  foreach($a as $k) {
+    }
+    $j = 0;
+    $r = array();
+    foreach($a as $k) {
     if($j == 0) $r[0] = $k;
     else {
-      if($k['user'] != $r[$j]['user'] || $k['site'] != $r[$j]['site']) {
-	$j++;
-	$r[$j] = $k;
-      }
+    if($k['user'] != $r[$j]['user'] || $k['site'] != $r[$j]['site']) {
+    $j++;
+    $r[$j] = $k;
     }
-  }
-  return $r;
+    }
+    }
+    return $r;
   */
 }
 function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
@@ -158,24 +158,22 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 	      }
 	    }
 
-                                                if(true) {
-                                                $arrori = $arr;
-                                                reset($arrori);  //cassio cassiopc
-                                                $pname = array('A','B','C','D','E','F','G','H','I','J','K');
-                                                while(list($ee,$cc) = each($arrori)) {
-                                                  for($pi=0; $pi < 11; $pi++) unset($arr[$ee]['problem'][$pi+1]);
-                                                  reset($arrori[$ee]["problem"]);
-                                                  while(list($e2,$c2) = each($arrori[$ee]["problem"])) {
-                                                        for($pi=0; $pi < 11; $pi++)
-                                                          if(isset($arrori[$ee]['problem'][$e2]['name']) && trim($arrori[$ee]['problem'][$e2]['name']) == $pname[$pi]) break;
-                                                        if($pi < 11) {
-                                                          $arr[$ee]['problem'][$pi+1] = $arrori[$ee]['problem'][$e2];
-                                                        }
-                                                  }
-                                                }
-                                                }
-
-
+	    if(false) {
+	      $arrori = $arr;
+	      reset($arrori);  //cassio cassiopc
+	      $pname = array('A','B','C','D','E','F','G','H','I','J','K');
+	      while(list($ee,$cc) = each($arrori)) {
+		for($pi=0; $pi < 11; $pi++) unset($arr[$ee]['problem'][$pi+1]);
+		reset($arrori[$ee]["problem"]);
+		while(list($e2,$c2) = each($arrori[$ee]["problem"])) {
+		  for($pi=0; $pi < 11; $pi++)
+		    if(isset($arrori[$ee]['problem'][$e2]['name']) && trim($arrori[$ee]['problem'][$e2]['name']) == $pname[$pi]) break;
+		  if($pi < 11) {
+		    $arr[$ee]['problem'][$pi+1] = $arrori[$ee]['problem'][$e2];
+		  }
+		}
+	      }
+	    }
 
 	    $resp = array_merge($resp, $arr);
 	  }
