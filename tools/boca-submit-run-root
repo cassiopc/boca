@@ -42,12 +42,18 @@ if [ "$7" != "" ]; then
 	chmod 700 /root/submissions
 	nom=/root/submissions/`date +%s%N`.bocarun.tmp
 
-	echo "BOCASERVER=`echo $1 | tr -cd '[[:alnum:]]._+-/'`" > "$nom"
-	echo "user=`echo $2 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
-	echo "pass=`echo $3 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
-	echo "problem=`echo $4 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
-	echo "language=`echo $5 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
-	echo "name=`echo $6 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
+	tmpvar=`echo "$1" | tr -cd '[[:alnum:]]._+-/'`
+	echo "BOCASERVER=$tmpvar" > "$nom"
+	tmpvar=`echo "$2" | tr -cd '[[:alnum:]]._+-/'`
+	echo "user=$tmpvar" >> "$nom"
+	tmpvar=`echo "$3" | tr -cd '[[:alnum:]]._+-/'`
+	echo "pass=$tmpvar" >> "$nom"
+	tmpvar=`echo "$4" | tr -cd '[[:alnum:]]._+-/'`
+	echo "problem=$tmpvar" >> "$nom"
+	tmpvar=`echo "$5" | tr -cd '[[:alnum:]]._+-/'`
+	echo "language=$tmpvar" >> "$nom"
+	tmpvar=`echo "$6" | tr -cd '[[:alnum:]]._+-/'`
+	echo "name=$tmpvar" >> "$nom"
 	echo -en "data=\"" >> "$nom"
 	uuencode -m zzzzzzzzzz < `echo -n "$7" | tr -cd '[[:alnum:]]._+-/'` | grep -v "begin-base64.*zzzzzzzzzz" >> "$nom"
 	echo "\"" >> "$nom"
