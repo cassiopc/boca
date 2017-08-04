@@ -64,12 +64,13 @@ if [ "$7" != "" ]; then
 	uniq=`sha256sum "$7" | cut -f1 -d' '`
 	code=`cat /root/submissions/code 2>/dev/null`
 	if [ "$code" == "" ]; then
-	    echo "ERROR: this computer is not configured to submit runs"
+	    echo "ERROR: this computer is not configured to submit runs -- code missing"
 	    exit 1
 	fi
-	comp="error"
-	if [ -r /root/submissions/comp ]; then
-	    comp=`cat /root/submissions/comp`
+	comp=`cat /root/submissions/comp 2>/dev/null`
+	if [ "$comp" == "" ]; then
+	    echo "ERROR: this computer is not configured to submit runs -- comp missing"
+	    exit 1
 	fi
 	res=`echo -n "${code}${uniq}${comp}${dateerr}" | sha256sum - | cut -f1 -d' '`
 	echo "uniq=$uniq" >> "$nom"
