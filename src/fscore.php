@@ -49,47 +49,47 @@ function ScoreCMP($a,$b) {
 }
 function ordena($a) {
   /*
-    $n = count($a);
-    $r = array();
-    for ($i=0; $i<$n; $i++) {
+  $n = count($a);
+  $r = array();
+  for ($i=0; $i<$n; $i++) {
     $max=null;
     foreach($a as $e => $c) {
-    if ($c != null && ($max==null || ScoreCMP($c,$max) > 0)) {
-    //			     $j=0;
-    //	     for(;$j<$i;$j++)
-    //	       if($r[$j]['user']==$a[$e]['user'] && $r[$j]['site']==$a[$e]['site']) break;
-    //	     if($j>=$i) {
-    $max = $c;
-    $maxe = $e;
-    //	     }
-    }
+      if ($c != null && ($max==null || ScoreCMP($c,$max) > 0)) {
+	//			     $j=0;
+	//	     for(;$j<$i;$j++)
+	//	       if($r[$j]['user']==$a[$e]['user'] && $r[$j]['site']==$a[$e]['site']) break;
+	//	     if($j>=$i) {
+	$max = $c;
+	$maxe = $e;
+	//	     }
+      }
     }
     if ($max==null) break;
     $r[$i] = $max;
     $a[$maxe] = null;
-    }
+  }
   */
   uasort($a, "ScoreCMPinv");
   return $a;
   /*
-    $r = array();
-    $j = 0;
-    foreach($a as $k => $v) {
+  $r = array();
+  $j = 0;
+  foreach($a as $k => $v) {
     $r[$j] = $v;
     $j++;
-    }
-    $j = 0;
-    $r = array();
-    foreach($a as $k) {
+  }
+  $j = 0;
+  $r = array();
+  foreach($a as $k) {
     if($j == 0) $r[0] = $k;
     else {
-    if($k['user'] != $r[$j]['user'] || $k['site'] != $r[$j]['site']) {
-    $j++;
-    $r[$j] = $k;
+      if($k['user'] != $r[$j]['user'] || $k['site'] != $r[$j]['site']) {
+	$j++;
+	$r[$j] = $k;
+      }
     }
-    }
-    }
-    return $r;
+  }
+  return $r;
   */
 }
 function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {

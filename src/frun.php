@@ -753,14 +753,17 @@ function DBNewRun($param,$c=null) {
 			return 0;
 		}
 	} else {
-		$b = DBSiteInfo($contest, $site, $c);
-		$dif = $rundatediff;
-                if ($dif >= $b['siteduration']) {
-                        DBExec($c, "rollback work", "DBNewRun(rollback-over)");
-                        LOGError("Tried to submit a run but the contest is over. SQL=(" . $sql . ")");
-                        MSGError("The contest is over!");
-                        return 0;
-                }
+	  //cassiopc: so we let the run enter the system if it comes with a defined timestamp, but it is to decide later if it will be counted...
+	  //$b = DBSiteInfo($contest, $site, $c);
+	  $dif = $rundatediff;
+	  /*
+	    if ($dif >= $b['siteduration']) {
+	    DBExec($c, "rollback work", "DBNewRun(rollback-over)");
+	    LOGError("Tried to submit a run but the contest is over. SQL=(" . $sql . ")");
+	    MSGError("The contest is over!");
+	    return 0;
+	    }
+	  */
 	}
 
 	if($updatetime > $t || $insert) {
