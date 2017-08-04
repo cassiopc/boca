@@ -15,167 +15,185 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 25/jul/2017 by cassio@ime.usp.br
+// Last modified 04/aug/2017 by cassio@ime.usp.br
 
-function scoretransfer($putname, $localsite) {
-	$ds = DIRECTORY_SEPARATOR;
-	if($ds=="") $ds = "/";
+function scoretransfer($putname, $localsite, $timeo=5) {
+  $ds = DIRECTORY_SEPARATOR;
+  if($ds=="") $ds = "/";
 
-	if(is_readable('/etc/boca.conf')) {
-		$pif=parse_ini_file('/etc/boca.conf');
-		$bocaproxy = @trim($pif['proxy']);
-		if($bocaproxy != "" && substr($bocaproxy,0,6) != 'tcp://')
-			$bocaproxy = 'tcp://' . $bocaproxy;
-		$bocaproxylogin = @trim($pif['proxylogin']);
-		$bocaproxypass = @trim($pif['proxypassword']);
-		if($bocaproxylogin != "")
-			$bocaproxypass = base64_encode($bocaproxylogin . ":" . $bocaproxypass);
+  if(is_readable('/etc/boca.conf')) {
+    $pif=parse_ini_file('/etc/boca.conf');
+    $bocaproxy = @trim($pif['proxy']);
+    if($bocaproxy != "" && substr($bocaproxy,0,6) != 'tcp://')
+      $bocaproxy = 'tcp://' . $bocaproxy;
+    $bocaproxylogin = @trim($pif['proxylogin']);
+    $bocaproxypass = @trim($pif['proxypassword']);
+    if($bocaproxylogin != "")
+      $bocaproxypass = base64_encode($bocaproxylogin . ":" . $bocaproxypass);
+  } else {
+    $bocaproxy = "";
+    $bocaproxypass = "";
+  }
+
+  $privatedir = $_SESSION['locr'] . $ds . "private";
+
+  // as of aug/2017, let's only do transfers with the mainsite as specified at the contestmainsiteurl
+  //  if(!is_readable($privatedir . $ds . 'remotescores' . $ds . "otherservers")) return;
+  //  $remotesite = @file($privatedir . $ds . 'remotescores' . $ds . "otherservers");
+  $remotesite = array();
+  
+  $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
+  $localfile = "score_site" . $localsite . "_" . $localsite . "_x.dat";
+  
+  $contest=$_SESSION["usertable"]["contestnumber"];
+  if($contest != '' && ($ct = DBContestInfo($contest)) != null) {
+    if(trim($ct['contestmainsiteurl']) != '') {
+      $tmp = explode(' ',$ct['contestmainsiteurl']);
+      if(count($tmp) >= 3) {
+	$remotesite[count($remotesite)] = $ct['contestmainsiteurl'];
+      }
+    }
+  }
+
+  for($i = 0; $i < count($remotesite); $i++) {
+    $sitedata = explode(' ', $remotesite[$i]);
+    if(count($sitedata) < 3) continue;
+    $siteurl = $sitedata[0];
+    if(strpos($siteurl,'#') !== false) continue;
+    LOGError("scoretransfer: found site $siteurl");
+    if(substr($siteurl,0,7) != 'http://')
+      $siteurl = 'http://' . $siteurl;
+    $urldiv='/';
+    if(substr($siteurl,strlen($siteurl)-1,1) == '/')
+      $urldiv = '';
+    //		LOGError("url=" .$siteurl . $urldiv . "index.php?getsessionid=1");
+    $opts = array();
+    $opts['http']['timeout'] = $timeo;
+    $context = stream_context_create($opts);		  
+    if(($sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1", 0, $context))===false) {
+      LOGError("scoretransfer: timeout at get session id for $siteurl");
+      continue;
+    }
+    //		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
+    $user = trim($sitedata[1]);
+    $res = myhash( myhash (trim($sitedata[2])) . $sess);
+    //		LOGError("url=" . $siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer");
+    $opts = array(
+		  'http' => array(
+				  'method' => 'GET',
+				  'request_fulluri' => true, 
+				  'header' => 'Cookie: PHPSESSID=' . $sess
+				  )
+		  );
+    if($bocaproxy != "")
+      $opts['http']['proxy'] = $bocaproxy;
+    if($bocaproxypass != "")
+      $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+    $opts['http']['timeout'] = $timeo;
+    $context = stream_context_create($opts);
+
+    if(($ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context))===false) {
+      LOGError("scoretransfer: timeout at login for $siteurl");
+      continue;
+    }
+    //		LOGError("ok=" . $ok);
+    if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
+      if(($res = @file_get_contents($siteurl . $urldiv . "scoretable.php?remote=-42", 0, $context))===false) {
+	LOGError("scoretransfer: timeout at get score for $siteurl");
+	continue;
+      }
+      @file_put_contents($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip', $res);
+      if(is_readable($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip')) {
+	$zip = new ZipArchive;
+	if ($zip->open($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip') === true) {
+	  cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+	  @mkdir($privatedir . $ds . 'remotescores' . $ds . 'tmp');	
+	  $zip->extractTo($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+	  foreach(glob($privatedir . $ds . 'remotescores' . $ds . 'tmp' . $ds . '*.dat') as $file) {
+	    @chown($file,"www-data");
+	    @chmod($file,0660);
+	    $bn = basename($file);
+	    if($bn == $localfile)
+	      @rename($file, $privatedir . $ds . 'remotescores' . $ds . "score_site" . $localsite . "__y.dat");
+	    else
+	      @rename($file, $privatedir . $ds . 'remotescores' . $ds . $bn);
+	  }
+	  $zip->close();
+	  LOGError("scoretransfer: download OK");
 	} else {
-		$bocaproxy = "";
-		$bocaproxypass = "";
+	  LOGError("scoretransfer: download failed (2)");
 	}
+	cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
+	@unlink($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip');
+      } else {
+	LOGError("scoretransfer: download failed (3)");
+      }
+    } else {
+      LOGError("scoretransfer: download failed (1)");
+    }
 
-	$privatedir = $_SESSION['locr'] . $ds . "private";
-	if(!is_readable($privatedir . $ds . 'remotescores' . $ds . "otherservers")) return;
-$superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
-	$localfile = "score_site" . $localsite . "_" . $localsite . "_x.dat";
-	$remotesite = @file($privatedir . $ds . 'remotescores' . $ds . "otherservers");
+    if(is_readable($putname)) {
+      $data = @file_get_contents($putname);
+      $data_url = http_build_query(array('data' => $data,
+					 ));
 
-   $contest=$_SESSION["usertable"]["contestnumber"];
-   if($contest != '' && ($ct = DBContestInfo($contest)) != null) {
-     if(trim($ct['contestmainsiteurl']) != '') {
-       $tmp = explode(' ',$ct['contestmainsiteurl']);
-       if(count($tmp) >= 3) {
-          $remotesite[count($remotesite)] = $ct['contestmainsiteurl'];
-       }
-     }
-   }
+      $opts = array(
+		    'http' => array(
+				    'method' => 'POST',
+				    'request_fulluri' => true, 
+				    'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
+				    'content' => $data_url
+				    )
+		    );
+      if($bocaproxy != "")
+	$opts['http']['proxy'] = $bocaproxy;
+      if($bocaproxypass != "")
+	$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+      $opts['http']['timeout'] = $timeo;
+      $context = stream_context_create($opts);
+      if(($s = @file_get_contents($siteurl . $urldiv . "site/putfile.php", 0, $context))===false) {
+	LOGError("scoretransfer: timeout at upload for $siteurl");
+      } else {			  
+	if(strpos($s,'SCORE UPLOADED OK') !== false)
+	  LOGError("scoretransfer: upload OK");
+	else
+	  LOGError("scoretransfer: upload failed (" . $s . ")");
+      }
+    }
+    if(is_readable($superlfile)) {
+      $data = @file_get_contents($superlfile);
+      $data_url = http_build_query(array('data' => $data,
+					 ));
 
-	for($i = 0; $i < count($remotesite); $i++) {
-		$sitedata = explode(' ', $remotesite[$i]);
-		if(count($sitedata) < 3) continue;
-		$siteurl = $sitedata[0];
-		if(strpos($siteurl,'#') !== false) continue;
-		LOGError("scoretransfer: found site $siteurl");
-		if(substr($siteurl,0,7) != 'http://')
-			$siteurl = 'http://' . $siteurl;
-		$urldiv='/';
-		if(substr($siteurl,strlen($siteurl)-1,1) == '/')
-			$urldiv = '';
-//		LOGError("url=" .$siteurl . $urldiv . "index.php?getsessionid=1");
-		$opts = array();
-		$opts['http']['timeout'] = 5;
-		$context = stream_context_create($opts);		  
-		$sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1", 0, $context);
-//		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
-		$user = trim($sitedata[1]);
-		$res = myhash( myhash (trim($sitedata[2])) . $sess);
-//		LOGError("url=" . $siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer");
-		$opts = array(
-			'http' => array(
-				'method' => 'GET',
-				'request_fulluri' => true, 
-				'header' => 'Cookie: PHPSESSID=' . $sess
-				)
-			);
-		if($bocaproxy != "")
-			$opts['http']['proxy'] = $bocaproxy;
-		if($bocaproxypass != "")
-			$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-		$opts['http']['timeout'] = 5;
-		$context = stream_context_create($opts);
-
-		$ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
-//		LOGError("ok=" . $ok);
-		if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
-			$res = @file_get_contents($siteurl . $urldiv . "scoretable.php?remote=-42", 0, $context);
-			@file_put_contents($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip', $res);
-			if(is_readable($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip')) {
-				$zip = new ZipArchive;
-				if ($zip->open($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip') === true) {
-					cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
-					@mkdir($privatedir . $ds . 'remotescores' . $ds . 'tmp');	
-					$zip->extractTo($privatedir . $ds . 'remotescores' . $ds . 'tmp');
-					foreach(glob($privatedir . $ds . 'remotescores' . $ds . 'tmp' . $ds . '*.dat') as $file) {
-						@chown($file,"www-data");
-						@chmod($file,0660);
-						$bn = basename($file);
-						if($bn == $localfile)
-							@rename($file, $privatedir . $ds . 'remotescores' . $ds . "score_site" . $localsite . "__y.dat");
-						else
-							@rename($file, $privatedir . $ds . 'remotescores' . $ds . basename($file));
-					}
-					$zip->close();
-					LOGError("scoretransfer: download OK");
-				} else {
-					LOGError("scoretransfer: download failed (2)");
-				}
-				cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
-				@unlink($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip');
-			} else {
-				LOGError("scoretransfer: download failed (3)");
-			}
-		} else {
-			LOGError("scoretransfer: download failed (1)");
-		}
-
-		if(is_readable($putname)) {
-			$data = @file_get_contents($putname);
-			$data_url = http_build_query(array('data' => $data,
-										 ));
-
-			$opts = array(
-				'http' => array(
-					'method' => 'POST',
-					'request_fulluri' => true, 
-					'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
-					'content' => $data_url
-					)
-				);
-			if($bocaproxy != "")
-				$opts['http']['proxy'] = $bocaproxy;
-			if($bocaproxypass != "")
-				$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-			$opts['http']['timeout'] = 5;
-			$context = stream_context_create($opts);
-			$s = @file_get_contents($siteurl . $urldiv . "site/putfile.php", 0, $context);
-			if(strpos($s,'SCORE UPLOADED OK') !== false)
-				LOGError("scoretransfer: upload OK");
-			else
-				LOGError("scoretransfer: upload failed (" . $s . ")");
-		}
-                if(is_readable($superlfile)) {
-                        $data = @file_get_contents($superlfile);
-                        $data_url = http_build_query(array('data' => $data,
-                                                                                 ));
-
-                        $opts = array(
-                                'http' => array(
-                                        'method' => 'POST',
-                                        'request_fulluri' => true,
-                                        'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
-                                        'content' => $data_url
-                                        )
-                                );
-                        if($bocaproxy != "")
-                                $opts['http']['proxy'] = $bocaproxy;
-                        if($bocaproxypass != "")
-                                $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-			$opts['http']['timeout'] = 5;
-                        $context = stream_context_create($opts);
-                        $s = @file_get_contents($siteurl . $urldiv . "site/putfilesuper.php", 0, $context);
-                        if(strpos($s,'SCORE UPLOADED OK') !== false)
-                                LOGError("scoretransfer: upload full OK");
-                        else
-                                LOGError("scoretransfer: upload full failed (" . $s . ")");
-                }
-
-		break;
-	}
+      $opts = array(
+		    'http' => array(
+				    'method' => 'POST',
+				    'request_fulluri' => true,
+				    'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
+				    'content' => $data_url
+				    )
+		    );
+      if($bocaproxy != "")
+	$opts['http']['proxy'] = $bocaproxy;
+      if($bocaproxypass != "")
+	$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+      $opts['http']['timeout'] = $timeo;
+      $context = stream_context_create($opts);
+      if(($s = @file_get_contents($siteurl . $urldiv . "site/putfilesuper.php", 0, $context))===false) {
+	LOGError("scoretransfer: timeout at full upload for $siteurl");
+	continue;
+      } else {
+	if(strpos($s,'SCORE UPLOADED OK') !== false)
+	  LOGError("scoretransfer: upload full OK");
+	else
+	  LOGError("scoretransfer: upload full failed (" . $s . ")");
+      }
+    }
+  }
 }
 
 
-function getMainXML() {
+function getMainXML($contest,$timeo=5) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   
@@ -197,11 +215,11 @@ function getMainXML() {
   
   $c = DBConnect();
   if ($c==null) return false;
-  $contest = $_SESSION["usertable"]["contestnumber"];
   $r = DBExec($c, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
-    echo "Unable to find the contest $contest in the database.\n";
-    exit;
+    echo "Unable to find the contest $contest in the database.";
+    LOGError("Unable to find the contest $contest in the database.");
+    return false;
   }
   $ct = DBRow($r,0);
   $localsite = $ct["contestlocalsite"];
@@ -212,6 +230,7 @@ function getMainXML() {
   }
   $sitedata = explode(' ',$ct['contestmainsiteurl']);
   if(count($sitedata) < 3) {
+    LOGError("getMainXML: invalid mainsiteurl entry");
     return false;
   }
   if(count($sitedata) == 3) {
@@ -228,10 +247,13 @@ function getMainXML() {
     $urldiv = '';
   //		LOGError("url=" .$siteurl . $urldiv . "index.php?getsessionid=1");
   $opts = array();
-  $opts['http']['timeout'] = 5;
+  $opts['http']['timeout'] = $timeo;
   $context = stream_context_create($opts);		  
-  $sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1", 0, $context);
-  //		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
+  if(($sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1", 0, $context))===false) {
+    LOGError("getMainXML: timeout at get session id for $siteurl");
+    return false;
+  }
+  //LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
   $user = trim($sitedata[1]);
   $res = myhash( myhash (trim($sitedata[2])) . $sess);
   $opts = array(
@@ -245,9 +267,12 @@ function getMainXML() {
     $opts['http']['proxy'] = $bocaproxy;
   if($bocaproxypass != "")
     $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-  $opts['http']['timeout'] = 5;  
+  $opts['http']['timeout'] = $timeo;  
   $context = stream_context_create($opts);
-  $ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
+  if(($ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context))===false) {
+    LOGError("getMainXML: timeout at login for $siteurl");
+    return false;
+  }
   $ti = mytime();
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
@@ -269,9 +294,12 @@ function getMainXML() {
       $opts['http']['proxy'] = $bocaproxy;
     if($bocaproxypass != "")
       $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
-    $opts['http']['timeout'] = 5;
+    $opts['http']['timeout'] = $timeo;
     $context = stream_context_create($opts);
-    $s = @file_get_contents($siteurl . $urldiv . "site/getsite.php", 0, $context);
+    if(($s = @file_get_contents($siteurl . $urldiv . "site/getsite.php", 0, $context))===false) {
+      LOGError("getMainXML: timeout at transfer for $siteurl");
+      return false;
+    }
     if(strpos($s,'<OK>') !== false)
       LOGInfo("xmltransfer: OK");
     else
@@ -306,12 +334,12 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
   xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
   xml_parse_into_struct($parser, $data, $values, $tags);
   xml_parser_free($parser);
-//	print_r($tags);
-//	print_r($values);
+  //	print_r($tags);
+  //	print_r($values);
   $conn = DBConnect();
   if ($conn==null) return false;
   DBExec($conn,"begin work","importFromXML(begin)");
-//	DBExec($conn,"lock","importFromXML(lock)");
+  //	DBExec($conn,"lock","importFromXML(lock)");
   $r = DBExec($conn, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
     LOGError("importFromXML: Unable to find the contest $contest in the database.");
@@ -520,31 +548,31 @@ function generateSiteXML($contest,$site,$updatetime) {
   if ($c==null) return null;
   DBExec($c, "begin work");
   foreach($sql as $kk => $vv) {
-	  $meta = pg_meta_data($c, $kk);
-	  if (!is_array($meta)) return null;
-	  $r = DBExec ($c, $vv, "generateSiteXML($kk)");
-	  $n = DBnLines ($r);
-	  for($i=0; $i<$n; $i++) {
-	    $atual = DBRow($r,$i);
-	    $str .= "<" . $kk . ">\n";
-	    foreach($atual as $key => $val) {
-	      if($meta[$key]['type'] == 'oid' && $val != '') {
-		if (($lo = DB_lo_open ($c, $val, "r")) !== false) {
-		  $str .= "  <" . $key . ">" . base64_encode("base64:" . base64_encode(DB_lo_read($contest,$lo))) . "</" . $key . ">\n";
-		  DB_lo_close($lo);
-		} else {
-		  LOGError("large object ($key,$val) not readable");
-		}
-	      } else {
-		$str .= "  <" . $key . ">" . base64_encode($val) . "</" . $key . ">\n";
-	      }
-	    }
-	    $str .= "</" . $kk . ">\n";
+    $meta = pg_meta_data($c, $kk);
+    if (!is_array($meta)) return null;
+    $r = DBExec ($c, $vv, "generateSiteXML($kk)");
+    $n = DBnLines ($r);
+    for($i=0; $i<$n; $i++) {
+      $atual = DBRow($r,$i);
+      $str .= "<" . $kk . ">\n";
+      foreach($atual as $key => $val) {
+	if($meta[$key]['type'] == 'oid' && $val != '') {
+	  if (($lo = DB_lo_open ($c, $val, "r")) !== false) {
+	    $str .= "  <" . $key . ">" . base64_encode("base64:" . base64_encode(DB_lo_read($contest,$lo))) . "</" . $key . ">\n";
+	    DB_lo_close($lo);
+	  } else {
+	    LOGError("large object ($key,$val) not readable");
 	  }
+	} else {
+	  $str .= "  <" . $key . ">" . base64_encode($val) . "</" . $key . ">\n";
 	}
-	$str .= "</XML>\n";
-	DBExec($c,"commit work","generateXML(commit)");
-	LOGInfo("xml data generated for contest $contest site $site at time $updatetime");
-	return $str;
+      }
+      $str .= "</" . $kk . ">\n";
+    }
+  }
+  $str .= "</XML>\n";
+  DBExec($c,"commit work","generateXML(commit)");
+  LOGInfo("xml data generated for contest $contest site $site at time $updatetime");
+  return $str;
 }
 
