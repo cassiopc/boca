@@ -62,7 +62,11 @@ if [ "$7" != "" ]; then
 #	uniq=`date +%sN`-`sha256sum "$7"`
 #	uniq=`echo $uniq | sha256sum - | cut -f1 -d' '`
 	uniq=`sha256sum "$7" | cut -f1 -d' '`
-	code=`cat /root/submissions/code`
+	code=`cat /root/submissions/code 2>/dev/null`
+	if [ "$code" == "" ]; then
+	    echo "ERROR: this computer is not configured to submit runs"
+	    exit 1
+	fi
 	comp="error"
 	if [ -r /root/submissions/comp ]; then
 	    comp=`cat /root/submissions/comp`
