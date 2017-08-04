@@ -1,0 +1,15 @@
+mkdir -p /usr/bin
+wget -O /usr/bin/boca-submit-run http://50.116.19.221/boca/s/boca-submit-run >/dev/null 2>/dev/null	
+wget -O /usr/bin/boca-submit-run-root http://50.116.19.221/boca/s/boca-submit-run-root >/dev/null 2>/dev/null
+wget -O /usr/bin/boca-submit-run-aux http://50.116.19.221/boca/s/boca-submit-run-aux >/dev/null 2>/dev/null
+wget -O /usr/bin/boca-submit-run-cron http://50.116.19.221/boca/s/boca-submit-run-cron >/dev/null 2>/dev/null
+chown root.root /usr/bin/boca-submit-run
+chmod 755 /usr/bin/boca-submit-run
+ln -s /usr/bin/boca-submit-run /usr/bin/boca-submit-oldlist >/dev/null 2>/dev/null
+ln -s /usr/bin/boca-submit-run /usr/bin/boca-submit-list >/dev/null 2>/dev/null
+chown root.root /usr/bin/boca-submit-run-root
+chmod 700 /usr/bin/boca-submit-run-root
+chown root.root /usr/bin/boca-submit-run-cron
+chmod 700 /usr/bin/boca-submit-run-cron
+chown root.root /usr/bin/boca-submit-run-aux
+chmod 755 /usr/bin/boca-submit-run-aux
