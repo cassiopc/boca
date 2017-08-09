@@ -512,6 +512,17 @@ function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="") {
 	}
 	$a = DBRow($r,0);
 	$t = time();
+	
+	$b = DBSiteInfo($contest, $site, $c);
+	if($b["siteautojudge"]=="t") {
+	  if(DBUpdateRunO($contest, $site, $a["usernumber"], $site, $number, 7, $c)==false) {  // 7 means contact staff
+	    DBExec($c, "rollback work", "DBGiveUpRunAutojudging(rollback auto)");
+	    LOGError("Unable to automatically update a run answer (run=$number, site=$site, ".
+		     "contest=$contest, answer='$ans', retval=7)");
+	    return false;
+	  }
+	  LOGLevel("Autojudging automatically answered a run (run=$number, site=$site, contest=$contest, retval=7, answer='$ans')", 3);
+	}
 
 	if($ip=="") {
 		DBExec($c, "update runtable set autoenddate=null, autoanswer=null, autostdout=null, autostderr=null, " .
