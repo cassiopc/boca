@@ -5,9 +5,6 @@ if [ "`id -u`" != "0" ]; then
   exit 1
 fi
 
-if [ "$BOCASERVER" == "" ]; then
-    BOCASERVER=50.116.19.221
-fi
 user="$1"
 if [ "$user" == "" ]; then
   echo "parameter user missing. Usage: $0 <user> [<optional-server-address>]"
@@ -15,7 +12,20 @@ if [ "$user" == "" ]; then
 fi
 if [ "$2" != "" ]; then
     BOCASERVER=$2
+else
+  if [[ ! -e /etc/bocaip ]] ; then
+      echo "O IP do servidor boca nao configurado. Usando bombonera.org"
+      BOCASERVER=50.116.19.221
+  else
+      source /etc/bocaip
+      BOCASERVER=$BOCAIP
+  fi
 fi
+if [ "$BOCASERVER" == "" ]; then
+    echo "BOCA server not defined. Aborting"
+    exit 1
+fi
+
 echo "Server at $BOCASERVER"
 read -s -p "Password: " pass
 

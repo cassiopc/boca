@@ -35,26 +35,34 @@ else
     fi
 fi
 
+if [ 0 == 1 ]; then
+  ###example of codes
+  sitename='imeu'
+  password='password'
+  ress=`echo -n "$password" | sha256sum - | cut -f1 -d' '`
+  res=`echo -n "${password}${ress}${password}" | sha256sum - | cut -f1 -d' '`
+  echo $sitename $ress $res 0
 
 ###example of generating score.sep
 ###First Surname:email@gmail.com:Sao Paulo:SP:spsp:46:48479:146:qrw3
-# #!/bin/bash
-# while read lin; do 
-#   prefix="`echo -n $lin | cut -d':' -f8`"
-#   prenam="`echo -n $lin | cut -d':' -f5`"
-#   echo "$prenam ${prefix}000/${prefix}399/1 # /^team${prenam}/ /^staff${prenam}/ /^score${prenam}/"
-#   echo "${prenam}ccl ${prefix}000/${prefix}500/1 # /^staff${prenam}/ /^teamccl${prenam}/ /^judge/"
-# done
-# #!/bin/bash
-# i=1
-# j=1
-# k=1
-# while [ $i -le 49 ]; do
-#    let "jj = $j + 1"
-#    let "ii = $i - 1"
-#    let "ff = $ii * 100 + 50000"
-#    let "gg = $i * 100 + 49999"
-#    echo "sede$i $ff/$gg/1 # /^team${j}\$/ /^team${jj}\$/ /^staff${i}\$/"
-#    let "i = $i + 1"
-#    let "j = $j + 2"
-# done
+  #!/bin/bash
+  while read lin; do 
+    prefix="`echo -n $lin | cut -d':' -f8`"
+    prenam="`echo -n $lin | cut -d':' -f5`"
+    echo "$prenam ${prefix}000/${prefix}399/1 # /^team${prenam}/ /^staff${prenam}/ /^score${prenam}/"
+    echo "${prenam}ccl ${prefix}000/${prefix}500/1 # /^staff${prenam}/ /^teamccl${prenam}/ /^judge/"
+  done
+  #!/bin/bash
+  i=1
+  j=1
+  k=1
+  while [ $i -le 49 ]; do
+    let "jj = $j + 1"
+    let "ii = $i - 1"
+    let "ff = $ii * 100 + 50000"
+    let "gg = $i * 100 + 49999"
+    echo "sede$i $ff/$gg/1 # /^team${j}\$/ /^team${jj}\$/ /^staff${i}\$/"
+    let "i = $i + 1"
+    let "j = $j + 2"
+  done
+fi
