@@ -222,14 +222,19 @@ function IntrusionNotify($where) {
 function ValidSession() {
 	if (!isset($_SESSION["usertable"])) return(FALSE);
 	$gip = getIP();
-	if ($_SESSION["usertable"]["userip"] != $gip ||
-		$_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
+	// cassiopc: sites that use multiple IP addresses to go out create a serious problem to check IPs...
+//	if(substr($_SESSION["usertable"]["userip"],0,6) != '157.92') {
+//	if ($_SESSION["usertable"]["userip"] != $gip ||
+//		$_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
+  //      } else {
+	if($_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
+    //    }
 	if($_SESSION["usertable"]["usermultilogin"] == 't') return(TRUE);
 	
 	$tmp = DBUserInfo($_SESSION["usertable"]["contestnumber"], 
 					  $_SESSION["usertable"]["usersitenumber"], 
 					  $_SESSION["usertable"]["usernumber"]);
-	if ($tmp["userip"] != $gip) return(FALSE);
+	if ($tmp["userip"] != $gip) return(FALSE); //cassiopc: they may create a problem here too...
 	return(TRUE);
 }
 // grava erro no arquivo de log
@@ -350,7 +355,7 @@ function match_network ($nets, $ip) {
 
         $ip_arr   = explode('/', $net);
         $net_long = ip2long(trim($ip_arr[0]));
-		if(trim($ip_arr[1]) != '') {
+		if(count($ip_arr) > 1 && trim($ip_arr[1]) != '') {
 			$x        = ip2long(trim($ip_arr[1]));
 			$mask     = long2ip($x) == ((int) trim($ip_arr[1])) ? $x : 0xffffffff << (32 - ((int) trim($ip_arr[1])));
         } else { 

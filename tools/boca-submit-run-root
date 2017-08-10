@@ -42,12 +42,18 @@ if [ "$7" != "" ]; then
 	chmod 700 /root/submissions
 	nom=/root/submissions/`date +%s%N`.bocarun.tmp
 
-	echo "BOCASERVER=`echo $1 | tr -cd '[[:alnum:]]._+-/'`" > "$nom"
-	echo "user=`echo $2 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
-	echo "pass=`echo $3 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
-	echo "problem=`echo $4 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
-	echo "language=`echo $5 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
-	echo "name=`echo $6 | tr -cd '[[:alnum:]]._+-/'`" >> "$nom"
+	tmpvar=`echo "$1" | tr -cd '[[:alnum:]]._+-/'`
+	echo "BOCASERVER=$tmpvar" > "$nom"
+	tmpvar=`echo "$2" | tr -cd '[[:alnum:]]._+-/'`
+	echo "user=$tmpvar" >> "$nom"
+	tmpvar=`echo "$3" | tr -cd '[[:alnum:]]._+-/'`
+	echo "pass=$tmpvar" >> "$nom"
+	tmpvar=`echo "$4" | tr -cd '[[:alnum:]]._+-/'`
+	echo "problem=$tmpvar" >> "$nom"
+	tmpvar=`echo "$5" | tr -cd '[[:alnum:]]._+-/'`
+	echo "language=$tmpvar" >> "$nom"
+	tmpvar=`echo "$6" | tr -cd '[[:alnum:]]._+-/'`
+	echo "name=$tmpvar" >> "$nom"
 	echo -en "data=\"" >> "$nom"
 	uuencode -m zzzzzzzzzz < `echo -n "$7" | tr -cd '[[:alnum:]]._+-/'` | grep -v "begin-base64.*zzzzzzzzzz" >> "$nom"
 	echo "\"" >> "$nom"
@@ -56,10 +62,15 @@ if [ "$7" != "" ]; then
 #	uniq=`date +%sN`-`sha256sum "$7"`
 #	uniq=`echo $uniq | sha256sum - | cut -f1 -d' '`
 	uniq=`sha256sum "$7" | cut -f1 -d' '`
-	code=`cat /root/submissions/code`
-	comp="error"
-	if [ -r /root/submissions/comp ]; then
-	    comp=`cat /root/submissions/comp`
+	code=`cat /root/submissions/code 2>/dev/null`
+	if [ "$code" == "" ]; then
+	    echo "ERROR: this computer is not configured to submit runs -- code missing"
+	    exit 1
+	fi
+	comp=`cat /root/submissions/comp 2>/dev/null`
+	if [ "$comp" == "" ]; then
+	    echo "ERROR: this computer is not configured to submit runs -- comp missing"
+	    exit 1
 	fi
 	res=`echo -n "${code}${uniq}${comp}${dateerr}" | sha256sum - | cut -f1 -d' '`
 	echo "uniq=$uniq" >> "$nom"

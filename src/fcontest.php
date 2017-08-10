@@ -1039,10 +1039,18 @@ function insertlanguages($n,$c=null) {
 	$param['name']='Java';
 	$param['extension']='java';
 	DBNewLanguage($n, $param, $c);
-//	$param['number']=4;
-//	$param['name']='C++11';
-//	$param['extension']='cc';
-//	DBNewLanguage($n, $param, $c);
+	$param['number']=4;
+	$param['name']='Python2';
+	$param['extension']='py2';
+	DBNewLanguage($n, $param, $c);
+	$param['number']=5;
+	$param['name']='Python3';
+	$param['extension']='py3';
+	DBNewLanguage($n, $param, $c);
+	$param['number']=6;
+	$param['name']='C++11';
+	$param['extension']='cc';
+	DBNewLanguage($n, $param, $c);
 }
 function insertanswers($n,$c) {
 	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
@@ -1060,7 +1068,9 @@ function insertanswers($n,$c) {
 	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
 			"($n, 6, 'NO - Wrong answer', 'f', 'f')", "DBNewContest(insert WA answer)");
 	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 7, 'NO - If possible, contact staff', 'f', 'f')", "DBNewContest(insert CS answer)");
+			"($n, 7, 'NO - Contact staff', 'f', 'f')", "DBNewContest(insert CS answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
+			"($n, 8, 'NO - Name mismatch', 'f', 'f')", "DBNewContest(insert MI answer)");
 }
 function DBNewSite ($contest, $c=null, $param=array()) {
 	$cw = false;

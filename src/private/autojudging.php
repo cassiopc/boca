@@ -387,7 +387,7 @@ if($retval != 0) {
 		DBGiveUpRunAutojudging($contest, $site, $number, $ip, "warning: problem package has no input files");
 		continue;
 	} else {
-		$errp=0; $ncor=0;
+	  $errp=0; $ncor=0; $showcor=false;
 		foreach($inputlist as $file) {
 			$file = basename($file);
 			if(is_file($dir . $ds . "input" . $ds . $file)) {
@@ -484,28 +484,33 @@ if($retval != 0) {
 					if($localretval < 4 || $localretval > 6) {
 						// contact staff
 						$retval = 7;
-						$answer='(Contact staff)' . $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
+						$answer='(Contact staff)' . $answertmp;
+						if($showcor) $answertmp .= ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 						break;
 					}
 					if($localretval == 6) {
 						$retval=$localretval;
-						$answer='(Wrong answer)'. $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
+						$answer='(Wrong answer)'. $answertmp;
+						if($showcor) $answertmp .= ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 						break;
 					}
 					if($localretval == 5) {
 						$retval=$localretval;
-						$answer='(Presentation error)'. $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
+						$answer='(Presentation error)'. $answertmp;
+						if($showcor) $answertmp .= ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 					} else {
 						if($localretval != 4) {
 							$retval = 7;
-							$answer='(Contact staff)' . $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
+							$answer='(Contact staff)' . $answertmp;
+							if($showcor) $answertmp .= ' (' . $ncor . '/' . $ninputlist . ' OKs)';
 							break;
 						}
 						$ncor++;
 						if($retval == 0 || $retval == 1) {
-							// YES!
-							$answer='(YES)' . $answertmp . ' (' . $ncor . '/' . $ninputlist . ' OKs)';
-							$retval = 1;
+						  // YES!
+						  $answer='(YES)' . $answertmp;
+						  if($showcor) $answertmp .= ' (' . $ncor . '/' . $ninputlist . ' OKs)';
+						  $retval = 1;
 						}
 					}
 				} else {

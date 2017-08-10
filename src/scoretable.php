@@ -78,10 +78,10 @@ if(!ValidSession()) {
 $loc = $_SESSION["loc"];
 if(!isset($detail)) $detail=true;
 if(!isset($final)) $final=false;
-$scoredelay["admin"] = 3;
-$scoredelay["score"] = 30;
-$scoredelay["team"] = 10;
-$scoredelay["judge"] = 5;
+$scoredelay["admin"] = 10;
+$scoredelay["score"] = 60;
+$scoredelay["team"] = 30;
+$scoredelay["judge"] = 20;
 $scoredelay["staff"] = 30;
 $actualdelay = 60;
 if(isset($scoredelay[$_SESSION["usertable"]["usertype"]])) $actualdelay = $scoredelay[$_SESSION["usertable"]["usertype"]];
@@ -143,7 +143,7 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		}
 		@fclose($fp);
 
-		getMainXML();
+		getMainXML($_SESSION["usertable"]["contestnumber"]);
 		
 		@unlink($destination . ".lck");
 	  } else {
@@ -237,17 +237,18 @@ if($redo) {
 	}
 	if(is_readable($_SESSION["locr"] . $ds . 'private' . $ds . 'score.sep')) {
 		$rf=file($_SESSION["locr"] . $ds . 'private' . $ds . 'score.sep');
-		$strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup(1)\"> <b>Available scores:</b> \n";
+		$fta=true;
 		for($rfi=1;$rfi<=count($rf);$rfi++) {
 			$lin = explode('#',trim($rf[$rfi-1]));
 			if(isset($lin[1]) && $_SESSION["usertable"]["usertype"]!='admin') {
 				$arr=explode(' ',trim($lin[1]));
 				for($arri=0;$arri<count($arr);$arri++)
-					if(preg_match($arr[$arri],$_SESSION["usertable"]["username"])) break;
+					if($arr[$arri] != '' && preg_match($arr[$arri],$_SESSION["usertable"]["username"])) break;
 				if($arri>=count($arr)) continue;
 			}
 			$lin = trim($lin[0]);
 			if($lin=='') continue;
+		if($fta) { $fta=false; $strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup($rfi)\"> <b>Available scores:</b> \n"; }
             $grname=explode(' ',$lin);
 			$class=1;
 			reset($score);
@@ -296,6 +297,7 @@ if($redo) {
 	$n=0;
 	reset($score);
 	while(list($e, $c) = each($score)) {
+	if(!isset($score[$e]['classingroup'])) continue;  
 	  reset($score[$e]['classingroup']);
  	  while(list($cg1,$cg2) = each($score[$e]['classingroup'])) {
   	    $strtmp .= " <tr class=\"";
