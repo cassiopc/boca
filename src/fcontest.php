@@ -1032,8 +1032,8 @@ function insertlanguages($n,$c=null) {
 	$param['extension']='c';
 	DBNewLanguage($n, $param, $c);
 	$param['number']=2;
-	$param['name']='C++';
-	$param['extension']='cpp';
+	$param['name']='C++11';
+	$param['extension']='cc';
 	DBNewLanguage($n, $param, $c);
 	$param['number']=3;
 	$param['name']='Java';
@@ -1046,10 +1046,6 @@ function insertlanguages($n,$c=null) {
 	$param['number']=5;
 	$param['name']='Python3';
 	$param['extension']='py3';
-	DBNewLanguage($n, $param, $c);
-	$param['number']=6;
-	$param['name']='C++11';
-	$param['extension']='cc';
 	DBNewLanguage($n, $param, $c);
 }
 function insertanswers($n,$c) {
