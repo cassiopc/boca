@@ -1,2 +1,0 @@
-#!/bin/bash
-ntpdate -u 198.60.22.240

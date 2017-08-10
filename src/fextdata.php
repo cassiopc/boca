@@ -15,7 +15,17 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 25/jul/2017 by cassio@ime.usp.br
+// Last modified 10/aug/2017 by cassio@ime.usp.br
+
+function makeurlhttps($siteurl) {
+  if(substr($siteurl,0,7) == 'http://')
+    $siteurl = substr($siteurl,7);
+  if(substr($siteurl,0,8) != 'https://')
+    $siteurl = 'https://' . $siteurl;
+  if(substr($siteurl,strlen($siteurl)-1,1) != '/')
+    $siteurl .= '/';
+  return $siterul;
+}
 
 function scoretransfer($putname, $localsite) {
 	$ds = DIRECTORY_SEPARATOR;
@@ -57,20 +67,16 @@ $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
 		$siteurl = $sitedata[0];
 		if(strpos($siteurl,'#') !== false) continue;
 		LOGError("scoretransfer: found site $siteurl");
-		if(substr($siteurl,0,7) != 'http://')
-			$siteurl = 'http://' . $siteurl;
-		$urldiv='/';
-		if(substr($siteurl,strlen($siteurl)-1,1) == '/')
-			$urldiv = '';
-//		LOGError("url=" .$siteurl . $urldiv . "index.php?getsessionid=1");
+		$siteurl = makeurlhttps($siteurl);
+//		LOGError("url=" .$siteurl . "index.php?getsessionid=1");
 		$opts = array();
 		$opts['http']['timeout'] = 5;
 		$context = stream_context_create($opts);		  
-		$sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1", 0, $context);
+		$sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context);
 //		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
 		$user = trim($sitedata[1]);
 		$res = myhash( myhash (trim($sitedata[2])) . $sess);
-//		LOGError("url=" . $siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer");
+//		LOGError("url=" . $siteurl . "index.php?name=${user}&password=${res}&action=transfer");
 		$opts = array(
 			'http' => array(
 				'method' => 'GET',
@@ -85,10 +91,10 @@ $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
 		$opts['http']['timeout'] = 5;
 		$context = stream_context_create($opts);
 
-		$ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
+		$ok = @file_get_contents($siteurl . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
 //		LOGError("ok=" . $ok);
 		if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
-			$res = @file_get_contents($siteurl . $urldiv . "scoretable.php?remote=-42", 0, $context);
+			$res = @file_get_contents($siteurl . "scoretable.php?remote=-42", 0, $context);
 			@file_put_contents($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip', $res);
 			if(is_readable($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip')) {
 				$zip = new ZipArchive;
@@ -138,7 +144,7 @@ $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
 				$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
 			$opts['http']['timeout'] = 5;
 			$context = stream_context_create($opts);
-			$s = @file_get_contents($siteurl . $urldiv . "site/putfile.php", 0, $context);
+			$s = @file_get_contents($siteurl . "site/putfile.php", 0, $context);
 			if(strpos($s,'SCORE UPLOADED OK') !== false)
 				LOGError("scoretransfer: upload OK");
 			else
@@ -163,7 +169,7 @@ $superlfile = $privatedir . $ds . "score_localsite_" . $localsite . "_x.dat";
                                 $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
 			$opts['http']['timeout'] = 5;
                         $context = stream_context_create($opts);
-                        $s = @file_get_contents($siteurl . $urldiv . "site/putfilesuper.php", 0, $context);
+                        $s = @file_get_contents($siteurl . "site/putfilesuper.php", 0, $context);
                         if(strpos($s,'SCORE UPLOADED OK') !== false)
                                 LOGError("scoretransfer: upload full OK");
                         else
@@ -221,16 +227,12 @@ function getMainXML() {
 
   $siteurl = $sitedata[0];
   LOGInfo("getMainXML: site $siteurl");
-  if(substr($siteurl,0,7) != 'http://')
-    $siteurl = 'http://' . $siteurl;
-  $urldiv='/';
-  if(substr($siteurl,strlen($siteurl)-1,1) == '/')
-    $urldiv = '';
-  //		LOGError("url=" .$siteurl . $urldiv . "index.php?getsessionid=1");
+  $siteurl = makeurlhttps($siteurl);
+  //		LOGError("url=" .$siteurl . "index.php?getsessionid=1");
   $opts = array();
   $opts['http']['timeout'] = 5;
   $context = stream_context_create($opts);		  
-  $sess = @file_get_contents($siteurl . $urldiv . "index.php?getsessionid=1", 0, $context);
+  $sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context);
   //		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
   $user = trim($sitedata[1]);
   $res = myhash( myhash (trim($sitedata[2])) . $sess);
@@ -247,7 +249,7 @@ function getMainXML() {
     $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
   $opts['http']['timeout'] = 5;  
   $context = stream_context_create($opts);
-  $ok = @file_get_contents($siteurl . $urldiv . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
+  $ok = @file_get_contents($siteurl . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
   $ti = mytime();
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
@@ -271,7 +273,7 @@ function getMainXML() {
       $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
     $opts['http']['timeout'] = 5;
     $context = stream_context_create($opts);
-    $s = @file_get_contents($siteurl . $urldiv . "site/getsite.php", 0, $context);
+    $s = @file_get_contents($siteurl . "site/getsite.php", 0, $context);
     if(strpos($s,'<OK>') !== false)
       LOGInfo("xmltransfer: OK");
     else
