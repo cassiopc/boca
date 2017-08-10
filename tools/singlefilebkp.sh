@@ -22,14 +22,14 @@ if [ "$1" == "" ]; then
 fi
 
 if [ -r "$1" ]; then
-md=`wget -S https://$BOCASERVER/boca/index.php -O /dev/null --save-cookies /tmp/.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1 | cut -f2 -d'=' | cut -f1 -d';'`
+md=`wget --no-check-certificate -S https://$BOCASERVER/boca/index.php -O /dev/null --save-cookies /tmp/.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1 | cut -f2 -d'=' | cut -f1 -d';'`
 echo -n "User: "
 read user
 echo -n "Password: "
 read pass
 res=`echo -n $pass | md5sum - | cut -f1 -d' '`
 res=`echo -n "${res}${md}" | md5sum - | cut -f1 -d' '`
-wget "https://$BOCASERVER/boca/index.php?name=${user}&password=${res}" --load-cookies /tmp/.cookie.txt --keep-session-cookies --save-cookies /tmp/.cookie.txt -O /tmp/.temp.txt 2>/dev/null >/dev/null
+wget --no-check-certificate "https://$BOCASERVER/boca/index.php?name=${user}&password=${res}" --load-cookies /tmp/.cookie.txt --keep-session-cookies --save-cookies /tmp/.cookie.txt -O /tmp/.temp.txt 2>/dev/null >/dev/null
 grep -qi incorrect /tmp/.temp.txt
 if [ $? == 0 ]; then 
   echo User or password incorrect
@@ -37,7 +37,7 @@ else
 nom=`echo -n $1 | perl -MURI::Escape -lne 'print uri_escape($_)'`
 echo -n "name=${nom}&data=" > /tmp/.temp.txt
 uuencode -m zzzzzzzzzz < $1 | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> /tmp/.temp.txt
-wget "https://$BOCASERVER/boca/team/getfile.php" --load-cookies /tmp/.cookie.txt --keep-session-cookies -O /dev/null --post-file=/tmp/.temp.txt >/dev/null 2>/dev/null
+wget --no-check-certificate "https://$BOCASERVER/boca/team/getfile.php" --load-cookies /tmp/.cookie.txt --keep-session-cookies -O /dev/null --post-file=/tmp/.temp.txt >/dev/null 2>/dev/null
 fi
 rm -f /tmp/.temp.txt
 rm -f /tmp/.cookie.txt
