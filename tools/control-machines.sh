@@ -28,12 +28,11 @@ else
 	done
     else    
 	for i in `ls runs-submitted*.txt`; do
-	    cat $i | while read lin; do
-		l1=`echo $lin | cut -d'-' -f1`
-		q=`grep -c $l1 runs-submitted*.txt | wc -l`
+	    cat $i|cut -d'-' -f1 |sort -u| while read lin; do
+		q=`grep -c $lin runs-submitted*.txt | wc -l`
 		if [ "$q" != "1" ]; then
-		    echo "===Computer $l1 used by multiple users"
-		    grep -c $l1 runs-submitted*.txt
+		    echo "===Computer $lin used by multiple users"
+		    grep -c $lin runs-submitted*.txt
 		fi
 	    done
 	done
