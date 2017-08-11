@@ -127,11 +127,11 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 					   'filename'=>$name,
 					   'filepath'=>$temp);
 		$compv = "errorseed-5847245-errorseed";
-//		if(isset($_POST['comp']) && $_POST['comp'] != '') $compv=trim(myhtmlspecialchars($_POST['comp']));
-//		else {
+		if(isset($_POST['comp']) && $_POST['comp'] != '') $compv=trim(myhtmlspecialchars($_POST['comp']));
+		else {
 			echo "\nRESULT: ERROR COMPUTER KEY";
 			exit;
-//		}
+		}
  		$verify = $compv . '-'. $shaf . '-' . $name . '-'. $prob . '-' . $lang . '-' . 
 			$_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
 

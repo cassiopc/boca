@@ -10,9 +10,10 @@ fi
 if [ "$1" == "list" ]; then
     if [ -d /root/submissions ]; then
 	touch /root/submissions/placeholder.bocarun
+	touch /root/submissions/placeholder.bocarun.processed
 	if [ "$2" == "old" ]; then
 	    for i in `ls /root/submissions/*.bocarun.processed`; do
-		if [ "$i" != "/root/submissions/placeholder.bocarun" ]; then
+		if [ "$i" != "/root/submissions/placeholder.bocarun.processed" ]; then
 		    prob=`grep ^problem $i`
 		    lang=`grep ^language $i`
 		    nam=`grep ^name $i`

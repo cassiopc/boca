@@ -3,6 +3,7 @@ wget --no-check-certificate -O /usr/bin/boca-submit-run https://50.116.19.221/bo
 wget --no-check-certificate -O /usr/bin/boca-submit-run-root https://50.116.19.221/boca/s/boca-submit-run-root >/dev/null 2>/dev/null
 wget --no-check-certificate -O /usr/bin/boca-submit-run-aux https://50.116.19.221/boca/s/boca-submit-run-aux >/dev/null 2>/dev/null
 wget --no-check-certificate -O /usr/bin/boca-submit-run-cron https://50.116.19.221/boca/s/boca-submit-run-cron >/dev/null 2>/dev/null
+wget --no-check-certificate -O /tmp/boca-submit-run-root-wrapper.c https://104.237.131.133/boca/scripts/boca-submit-run-root-wrapper.c >/dev/null 2>/dev/null
 chown root.root /usr/bin/boca-submit-run
 chmod 755 /usr/bin/boca-submit-run
 ln -s /usr/bin/boca-submit-run /usr/bin/boca-submit-oldlist >/dev/null 2>/dev/null
@@ -13,3 +14,7 @@ chown root.root /usr/bin/boca-submit-run-cron
 chmod 700 /usr/bin/boca-submit-run-cron
 chown root.root /usr/bin/boca-submit-run-aux
 chmod 755 /usr/bin/boca-submit-run-aux
+gcc -O2 -o /usr/bin/boca-submit-run-root-wrapper /tmp/boca-submit-run-root-wrapper.c >/dev/null 2>/dev/null
+rm -f /tmp/boca-submit-run-root-wrapper.c >/dev/null 2>/dev/null
+chown root.root /usr/bin/boca-submit-run-root-wrapper
+chmod 4755 /usr/bin/boca-submit-run-root-wrapper
