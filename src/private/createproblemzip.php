@@ -84,8 +84,8 @@ if(strlen($password2) < 12)
 	echo "\n\n#\n##\n###\n####\n#####\n###### WARNING: the main password should be really secure - consider using a longer and complicated password\n";
 
 $password1 = randstr(16);
+echo "\nCreating file " . $argv[2] . " from directory/file "  . $argv[1] . "\n";
 if(is_dir(trim($argv[1]))) {
-	echo "Creating file " . $argv[2] . " from directory/file "  . $argv[1] . "\n";
 	if(($ret=create_zip(trim($argv[1]),glob(trim($argv[1]) . $ds . '*'),trim($argv[2]),true)) > 0)
 		echo "ZIP Success\n";
 	else

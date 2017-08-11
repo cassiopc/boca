@@ -12,12 +12,12 @@ install-bocawww:
 
 install-bocaapache: install-bocawww
 	mkdir -p $(DESTDIR)/etc/apache2/sites-enabled/
-	cp tools/etc/apache2/conf.d/boca $(DESTDIR)/etc/apache2/sites-enabled/000-boca.conf
+	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-enabled/000-boca.conf
 
 install-scripts:
 	mkdir -p $(DESTDIR)/usr/sbin/
 	install tools/dump.sh $(DESTDIR)/usr/sbin/boca-dump
-	install tools/etc/icpc/createbocajail.sh $(DESTDIR)/usr/sbin/boca-createjail
+	install tools/boca-createjail $(DESTDIR)/usr/sbin/boca-createjail
 	install tools/boca-createdb.sh $(DESTDIR)/usr/sbin/boca-createdb
 	install tools/boca-autojudge.sh $(DESTDIR)/usr/sbin/boca-autojudge
 	install tools/boca-config-dbhost.sh $(DESTDIR)/usr/sbin/boca-config-dbhost
