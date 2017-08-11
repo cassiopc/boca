@@ -10,7 +10,7 @@ fi
 #Check if this script is running in a user in sudo group or root
 if groups | egrep -q "(sudo|root)" ; then
   echo "Este script deve ser executado por um usuario normal"
-  echo "Na Maratona este usuario, geralmente, é o 'icpc'"
+  echo "Na Maratona este usuario, geralmente, eh o 'icpc'"
   exit 1
 fi
 
@@ -70,7 +70,7 @@ fi
 
 if [ -r "$5" ]; then
     if [ "$4" != "C" -a "$4" != "C++11" -a "$4" != "Java" -a "$4" != "Python2" -a "$4" != "Python3" ]; then
-	echo "Warning: language name is not standard, be sure it is correct (this is not an error, it might be ok)"
+	echo "Warning: language name is not standard, be sure it is correct (this is not necessarily an error)"
     fi
     
     nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
