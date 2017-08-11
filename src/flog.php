@@ -160,7 +160,7 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	if ($a["userip"] != $gip && $a["userip"] != "" && $a["usertype"] != "score") {
 		LOGLevel("User $name is using two different IPs: " . $a["userip"] . 
 			 "(" . dateconv($a["userlastlogin"]) .") and " . $gip,1);
-		if($msg && $a["usertype"] != "admin") MSGError("You are using two distinct IPs. Admin notified.");
+		if($msg && $a["usertype"] != "admin" && $a["usermultilogin"] != "t") MSGError("You are using two distinct IPs. Admin notified.");
 	}
 	if ($a["userpermitip"] != "") {
 		$ips=explode(';',$a["userpermitip"]);
