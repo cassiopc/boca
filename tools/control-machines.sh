@@ -27,11 +27,22 @@ else
 	    echo "`echo -n $lin | cut -d':' -f5` $pas $pass 0"
 	done
     else    
-	for arquivo in runs-submitted-1-1-*txt; do
-	    TIME="$(cut -d'-' -f5 <<< "$arquivo")"
-	    printf "$TIME "
-	    grep '\-2[0-1][0-9]\-' $arquivo|cut -d'-' -f1 |sort -u|wc -l
+	for i in `ls runs-submitted*.txt`; do
+	    cat $i | while read lin; do
+		l1=`echo $lin | cut -d'-' -f1`
+		q=`grep -c $l1 runs-submitted*.txt | wc -l`
+		if [ "$q" != "1" ]; then
+		    echo "===Computer $l1 used by multiple users"
+		    grep -c $l1 runs-submitted*.txt
+		fi
+	    done
 	done
+	# for arquivo in `ls runs-submitted-*txt`; do
+	#     TIME="$(cut -d'-' -f3-5 <<< "`basename $arquivo .txt`")"
+	#     printf "$TIME "
+	#     ##grep '\-2[0-1][0-9]\-'
+	#     cat $arquivo|cut -d'-' -f1 |sort -u|wc -l
+	# done
     fi
 fi
 
