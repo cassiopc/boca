@@ -69,12 +69,16 @@ if [ "$1" == "" ]; then
 fi
 
 if [ -r "$5" ]; then
-	nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
-	for BOCASERVER in `echo $BOCASERVERS | tr ';' ' '`; do
-		$runroot "$BOCASERVER" "$1" "$2" "$3" "$4" "`basename $5`" "$5"
-	done
+    if [ "$4" != "C" -a "$4" != "C++11" -a "$4" != "Java" -a "$4" != "Python2" -a "$4" != "Python3" ]; then
+	echo "Warning: language name is not standard, be sure it is correct (this is not an error, it might be ok)"
+    fi
+    
+    nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
+    for BOCASERVER in `echo $BOCASERVERS | tr ';' ' '`; do
+	$runroot "$BOCASERVER" "$1" "$2" "$3" "$4" "`basename $5`" "$5"
+    done
 else
-	echo "file $5 not found/readable"
+    echo "file $5 not found/readable"
 fi
 
 fi
