@@ -20,7 +20,7 @@ char *clean(char *s) {
 }
 int main(int argc, char **argv) {
   if(argc != 8) return 1;
-  sprintf(str,"/usr/bin/boca-submit-run-root \"%300s\" \"%300s\" \"%300s\" \"%300s\" \"%300s\" \"%300s\" \"%300s\"",
+  sprintf(str,"/usr/bin/boca-submit-run-root \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"",
 	  clean(argv[1]),clean(argv[2]),clean(argv[3]),clean(argv[4]),clean(argv[5]),clean(argv[6]),clean(argv[7]));
   setuid(0);
   system(str);
