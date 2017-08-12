@@ -48,10 +48,10 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["problem"]) && isset($_POST["Su
 		}
 
 
-		$ac=array('contest','site','user','problem','lang','filename','filepath');
-		$ac1=array('runnumber','rundate','rundatediff','rundatediffans','runanswer','runstatus','runjudge','runjudgesite',
-			   'runjudge1','runjudgesite1','runanswer1','runjudge2','runjudgesite2','runanswer2',
-			   'autoip','autobegindate','autoenddate','autoanswer','autostdout','autostderr','updatetime');
+		//		$ac=array('contest','site','user','problem','lang','filename','filepath');
+		//		$ac1=array('runnumber','rundate','rundatediff','rundatediffans','runanswer','runstatus','runjudge','runjudgesite',
+		//			   'runjudge1','runjudgesite1','runanswer1','runjudge2','runjudgesite2','runanswer2',
+		//			   'autoip','autobegindate','autoenddate','autoanswer','autostdout','autostderr','updatetime');
 		$param = array('contest'=>$_SESSION["usertable"]["contestnumber"],
 					   'site'=>$_SESSION["usertable"]["usersitenumber"],
 					   'user'=>  $_SESSION["usertable"]["usernumber"],
