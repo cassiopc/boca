@@ -22,7 +22,7 @@
 require_once("globals.php");
 
 if(!ValidSession()) {
-        InvalidSession("scoretable.php");
+        InvalidSession("optionlower.php");
         ForceLoad("index.php");
 }
 $loc = $_SESSION['loc'];

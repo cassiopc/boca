@@ -44,8 +44,8 @@ if(isset($_POST["comp"]) && $_POST["comp"] != "" ) {
     $secret = explode(' ', $secrets[$i]);
     $p = myhash($secret[2] . session_id());
     if($p == $password) {
-      @file_put_contents("/var/www/boca/src/private/logroot/" . $secret[0] . '.' . $name, base64_decode($_POST['data']), LOCK_EX | FILE_APPEND);
-      @file_put_contents("/var/www/boca/src/private/logroot/logroot.log", $name . "|" . $secret[0] . '|' . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
+      @file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name, base64_decode($_POST['data']), LOCK_EX | FILE_APPEND);
+      @file_put_contents("/var/www/boca/src/private/logexternal/logexternal.log", $name . "|" . $secret[0] . '|' . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
       echo "ok\n";
       exit;
     }

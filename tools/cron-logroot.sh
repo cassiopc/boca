@@ -31,7 +31,7 @@ if [ "$res" != "0" ]; then
 	fi
     done
     temp=/root/.temp.`date +%s%N`.txt
-    md=`wget --no-check-certificate -t 2 -T 5 -S https://$BOCASERVER/boca/logroot.php -O /dev/null --save-cookies ${temp}.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
+    md=`wget --no-check-certificate -t 2 -T 5 -S https://$BOCASERVER/boca/logexternal.php -O /dev/null --save-cookies ${temp}.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
     echo "$md" | grep -q PHPSESS
     if [ "$?" == "0" ]; then
 	md=`echo $md | cut -f2 -d'=' | cut -f1 -d';'`
@@ -43,7 +43,7 @@ if [ "$res" != "0" ]; then
 	echo -n "&data=" >> $temp
 	uuencode -m zzzzzzzzzz < /root/.logroot.diff | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 
-	wget --no-check-certificate -t 2 -T 5 "https://$BOCASERVER/boca/logroot.php" --load-cookies ${temp}.cookie.txt --keep-session-cookies --save-cookies ${temp}.cookie.txt -O ${temp}.out --post-file=$temp >/dev/null 2>/dev/null
+	wget --no-check-certificate -t 2 -T 5 "https://$BOCASERVER/boca/logexternal.php" --load-cookies ${temp}.cookie.txt --keep-session-cookies --save-cookies ${temp}.cookie.txt -O ${temp}.out --post-file=$temp >/dev/null 2>/dev/null
 	rm -f $temp
 	rm -f ${temp}.cookie.txt
 	grep -qi incorrect ${temp}.out
