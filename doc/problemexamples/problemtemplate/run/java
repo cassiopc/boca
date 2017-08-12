@@ -178,7 +178,13 @@ else
 	ret=$?
 fi
 if [ $ret -gt 10 ]; then
-	echo "> > > > > > > Nonzero return code - possible runtime error - I'M GUESSING IT IS RUNTIME ERROR < < < < < < < <"
+    if [ -r stderr0 ]; then
+	grep -q "not find or load main class" stderr0
+	if [ $? == 0 ]; then
+	    echo "> > > Nonzero return code - possible class name mismatch - do check < < <"
+	else
+	    echo "> > > Nonzero return code - possible runtime error - do check < < <"
+	fi
 	ret=9
 fi
 if [ -f stdout0 ]; then

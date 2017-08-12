@@ -29,10 +29,15 @@ else
     else    
 	for i in `ls runs-submitted*.txt`; do
 	    cat $i|cut -d'-' -f1 |sort -u| while read lin; do
-		q=`grep -c $lin runs-submitted*.txt | wc -l`
+		q=`grep -c $lin runs-submitted*.txt | grep -v ":0$" | wc -l`
 		if [ "$q" != "1" ]; then
 		    echo "===Computer $lin used by multiple users"
-		    grep -c $lin runs-submitted*.txt
+		    grep -c $lin runs-submitted*.txt | grep -v ":0$" | while read line1; do
+                      fname=`echo $line1 | cut -d':' -f1`
+		      fname=`basename $fname .txt`
+                      echo $fname
+		      grep $lin ${fname}.try | cut -d'-' -f4 | while read line2; do date -d "@$line2"; done
+                   done   
 		fi
 	    done
 	done

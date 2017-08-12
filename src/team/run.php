@@ -159,7 +159,7 @@ $pastabs=''; if(isset($_POST["pastabs"])) $pastabs=myhtmlspecialchars($_POST["pa
 		//@file_put_contents($fcname . ".try", $verify1 . "\n", FILE_APPEND | LOCK_EX);
                         $codes = @file($fcname . ".txt",FILE_IGNORE_NEW_LINES);
                         if(is_array($codes) && in_array($verify,$codes)) {
-@file_put_contents($fcname . ".try", $verify1 . "-ALREADY\n", FILE_APPEND | LOCK_EX);
+			  @file_put_contents($fcname . ".try", $verify1 . "-ALREADY\n", FILE_APPEND | LOCK_EX);
 					if(isset($_POST['name']) && $_POST['name'] != '') {
                                		 echo "\nRESULT: SAME FILE ALREADY SUBMITTED FOR THIS PROB/LANG";
 					exit;
