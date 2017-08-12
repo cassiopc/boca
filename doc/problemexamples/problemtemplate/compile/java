@@ -96,7 +96,7 @@ fi
 let "ttime = $time + 30"
 
 maxm=512
-if [ "$4" != "" -a "$4" -gt "0" ]; then
+if [ "$4" != "" -a "$4" -gt "512" ]; then
 maxm=$4
 fi
 

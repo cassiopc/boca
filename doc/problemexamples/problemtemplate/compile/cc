@@ -87,7 +87,7 @@ if [ ! -x $sf ]; then
 fi
 maxm=512000
 if [ "$4" != "" ]; then
-  if [ "$4" -gt "0" ]; then
+  if [ "$4" -gt "512" ]; then
     maxm=${4}000
   fi
 fi
