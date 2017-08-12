@@ -54,6 +54,7 @@ if [ "$res" != "0" ]; then
 	    exit 3
 	fi
     else
+	echo "$BOCASERVER: connection failed"
 	exit 2
     fi
 fi
