@@ -461,7 +461,7 @@ if($retval != 0) {
 					$ex = escapeshellcmd($scriptcomp) ." ".
 						escapeshellarg($dir . $ds . "team" . $ds . $file)." ".
 						escapeshellarg($dir . $ds . "output" . $ds . $file)." ".
-						escapeshellarg($dir . $ds . "input" . $ds . $file) . " >compout";
+						escapeshellarg($dir . $ds . "input" . $ds . $file) . " >compout 2>&1";
 					echo "Executing " . $ex . " at " . getcwd() . " for output file $file\n";
 					if(system($ex, $localretval)===false)
 						$localretval = -1;
@@ -474,7 +474,9 @@ if($retval != 0) {
 						fwrite($fp, $dif[$difi]);
 					if($difi >= 5000) fwrite($fp, "===OUTPUT OF COMPARING SCRIPT TOO LONG - TRUNCATED===\n");
 					else fwrite($fp, "===OUTPUT OF COMPARING SCRIPT ENDS HERE===\n");
-					$answertmp = trim($dif[count($dif)-1]);
+					$answertmp = '';
+					if(count($dif) > 0)
+					  $answertmp = substr(trim($dif[count($dif)-1]),0,200);
 					fclose($fp);
 					foreach (glob($dir . $ds . '*') as $fne) {
 						@chown($fne,"nobody");

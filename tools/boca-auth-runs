@@ -43,7 +43,7 @@ temp=/tmp/.temp.`date +%s%N`.txt
 md=`wget --no-check-certificate -t 2 -T 7 -S https://$BOCASERVER/boca/getcode.php -O /dev/null --save-cookies ${temp}.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
 echo "$md" | grep -q PHPSESS
 if [ "$?" == "0" ]; then
-    md=`echo $md | cut -f2 -d'=' | cut -f1 -d';' | cut -f7 -d"$(echo -e '\t')"`
+    md=`echo $md | cut -f2 -d'=' | cut -f1 -d';'`
     ress=`echo -n $pass | sha256sum - | cut -f1 -d' '`
     res=`echo -n "${ress}${md}" | sha256sum - | cut -f1 -d' '`
     wget --no-check-certificate -t 2 -T 7 "https://$BOCASERVER/boca/getcode.php?name=${user}&password=${res}" --load-cookies ${temp}.cookie.txt --keep-session-cookies --save-cookies ${temp}.cookie.txt -O $temp 2>/dev/null >/dev/null
