@@ -2,6 +2,7 @@
 
 if [ "$1" == "users" ]; then
     for i in `ls runs-submitted*.txt`; do
+	[ "$2" == "verb" ] && echo "users checking $i"
 	a=""
 	cat $i | while read lin; do
 	    if [ "$a" == "" ]; then
@@ -28,6 +29,7 @@ else
 	done
     else    
 	for i in `ls runs-submitted*.txt`; do
+	    [ "$2" == "verb" ] && echo "checking $i"
 	    cat $i|cut -d'-' -f1 |sort -u| while read lin; do
 		q=`grep -c $lin runs-submitted*.txt | grep -v ":0$" | wc -l`
 		if [ "$q" != "1" ]; then
