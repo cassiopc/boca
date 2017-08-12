@@ -477,6 +477,7 @@ if($retval != 0) {
 					$answertmp = '';
 					if(count($dif) > 0)
 					  $answertmp = substr(trim($dif[count($dif)-1]),0,200);
+					$answertmp = sanitizeText($answertmp);
 					fclose($fp);
 					foreach (glob($dir . $ds . '*') as $fne) {
 						@chown($fne,"nobody");
