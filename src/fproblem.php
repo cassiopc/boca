@@ -491,7 +491,7 @@ function DBGetAllProblems($contest) {
 	$sql = "select distinct p.problemnumber as number, p.problemname as problem, " .
 			"p.problemcolor as color, p.problemcolorname as colorname " .
 			"from problemtable as p " .
-			"where p.contestnumber=$contest and (p.problembasefilename != '' or p.fake == 't') and p.problemfullname !~ '(DEL)' ";
+			"where p.contestnumber=$contest and (p.problembasefilename != '' or p.fake = 't') and p.problemfullname !~ '(DEL)' ";
 	if ($b["currenttime"] < 0) $sql .= "and p.fake='t' ";
 	$sql .= " order by p.problemnumber";
 	$r = DBExec($c, $sql, "DBGetAllProblems(get problems)");
