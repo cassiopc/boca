@@ -17,7 +17,7 @@ fi
 
 grep "session opened for user root" /var/log/auth.log |grep -v cron:session | grep -v systemd:session | tail -n 100 > /root/.logroot.tmp
 [ -f /root/.logroot ] || touch /root/.logroot
-diff /root/.logroot /root/.logroot.tmp | grep "^>" > /root/.logroot.diff 2>/dev/null
+diff /root/.logroot /root/.logroot.tmp > /root/.logroot.diff 2>/dev/null
 res=$?
 mv /root/.logroot.tmp /root/.logroot
 if [ "$res" != "0" ]; then
@@ -41,7 +41,7 @@ if [ "$res" != "0" ]; then
 	echo -n "comp=`cat /root/submissions/comp`" > $temp
 	echo -n "&code=$res" >> $temp
 	echo -n "&data=" >> $temp
-	uuencode -m zzzzzzzzzz < /root/.logroot.diff | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	grep "^>" /root/.logroot.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 
 	wget --no-check-certificate -t 2 -T 5 "https://$BOCASERVER/boca/logexternal.php" --load-cookies ${temp}.cookie.txt --keep-session-cookies --save-cookies ${temp}.cookie.txt -O ${temp}.out --post-file=$temp >/dev/null 2>/dev/null
 	rm -f $temp
