@@ -83,15 +83,15 @@ function DBGetProblemData($contestnumber, $problemnumber, $c=null) {
 	for ($i=0;$i<$n;$i++) {
 		$a[$i] = DBRow($r,$i);
 		if(isset($_SESSION['locr'])) {
-		$ds = DIRECTORY_SEPARATOR;
-		if($ds=="") $ds = "/";
-		$nn = $a[$i]['number'];
-		$ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $nn;
-		if(is_readable($ptmp . ".name")) {
-			$a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
-			if($a[$i]['descfilename'] != '')
-				$a[$i]['descoid']=-1;
-		}
+		  $ds = DIRECTORY_SEPARATOR;
+		  if($ds=="") $ds = "/";
+		  $nn = $a[$i]['number'];
+		  $ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $nn;
+		  if(is_readable($ptmp . ".name")) {
+		    $a[$i]['descfilename']=trim(file_get_contents($ptmp . ".name"));
+		    if($a[$i]['descfilename'] != '')
+		      $a[$i]['descoid']=-1;
+		  }
 		}
 	}
 	return $a;
@@ -461,7 +461,7 @@ function DBGetProblems($contest,$showanyway=false) {
 	$sql = "select distinct p.problemnumber as number, p.problemname as problem, " .
 		"p.problemfullname as fullname, p.problembasefilename as basefilename, " .
 			"p.problemcolor as color, p.problemcolorname as colorname " .
-	       "from problemtable as p where p.fake!='t' and p.contestnumber=$contest and p.problemfullname !~ '(DEL)' order by p.problemnumber";
+	       "from problemtable as p where p.fake!='t' and p.contestnumber=$contest and p.problembasefilename != '' and p.problemfullname !~ '(DEL)' order by p.problemnumber";
 	$r = DBExec($c, $sql, "DBGetProblems(get problems)");
 	$n = DBnlines($r);
 	$a = array();
