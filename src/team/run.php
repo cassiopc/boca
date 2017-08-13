@@ -143,9 +143,11 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
     $pastabs=''; if(isset($_POST["pastabs"])) $pastabs=myhtmlspecialchars($_POST["pastabs"]);
     $verify1 = $pasthash . '-' . $pastvalhash .'-'. $pastval .'-'. $pastabs .'-'. $compv . '-'. $shaf . '-' . $name . '-'. $prob . '-' . $lang . '-' .
       $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
-    
+
+    @mkdir($_SESSION["locr"] . $ds . "private" . $ds . 'runslog',0770);
     $fcname = $_SESSION["locr"] . $ds . "private" . $ds . 'runslog' . $ds . 'runs-submitted-' . $_SESSION["usertable"]["contestnumber"].'-'.
       $_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
+    @mkdir($_SESSION["locr"] . $ds . "private" . $ds . 'comp',0770);
     $fcnamex = $_SESSION["locr"] . $ds . "private" . $ds . 'comp' . $ds . $compv . ".comp";
     $prevcomp = @file_get_contents($fcnamex);
     
