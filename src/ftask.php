@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 13/aug/2017 by cassio@ime.usp.br
 function DBDropTaskTable() {
 	 $c = DBConnect();
 	 $r = DBExec($c, "drop table \"tasktable\"", "DBDropTaskTable(drop table)");
@@ -204,8 +204,8 @@ function DBGetTaskToAnswerC($number,$site,$contest,$chief) {
 function DBAllTasks($contest) {
 	return DBOpenTasksSNS($contest,"x",-1);
 }
-function DBAllTasksInSites($contest,$site,$order) {
-	return DBOpenTasksSNS($contest,$site,-1,$order);
+function DBAllTasksInSites($contest,$site,$order,$adm=false) {
+  return DBOpenTasksSNS($contest,$site,-1,$order,$adm);
 }
 function DBOpenTasks($contest) {
 	return DBOpenTasksSNS($contest,"x",1);
@@ -213,7 +213,7 @@ function DBOpenTasks($contest) {
 function DBOpenTasksInSites($contest,$site) {
 	return DBOpenTasksSNS($contest,$site,1);
 }
-function DBOpenTasksSNS($contest,$site,$st,$order='task') {
+function DBOpenTasksSNS($contest,$site,$st,$order='task',$adm=false) {
 	$c = DBConnect();
 	$sql = "select distinct t.tasknumber as number, t.taskdatediff as timestamp, t.usernumber as user, ".
 		"u.username as username, t.color as color, t.colorname as colorname, " .
@@ -232,12 +232,16 @@ function DBOpenTasksSNS($contest,$site,$st,$order='task') {
 	        for ($i=0;$i<count($str);$i++) {
 				if (is_numeric($str[$i])) {
 					$sql .= " or (t.sitenumber=".$str[$i];
-					$b = DBSiteInfo($contest, $str[$i]);
-					if ($b == null) {
-						exit;
+					if($adm == false) {
+					  $b = DBSiteInfo($contest, $str[$i]);
+					  if ($b == null) {
+					    exit;
+					  }
+					  $t = $b["currenttime"]; 
+					  //					  $sql .= " and (t.taskdatediffans<=$t or (t.taskstatus != 'done' and t.taskdatediff<=$t))";
+					  $sql .= " and t.taskdatediff<=$t";
 					}
-					$t = $b["currenttime"]; 
-					$sql .= " and (t.taskdatediffans<=$t or (t.taskstatus != 'done' and t.taskdatediff<=$t))) ";
+					$sql .= ") ";
 				}
 	        }
         	$sql .= ")";
