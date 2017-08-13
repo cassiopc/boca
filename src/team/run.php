@@ -126,109 +126,112 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 		   'lang'=>$lang,
 		   'filename'=>$name,
 		   'filepath'=>$temp);
+    $compv = "web_" . sanitizeFilename(getIP()) . "_" . $_SESSION["usertable"]["contestnumber"].'_'.$_SESSION["usertable"]["usersitenumber"].'_'.$_SESSION["usertable"]["usernumber"];
     if(trim($linesubmission) =='1') {
-      $compv = "errorseed-5847245-errorseed";
-      if(isset($_POST['comp']) && $_POST['comp'] != '') $compv=trim(myhtmlspecialchars($_POST['comp']));
+      if(isset($_POST['comp']) && $_POST['comp'] != '') $compv=substr(trim(sanitizeFilename($_POST['comp'])),0,150);
       else {
 	echo "\nRESULT: ERROR COMPUTER KEY";
 	exit;
       }
-      $verify = $compv . '-'. $shaf . '-' . $name . '-'. $prob . '-' . $lang . '-' . 
-	$_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
-      
-      $pasthash=""; if(isset($_POST["pasthash"])) $pasthash=myhtmlspecialchars($_POST["pasthash"]);
-      $pastvalhash=''; if(isset($_POST["pastvalhash"])) $pastvalhash=myhtmlspecialchars($_POST["pastvalhash"]);
-      $pastval=''; if(isset($_POST["pastval"])) $pastval=myhtmlspecialchars($_POST["pastval"]);
-      $pastabs=''; if(isset($_POST["pastabs"])) $pastabs=myhtmlspecialchars($_POST["pastabs"]);
-      $verify1 = $pasthash . '-' . $pastvalhash .'-'. $pastval .'-'. $pastabs .'-'. $compv . '-'. $shaf . '-' . $name . '-'. $prob . '-' . $lang . '-' .
-	$_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
-      
-      $fcname = $_SESSION["locr"] . $ds . "private" . $ds . 'runs-submitted-' . $_SESSION["usertable"]["contestnumber"].'-'.
-	$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
-      $fcnamex = $_SESSION["locr"] . $ds . "private" . $ds . 'comp' . $ds . md5($compv) . ".comp";
-      $prevcomp = @file_get_contents($fcnamex);
-      
-      if($prevcomp === false || trim($prevcomp) == '') {
-	@file_put_contents($fcnamex, $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"], LOCK_EX);
-      } else {
-	if(strlen($compv) != 32 || trim($prevcomp) != $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"]) {
+    }
+    $verify = $compv . '-'. $shaf . '-' . $name . '-'. $prob . '-' . $lang . '-' . 
+      $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
+    
+    $pasthash=""; if(isset($_POST["pasthash"])) $pasthash=myhtmlspecialchars($_POST["pasthash"]);
+    $pastvalhash=''; if(isset($_POST["pastvalhash"])) $pastvalhash=myhtmlspecialchars($_POST["pastvalhash"]);
+    $pastval=''; if(isset($_POST["pastval"])) $pastval=myhtmlspecialchars($_POST["pastval"]);
+    $pastabs=''; if(isset($_POST["pastabs"])) $pastabs=myhtmlspecialchars($_POST["pastabs"]);
+    $verify1 = $pasthash . '-' . $pastvalhash .'-'. $pastval .'-'. $pastabs .'-'. $compv . '-'. $shaf . '-' . $name . '-'. $prob . '-' . $lang . '-' .
+      $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
+    
+    $fcname = $_SESSION["locr"] . $ds . "private" . $ds . 'runslog' . $ds . 'runs-submitted-' . $_SESSION["usertable"]["contestnumber"].'-'.
+      $_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
+    $fcnamex = $_SESSION["locr"] . $ds . "private" . $ds . 'comp' . $ds . $compv . ".comp";
+    $prevcomp = @file_get_contents($fcnamex);
+    
+    if($prevcomp === false || trim($prevcomp) == '') {
+      @file_put_contents($fcnamex, $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"], LOCK_EX);
+    } else {
+      if(trim($prevcomp) != $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"]) {
+	if(isset($_POST['name']) && $_POST['name'] != '') {
 	  echo "\nRESULT: UNAUTHORIZED COMPUTER";
 	  exit;
 	}
+	MSGError("Could not save computer info");
       }
-
-      //@file_put_contents($fcname . ".try", $verify1 . "\n", FILE_APPEND | LOCK_EX);
-      $codes = @file($fcname . ".txt",FILE_IGNORE_NEW_LINES);
-      if(is_array($codes) && in_array($verify,$codes)) {
-	@file_put_contents($fcname . ".try", $verify1 . "-ALREADY\n", FILE_APPEND | LOCK_EX);
-	if(isset($_POST['name']) && $_POST['name'] != '') {
-	  echo "\nRESULT: SAME FILE ALREADY SUBMITTED FOR THIS PROB/LANG";
-	  exit;
-	}
-	MSGError("Same file already submitted for this problem and language"); ForceLoad($runteam);
-      } 
-      
-      if(isset($_POST['pastcode']) && $_POST['pastcode'] != '') {
-	$pastcode = myhtmlspecialchars($_POST["pastcode"]);
-	if(isset($_POST["pasthash"]) && isset($_POST["pastval"])) {
-	  $pasthash = myhtmlspecialchars($_POST["pasthash"]);
-	  $pastvalhash = myhtmlspecialchars($_POST["pastvalhash"]);
-	  $pastval = myhtmlspecialchars($_POST["pastval"]);
-	  $pastabs = myhtmlspecialchars($_POST["pastabs"]);
-	  if(is_readable($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config')) {
-	    $pcodes = @file($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config');
-	    $pastsubmission = array_map(function($element){ $sp=explode(' ',$element,4); return trim($sp[2]); }, $pcodes);
-	    $key=-1;
-	    
-	    for($hh=0; $hh < count($pastsubmission); $hh++) 
-	      if(myhash($pastsubmission[$hh] . $pastcode . $compv . $pastval) == $pastvalhash) { $key = $hh; break; }
-	    if($key < 0) {
-	      //if(($key=array_search($pastvalhash, $pastsubmission))===false) {
-	      //	$pastsubmission = array_map(function($element){ $sp=explode(' ',$element,4); return myhash(trim($sp[2]) . trim($pastcode) . trim($pastabs)); }, $pcodes);
-	      //	if(($key=array_search($pasthash, $pastsubmission))===false) {
-	      echo "\nRESULT: INVALID SUBMISSION CODE (0)";
-	      exit;
-	      //	}
-	    }
-	  } else {
-	    @file_put_contents($fcname . ".try", $verify1 . "-BADCODE1\n", FILE_APPEND | LOCK_EX);
-	    echo "\nRESULT: INVALID SUBMISSION CODE (1)";
-	    exit;
-	  }
-	} else {
-	  @file_put_contents($fcname . ".try", $verify1 . "-BADCODE2\n", FILE_APPEND | LOCK_EX);
-	  echo "\nRESULT: INVALID SUBMISSION CODE (2)";
-	  exit;
-	}
-	if($pastval > 0) {
-	  $param['rundate']=time() - $pastval;
-	  $b = DBSiteInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"]);
-	  $dif = $b["currenttime"]; 
-	  $param['rundatediff']=$dif - $pastval;
-	}
-
-	$tardes = array_map(function($element){ $sp=explode(' ',$element,4); if(count($sp)>3) return 60*trim($sp[3]); return 0; }, $pcodes);
-	///////CASO DE COMECAR MAIS TARDE NO CENTRALIZADO
-	if($key >= 0 && $tardes[$key] > 0) { //substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
-	  $param['rundate']=$param['rundate'] - $tardes[$key]; // 60*10 = 10 minutos
-	  $param['rundatediff']=$param['rundatediff'] - $tardes[$key];
-	}
-	$retv = DBNewRun ($param);
-	if($retv == 2) {
-	  @file_put_contents($fcname . ".try", $verify1 . "-OK-" . $param['rundatediff'] . "-" . $param['rundate'] . "-" . $b["currenttime"] . "\n", FILE_APPEND | LOCK_EX);
-	  @file_put_contents($fcname . ".txt", $verify . "\n", FILE_APPEND | LOCK_EX);
-	  echo "\nRESULT: RUN SUBMITTED SUCCESSFULLY ($pastval)";
-	} else {
-	  if($retv == 0) {
-	    echo "\nRESULT: CONTEST NOT RUNNING";
-	    @file_put_contents($fcname . ".try", $verify1 . "-NOTRUNNING\n", FILE_APPEND | LOCK_EX);
-	  }			else {
-	    echo "\nRESULT: UNKNOWN PROBLEM";
-	    @file_put_contents($fcname . ".try", $verify1 . "-UNKNOWN\n", FILE_APPEND | LOCK_EX);
-	  }
-	}
+    }
+    
+    //@file_put_contents($fcname . ".try", $verify1 . "\n", FILE_APPEND | LOCK_EX);
+    $codes = @file($fcname . ".txt",FILE_IGNORE_NEW_LINES);
+    if(is_array($codes) && in_array($verify,$codes)) {
+      @file_put_contents($fcname . ".try", $verify1 . "-ALREADY\n", FILE_APPEND | LOCK_EX);
+      if(isset($_POST['name']) && $_POST['name'] != '') {
+	echo "\nRESULT: SAME FILE ALREADY SUBMITTED FOR THIS PROB/LANG";
 	exit;
       }
+      MSGError("Same file already submitted for this problem and language"); ForceLoad($runteam);
+    } 
+    
+    if(isset($_POST['pastcode']) && $_POST['pastcode'] != '') {
+      $pastcode = myhtmlspecialchars($_POST["pastcode"]);
+      if(isset($_POST["pasthash"]) && isset($_POST["pastval"])) {
+	$pasthash = myhtmlspecialchars($_POST["pasthash"]);
+	$pastvalhash = myhtmlspecialchars($_POST["pastvalhash"]);
+	$pastval = myhtmlspecialchars($_POST["pastval"]);
+	$pastabs = myhtmlspecialchars($_POST["pastabs"]);
+	if(is_readable($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config')) {
+	  $pcodes = @file($_SESSION["locr"] . $ds . "private" . $ds . 'run-past.config');
+	  $pastsubmission = array_map(function($element){ $sp=explode(' ',$element,4); return trim($sp[2]); }, $pcodes);
+	  $key=-1;
+	  
+	  for($hh=0; $hh < count($pastsubmission); $hh++) 
+	    if(myhash($pastsubmission[$hh] . $pastcode . $compv . $pastval) == $pastvalhash) { $key = $hh; break; }
+	  if($key < 0) {
+	    //if(($key=array_search($pastvalhash, $pastsubmission))===false) {
+	    //	$pastsubmission = array_map(function($element){ $sp=explode(' ',$element,4); return myhash(trim($sp[2]) . trim($pastcode) . trim($pastabs)); }, $pcodes);
+	    //	if(($key=array_search($pasthash, $pastsubmission))===false) {
+	    echo "\nRESULT: INVALID SUBMISSION CODE (0)";
+	    exit;
+	    //	}
+	  }
+	} else {
+	  @file_put_contents($fcname . ".try", $verify1 . "-BADCODE1\n", FILE_APPEND | LOCK_EX);
+	  echo "\nRESULT: INVALID SUBMISSION CODE (1)";
+	  exit;
+	}
+      } else {
+	@file_put_contents($fcname . ".try", $verify1 . "-BADCODE2\n", FILE_APPEND | LOCK_EX);
+	echo "\nRESULT: INVALID SUBMISSION CODE (2)";
+	exit;
+      }
+      if($pastval > 0) {
+	$param['rundate']=time() - $pastval;
+	$b = DBSiteInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"]);
+	$dif = $b["currenttime"]; 
+	$param['rundatediff']=$dif - $pastval;
+      }
+      
+      $tardes = array_map(function($element){ $sp=explode(' ',$element,4); if(count($sp)>3) return 60*trim($sp[3]); return 0; }, $pcodes);
+      ///////CASO DE COMECAR MAIS TARDE NO CENTRALIZADO
+      if($key >= 0 && $tardes[$key] > 0) { //substr($_SESSION["usertable"]["username"],0,3) == 'XXX') {
+	$param['rundate']=$param['rundate'] - $tardes[$key]; // 60*10 = 10 minutos
+	$param['rundatediff']=$param['rundatediff'] - $tardes[$key];
+      }
+      $retv = DBNewRun ($param);
+      if($retv == 2) {
+	@file_put_contents($fcname . ".try", $verify1 . "-OK-" . $param['rundatediff'] . "-" . $param['rundate'] . "-" . $b["currenttime"] . "\n", FILE_APPEND | LOCK_EX);
+	@file_put_contents($fcname . ".txt", $verify . "\n", FILE_APPEND | LOCK_EX);
+	echo "\nRESULT: RUN SUBMITTED SUCCESSFULLY ($pastval)";
+      } else {
+	if($retv == 0) {
+	  echo "\nRESULT: CONTEST NOT RUNNING";
+	  @file_put_contents($fcname . ".try", $verify1 . "-NOTRUNNING\n", FILE_APPEND | LOCK_EX);
+	}			else {
+	  echo "\nRESULT: UNKNOWN PROBLEM";
+	  @file_put_contents($fcname . ".try", $verify1 . "-UNKNOWN\n", FILE_APPEND | LOCK_EX);
+	}
+      }
+      exit;
     }
     if(trim($linesubmission) =='1') {
       @file_put_contents($fcname . ".try", $verify1 . "-BADCALL\n", FILE_APPEND | LOCK_EX);
