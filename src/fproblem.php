@@ -127,7 +127,7 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
   for ($i=0;$i<$n;$i++) {
     $a[$i] = array_merge(array(),DBRow($r,$i));
 
-    if(strpos($a[$i]['fullname'],'(DEL)') !== false || $a[$i]['basefilename']=='') continue;
+    if(strpos($a[$i]['fullname'],'(DEL)') !== false) continue;
 
     $nn=$a[$i]['number'];
     $ptmp = $_SESSION["locr"] . $ds . "private" . $ds . "problemtmp" . $ds . "contest" . $contestnumber ."-problem" . $nn;
