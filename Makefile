@@ -13,6 +13,7 @@ install-bocawww:
 install-bocaapache: install-bocawww
 	mkdir -p $(DESTDIR)/etc/apache2/sites-enabled/
 	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-enabled/000-boca.conf
+	[ -f /etc/apache2/sites-available/default-ssl.conf ] && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
 
 install-scripts:
 	mkdir -p $(DESTDIR)/usr/sbin/
