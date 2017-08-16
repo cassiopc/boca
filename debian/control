@@ -19,7 +19,7 @@ Description: BOCA is a software created to control a contest with the ACM ICPC r
 
 Package: boca-submission-tools
 Architecture: amd64
-Depends: sharutils, wget, coreutils, libany-uri-escape-perl
+Depends: sharutils, wget, coreutils, libany-uri-escape-perl, openssl
 Description: BOCA submission tools.
   This package provides tools to submit codes to a running boca server
   without using the web interface.
