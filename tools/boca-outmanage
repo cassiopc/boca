@@ -83,8 +83,16 @@ if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o ! -f /roo
     echo "authentication successful"
 fi
 
-porta=5000
+if [ -f /etc/ssh/sshd_config ]; then
+    grep -v -i AllowUsers /etc/ssh/sshd_config | grep -v -i PermitRootLogin | grep -v -i PasswordAuthentication > /etc/ssh/sshd_config.tmp
+    echo "AllowUsers root" >> /etc/ssh/sshd_config.tmp
+    echo "PasswordAuthentication no" >> /etc/ssh/sshd_config.tmp
+    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config.tmp
+    mv /etc/ssh/sshd_config.tmp /etc/ssh/sshd_config
+    service ssh restart
+fi
 
+porta=5000
 while [ $porta -lt 6000 ]; do
     pids=`ps auxw | grep "ssh -v -f -N" | grep ${BOCASERVER} | awk '{print $2;}'`
     if [ "$pids" != "" ]; then
