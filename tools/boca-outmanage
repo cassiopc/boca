@@ -7,7 +7,7 @@ fi
 
 user="$1"
 if [ "$user" == "" ]; then
-  echo "parameter user missing. Usage: $0 <user> [<optional-server-address>]"
+  echo "parameter user missing. Usage: $0 <user> [<optional-server-address>] [<force-redo>]"
   exit 1
 fi
 if [ "$2" != "" ]; then
@@ -27,59 +27,76 @@ if [ "$BOCASERVER" == "" ]; then
 fi
 
 echo "Server at $BOCASERVER"
-temp=/tmp/.temp.`date +%s%N`.txt
+for i in wget sha256sum cut; do
+    p=`which $i`
+    if [ -x "$p" ]; then
+	echo -n ""
+    else
+	echo "$i" not found
+	exit 1
+    fi
+done
+temp=/root/.temp.`date +%s%N`.txt
 
-kill -9 `ps auxw | grep ssh | grep ${BOCASERVER} | awk '{print $2;}'`
+mkdir -p /root/.ssh
+if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o "$3" != "" ]; then
+    ssh-keygen -q -f /root/.ssh/$BOCASERVER -t rsa -b 4096 -C "${user}@bombonera.org" -N ''
+    echo -e "Host $BOCASERVER\n  HostName $BOCASERVER\n  User bocassh\n  IdentityFile /root/.ssh/$BOCASERVER\n" > /root/.ssh/config
+    
+    read -s -p "Password: " pass
+    echo ""
+
+    md=`wget --no-check-certificate -t 2 -T 5 -S https://$BOCASERVER/boca/updatessh.php -O /dev/null --save-cookies ${temp}.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
+    echo "$md" | grep -q PHPSESS
+    if [ "$?" == "0" ]; then
+	md=`echo $md | cut -f2 -d'=' | cut -f1 -d';'`
+	ress=`echo -n $pass | sha256sum - | cut -f1 -d' '`
+	res=`echo -n "${ress}${md}" | sha256sum - | cut -f1 -d' '`
+	
+	echo -n "name=${user}" > $temp
+	[ -f /root/submissions/comp ] && echo -n "comp=`cat /root/submissions/comp`" >> $temp
+	echo -n "&password=$res" >> $temp
+	echo -n "&data=" >> $temp
+	cat /root/.ssh/$BOCASERVER.pub | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	
+	wget --no-check-certificate -t 2 -T 5 "https://$BOCASERVER/boca/updatessh.php" --load-cookies ${temp}.cookie.txt --keep-session-cookies --save-cookies ${temp}.cookie.txt -O ${temp}.out --post-file=$temp >/dev/null 2>/dev/null
+	rm -f $temp
+	rm -f ${temp}.cookie.txt
+	grep -qi incorrect ${temp}.out
+	res=$?
+	rm ${temp}.out
+	if [ "$res" == "0" ]; then 
+	    echo "$BOCASERVER: User or password incorrect"
+	    exit 3
+	fi
+    else
+	echo "$BOCASERVER: connection failed"
+	exit 2
+    fi
+    echo "authentication successful"
+fi
 
 porta=5000
 
-ssh -f -N -R ${porta}:localhost:22 ${user}@${BOCASERVER} 2>&1
-
-
-let "port = $porta + 1"
-
-read -s -p "Password: " pass
-
-for i in wget sha256sum cut; do
-  p=`which $i`
-  if [ -x "$p" ]; then
-    echo -n ""
-  else
-    echo "$i" not found
-    exit 1
-  fi
-done
-temp=/tmp/.temp.`date +%s%N`.txt
-
-md=`wget --no-check-certificate -t 2 -T 7 -S https://$BOCASERVER/boca/getcode.php -O /dev/null --save-cookies ${temp}.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
-echo "$md" | grep -q PHPSESS
-if [ "$?" == "0" ]; then
-    md=`echo $md | cut -f2 -d'=' | cut -f1 -d';'`
-    ress=`echo -n $pass | sha256sum - | cut -f1 -d' '`
-    res=`echo -n "${ress}${md}" | sha256sum - | cut -f1 -d' '`
-    wget --no-check-certificate -t 2 -T 7 "https://$BOCASERVER/boca/getcode.php?name=${user}&password=${res}" --load-cookies ${temp}.cookie.txt --keep-session-cookies --save-cookies ${temp}.cookie.txt -O $temp 2>/dev/null >/dev/null
-    grep -qi incorrect $temp
-    if [ $? == 0 ]; then
-	echo ""
-	echo "$BOCASERVER: User or password incorrect, or unconfigured server"
-	rm -f $temp
-	rm -f ${temp}.cookie.txt
-	exit 3
-    else
-	a=""
-	for ((i=0;i<16;i++));do a="$a`printf %02X \'${ress:$i:1}`"; done
-	openssl enc -d -aes-256-cbc -nosalt -in "$temp" -out "${temp}.1" -K $a -iv 31323334353637383132333435363738
-	rm -f "$temp"
-	/bin/bash "${temp}.1"
-	rm -f "${temp}.1"
+while [ $porta -lt 6000 ]; do
+    pids=`ps auxw | grep "ssh -v -f -N" | grep ${BOCASERVER} | awk '{print $2;}'`
+    if [ "$pids" != "" ]; then
+	kill -9 $pids
     fi
-    [ -f "$temp" ] && rm -f "$temp"
-    rm -f ${temp}.cookie.txt
-    echo ""
-    echo "authentication successful"
-else
-    echo ""
-    echo "could not connect to server"
-    exit 2
-fi
+    echo "Trying $porta"
+    ssh -v -f -N -o UserKnownHostsFile=/dev/null -o PasswordAuthentication=no -o StrictHostKeyChecking=no -R ${porta}:localhost:22 bocassh@${BOCASERVER} >$temp 2>&1
+    for k in 1 2 3 4 5 6 7 8; do
+	sleep 1
+	grep -q "remote forward.*for:" $temp
+	if [ $? == 0 ]; then
+	    break
+	fi
+    done
+    grep -q "remote forward success for:" $temp
+    if [ $? == 0 ]; then
+	echo "Forward successful at $porta"
+	break
+    fi
+    let "porta = $porta + 1"
+done
 exit 0
