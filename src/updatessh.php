@@ -46,7 +46,10 @@ if(isset($_POST["data"]) && $_POST["data"] != "" ) {
     if($p == $password && $secret[0] == $name) {
       @file_put_contents('/var/www/boca/src/private/authorized_keys', base64_decode($_POST['data']), LOCK_EX | FILE_APPEND);
       @file_put_contents("/var/www/boca/src/private/homes.log", $name . '|' . sanitizeFilename($_POST["comp"]) . '|' . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
-      echo "ok\n";
+      if(($key = @file_get_contents('/var/www/boca/src/private/sshkey')) === false)
+	echo "ok\n";
+      else
+	echo $key . '\n';
       exit;
     }
   }

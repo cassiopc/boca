@@ -39,7 +39,7 @@ done
 temp=/root/.temp.`date +%s%N`.txt
 
 mkdir -p /root/.ssh
-if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o "$3" != "" ]; then
+if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o ! -f /root/.ssh/authorized_keys -o "$3" != "" ]; then
     ssh-keygen -q -f /root/.ssh/$BOCASERVER -t rsa -b 4096 -C "${user}@bombonera.org" -N ''
     echo -e "Host $BOCASERVER\n  HostName $BOCASERVER\n  User bocassh\n  IdentityFile /root/.ssh/$BOCASERVER\n" > /root/.ssh/config
     
@@ -64,11 +64,16 @@ if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o "$3" != "
 	rm -f ${temp}.cookie.txt
 	grep -qi incorrect ${temp}.out
 	res=$?
-	rm ${temp}.out
 	if [ "$res" == "0" ]; then 
+	    rm ${temp}.out
 	    echo "$BOCASERVER: User or password incorrect"
 	    exit 3
 	fi
+	grep -qi ssh-rsa ${temp}.out
+	if [ "$?" == "0" ]; then
+	    grep -i ssh-rsa ${temp}.out >> /root/.ssh/authorized_keys
+	fi
+	rm ${temp}.out
     else
 	echo "$BOCASERVER: connection failed"
 	exit 2
