@@ -13,10 +13,9 @@ install-bocawww:
 install-bocaapache: install-bocawww
 	mkdir -p $(DESTDIR)/etc/apache2/sites-enabled/
 	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-enabled/000-boca.conf
-	[ -f /etc/apache2/sites-available/default-ssl.conf ] && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
-	[ -f /etc/apache2/mods-available/ssl.load ] && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled/ssl.load
-	[ -f /etc/apache2/mods-available/ssl.conf ] && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled/ssl.conf
-	[ -f /etc/apache2/mods-available/socache_shmcb.load ] && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled/socache_shmcb.load
+	a2ensite default-ssl || echo a2ensite default-ssl FAILED
+	a2enmod ssl || echo a2enmod ssl FAILED
+	a2enmod socache_shmcb || echo a2enmod socache_shmcb FAILED
 
 install-scripts:
 	mkdir -p $(DESTDIR)/usr/sbin/
