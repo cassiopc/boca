@@ -1,3 +1,9 @@
+boca (1:1.5.11-1) xenial; urgency=medium
+
+  * Bump to Boca 1.5.11
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Thu, 18 Aug 2017 00:01:25 -0200
+
 boca (1:1.5.10-6) xenial; urgency=medium
 
   * Fix: chown and chmod in /var/www/boca
