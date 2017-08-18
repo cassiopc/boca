@@ -34,8 +34,7 @@ and if the current working directory (ie, ".") is included
 in the PATH environment variable.
 
 $ sudo /bin/bash
-# cd /var/www/boca/src
-# /var/www/boca/tools/autojudge.sh
+# /var/www/boca/tools/boca-autojudge.sh ## or /usr/sbin/boca-autojudge
 
 The autojudging.php will stay running until CRTL+C is
 pressed or it's killed by some other way. Autojudging waits 

@@ -76,7 +76,8 @@ computer. About the configuration, the only difference between the autojudge com
 team's computers is the setup of the database password, as mentioned before. You must set up
 the database password during the initialization of the autojudging computer. Then, to run the 
 autojudging system, you need to login as icpcadmin (privileged user), open a command-line 
-terminal (it is inside accessories), and run "sudo /var/www/boca/tools/autojudge.sh" (without quotes).
+terminal (it is inside accessories), and run "sudo /var/www/boca/tools/boca-autojudge.sh" 
+(or you might want to use the script installed in /usr/sbin/boca-autojudge if using apt-get).
 If everything is fine, some dots will appear on the screen while the script runs an infinite
 loop waiting for submissions. Ctrl-C stops the autojudge. The autojudging shall be started 
 after configuring the server to run the contest, otherwise it will eventually output an error or
