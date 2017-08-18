@@ -15,7 +15,7 @@ if [ "$BOCASERVER" == "" ]; then
     exit 1
 fi
 
-for zcount in 1 2 3 4; do
+for zcount in 1 2 3 4 5 6; do
 
 grep "session opened for user root" /var/log/auth.log |grep -v cron:session | grep -v systemd:session | tail -n 100 > /root/.logroot.tmp
 [ -f /root/.logroot ] || touch /root/.logroot
@@ -60,7 +60,7 @@ if [ "$res" != "0" ]; then
     fi
 fi
 mv /root/.logroot.tmp /root/.logroot
-[ "$zcount" == "4" ] || sleep 15
+[ "$zcount" == "6" ] || sleep 8
 done
 
 exit 0
