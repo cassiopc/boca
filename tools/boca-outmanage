@@ -42,19 +42,24 @@ mkdir -p /root/.ssh
 if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o ! -f /root/.ssh/authorized_keys -o "$3" != "" ]; then
     ssh-keygen -q -f /root/.ssh/$BOCASERVER -t rsa -b 4096 -C "${user}@bombonera.org" -N ''
     echo -e "Host $BOCASERVER\n  HostName $BOCASERVER\n  User bocassh\n  IdentityFile /root/.ssh/$BOCASERVER\n" > /root/.ssh/config
+    chmod 600 /root/.ssh/config
 
-    read -s -p "Password: " pass
-    echo ""
-
+    if [ -f /root/submissions/code ]; then
+	ress=`cat /root/submissions/code`
+    else
+	read -s -p "Password: " pass
+	echo ""
+	ress=`echo -n $pass | sha256sum - | cut -f1 -d' '`
+    fi
+    
     md=`wget --no-check-certificate -t 2 -T 5 -S https://$BOCASERVER/boca/updatessh.php -O /dev/null --save-cookies ${temp}.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
     echo "$md" | grep -q PHPSESS
     if [ "$?" == "0" ]; then
 	md=`echo $md | cut -f2 -d'=' | cut -f1 -d';'`
-	ress=`echo -n $pass | sha256sum - | cut -f1 -d' '`
 	res=`echo -n "${ress}${md}" | sha256sum - | cut -f1 -d' '`
 
 	echo -n "name=${user}" > $temp
-	[ -f /root/submissions/comp ] && echo -n "comp=`cat /root/submissions/comp`" >> $temp
+	[ -f /root/submissions/comp ] && echo -n "&comp=`cat /root/submissions/comp`" >> $temp
 	echo -n "&password=$res" >> $temp
 	echo -n "&data=" >> $temp
 	cat /root/.ssh/$BOCASERVER.pub | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp

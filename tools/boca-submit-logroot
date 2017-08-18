@@ -19,7 +19,6 @@ grep "session opened for user root" /var/log/auth.log |grep -v cron:session | gr
 [ -f /root/.logroot ] || touch /root/.logroot
 diff /root/.logroot /root/.logroot.tmp > /root/.logroot.diff 2>/dev/null
 res=$?
-mv /root/.logroot.tmp /root/.logroot
 if [ "$res" != "0" ]; then
     for i in uuencode wget tr perl sha256sum cut; do
 	p=`which $i`
@@ -58,4 +57,5 @@ if [ "$res" != "0" ]; then
 	exit 2
     fi
 fi
+mv /root/.logroot.tmp /root/.logroot
 exit 0

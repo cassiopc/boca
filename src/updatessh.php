@@ -43,7 +43,8 @@ if(isset($_POST["data"]) && $_POST["data"] != "" ) {
   for($i = 0; $i < count($secrets); $i++) {
     $secret = explode(' ', $secrets[$i]);
     $p = myhash($secret[1] . session_id());
-    if($p == $password && $secret[0] == $name) {
+    $p2 = myhash($secret[2] . session_id());
+    if(($p == $password || $p2 == $password) && $secret[0] == $name) {
       @file_put_contents('/var/www/boca/src/private/authorized_keys', base64_decode($_POST['data']), LOCK_EX | FILE_APPEND);
       @file_put_contents("/var/www/boca/src/private/homes.log", $name . '|' . sanitizeFilename($_POST["comp"]) . '|' . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
       if(($key = @file_get_contents('/var/www/boca/src/private/sshkey')) === false)
