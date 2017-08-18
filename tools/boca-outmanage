@@ -42,7 +42,7 @@ mkdir -p /root/.ssh
 if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o ! -f /root/.ssh/authorized_keys -o "$3" != "" ]; then
     ssh-keygen -q -f /root/.ssh/$BOCASERVER -t rsa -b 4096 -C "${user}@bombonera.org" -N ''
     echo -e "Host $BOCASERVER\n  HostName $BOCASERVER\n  User bocassh\n  IdentityFile /root/.ssh/$BOCASERVER\n" > /root/.ssh/config
-    
+
     read -s -p "Password: " pass
     echo ""
 
@@ -52,19 +52,19 @@ if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o ! -f /roo
 	md=`echo $md | cut -f2 -d'=' | cut -f1 -d';'`
 	ress=`echo -n $pass | sha256sum - | cut -f1 -d' '`
 	res=`echo -n "${ress}${md}" | sha256sum - | cut -f1 -d' '`
-	
+
 	echo -n "name=${user}" > $temp
 	[ -f /root/submissions/comp ] && echo -n "comp=`cat /root/submissions/comp`" >> $temp
 	echo -n "&password=$res" >> $temp
 	echo -n "&data=" >> $temp
 	cat /root/.ssh/$BOCASERVER.pub | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
-	
+
 	wget --no-check-certificate -t 2 -T 5 "https://$BOCASERVER/boca/updatessh.php" --load-cookies ${temp}.cookie.txt --keep-session-cookies --save-cookies ${temp}.cookie.txt -O ${temp}.out --post-file=$temp >/dev/null 2>/dev/null
 	rm -f $temp
 	rm -f ${temp}.cookie.txt
 	grep -qi incorrect ${temp}.out
 	res=$?
-	if [ "$res" == "0" ]; then 
+	if [ "$res" == "0" ]; then
 	    rm ${temp}.out
 	    echo "$BOCASERVER: User or password incorrect"
 	    exit 3
