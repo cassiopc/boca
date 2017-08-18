@@ -84,12 +84,15 @@ if [ ! -f /root/.ssh/$BOCASERVER -o ! -f /root/.ssh/$BOCASERVER.pub -o ! -f /roo
 fi
 
 if [ -f /etc/ssh/sshd_config ]; then
-    grep -v -i AllowUsers /etc/ssh/sshd_config | grep -v -i PermitRootLogin | grep -v -i PasswordAuthentication > /etc/ssh/sshd_config.tmp
-    echo "AllowUsers root" >> /etc/ssh/sshd_config.tmp
-    echo "PasswordAuthentication no" >> /etc/ssh/sshd_config.tmp
-    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config.tmp
-    mv /etc/ssh/sshd_config.tmp /etc/ssh/sshd_config
-    service ssh restart
+    grep -iq "^[[:space:]]*AllowUsers" /etc/ssh/sshd_config
+    if [ "$?" != "0" ]; then
+	grep -v -i "^[[:space:]]*AllowUsers" /etc/ssh/sshd_config | grep -v -i "^[[:space:]]*PermitRootLogin" | grep -v -i "^[[:space:]]*PasswordAuthentication" > /etc/ssh/sshd_config.tmp
+	echo "AllowUsers root" >> /etc/ssh/sshd_config.tmp
+	echo "PasswordAuthentication no" >> /etc/ssh/sshd_config.tmp
+	echo "PermitRootLogin yes" >> /etc/ssh/sshd_config.tmp
+	mv /etc/ssh/sshd_config.tmp /etc/ssh/sshd_config
+	service ssh restart
+    fi
 fi
 
 porta=5000
