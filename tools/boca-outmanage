@@ -7,8 +7,11 @@ fi
 
 user="$1"
 if [ "$user" == "" ]; then
-  echo "parameter user missing. Usage: $0 <user> [<optional-server-address>] [<force-redo>]"
-  exit 1
+    user=`cat /root/submissions/user 2>/dev/null`
+    if [ "$user" == "" ]; then
+	echo "parameter user missing. Usage: $0 <user> [<optional-server-address>] [<force-redo>]"
+	exit 1
+    fi
 fi
 if [ "$2" != "" ]; then
     BOCASERVER=$2

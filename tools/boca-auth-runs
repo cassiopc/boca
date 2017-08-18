@@ -66,6 +66,8 @@ if [ "$?" == "0" ]; then
     rm -f ${temp}.cookie.txt
     echo ""
     echo "authentication successful"
+    mkdir -p /root/submissions
+    echo -n $user > /root/submissions/user
 else
     echo ""
     echo "could not connect to server"
