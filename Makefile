@@ -35,12 +35,14 @@ install: install-bocawww install-bocaapache install-scripts tools/safeexec
 install-submission-tools: tools/boca-submit-run-root-wrapper
 	mkdir -p $(DESTDIR)/usr/bin $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d
 	install tools/boca-auth-runs $(DESTDIR)/usr/sbin/
+	install tools/boca-fixssh $(DESTDIR)/usr/sbin/
 	install tools/boca-submit-run $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-cron $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-aux $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-root $(DESTDIR)/usr/bin/
 	install tools/boca-submit-logroot $(DESTDIR)/usr/sbin/boca-submit-logroot
 	install tools/cron-submit $(DESTDIR)/etc/cron.d/
+	install tools/cron-fixssh $(DESTDIR)/etc/cron.d/
 	install tools/cron-logroot $(DESTDIR)/etc/cron.d/
 	install tools/boca-submit-run-root-wrapper $(DESTDIR)/usr/bin/
 	install tools/boca-outmanage $(DESTDIR)/usr/sbin/
