@@ -1,3 +1,14 @@
+boca (1:1.5.11-2) xenial; urgency=medium
+
+  * fixed scripts
+  * better parse of sshd config
+  * double auth possible
+  * fix sleeping times
+  * better window
+  * get user from local file
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Thu, 20 Aug 2017 22:45:12 -0300
+
 boca (1:1.5.11-1) xenial; urgency=medium
 
   * Bump to Boca 1.5.11
