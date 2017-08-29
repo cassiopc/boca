@@ -258,6 +258,14 @@ while(42) {
     file_put_contents($cache . $ds . $run["inputoid"] . "." . $run["inputname"], encryptData($s,$key));
   }
 
+  // just to test the system, returning yes to every single submission...
+  if(false) {
+    @file_put_contents('/tmp/boca.empty','this empty file is for testing');
+    DBUpdateRunAutojudging($contest, $site, $number, $ip, 'Always yes', '/tmp/boca.empty', '/tmp/boca.empty', 1);
+    echo "Autojudging answered 'Always yes' (contest=$contest, site=$site, run=$number)\n";
+    continue;
+  }
+  
   if(!isset($limits[$basename][$run["extension"]][0]) || !is_numeric($limits[$basename][$run["extension"]][0]) ||
      !isset($limits[$basename][$run["extension"]][1]) || !is_numeric($limits[$basename][$run["extension"]][1]) ||
      !isset($limits[$basename][$run["extension"]][2]) || !is_numeric($limits[$basename][$run["extension"]][2]) ||
