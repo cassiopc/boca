@@ -603,7 +603,9 @@ while(42) {
   }
   if($retval >= 7 && $retval <= 9) {
     $ans = file("allout");
-    $anstmp = substr(trim(escape_string($ans[count($ans)-1])),0,100);
+    $anstmp = '';
+    if(count($ans) > 0)
+      $anstmp = substr(trim(escape_string($ans[count($ans)-1])),0,100);
     unset($ans);
     $answer = "(probably runtime error - unusual code: $retval) " . $anstmp;
     // runtime error
