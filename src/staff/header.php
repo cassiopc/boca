@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 29/aug/2017 by cassio@ime.usp.br
 ob_start();
 header ("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -67,7 +67,7 @@ echo " <tr>\n";
 echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=task.php>Tasks</a></td>\n";
 //echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=task.php>Tasks ($nr)</a></td>\n";
 echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=score.php>Score</a></td>\n";
-echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=run.php>Runs</a></td>\n";
+//echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=run.php>Runs</a></td>\n";
 echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=option.php>Options</a></td>\n";
 
 echo " <td align=center width=\"20%\"><a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/stat.php', ".

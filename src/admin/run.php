@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 29/aug/2017 by cassio@ime.usp.br
 require 'header.php';
 if(isset($_GET["order"]) && $_GET["order"] != "") {
 $order = myhtmlspecialchars($_GET["order"]);
@@ -64,18 +64,18 @@ if(isset($_POST)) {
 	  if(isset($_POST["cbox_" . $run[$i]["number"] . "_" . $run[$i]["site"]]) && 
 		 $_POST["cbox_" . $run[$i]["number"] . "_" . $run[$i]["site"]] != "") {
 		  if(isset($_POST["auto"]) && $_POST["auto"]=="Re-run autojudge for selected runs") {
-        if (DBGiveUpRunAutojudging($_SESSION["usertable"]["contestnumber"], 
-	    $run[$i]["site"], $run[$i]["number"]))
-	    $nrenew++;
-      }
-		  if(isset($_POST["open"]) && $_POST["open"]=="Open selected runs for rejudging") {
-			  DBGiveUpRunAutojudging($_SESSION["usertable"]["contestnumber"], 
-									 $run[$i]["site"], $run[$i]["number"]);
-			  if (DBChiefRunGiveUp($run[$i]["number"], $run[$i]["site"], 
-								   $_SESSION["usertable"]["contestnumber"]))
-				  $nreopen++;
+		    if (DBGiveUpRunAutojudging($_SESSION["usertable"]["contestnumber"], 
+					       $run[$i]["site"], $run[$i]["number"]), '', '', true)
+		      $nrenew++;
 		  }
-    }
+		  if(isset($_POST["open"]) && $_POST["open"]=="Open selected runs for rejudging") {
+		    DBGiveUpRunAutojudging($_SESSION["usertable"]["contestnumber"], 
+					   $run[$i]["site"], $run[$i]["number"]);
+		    if (DBChiefRunGiveUp($run[$i]["number"], $run[$i]["site"], 
+					 $_SESSION["usertable"]["contestnumber"]))
+		      $nreopen++;
+		  }
+	  }
   }
   if($nrenew > 0) {
     MSGError($nrenew . " runs renewed for autojudging.");
@@ -87,7 +87,7 @@ if(isset($_POST)) {
   }
 }
 
-
+$us = DBAllUserNames($_SESSION["usertable"]["contestnumber"]);
 for ($i=0; $i<count($run); $i++) {
   if($run[$i]["answer1"] != 0 && $run[$i]["answer2"] != 0 && $run[$i]["status"] != "judged") {
     if($runphp == "runchief.php")
@@ -105,8 +105,7 @@ for ($i=0; $i<count($run); $i++) {
   echo "  <td nowrap>" . $run[$i]["site"] . "</td>\n";
   if($runphp == "run.php") {
     if ($run[$i]["user"] != "") {
-	$u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["site"], $run[$i]["user"]);
-	echo "  <td nowrap>" . $u["username"] . "</td>\n";
+	echo "  <td nowrap>" . $us[$run[$i]["site"] . '-' . $run[$i]["user"]] . "</td>\n";
     }
   }
   echo "  <td nowrap>" . dateconvminutes($run[$i]["timestamp"]) . "</td>\n";
@@ -124,18 +123,15 @@ for ($i=0; $i<count($run); $i++) {
 
   echo "  <td nowrap bgcolor=\"#$color\">" . $run[$i]["status"] . "</td>\n";
   if ($run[$i]["judge"] != "") {
-	$u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["judgesite"], $run[$i]["judge"]);
-	echo "  <td nowrap>" . $u["username"] . " (" . $run[$i]["judgesite"] . ")";
+	echo "  <td nowrap>" . $us[$run[$i]["judgesite"] .'-'. $run[$i]["judge"]] . " (" . $run[$i]["judgesite"] . ")";
   } else
 	echo "  <td>&nbsp;";
 
   if ($run[$i]["judge1"] != "") {
-	$u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["judgesite1"], $run[$i]["judge1"]);
-	echo " [" . $u["username"] . " (" . $run[$i]["judgesite1"] . ")]";
+	echo " [" . $us[$run[$i]["judgesite1"] .'-'. $run[$i]["judge1"]] . " (" . $run[$i]["judgesite1"] . ")]";
   }
   if ($run[$i]["judge2"] != "") {
-	$u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["judgesite2"], $run[$i]["judge2"]);
-	echo " [" . $u["username"] . " (" . $run[$i]["judgesite2"] . ")]";
+	echo " [" . $us[$run[$i]["judgesite2"] .'-'. $run[$i]["judge2"]] . " (" . $run[$i]["judgesite2"] . ")]";
   }
 
   echo "</td>\n";

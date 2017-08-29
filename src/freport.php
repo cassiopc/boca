@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 29/aug/2017 by cassio@ime.usp.br
 
 function DBRunReport($contest,$site) {
 	$c = DBConnect();
@@ -50,7 +50,8 @@ function DBRunReport($contest,$site) {
 		$xuserfull[$a['name']] = $a['fullname'];
 	}
 	ksort($xusername);
-
+	$xcolor = array();
+	
 	$pr = DBGetProblems($contest);
 	for($i=0; $i<count($pr); $i++) {
 	  $xproblem[$pr[$i]['problem']]=0;
@@ -63,7 +64,11 @@ function DBRunReport($contest,$site) {
 	$xanswer = array();
 	$xtimestamp = array();
 	$xtimestampyes = array();
-
+	$xpa = array();
+	$xpl = array();
+	$xla = array();
+	$xup = array();
+	
 	$r = DBExec($c, $sql, "DBRunReport(get runs)");
 	$n = DBnlines($r);
 

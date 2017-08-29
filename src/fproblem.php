@@ -290,7 +290,7 @@ function DBNewProblem($contestnumber, $param, $c=null) {
   if(isset($param['problemcolor']) && !isset($param['color'])) $param['color']=$param['problemcolor'];
   if(isset($param['probleminputfile']) && !isset($param['inputfilepath'])) $param['inputfilepath']=$param['probleminputfile'];
   if(isset($param['probleminputfilename']) && !isset($param['inputfilename'])) $param['inputfilename']=$param['probleminputfilename'];
-  $param['basename'] = sanitizeFilename($param['basename']);
+  if(isset($param['basename'])) $param['basename'] = sanitizeFilename($param['basename']);
 	
   $ac=array('number','name');
   $type['number']=1;

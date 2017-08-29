@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
+// Last modified 29/aug/2017 by cassio@ime.usp.br
 
 require('header.php');
 
@@ -139,7 +139,9 @@ $str="All Runs by Language";
 $str2="Accepted Runs by Language";
 reset($d['language']);
 while (list($keya, $val) = each($d['language'])) {
-  $val = $d['languageyes'][$keya]; if($val=="") $val=0; 
+  $val=0;
+  if(isset($d['languageyes'][$keya]))
+    $val = $d['languageyes'][$keya];
   $str2 .= chr(1) . $keya . "(" . $val . ")" . chr(1) . $val;
 }
 

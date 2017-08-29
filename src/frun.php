@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 26/jul/2017 by cassio@ime.usp.br
+// Last modified 29/aug/2017 by cassio@ime.usp.br
 
 function DBDropRunTable() {
 	$c = DBConnect();
@@ -498,7 +498,7 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 	LOGLevel("Autojudging automatically answered a run (run=$number, site=$site, contest=$contest, retval=$retval, answer='$answer')", 3);
 	return true;
 }
-function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="") {
+function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="", $fromadmin=false) {
 	$c = DBConnect();
 	DBExec($c, "begin work", "DBGiveUpRunAutojudging(transaction)");
 	$sql = "select * from runtable as r " .
@@ -514,14 +514,13 @@ function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="") {
 	$t = time();
 	
 	$b = DBSiteInfo($contest, $site, $c);
-	if($b["siteautojudge"]=="t") {
+	if($fromadmin && $b["siteautojudge"]=="t") {
 	  if(DBUpdateRunO($contest, $site, $a["usernumber"], $site, $number, 7, $c)==false) {  // 7 means contact staff
 	    DBExec($c, "rollback work", "DBGiveUpRunAutojudging(rollback auto)");
 	    LOGError("Unable to automatically update a run answer (run=$number, site=$site, ".
 		     "contest=$contest, answer='$ans', retval=7)");
 	    return false;
 	  }
-	  LOGLevel("Autojudging automatically answered a run (run=$number, site=$site, contest=$contest, retval=7, answer='$ans')", 3);
 	}
 
 	if($ip=="") {

@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 26/jul/2017 by cassio@ime.usp.br
+//Last updated 29/aug/2017 by cassio@ime.usp.br
 //
 function DBDropContestTable() {
 	 $c = DBConnect();
@@ -200,6 +200,24 @@ function DBFakeContest() {
 		"values (0, 1, 1, 'system', 'Systems', NULL, 'system', 't', ".
            "'t', '$pass', NULL, NULL, '', NULL, NULL)", "DBFakeContest(insert system user)");
 	DBExec($c, "commit work");
+}
+function DBAllUserNames($contest,$site=-1) {
+	$sql = "select * from usertable where contestnumber=$contest ";
+	if($site > 0) $sql .= "and usersitenumber=$site ";
+	$c = DBConnect();
+	$r = DBExec ($c, $sql, "DBAllUserNames(get users)");
+	$n = DBnlines($r);
+	if ($n == 0) {
+		LOGError("Unable to find users in the database. SQL=(" . $sql . ")");
+		MSGError("Unable to find users in the database!");
+	}
+
+	$a = array();
+	for ($i=0;$i<$n;$i++) {
+	  $tmp = DBRow($r,$i);
+	  $a[$tmp['usersitenumber'] . '-' . $tmp['usernumber']] = $tmp['username'];
+	}
+	return $a;
 }
 function DBAllUserInfo($contest,$site=-1) {
 	$sql = "select * from usertable where contestnumber=$contest ";
