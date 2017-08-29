@@ -65,7 +65,7 @@ if(isset($_POST)) {
 		 $_POST["cbox_" . $run[$i]["number"] . "_" . $run[$i]["site"]] != "") {
 		  if(isset($_POST["auto"]) && $_POST["auto"]=="Re-run autojudge for selected runs") {
 		    if (DBGiveUpRunAutojudging($_SESSION["usertable"]["contestnumber"], 
-					       $run[$i]["site"], $run[$i]["number"]), '', '', true)
+					       $run[$i]["site"], $run[$i]["number"], '', '', true))
 		      $nrenew++;
 		  }
 		  if(isset($_POST["open"]) && $_POST["open"]=="Open selected runs for rejudging") {
