@@ -206,6 +206,16 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 	echo "\nRESULT: INVALID SUBMISSION CODE (2)";
 	exit;
       }
+      // cassio: being restrict with respect to internet connection in the client
+      $pok = 'OK';
+      if(!isset($_POST['oknet']) || !is_numeric($_POST['oknet']) || $_POST['oknet']>0) {
+	$pok = 'OKNET';
+	if(true) {
+	  @file_put_contents($fcname . ".try", $verify1 . "-NET" . $_POST['oknet'] . "\n", FILE_APPEND | LOCK_EX);
+	  echo "\nRESULT: INVALID SUBMISSION CODE (3)";
+	  exit;
+	}
+      }
       if($pastval > 0) {
 	$param['rundate']=time() - $pastval;
 	$b = DBSiteInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"]);
@@ -221,7 +231,8 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
       }
       $retv = DBNewRun ($param);
       if($retv == 2) {
-	@file_put_contents($fcname . ".try", $verify1 . "-OK-" . $param['rundatediff'] . "-" . $param['rundate'] . "-" . $b["currenttime"] . "\n", FILE_APPEND | LOCK_EX);
+	if(isset($_POST['oknet']) && is_numeric($_POST['oknet']) && $_POST['oknet']>0) $pok .= $_POST['oknet'];
+	@file_put_contents($fcname . ".try", $verify1 . "-" . $pok . "-" . $param['rundatediff'] . "-" . $param['rundate'] . "-" . $b["currenttime"] . "\n", FILE_APPEND | LOCK_EX);
 	@file_put_contents($fcname . ".txt", $verify . "\n", FILE_APPEND | LOCK_EX);
 	echo "\nRESULT: RUN SUBMITTED SUCCESSFULLY ($pastval)";
       } else {
