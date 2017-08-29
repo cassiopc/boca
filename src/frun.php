@@ -514,7 +514,7 @@ function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="", $from
 	$t = time();
 	
 	$b = DBSiteInfo($contest, $site, $c);
-	if($fromadmin && $b["siteautojudge"]=="t") {
+	if(!$fromadmin && $b["siteautojudge"]=="t") {
 	  if(DBUpdateRunO($contest, $site, $a["usernumber"], $site, $number, 7, $c)==false) {  // 7 means contact staff
 	    DBExec($c, "rollback work", "DBGiveUpRunAutojudging(rollback auto)");
 	    LOGError("Unable to automatically update a run answer (run=$number, site=$site, ".
