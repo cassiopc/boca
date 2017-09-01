@@ -3,5 +3,7 @@
 #Make sure wrapper is suid
 chmod 4555 /usr/bin/boca-submit-run-root-wrapper
 
-ln -s /usr/bin/boca-submit-run /usr/bin/boca-submit-list
-ln -s /usr/bin/boca-submit-run /usr/bin/boca-submit-oldlist
+for i in boca-submit-list boca-submit-oldlist; do
+  rm -f /usr/bin/$i || true
+  ln -s /usb/bin/boca-submit-run /usr/bin/$i
+done
