@@ -1,3 +1,19 @@
+boca (1:1.5.11-4) xenial; urgency=medium
+
+  * Fix link creation boca-submit-{list,oldlist}
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Thu, 31 Aug 2017 23:56:29 -0300
+
+boca (1:1.5.11-3) xenial; urgency=medium
+
+  * control: Change boca depends libapache2-mod-php -> php-fpm
+  * boca-submission-tools.postinst: Creat symlink to list and oldlist
+  * Makefile: Installs boca-checkinternet
+  * bug fixes and speed up runs
+  * force internet control, force ipv4
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Thu, 31 Aug 2017 11:01:30 -0300
+
 boca (1:1.5.11-2) xenial; urgency=medium
 
   * fixed scripts
