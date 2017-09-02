@@ -5,5 +5,5 @@ chmod 4555 /usr/bin/boca-submit-run-root-wrapper
 
 for i in boca-submit-list boca-submit-oldlist; do
   rm -f /usr/bin/$i || true
-  ln -s /usb/bin/boca-submit-run /usr/bin/$i
+  ln -s /usr/bin/boca-submit-run /usr/bin/$i
 done
