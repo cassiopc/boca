@@ -12,7 +12,7 @@ test2=$?
 wget -4 --no-check-certificate -t 2 -T 7 -O - https://www.wikipedia.org 2>/dev/null | grep -iq html
 test3=$?
 
-if [ "$test1" != "0" -o "$test2" != "0" -o "$test3" != "0" ]; then
+if [ "$test1" == "0" -o "$test2" == "0" -o "$test3" == "0" ]; then
     if [ $debug == 1 ]; then
 	echo "internet problem (1-$test1-$test2-$test3)"
     fi
@@ -26,7 +26,7 @@ test2=$?
 wget -4 --no-check-certificate -t 2 -T 7 -O - https://91.198.174.192 2>/dev/null | grep -iq html
 test3=$?
 
-if [ "$test1" != "0" -o "$test2" != "0" -o "$test3" != "0" ]; then
+if [ "$test1" == "0" -o "$test2" == "0" -o "$test3" == "0" ]; then
     if [ $debug == 1 ]; then
 	echo "internet problem (2-$test1-$test2-$test3)"
     fi
