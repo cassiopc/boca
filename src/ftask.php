@@ -216,7 +216,7 @@ function DBOpenTasksInSites($contest,$site) {
 function DBOpenTasksSNS($contest,$site,$st,$order='task',$adm=false) {
 	$c = DBConnect();
 	$sql = "select distinct t.tasknumber as number, t.taskdatediff as timestamp, t.usernumber as user, ".
-		"u.username as username, t.color as color, t.colorname as colorname, " .
+		"u.username as username, u.userfullname as fullname, t.color as color, t.colorname as colorname, " .
 		"t.taskstatus as status, t.sitenumber as site, t.taskstaffnumber as staff, " .
 		"t.taskstaffsite as staffsite, t.taskdesc as description, tasksystem as system, " .
 		"t.taskfilename as filename, t.taskdata as oid, uu.username as staffname " .
