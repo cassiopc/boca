@@ -96,19 +96,19 @@ function computeHASH()
       <tr> 
         <td width="35%" align=right>Old Password:</td>
         <td width="65%">
-	  <input type="password" name="passwordo" size="20" maxlength="20" />
+	  <input type="password" name="passwordo" size="20" maxlength="200" />
         </td>
       </tr>
       <tr> 
         <td width="35%" align=right>New Password:</td>
         <td width="65%">
-	  <input type="password" name="passwordn1" size="20" maxlength="20" />
+	  <input type="password" name="passwordn1" size="20" maxlength="200" />
         </td>
       </tr>
       <tr> 
         <td width="35%" align=right>Retype New Password:</td>
         <td width="65%">
-	  <input type="password" name="passwordn2" size="20" maxlength="20" />
+	  <input type="password" name="passwordn2" size="20" maxlength="200" />
         </td>
       </tr>
     </table>
