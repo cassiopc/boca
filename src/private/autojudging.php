@@ -395,6 +395,7 @@ while(42) {
       continue;
     } else {
       $errp=0; $ncor=0; $showcor=false;
+      sort($inputlist);
       foreach($inputlist as $file) {
 	$file = basename($file);
 	if(is_file($dir . $ds . "input" . $ds . $file)) {
