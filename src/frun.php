@@ -481,10 +481,28 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 
 	$b = DBSiteInfo($contest, $site, $c);
 
-	if($b["siteautojudge"]!="t") { // && $retval != 1 && $retval != 6) { //cassiopc incluir automatic judging of some codes 1:YES WA:6
+	if(  true ||
+	   $a["runproblem"] == 1 ||
+	   $a["runproblem"] == 2 ||
+	   $a["runproblem"] == 3 ||
+	   $a["runproblem"] == 4 ||
+	   $a["runproblem"] == 5 ||
+	   $a["runproblem"] == 6 ||
+	   $a["runproblem"] == 7 ||
+	   $a["runproblem"] == 8 ||
+	   $a["runproblem"] == 9 ||
+	   $a["runproblem"] == 10 ||
+	   $a["runproblem"] == 11 ||
+	   $a["runproblem"] == 12 ||
+	   $a["runproblem"] == 13 ||
+	   ($retval != 1 && $retval != 6)) {
+	
+          if($b["siteautojudge"]!="t") {
+	  // && (($retval != 1 && $retval != 6) || $a["runproblem"] == 1 || $a["runproblem"] == 2) ) { //cassiopc incluir automatic judging of some codes 1:YES WA:6
 		DBExec($c, "commit work", "DBUpdateRunAutojudging(commit)");
 		LOGLevel("Autojudging answered a run (run=$number, site=$site, contest=$contest, answer='$answer', retval=$retval)", 3);
 		return true;
+	  }
 	}
 
 	//echo "DEBUG: $contest, $site, " .$a["usernumber"].", $site, $number, $retval\n";
