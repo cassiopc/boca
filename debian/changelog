@@ -1,3 +1,18 @@
+boca (1:1.5.11-5) xenial; urgency=medium
+
+  * Revert "control: Change boca depends libapache2-mod-php -> php-fpm"
+  * remove need of encryption to speed up server
+  * Merge branch 'master' of github.com:cassiopc/boca
+  * new info when printing
+  * new info when printing
+  * more chars in the print
+  * remove limit of 20 chars
+  * move tst out of public
+  * order the files by name in the aj
+  * show runs to staff user
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Sat, 14 Oct 2017 10:09:11 -0300
+
 boca (1:1.5.11-4) xenial; urgency=medium
 
   * Fix link creation boca-submit-{list,oldlist}
