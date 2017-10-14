@@ -128,8 +128,7 @@ for ($i=0; $i<count($task); $i++) {
   }
   echo "</td>\n";
   if ($task[$i]["oid"] != null) {
-    $msg = "///// " . $task[$i]["username"]." ".$task[$i]["username"]." ".$task[$i]["username"]." ".
-           $task[$i]["username"]." ".$task[$i]["username"]." ".$task[$i]["username"];
+    $msg = "///// " . $task[$i]["username"]." -- ". substr($task[$i]["fullname"],0,60) ." -- ".$task[$i]["username"]." ";
     echo "  <td nowrap><a href=\"../filedownload.php?" . filedownload($task[$i]["oid"],$task[$i]["filename"]) .
         "\">" . $task[$i]["filename"] . "</a>";
     echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".

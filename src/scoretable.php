@@ -175,10 +175,11 @@ if(isset($_GET["remote"])) {
 	}
 	exit;
 }
-
 if(!$redo) {
 	$conf=globalconf();
-	$strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")),$conf["key"],'score');
+	if($conf['doenc'])
+	  $strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")),$conf["key"],'score');
+	else $strtmp = substr($strtmp,strpos($strtmp,"\n"));
 	if($strtmp=="") $redo=TRUE;
 }
 if($redo) {
@@ -396,7 +397,9 @@ if($redo) {
 	}
 
 	$conf=globalconf();
-	$strtmp = "<!-- " . time() . " --> <?php exit; ?>\n" . encryptData($strtmp,$conf["key"],false);
+	if($conf['doenc'])
+	  $strtmp = "<!-- " . time() . " --> <?php exit; ?>\n" . encryptData($strtmp,$conf["key"],false);
+	else $strtmp = "<!-- " . time() . " --> <?php exit; ?>\n" . $strtmp;
 	if(file_put_contents($scoretmp, $strtmp,LOCK_EX)===FALSE) {
 		if($_SESSION["usertable"]["usertype"] == 'admin') {
 			MSGError("Cannot write to the score cache file -- performance might be compromised");
@@ -404,7 +407,9 @@ if($redo) {
 		LOGError("Cannot write to the ".$_SESSION["usertable"]["usertype"]."-score cache file -- performance might be compromised");
 	}
 	$conf=globalconf();
-	$strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")),$conf["key"]);
+	if($conf['doenc'])
+	  $strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")),$conf["key"]);
+	else $strtmp = substr($strtmp,strpos($strtmp,"\n"));
 }
 echo $strtmp;
 ?>
