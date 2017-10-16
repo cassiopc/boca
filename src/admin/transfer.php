@@ -30,7 +30,7 @@ if(is_writable($remotedir)) {
     if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
       ForceLoad("index.php");
     echo "<pre>\n";
-    echo "Building scores\n"
+    echo "Building scores\n";
     $level=$s["sitescorelevel"];
     $data0 = array();
     if($level>0) {
