@@ -29,7 +29,8 @@ if(is_writable($remotedir)) {
 
     if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
       ForceLoad("index.php");
-    
+    echo "<pre>\n";
+    echo "Building scores\n"
     $level=$s["sitescorelevel"];
     $data0 = array();
     if($level>0) {
@@ -52,8 +53,9 @@ if(is_writable($remotedir)) {
     $fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
     @file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
     @rename($fname . ".tmp",$fname . ".dat");
+    echo "Transferring scores\n";
     scoretransfer($fname . ".dat", $localsite);
-    
+    echo "Saving scores\n";
     if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$fname . ".tmp") != 1) {
       LOGError("Cannot create score zip file");
       if(@create_zip($remotedir,array(),$fname . ".tmp") == 1)
@@ -62,9 +64,9 @@ if(is_writable($remotedir)) {
       @rename($fname . ".tmp",$destination);
     }
     @fclose($fp);
-    
+    echo "Processing other data\n";
     getMainXML($_SESSION["usertable"]["contestnumber"]);
-    
+    echo "</pre>\n";
     @unlink($destination . ".lck");
   } else {
     if(file_exists($destination . ".lck") && filemtime($destination . ".lck") < time() - 180)

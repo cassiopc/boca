@@ -264,7 +264,6 @@ function getMainXML($contest,$timeo=5) {
   $opts = array();
   $opts['http']['timeout'] = $timeo;
   $context = stream_context_create($opts);
-  echo "<pre>";
   echo "Connecting to ". $siteurl . "\n";
   try {
     $sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context);
@@ -272,7 +271,7 @@ function getMainXML($contest,$timeo=5) {
     $sess=false;
   }
   if($sess===false) {
-    echo "timeout at connection\n</pre>";
+    echo "timeout at connection\n";
     LOGError("getMainXML: timeout at get session id for $siteurl");
     return false;
   }
@@ -298,7 +297,7 @@ function getMainXML($contest,$timeo=5) {
     $ok=false;
   }
   if($ok===false) {
-    echo "timeout at authorization\n</pre>";
+    echo "timeout at authorization\n";
     LOGError("getMainXML: timeout at login for $siteurl");
     return false;
   }
@@ -332,7 +331,7 @@ function getMainXML($contest,$timeo=5) {
       $s=false;
     }
     if($s===false) {
-      echo "timeout at transferring\n</pre>";
+      echo "timeout at transferring\n";
       LOGError("getMainXML: timeout at transfer for $siteurl");
       return false;
     }
@@ -350,7 +349,7 @@ function getMainXML($contest,$timeo=5) {
     //    LOGError("string: " . substr($s,0,50));
     $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
     if(strtoupper(substr($s,0,5)) != "<XML>") {
-      echo "Data corrupted\n</pre>";
+      echo "Data corrupted\n";
       return false;
     }
     echo "Importing data to local server\n";
@@ -368,7 +367,6 @@ function getMainXML($contest,$timeo=5) {
     echo "Transfer error (" . $ok . ")\n";
     LOGError("xmltransfer: failed (" . $ok . ")");
   }
-  echo "</pre>\n";
   return false;
 }
 
