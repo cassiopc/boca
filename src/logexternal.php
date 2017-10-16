@@ -45,7 +45,7 @@ if(isset($_POST["comp"]) && $_POST["comp"] != "" ) {
     $p = myhash($secret[2] . session_id());
     if($p == $password) {
       @mkdir('/var/www/boca/src/private/logexternal/',0770,true);
-      @file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name, base64_decode($_POST['data']), LOCK_EX | FILE_APPEND);
+      @file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name, '\nbegin ' .  time() . ' ' . base64_decode($_POST['data']), LOCK_EX | FILE_APPEND);
       @file_put_contents("/var/www/boca/src/private/logexternal/logexternal.log", $name . "|" . $secret[0] . '|' . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
       echo "ok\n";
       exit;

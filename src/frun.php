@@ -481,21 +481,22 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 
 	$b = DBSiteInfo($contest, $site, $c);
 
-	if(  true ||
-	   $a["runproblem"] == 1 ||
-	   $a["runproblem"] == 2 ||
-	   $a["runproblem"] == 3 ||
-	   $a["runproblem"] == 4 ||
-	   $a["runproblem"] == 5 ||
-	   $a["runproblem"] == 6 ||
-	   $a["runproblem"] == 7 ||
-	   $a["runproblem"] == 8 ||
-	   $a["runproblem"] == 9 ||
-	   $a["runproblem"] == 10 ||
-	   $a["runproblem"] == 11 ||
-	   $a["runproblem"] == 12 ||
-	   $a["runproblem"] == 13 ||
-	   ($retval != 1 && $retval != 6)) {
+	if(true || //cassiopc remove the true here if you want this to take effect
+	   (($retval != 1 || // for some problems, YES is not automatic
+	     $a["runproblem"] == 1 ||
+	     $a["runproblem"] == 2 ||
+	     $a["runproblem"] == 3 ||
+	     $a["runproblem"] == 4 ||
+	     $a["runproblem"] == 5 ||
+	     $a["runproblem"] == 6 ||
+	     $a["runproblem"] == 7 ||
+	     $a["runproblem"] == 8 ||
+	     $a["runproblem"] == 9 ||
+	     $a["runproblem"] == 10 ||
+	     $a["runproblem"] == 11 ||
+	     $a["runproblem"] == 12 ||
+	     $a["runproblem"] == 13)
+	    && $retval != 4 && $retval != 6)) { // but WA and TLE are automatic for all problems
 	
           if($b["siteautojudge"]!="t") {
 	  // && (($retval != 1 && $retval != 6) || $a["runproblem"] == 1 || $a["runproblem"] == 2) ) { //cassiopc incluir automatic judging of some codes 1:YES WA:6
@@ -608,6 +609,8 @@ function DBOpenRunsSNS($contest,$site,$st,$order='run') {
 			$sql .= " and (u.usertype != 'judge')";
 		$sql .= " and (not r.runstatus = 'judged') " .
 			" and not r.runstatus ~ 'deleted' order by ";
+	} else if($st == 2) {
+	  $sql .= " and (not r.runanswer1 = 0) and (not r.runanswer2 = 0) and (not r.runstatus = 'judged') order by ";
 	} else $sql .= " order by ";
 
 	if($order == "site")
@@ -760,7 +763,7 @@ function DBNewRun($param,$c=null) {
 	  $runnumber = $a["nextrun"] + 1;
 	  DBExec($c, "update sitetable set sitenextrun=$runnumber" .
 		 " where sitenumber=$site and contestnumber=$contest and sitenextrun<$runnumber", "DBNewRun(update site)");
-	  $runnumber = myunique();
+	  $runnumber = myunique($runnumber);
 	  $runinc = $runnumber;
 	}
 	
@@ -855,14 +858,17 @@ function DBNewRun($param,$c=null) {
 		}
 
 		if($runinc >= $runnumber) {
-		  while(!DBExecNonStop($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
-				       "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
-				       "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
-				       "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
-				       "VALUES ($contest, $site, $runnumber, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
-				       "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
-				       "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
-				       "DBNewRun(insert run)")) {
+		  while(true) {
+		    DBExec($c,"SAVEPOINT sp" . $runnumber,"DBNewRun(insert run sp)");
+		    if(DBExecNonStop($c, "INSERT INTO runtable (contestnumber, runsitenumber, runnumber, usernumber, rundate, " .
+				     "rundatediff, rundatediffans, runproblem, runfilename, rundata, runanswer, runstatus, runlangnumber, " .
+				     "runjudge, runjudgesite, runanswer1, runjudge1, runjudgesite1, runanswer2, runjudge2, runjudgesite2, ".
+				     "autoip, autobegindate, autoenddate, autoanswer, autostdout, autostderr, updatetime) " . 
+				     "VALUES ($contest, $site, $runnumber, $user, $rundate, $rundatediff, $rundatediffans, $problem, '$filename', $oid, $runanswer, " .
+				     "'$runstatus', $lang, $runjudge, $runjudgesite, $runanswer1, $runjudge1, $runjudgesite1, $runanswer2, $runjudge2, " .
+				     "$runjudgesite2, '$autoip', $autobegindate, $autoenddate, '$autoanswer', $oid1, $oid2, $updatetime)",
+				     "DBNewRun(insert run)")) break;
+		    DBExec($c,"ROLLBACK TO SAVEPOINT sp" . $runnumber,"DBNewRun(insert run sp rollback)");
 		    $runnumber++;
 		    if($runnumber > $runinc + 3) break;
 		  }

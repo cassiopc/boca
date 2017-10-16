@@ -300,7 +300,7 @@ function DBNewClar($param,$c=null) {
 		DBExec($c, "update sitetable set sitenextclar=$clarnumber" .
 		       " where sitenumber=$site and contestnumber=$contest and sitenextclar<$clarnumber",
 		       "DBNewClar(update site)");
-		$clarnumber = myunique();
+		$clarnumber = myunique($clarnumber);
 		$clarinc = $clarnumber;
 	} else {
 		$sql = "select * from clartable as t where t.contestnumber=$contest and " .
@@ -338,11 +338,14 @@ function DBNewClar($param,$c=null) {
 	$ret=1;
 	if($insert) {
 	  if($clarinc >= $clarnumber) {
-	    while(!DBExecNonStop($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
-				 "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
-				 "($contest, $site, $clarnumber, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
-				 "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
-				 "DBNewClar(insert clar)")) {
+	    while(true) {
+	      DBExec($c,"SAVEPOINT sp" . $clarnumber,"DBNewClar(insert clar sp)");
+	      if(DBExecNonStop($c, "INSERT INTO clartable (contestnumber, clarsitenumber, clarnumber, usernumber, clardate, " .
+			       "clardatediff, clardatediffans, clarproblem, clardata, claranswer, clarjudge, clarjudgesite, clarstatus, updatetime) VALUES " .
+			       "($contest, $site, $clarnumber, $user, $clardate, $clardatediff, $clardatediffans, $problem, '$question', " .
+			       "'$claranswer', $clarjudge, $clarjudgesite, '$clarstatus', $updatetime)",
+			       "DBNewClar(insert clar)")) break;
+	      DBExec($c,"ROLLBACK TO SAVEPOINT sp" . $clarnumber,"DBNewClar(insert clar sp rollback)");
 	      $clarnumber++;
 	      if($clarnumber > $clarinc + 3) break;
 	    }

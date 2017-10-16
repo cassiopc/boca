@@ -71,7 +71,7 @@ if(!isset($_POST['noflush'])) {
 	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=problem.php>Problems</a></td>\n";
 	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=language.php>Languages</a></td>\n";
 	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=answer.php>Answers</a></td>\n";
-	//	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=export.php>Export</a></td>\n";
+	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=transfer.php>Transfer</a></td>\n";
 //echo " </tr></table><hr><table border=0 width=\"100%\" align=center><tr>\n";
 	echo " </tr><tr>\n";
 	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=task.php>Tasks</a></td>\n";

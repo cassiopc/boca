@@ -143,7 +143,7 @@ if($_SESSION["usertable"]["usertype"]=='score' || $_SESSION["usertable"]["userty
 		}
 		@fclose($fp);
 
-		getMainXML($_SESSION["usertable"]["contestnumber"]);
+		//getMainXML($_SESSION["usertable"]["contestnumber"]);
 		
 		@unlink($destination . ".lck");
 	  } else {

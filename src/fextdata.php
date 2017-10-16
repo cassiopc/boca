@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 10/aug/2017 by cassio@ime.usp.br
+// Last modified 16/oct/2017 by cassio@ime.usp.br
 
 function makeurlhttps($siteurl) {
   if(substr($siteurl,0,7) == 'http://')
@@ -236,7 +236,7 @@ function getMainXML($contest,$timeo=5) {
   if ($c==null) return false;
   $r = DBExec($c, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
-    echo "Unable to find the contest $contest in the database.";
+    echo "Unable to find the contest $contest in the database.\n";
     LOGError("Unable to find the contest $contest in the database.");
     return false;
   }
@@ -264,12 +264,15 @@ function getMainXML($contest,$timeo=5) {
   $opts = array();
   $opts['http']['timeout'] = $timeo;
   $context = stream_context_create($opts);
+  echo "<pre>";
+  echo "Connecting to ". $siteurl . "\n";
   try {
     $sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context);
   } catch(Exception $e) {
     $sess=false;
   }
   if($sess===false) {
+    echo "timeout at connection\n</pre>";
     LOGError("getMainXML: timeout at get session id for $siteurl");
     return false;
   }
@@ -288,19 +291,21 @@ function getMainXML($contest,$timeo=5) {
     $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
   $opts['http']['timeout'] = $timeo;  
   $context = stream_context_create($opts);
+  echo "Authorizing\n";
   try {
     $ok = @file_get_contents($siteurl . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
   } catch(Exception $e) {
     $ok=false;
   }
   if($ok===false) {
+    echo "timeout at authorization\n</pre>";
     LOGError("getMainXML: timeout at login for $siteurl");
     return false;
   }
   $ti = mytime();
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
-
+    echo "Generating local data\n";
     $data = encryptData(generateSiteXML($contest, $localsite, $updatetime-30),myhash(trim($sitedata[2])));
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
@@ -320,27 +325,35 @@ function getMainXML($contest,$timeo=5) {
       $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
     $opts['http']['timeout'] = $timeo;
     $context = stream_context_create($opts);
+    echo "Transferring data\n";
     try {
       $s = @file_get_contents($siteurl . "site/getsite.php", 0, $context);
     } catch(Exception $e) {
       $s=false;
     }
     if($s===false) {
+      echo "timeout at transferring\n</pre>";
       LOGError("getMainXML: timeout at transfer for $siteurl");
       return false;
     }
-
-    if(strpos($s,'<OK>') !== false)
+    $chstr = "<!-- <OK> -->\n";
+    if(strpos($s,$chstr) !== false) {
+      echo "Transfer succeeded\n";
       LOGInfo("xmltransfer: OK");
-    else
+    } else {
+      echo "Transfer error (" . $s . ")\n";
       LOGError("xmltransfer: failed (" . $s . ")");
+    }
 
-    $s = substr($s, strpos($s, "\n") + 1);
+    echo "Processing received data\n";
+    $s = substr($s, strpos($s, $chstr) + strlen($chstr));
     //    LOGError("string: " . substr($s,0,50));
     $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
     if(strtoupper(substr($s,0,5)) != "<XML>") {
+      echo "Data corrupted\n</pre>";
       return false;
     }
+    echo "Importing data to local server\n";
     if(importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime'])) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
       $ti = 2+$ct['updatetime'];
@@ -348,16 +361,20 @@ function getMainXML($contest,$timeo=5) {
       DBUpdateContest ($param, null);
       return true;
     } else {
+      echo "Importing error\n";
       LOGError("error importing xml");
     }
   } else {
+    echo "Transfer error (" . $ok . ")\n";
     LOGError("xmltransfer: failed (" . $ok . ")");
   }
+  echo "</pre>\n";
   return false;
 }
 
 function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
   LOGInfo("importFromXML: contest $contest site $site tomain $tomain");
+  if($tomain) $serv='Main'; else $serv='Local';
   $data = implode("",explode("\n",$ar));
   $parser = xml_parser_create('');
   xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 1);
@@ -372,6 +389,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
   //	DBExec($conn,"lock","importFromXML(lock)");
   $r = DBExec($conn, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
+    echo "$serv - error finding contest $contest \n";
     LOGError("importFromXML: Unable to find the contest $contest in the database.");
     //    DBExec($conn,"rollback work");
     return false;
@@ -411,10 +429,12 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	    if($uptime > 0) $param['updatetime']=$uptime;
 	    if(($ret=DBUpdateContest ($param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - Contest " . $param["contestnumber"] . " updated\n";
 		LOGInfo("importFromXML: Contest " . $param["contestnumber"] . " updated");
 	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param["contestnumber"] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param["contestnumber"]);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -427,10 +447,12 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(!$tomain && $table == "answertable") {
 	    if(($ret=DBNewAnswer ($contest, $param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - Answer " . $param["answernumber"] . " updated\n";
 		LOGInfo("importFromXML: Answer " . $param["answernumber"] . " updated");
 	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param["answernumber"] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param["answernumber"]);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -440,10 +462,12 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(!$tomain && $table == "langtable") {
 	    if(($ret=DBNewLanguage ($contest,$param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - Language " . $param['langnumber'] ." updated\n";
 		LOGInfo("importFromXML: Language " . $param['langnumber'] ." updated");
 	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param['langnumber'] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param['langnumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -453,9 +477,11 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(!$tomain && $table == "problemtable") {
 	    if(($ret=DBNewProblem ($contest,$param, $conn))) {
 	      if($ret==2)
+		echo "$serv - Problem " . $param['problemnumber'] ." updated\n";
 		LOGInfo("importFromXML: Problem " . $param['problemnumber'] ." updated");
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param['problemnumber'] . "\n";
 	      LOGError("importFromXML: error to update $table " . $param['problemnumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -466,11 +492,13 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(isset($param['clarsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['clarsitenumber'];              
 	  if(isset($param['runsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['runsitenumber'];              
 	  if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) {
+	    echo "$serv - site mismatch $site " . $param['sitenumber'] . "\n";
 	    LOGError("importFromXML: site mismatch $site " . $param['sitenumber']);
 	    continue;
 	  }
 	  if($tomain && $table == "sitetable") {
 	    if(!DBNewSite($contest, $conn, $param)) {
+	      echo "$serv - error to update $table \n";
 	      LOGError("importFromXML: error to update $table");
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -478,9 +506,11 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	    }
 	    if(($ret=DBUpdateSite($param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - Site " . $param["sitenumber"] . " updated\n";
 		LOGInfo("importFromXML: Site " . $param["sitenumber"] . " updated");
 	      }
 	    } else {
+	      echo "$serv - error to update $table ". $param["sitenumber"] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param["sitenumber"]);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -489,6 +519,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  }
 	  if($tomain && $table == "sitetimetable") {
 	    if(!DBUpdateSiteTime($contest, $param, $firsttimetime, $conn)) {
+	      echo "$serv - error to update $table \n";
 	      LOGError("importFromXML: error to update $table");
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -501,9 +532,11 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if($table == "usertable") {
 	    if(($ret=DBNewUser($param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - User " . $param["usernumber"]."/".$param['sitenumber']. " updated\n";
 		LOGInfo("importFromXML: User " . $param["usernumber"]."/".$param['sitenumber']. " updated");
 	      }
 	    } else {
+	      echo "$serv - error to update $table ". $param["usernumber"]."/".$param['sitenumber'] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param["usernumber"]."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -512,10 +545,13 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  }
 	  if($table == "tasktable") {
 	    if(($ret=DBNewTask ($param, $conn))) {
-	      if($ret==2)
+	      if($ret==2) {
+		echo "$serv - Task " . $param['tasknumber']."/".$param['sitenumber']." updated\n";
 		LOGInfo("importFromXML: Task " . $param['tasknumber']."/".$param['sitenumber']." updated");
+	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table " . $param['tasknumber']."/".$param['sitenumber'] . "\n";
 	      LOGError("importFromXML: error to update $table " . $param['tasknumber']."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -524,10 +560,13 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  }
 	  if($table == "clartable") {
 	    if(($ret=DBNewClar ($param, $conn))) {
-	      if($ret==2)
+	      if($ret==2) {
+		echo "$serv - Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated\n";
 		LOGInfo("importFromXML: Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated");
+	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param['clarnumber']."/".$param['sitenumber'] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param['clarnumber']."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -536,10 +575,13 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  }
 	  if($table == "runtable") {
 	    if(($ret=DBNewRun ($param, $conn))) {
-	      if($ret==2)
+	      if($ret==2) {
+		echo "$serv - Run " . $param['runnumber'] ."/".$param['sitenumber']." updated\n";
 		LOGInfo("importFromXML: Run " . $param['runnumber'] ."/".$param['sitenumber']." updated");
+	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param['runnumber'] ."/".$param['sitenumber'] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param['runnumber'] ."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -550,7 +592,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
       }
     }
   }
-  //	DBExec($conn,"commit work","importFromXML(commit)");
+  if($conn != null)
+    DBExec($conn,"commit work","importFromXML(commit)");
   return true;
 }
 
@@ -601,7 +644,7 @@ function generateSiteXML($contest,$site,$updatetime) {
     }
   }
   $str .= "</XML>\n";
-  DBExec($c,"commit work","generateXML(commit)");
+  DBExec($c,"commit work","generateSiteXML(commit)");
   LOGInfo("xml data generated for contest $contest site $site at time $updatetime");
   return $str;
 }

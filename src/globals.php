@@ -284,8 +284,8 @@ function mytime() {
 function mymtime() {
   return microtime(true);
 }
-function myunique() {
-  return ((int)(100*microtime(true))) % 100000000;
+function myunique($val=0) {
+  return (((int)(100*microtime(true))) % 10000000)*100 + ($val % 100);
 }
 //retorna data e hora atuais
 function now () {
