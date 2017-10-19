@@ -58,6 +58,10 @@ if (isset($_GET)) {
 		"'Webcast File','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
 		"resizable=yes')\">Webcast File</a><br />\n";
 
+      echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/s4ris.php', ".
+		"'S4ris File','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
+		"resizable=yes')\">S4RiS File</a><br />\n";
+
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/stat.php', ".
 		"'Problem Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
 		"resizable=yes')\">Statistics</a><br />\n";
