@@ -282,7 +282,7 @@ if ($main && isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_POST["
       }
     }
     function newsite() {
-      document.location='site.php?new=1';
+      document.getElementById('normal').style.display = "block";
     }
     function sitech(n) {
       if(n==null) {
@@ -599,7 +599,15 @@ if($main) {
   </center>
 		<?php } ?>
 </form>
-
-
+<div id="normal">
+<div id="popupnew">
+<form action="site.php" id="formnew" method="get" name="formnew">
+<h2>Choose site number</h2>
+<input id="new" name="Number" placeholder="new" type="text">
+<input type="submit" name="Go" value="Go">
+</form>
+</div>
+</div>
+    
 </body>
 </html>

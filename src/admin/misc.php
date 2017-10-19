@@ -61,7 +61,7 @@ if (isset($_POST["Submit3"]) && $_POST["Submit3"] == "Transfer scores") {
   $doscore=true;
 }
 if (isset($_POST["Submit4"]) && $_POST["Submit4"] == "Update BOCA") {
-  echo "<br><pre>Not implemented</pre>\n";
+  echo "<pre>Not implemented</pre>\n";
 }
 $privatedir = $_SESSION['locr'] . $ds . "private";
 $remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
@@ -71,7 +71,7 @@ if(is_writable($remotedir)) {
     if($doscore) {
       if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
 	ForceLoad("index.php");
-      echo "<br><pre>\n";
+      echo "<pre>\n";
       echo "Building scores\n";
       $level=$s["sitescorelevel"];
       $data0 = array();
@@ -116,7 +116,7 @@ if(is_writable($remotedir)) {
   } else {
     if(file_exists($destination . ".lck") && filemtime($destination . ".lck") < time() - 120)
       @unlink($destination . ".lck");
-    echo "<br><pre>Transfers locked by other process - try again soon</pre>\n";
+    echo "<pre>Transfers locked by other process - try again soon</pre>\n";
   }
 }
 ?>

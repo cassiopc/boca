@@ -53,7 +53,7 @@ if($_SESSION["usertable"]["usertype"] != "admin") {
 }
 
 if(!isset($_POST['noflush'])) {
-	echo "</head><body><table border=1 width=\"100%\">\n";
+	echo "</head><body id=\"body\" style=\"overflow:hidden;\"><table border=1 width=\"100%\">\n";
 	echo "<tr><td nowrap bgcolor=\"eeee00\" align=center>";
 	echo "<img src=\"../images/smallballoontransp.png\" alt=\"\">";
 	echo "<font color=\"#000000\">BOCA</font>";
