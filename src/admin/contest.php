@@ -22,7 +22,9 @@ $contest=$_SESSION["usertable"]["contestnumber"];
 
 if(($ct = DBContestInfo($contest)) == null)
 	ForceLoad("$loc/index.php");
-if ($ct["contestlocalsite"]==$ct["contestmainsite"]) $main=true; else $main=false;
+$localsite=$ct["contestlocalsite"];
+$mainsite=$ct["contestmainsite"];
+if ($localsite == $mainsite) $main=true; else $main=false;
 
 if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["penalty"]) && 
     isset($_POST["maxfilesize"]) && isset($_POST["mainsite"]) && isset($_POST["name"]) && 
@@ -106,6 +108,10 @@ if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["p
 			DBGetFullProblemData($_SESSION["usertable"]["contestnumber"],true);
 		}
 	}
+	if(($ct = DBContestInfo($contest)) == null)
+	  ForceLoad("$loc/index.php");
+	if ($ct["contestlocalsite"]!=$localsite || $mainsite!=$ct["contestmainsite"])
+	  ForceLoad("$loc/index.php");
 	ForceLoad("contest.php");
 }
 ?>
