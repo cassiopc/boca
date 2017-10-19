@@ -26,12 +26,18 @@ if ($main) {
   if(isset($_GET["Number"]) && isset($_GET["Go"]) && is_numeric($_GET["Number"]) && $_GET["Number"]>0) {
     $param = array();
     $param['number'] = $_GET["Number"];
-    $n = DBNewSite($_SESSION["usertable"]["contestnumber"],null,$param);
+    if(($n = DBNewSite($_SESSION["usertable"]["contestnumber"],null,$param)) === false) {
+      MSGError("Error creating site");
+      $n = 1;
+    }
     ForceLoad("site.php?site=$n");
   }
   if(isset($_GET["new"]) && $_GET["new"]=="1") {
-        $n = DBNewSite($_SESSION["usertable"]["contestnumber"]);
-        ForceLoad("site.php?site=$n");
+    if(($n = DBNewSite($_SESSION["usertable"]["contestnumber"])) === false) {
+      MSGError("Error creating site");
+      $n = 1;
+    }      
+    ForceLoad("site.php?site=$n");
   }
 }
 if (isset($_GET["site"]) && is_numeric($_GET["site"]))
