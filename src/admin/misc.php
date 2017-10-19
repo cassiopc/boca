@@ -27,28 +27,51 @@ require 'header.php';
         document.form1.confirmation.value='confirm';
       }
     }
+    function conf2() {
+      if (confirm("Confirm updating BOCA?")) {
+		  if (confirm("This operation will update your BOCA system. Confirm?")) {
+			  document.form1.confirmation.value='confirm';
+		  }
+      }
+    }
    </script>
    <center>
    <input type="submit" name="Submit1" value="Transfer" onClick="conf()"> &nbsp;
-   <input type="submit" name="Submit2" value="Transfer one-way" onClick="conf()"> &nbsp;
+   <input type="submit" name="Submit2" value="Transfer all" onClick="conf()"> &nbsp;
    <input type="submit" name="Submit3" value="Transfer scores"> &nbsp;
-   <input type="submit" name="Submit4" value="Update BOCA" onClick="conf()"> 
+   <input type="submit" name="Submit4" value="Update BOCA" onClick="conf2()"> 
   </center>
 </form>
 <?php
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
-
+$dotransfer=false;
+$doscore=false;
+$dotransferall=false;
 if (isset($_POST["Submit1"]) && $_POST["Submit1"] == "Transfer") {
-  $privatedir = $_SESSION['locr'] . $ds . "private";
-  $remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
-  $destination = $remotedir . $ds ."scores.zip";
-  if(is_writable($remotedir)) {
-    if(($fp = @fopen($destination . ".lck",'x')) !== false) {
-
+  $dotransfer=true;
+  $doscore=true;
+}
+if (isset($_POST["Submit2"]) && $_POST["Submit2"] == "Transfer all") {
+  $dotransfer=true;
+  $dotransferall=true;
+  $doscore=true;
+}
+if (isset($_POST["Submit3"]) && $_POST["Submit3"] == "Transfer scores") {
+  $doscore=true;
+}
+if (isset($_POST["Submit4"]) && $_POST["Submit4"] == "Update BOCA") {
+  echo "<br><pre>Not implemented</pre>\n";
+}
+$privatedir = $_SESSION['locr'] . $ds . "private";
+$remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
+$destination = $remotedir . $ds ."scores.zip";
+if(is_writable($remotedir)) {
+  if(($fp = @fopen($destination . ".lck",'x')) !== false) {
+    if($doscore) {
       if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
 	ForceLoad("index.php");
-      echo "<pre>\n";
+      echo "<br><pre>\n";
       echo "Building scores\n";
       $level=$s["sitescorelevel"];
       $data0 = array();
@@ -83,14 +106,17 @@ if (isset($_POST["Submit1"]) && $_POST["Submit1"] == "Transfer") {
 	@rename($fname . ".tmp",$destination);
       }
       @fclose($fp);
-      echo "Processing other data\n";
-      getMainXML($_SESSION["usertable"]["contestnumber"]);
-      echo "</pre>\n";
-      @unlink($destination . ".lck");
-    } else {
-      if(file_exists($destination . ".lck") && filemtime($destination . ".lck") < time() - 180)
-	@unlink($destination . ".lck");
     }
+    if($dotransfer) {
+      echo "Processing other data\n";
+      getMainXML($_SESSION["usertable"]["contestnumber"],10,$dotransferall);
+      echo "</pre>\n";
+    }
+    @unlink($destination . ".lck");
+  } else {
+    if(file_exists($destination . ".lck") && filemtime($destination . ".lck") < time() - 120)
+      @unlink($destination . ".lck");
+    echo "<br><pre>Transfers locked by other process - try again soon</pre>\n";
   }
 }
 ?>

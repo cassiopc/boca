@@ -212,7 +212,7 @@ function scoretransfer($putname, $localsite, $timeo=5) {
 }
 
 
-function getMainXML($contest,$timeo=5) {
+function getMainXML($contest,$timeo=5,$upd=false) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   
@@ -252,7 +252,7 @@ function getMainXML($contest,$timeo=5) {
     LOGError("getMainXML: invalid mainsiteurl entry");
     return false;
   }
-  if(count($sitedata) == 3) {
+  if(count($sitedata) == 3 || $upd) {
     $updatetime=0;
   } else
     $updatetime=trim($sitedata[3]);
