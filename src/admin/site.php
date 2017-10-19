@@ -23,11 +23,11 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 if($ct["contestlocalsite"]==$ct["contestmainsite"]) $main=true; else $main=false;
 
 if ($main) {
-  if(isset($_GET["Number"]) && is_numeric($_GET["Number"]) && $_GET["Number"]>0) {
+  if(isset($_GET["Number"]) && isset($_GET["Go"]) && is_numeric($_GET["Number"]) && $_GET["Number"]>0) {
     $param = array();
     $param['number'] = $_GET["Number"];
-    $n = DBNewSite($_SESSION["usertable"]["contestnumber"],$param);
-        ForceLoad("site.php?site=$n");    
+    $n = DBNewSite($_SESSION["usertable"]["contestnumber"],null,$param);
+    ForceLoad("site.php?site=$n");
   }
   if(isset($_GET["new"]) && $_GET["new"]=="1") {
         $n = DBNewSite($_SESSION["usertable"]["contestnumber"]);

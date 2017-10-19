@@ -1121,7 +1121,7 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 	} else {
 		$a = DBGetRow ("select * from sitetable where contestnumber=$contest and sitenumber=$number", 0, $c);
 		if($a != null) {
-		  if($cw)	DBExec($c, "commit work");
+		  if($cw) DBExec($c, "commit work");
 		  return 1;
 		}
 	}
