@@ -46,7 +46,7 @@ $r = DBExec($c,
 	' AND problemnumber > 0');
 $numProblems = DBnlines($r);
 $r = DBExec($c,
-	'SELECT username, userfullname FROM usertable' .
+	'SELECT * FROM usertable' .
 	' WHERE contestnumber = ' . $contest .
 	' AND userenabled = \'t\' AND usersitenumber = ' . $site .
 	' AND usertype = \'team\'');
@@ -57,7 +57,7 @@ $contestfile = $contestfile .
 	$numProblems . "\n";
 
 for ($i = 0; $i < $numTeams; $i++) {
-	$a = DBRow($r, $i);
+	$a = cleanuserdesc(DBRow($r, $i));
 	$teamID = $a['username'];
 	if(isset($a['usershortname']))
 		$teamName = $a['usershortname'];
