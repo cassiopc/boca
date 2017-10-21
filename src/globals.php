@@ -40,8 +40,69 @@ function filedownload($oid,$fname,$msg='') {
 	if($msg != '') $str .= "&msg=" . rawurlencode($msg);
 	return $str;
 }
+function dirrec($dir, $func, $dirPermissions, $filePermissions, $avoid=array()) {
+  $ds = DIRECTORY_SEPARATOR;
+  if($ds=="") $ds = "/";
+  $dp = opendir($dir);
+  while($file = readdir($dp)) {
+    if (($file == ".") || ($file == "..") || $file in_array($avoid))
+      continue;
+    $fullPath = $dir . $ds . $file;
+    if(is_dir($fullPath)) {
+      $func($fullPath, $dirPermissions);
+      dirrec($fullPath, $func, $dirPermissions, $filePermissions);
+    } else {
+      $func($fullPath, $filePermissions);
+    }
+  }
+  closedir($dp);
+}
 
-function cleardir($dir,$cddir=true,$secure=false) {
+function fixbocadir($dir,$full=false) {
+	if(is_dir($dir)) {
+	  $ds = DIRECTORY_SEPARATOR;
+	  if($ds=="") $ds = "/";
+	  $u = posix_getpwuid(fileowner($dir));
+	  $un = $u['name'];
+	  $ug = $u['gid'];
+	  if(@file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n") === false) return false;
+	  if(@touch($dir . $ds . 'private' . $ds . 'remotescores' . $ds . 'otherservers') === false) return false;
+	  if($full)
+	    $d = array('problemtmp','runtmp','scoretmp','remotescores','remotescoresfull','comp','logexternal','runslog');
+	  else
+	    $d = array('problemtmp','runtmp','scoretmp');
+	  foreach($d as $a) cleardir($a,true,true,false);
+	  dirrec($dir, chown, $un, $un);
+	  dirrec($dir, chgrp, $ug, $ug);
+	  dirrec($dir, chmod, "0755", "0644", array('private'));
+	  dirrec($dir . $ds . 'private', chmod, "0750", "0640");
+	  return true;
+	} else {
+	  return false;
+	}	
+}
+function updatebocafile($dirboca, $dirz, $t) {
+  $ok = true;
+  if(is_dir($dirz)) {
+    $ds = DIRECTORY_SEPARATOR;
+    if($ds=="") $ds = "/";
+    $d = @opendir($dirz);
+    while (($file = @readdir($d)) !== false) {
+      if($file != '.' && $file != '..')
+	if(updatebocafile($dirboca . $ds . $file, $dirz . $ds . $file, $t) === false) $ok=false;
+    }
+    @closedir($d);
+    @cleardir($dirz);
+  } else {
+    if(is_file($dirboca)) {
+      copy($dirboca, $dirboca . '.' . $t . '.old');
+      chmod($dirboca . '.' . $t . '.old', "0400");
+    }
+    if(rename($dirz, $dirboca) === false) $ok=false;
+  }
+  return $ok;
+}
+function cleardir($dir,$cddir=true,$secure=true,$removedir=true) {
 	if(is_dir($dir)) {
 		$ds = DIRECTORY_SEPARATOR;
 		if($ds=="") $ds = "/";
@@ -51,26 +112,12 @@ function cleardir($dir,$cddir=true,$secure=false) {
 		}
 		$d = @opendir($dir);
 		while (($file = @readdir($d)) !== false) {
-			if(!is_dir($dir . $ds . $file)) {
-				if($secure)
-					file_put_contents($dir . $ds . $file,str_repeat('XXXXXXXXXX',10000));
-				@unlink($dir . $ds . $file);
-			}
-			else {
-				if($file != '.' && $file != '..') {
-					$cdir1 = $dir . $ds . $file;
-					$d1 = @opendir($cdir1);
-					while (($file1 = @readdir($d1)) !== false)
-						if(!is_dir($cdir1 . $ds . $file1)) {
-							if($secure)
-								file_put_contents($cdir1 . $ds . $file1,str_repeat('XXXXXXXXXX',10000));
-							@unlink($cdir1 . $ds . $file1);
-						}
-					@rmdir($cdir1);
-				}
-			}
+		  if($file != '.' && $file != '..')
+		    cleardir($dir . $ds . $file, false, $secure, true);
 		}
-		@rmdir($dir);
+		@closedir($d);
+		if($removedir)
+		  @rmdir($dir);
 	} else {
 		if($secure)
 			file_put_contents($dir,str_repeat('XXXXXXXXXX',10000));

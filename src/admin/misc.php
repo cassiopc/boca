@@ -39,7 +39,9 @@ require 'header.php';
    <input type="submit" name="Submit1" value="Transfer" onClick="conf()"> &nbsp;
    <input type="submit" name="Submit2" value="Transfer all" onClick="conf()"> &nbsp;
    <input type="submit" name="Submit3" value="Transfer scores"> &nbsp;
-   <input type="submit" name="Submit4" value="Update BOCA" onClick="conf2()"> 
+   <input type="submit" name="Submit4" value="Clear cache" onClick="conf()"> 
+   <input type="submit" name="Submit5" value="Full clear" onClick="conf2()"> 
+   <input type="submit" name="Submit6" value="Update BOCA" onClick="conf2()"> 
   </center>
 </form>
 <?php
@@ -60,8 +62,44 @@ if (isset($_POST["Submit2"]) && $_POST["Submit2"] == "Transfer all") {
 if (isset($_POST["Submit3"]) && $_POST["Submit3"] == "Transfer scores") {
   $doscore=true;
 }
-if (isset($_POST["Submit4"]) && $_POST["Submit4"] == "Update BOCA") {
-  echo "<pre>Not implemented</pre>\n";
+if (isset($_POST["Submit4"]) && $_POST["Submit4"] == "Clear cache") {
+  if(fixbocadir(dirname(__DIR__)))
+    echo "<pre>Done</pre>\n";
+  else echo "<pre>Error (likely permission/ownership issues)</pre>\n";
+}
+if (isset($_POST["Submit4"]) && $_POST["Submit5"] == "Full clear") {
+  if(fixbocadir(dirname(__DIR__),true))
+    echo "<pre>Done</pre>\n";
+  else echo "<pre>Error (likely permission/ownership issues)</pre>\n";
+}
+if (isset($_POST["Submit4"]) && $_POST["Submit6"] == "Update BOCA") {
+  require('..' . $ds . 'versionnum.php');
+  $curv = split('.',$BOCAVERSION);
+  $dir = dirname(__DIR__);
+  fixbocadir($dir);
+  $tmpfname = tempnam(sys_get_temp_dir());
+  if(($str = @file_get_contents('http://www.bombonera.org/updateboca.zip')) !== false) {
+    @file_put_contents($tmpfname, $str);
+    $t = mytime();
+    $zip = new ZipArchive;
+    if ($zip->open($tmpfname) === true) {
+      $zip->extractTo($dir . $ds . "private" . $ds . "newboca." . $t);
+      $zip->close();
+      require($dir . $ds . "private" . $ds . "newboca." . $t . $ds . 'versionnum.php');
+      $newv = split('.',$BOCAVERSION);
+      if($curv[0] != $newv[0] || $curv[1] != $newv[1])
+	echo "<pre>Cannot updated because of major version difference</pre>";
+      else {
+	if(updatebocafile($dir, $dir . $ds . "private" . $ds . "newboca." . $t, $t) === false)
+	  echo "<pre>Error updating BOCA</pre>\n";
+	else {
+	  echo "<pre>Updated to " . $BOCAVERSION . "\n</pre>\n";
+	}
+      }
+    } else {
+      echo "<pre>Downloaded file corrupted</pre>";
+    }
+  } else echo "<pre>Download error</pre>";
 }
 $privatedir = $_SESSION['locr'] . $ds . "private";
 $remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
