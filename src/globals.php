@@ -82,23 +82,45 @@ function fixbocadir($dir,$full=false) {
 	}	
 }
 function updatebocafile($dirboca, $dirz, $t) {
-  $ok = true;
+  $ok = 0;
   if(is_dir($dirz)) {
     $ds = DIRECTORY_SEPARATOR;
     if($ds=="") $ds = "/";
     $d = @opendir($dirz);
     while (($file = @readdir($d)) !== false) {
       if($file != '.' && $file != '..')
-	if(updatebocafile($dirboca . $ds . $file, $dirz . $ds . $file, $t) === false) $ok=false;
+	$ok = $ok + updatebocafile($dirboca . $ds . $file, $dirz . $ds . $file, $t);
     }
     @closedir($d);
     @cleardir($dirz);
   } else {
     if(is_file($dirboca)) {
       copy($dirboca, $dirboca . '.' . $t . '.old');
-      chmod($dirboca . '.' . $t . '.old', "0400");
+    } else {
+      file_put_contents($dirboca . '.' . $t . '.old', "");
     }
-    if(rename($dirz, $dirboca) === false) $ok=false;
+    @chmod($dirboca . '.' . $t . '.old', "0000");
+    if(rename($dirz, $dirboca) === false) $ok=1;
+  }
+  return $ok;
+}
+function revertupdatebocafile($dirboca, $t) {
+  $ok = 0;
+  if(is_dir($dirboca)) {
+    $ds = DIRECTORY_SEPARATOR;
+    if($ds=="") $ds = "/";
+    $d = @opendir($dirboca);
+    while (($file = @readdir($d)) !== false) {
+      if($file != '.' && $file != '..')
+	$ok = $ok + revertupdatebocafile($dirboca . $ds . $file, $t);
+    }
+    @closedir($d);
+  } else {
+    if(is_file($dirboca) && substr($dirboca, strlen($dirboca)-strlen('.' . $t . '.old')) == '.' . $t . '.old') {
+      @chmod($dirboca, "0600");
+      if(@copy($dirboca, substr($dirboca, 0, strlen($dirboca)-strlen('.' . $t . '.old'))) === true) $ok=1;
+      @chmod($dirboca, "0000");
+    }
   }
   return $ok;
 }

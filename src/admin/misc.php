@@ -42,6 +42,7 @@ require 'header.php';
    <input type="submit" name="Submit4" value="Clear cache" onClick="conf()"> 
    <input type="submit" name="Submit5" value="Full clear" onClick="conf2()"> 
    <input type="submit" name="Submit6" value="Update BOCA" onClick="conf2()"> 
+   <input type="submit" name="Submit7" value="Revert Update" onClick="conf2()"> 
   </center>
 </form>
 <?php
@@ -67,12 +68,12 @@ if (isset($_POST["Submit4"]) && $_POST["Submit4"] == "Clear cache") {
     echo "<pre>Done</pre>\n";
   else echo "<pre>Error (likely permission/ownership issues)</pre>\n";
 }
-if (isset($_POST["Submit4"]) && $_POST["Submit5"] == "Full clear") {
+if (isset($_POST["Submit5"]) && $_POST["Submit5"] == "Full clear") {
   if(fixbocadir(dirname(__DIR__),true))
     echo "<pre>Done</pre>\n";
   else echo "<pre>Error (likely permission/ownership issues)</pre>\n";
 }
-if (isset($_POST["Submit4"]) && $_POST["Submit6"] == "Update BOCA") {
+if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
   require('..' . $ds . 'versionnum.php');
   $curv = split('.',$BOCAVERSION);
   $dir = dirname(__DIR__);
@@ -90,71 +91,85 @@ if (isset($_POST["Submit4"]) && $_POST["Submit6"] == "Update BOCA") {
       if($curv[0] != $newv[0] || $curv[1] != $newv[1])
 	echo "<pre>Cannot updated because of major version difference</pre>";
       else {
-	if(updatebocafile($dir, $dir . $ds . "private" . $ds . "newboca." . $t, $t) === false)
-	  echo "<pre>Error updating BOCA</pre>\n";
-	else {
-	  echo "<pre>Updated to " . $BOCAVERSION . "\n</pre>\n";
-	}
+	$q = updatebocafile($dir, $dir . $ds . "private" . $ds . "newboca." . $t, $t);
+	echo "<pre>" . $q . " files updated to " . $BOCAVERSION . "\n</pre>\n";
+	$str = @file_get_contents($dir . $ds . "private" . $ds . "updateboca.log");
+	@file_put_contents($dir . $ds . "private" . $ds . "updateboca.log",  $str . $t . "\n");
       }
     } else {
       echo "<pre>Downloaded file corrupted</pre>";
     }
   } else echo "<pre>Download error</pre>";
 }
-$privatedir = $_SESSION['locr'] . $ds . "private";
-$remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
-$destination = $remotedir . $ds ."scores.zip";
-if(is_writable($remotedir)) {
-  if(($fp = @fopen($destination . ".lck",'x')) !== false) {
-    if($doscore) {
-      if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
-	ForceLoad("index.php");
-      echo "<pre>\n";
-      echo "Building scores\n";
-      $level=$s["sitescorelevel"];
-      $data0 = array();
-      if($level>0) {
-	list($score,$data0) = DBScoreSite($_SESSION["usertable"]["contestnumber"], 
-					  $_SESSION["usertable"]["usersitenumber"], 0, -1);
-      }
-      $ct=DBGetActiveContest();
-      $localsite=$ct['contestlocalsite'];
-      $fname = $privatedir . $ds . "score_localsite_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
-      @file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
-      @rename($fname . ".tmp",$fname . ".dat");
-      
-      $data0 = array();
-      if($level>0) {
-	list($score,$data0) = DBScoreSite($_SESSION["usertable"]["contestnumber"], 
-					  $_SESSION["usertable"]["usersitenumber"], 1, -1);
-      }
-      $ct=DBGetActiveContest();
-      $localsite=$ct['contestlocalsite'];
-      $fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
-      @file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
-      @rename($fname . ".tmp",$fname . ".dat");
-      echo "Transferring scores\n";
-      scoretransfer($fname . ".dat", $localsite);
-      echo "Saving scores\n";
-      if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$fname . ".tmp") != 1) {
-	LOGError("Cannot create score zip file");
-	if(@create_zip($remotedir,array(),$fname . ".tmp") == 1)
+if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
+  $str = @file($dir . $ds . "private" . $ds . "updateboca.log");
+  $t = trim($str[count($str)-1]);
+  unset($str[count($str)-1]);
+  $str = implode("\n", $str);
+  $dir = dirname(__DIR__);
+  fixbocadir($dir);
+  echo "<pre>Reverting last update\n";
+  $q = revertupdatebocafile($dir, $t);
+  echo $q . " files reverted properly\n";
+  echo "</pre>";
+  @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", $str);
+}
+if($dotransfer || $doscore || $dotransferall) {
+  $privatedir = $_SESSION['locr'] . $ds . "private";
+  $remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
+  $destination = $remotedir . $ds ."scores.zip";
+  if(is_writable($remotedir)) {
+    if(($fp = @fopen($destination . ".lck",'x')) !== false) {
+      if($doscore) {
+	if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
+	  ForceLoad("index.php");
+	echo "<pre>\n";
+	echo "Building scores\n";
+	$level=$s["sitescorelevel"];
+	$data0 = array();
+	if($level>0) {
+	  list($score,$data0) = DBScoreSite($_SESSION["usertable"]["contestnumber"], 
+					    $_SESSION["usertable"]["usersitenumber"], 0, -1);
+	}
+	$ct=DBGetActiveContest();
+	$localsite=$ct['contestlocalsite'];
+	$fname = $privatedir . $ds . "score_localsite_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
+	@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
+	@rename($fname . ".tmp",$fname . ".dat");
+	
+	$data0 = array();
+	if($level>0) {
+	  list($score,$data0) = DBScoreSite($_SESSION["usertable"]["contestnumber"], 
+					    $_SESSION["usertable"]["usersitenumber"], 1, -1);
+	}
+	$ct=DBGetActiveContest();
+	$localsite=$ct['contestlocalsite'];
+	$fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
+	@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
+	@rename($fname . ".tmp",$fname . ".dat");
+	echo "Transferring scores\n";
+	scoretransfer($fname . ".dat", $localsite);
+	echo "Saving scores\n";
+	if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$fname . ".tmp") != 1) {
+	  LOGError("Cannot create score zip file");
+	  if(@create_zip($remotedir,array(),$fname . ".tmp") == 1)
+	    @rename($fname . ".tmp",$destination);
+	} else {
 	  @rename($fname . ".tmp",$destination);
-      } else {
-	@rename($fname . ".tmp",$destination);
+	}
+	@fclose($fp);
       }
-      @fclose($fp);
-    }
-    if($dotransfer) {
-      echo "Processing other data\n";
-      getMainXML($_SESSION["usertable"]["contestnumber"],10,$dotransferall);
-      echo "</pre>\n";
-    }
-    @unlink($destination . ".lck");
-  } else {
-    if(file_exists($destination . ".lck") && filemtime($destination . ".lck") < time() - 120)
+      if($dotransfer) {
+	echo "Processing other data\n";
+	getMainXML($_SESSION["usertable"]["contestnumber"],10,$dotransferall);
+	echo "</pre>\n";
+      }
       @unlink($destination . ".lck");
-    echo "<pre>Transfers locked by other process - try again soon</pre>\n";
+    } else {
+      if(file_exists($destination . ".lck") && filemtime($destination . ".lck") < time() - 120)
+	@unlink($destination . ".lck");
+      echo "<pre>Transfers locked by other process - try again soon</pre>\n";
+    }
   }
 }
 ?>
