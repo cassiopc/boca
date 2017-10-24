@@ -118,14 +118,16 @@ if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
     $str = @file($dir . $ds . "private" . $ds . "updateboca.log");
     if(count($str) >= 1) {
-      while(count($str) >= 1 && ($t = trim($str[count($str)-1]))=='')
-	unset($str[count($str)-1]);
+      $t = trim($str[count($str)-1]);
+      unset($str[count($str)-1]);
       $str = implode("\n", $str);
       fixbocadir($dir);
-      echo "Reverting last update\n";
-      $q = revertupdatebocafile($dir, $t);
-      echo $q . " files reverted properly\n";
-      fixbocadir($dir);
+      if($t != '') {
+	echo "Reverting last update\n";
+	$q = revertupdatebocafile($dir, $t);
+	echo $q . " files reverted properly\n";
+	fixbocadir($dir);
+      }
       @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", $str);
     } else {
       echo "No updates to revert\n";
