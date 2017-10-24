@@ -126,7 +126,7 @@ function revertupdatebocafile($dirboca, $t) {
   } else {
     if(is_file($dirboca) && substr($dirboca, 0, strlen('old.' . $t . '.')) == 'old.' . $t . '.') {
       @chmod($dirboca, 0600);
-      if(@copy($dirboca, substr($dirboca, strlen('old.' . $t . '.' .))) === true) $ok=1;
+      if(@copy($dirboca, substr($dirboca, strlen('old.' . $t . '.'))) === true) $ok=1;
       @chmod($dirboca, 0000);
     }
   }
