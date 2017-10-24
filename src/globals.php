@@ -101,7 +101,7 @@ function updatebocafile($dirboca, $dirz, $t) {
       file_put_contents($dirboca . '.' . $t . '.old', "");
     }
     @chmod($dirboca . '.' . $t . '.old', 0000);
-    if(rename($dirz, $dirboca) === false) $ok=1;
+    if(rename($dirz, $dirboca) === true) $ok=1;
   }
   return $ok;
 }
