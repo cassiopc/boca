@@ -65,8 +65,8 @@ function fixbocadir($dir,$full=false) {
 	  $u = posix_getpwuid(fileowner($dir));
 	  $un = $u['name'];
 	  $ug = $u['gid'];
-	  if(@file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n") === false) return false;
-	  if(@touch($dir . $ds . 'private' . $ds . 'remotescores' . $ds . 'otherservers') === false) return false;
+	  @file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n");
+	  @touch($dir . $ds . 'private' . $ds . 'remotescores' . $ds . 'otherservers');
 	  if($full)
 	    $d = array('problemtmp','runtmp','scoretmp','remotescores','remotescoresfull','comp','logexternal','runslog');
 	  else
@@ -76,6 +76,7 @@ function fixbocadir($dir,$full=false) {
 	  dirrec($dir, chgrp, $ug, $ug);
 	  dirrec($dir, chmod, 0755, 0644, array('private'));
 	  dirrec($dir . $ds . 'private', chmod, 0750, 0640);
+	  if(@file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n") === false) return false;
 	  return true;
 	} else {
 	  return false;

@@ -81,7 +81,7 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
     require('..' . $ds . 'versionnum.php');
     $curv = explode('.',$BOCAVERSION);
     fixbocadir($dir);
-    $tmpfname = tempnam(sys_get_temp_dir());
+    $tmpfname = $dir . $ds . "private" . $ds . 'newboca.zip';
     if(($str = @file_get_contents('http://www.bombonera.org/updateboca.zip')) !== false) {
       @file_put_contents($tmpfname, $str);
       $t = mytime();
