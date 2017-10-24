@@ -49,8 +49,8 @@ function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=a
     $ug = $u['gid'];
     if($un != $user) echo "user of $dir must be fixed!!\n";
     if($ug != $group) echo "group of $dir must be fixed!!\n";
-    if(chmod($dir, $dirPermissions) === false) echo "cannot chmod $dir\n";
-    if(($dp = opendir($dir)) === false) return;
+    if(@chmod($dir, $dirPermissions) === false) echo "cannot chmod $dir\n";
+    if(($dp = @opendir($dir)) === false) return;
     while($file = readdir($dp)) {
       if (($file == ".") || ($file == ".."))
 	continue;
@@ -68,9 +68,9 @@ function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=a
   } else {
     if(!is_link($dir)) {
       $t = myunique();
-      copy($dir, $dir . '.tmp' . $t);
-      rename($dir . '.tmp' . $t, $dir);
-      if(chmod($dir, $filePermissions)=== false) echo "cannot chmod $dir\n";
+      @copy($dir, $dir . '.tmp' . $t);
+      @rename($dir . '.tmp' . $t, $dir);
+      if(@chmod($dir, $filePermissions)=== false) echo "cannot chmod $dir\n";
     }
   }
 }
