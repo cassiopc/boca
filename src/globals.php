@@ -157,9 +157,9 @@ function cleardir($dir,$cddir=true,$secure=true,$removedir=true) {
 		if($removedir)
 		  @rmdir($dir);
 	} else {
-		if($secure)
-			file_put_contents($dir,str_repeat('XXXXXXXXXX',10000));
-		@unlink($dir);
+	  if($secure && !is_link($dir))
+	    file_put_contents($dir,str_repeat('XXXXXXXXXX',10000));
+	  @unlink($dir);
 	}
 }
 
