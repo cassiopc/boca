@@ -118,8 +118,8 @@ if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
     $str = @file($dir . $ds . "private" . $ds . "updateboca.log");
     if(count($str) >= 1) {
-      $t = trim($str[count($str)-1]);
-      unset($str[count($str)-1]);
+      while(count($str) >= 1 && ($t = trim($str[count($str)-1]))=='')
+	unset($str[count($str)-1]);
       $str = implode("\n", $str);
       fixbocadir($dir);
       echo "Reverting last update\n";
