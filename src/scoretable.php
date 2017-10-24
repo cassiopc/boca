@@ -175,7 +175,7 @@ if(isset($_GET["remote"])) {
 
 if(!$redo) {
 	$conf=globalconf();
-	if($conf['doenc'])
+	if(isset($conf['doenc']) && $conf['doenc'])
 	  $strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")),$conf["key"],'score');
 	else $strtmp = substr($strtmp,strpos($strtmp,"\n"));
 	if($strtmp=="") $redo=TRUE;
@@ -395,7 +395,7 @@ if($redo) {
 	}
 
 	$conf=globalconf();
-	if($conf['doenc'])
+	if(isset($conf['doenc']) && $conf['doenc'])
 	  $strtmp = "<!-- " . time() . " --> <?php exit; ?>\n" . encryptData($strtmp,$conf["key"],false);
 	else $strtmp = "<!-- " . time() . " --> <?php exit; ?>\n" . $strtmp;
 	if(file_put_contents($scoretmp, $strtmp,LOCK_EX)===FALSE) {
@@ -405,7 +405,7 @@ if($redo) {
 		LOGError("Cannot write to the ".$_SESSION["usertable"]["usertype"]."-score cache file -- performance might be compromised");
 	}
 	$conf=globalconf();
-	if($conf['doenc'])
+	if(isset($conf['doenc']) && $conf['doenc'])
 	  $strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")),$conf["key"]);
 	else $strtmp = substr($strtmp,strpos($strtmp,"\n"));
 }
