@@ -29,7 +29,7 @@ require 'header.php';
     }
     function conf2() {
       if (confirm("Confirm updating BOCA?")) {
-		  if (confirm("This operation will update your BOCA system. Confirm?")) {
+		  if (confirm("This operation may perform considerable changes to your BOCA system. Confirm?")) {
 			  document.form1.confirmation.value='confirm';
 		  }
       }
@@ -45,6 +45,10 @@ require 'header.php';
    <input type="submit" name="Submit7" value="Revert Update" onClick="conf2()"> 
   </center>
 </form>
+<br>
+<pre>
+OPERATION LOG DISPLAYS BELOW:
+
 <?php
 if(isset($_POST['confirmation']) && $_POST['confirmation'] == 'confirm') {
 $ds = DIRECTORY_SEPARATOR;
@@ -66,13 +70,13 @@ if (isset($_POST["Submit3"]) && $_POST["Submit3"] == "Transfer scores") {
 }
 if (isset($_POST["Submit4"]) && $_POST["Submit4"] == "Clear cache") {
   if(fixbocadir(dirname(__DIR__)))
-    echo "<pre>Done</pre>\n";
-  else echo "<pre>Error (likely permission/ownership issues)</pre>\n";
+    echo "Done\n";
+  else echo "Error (likely permission/ownership issues)\n";
 }
 if (isset($_POST["Submit5"]) && $_POST["Submit5"] == "Full clear") {
   if(fixbocadir(dirname(__DIR__),true))
-    echo "<pre>Done</pre>\n";
-  else echo "<pre>Error (likely permission/ownership issues)</pre>\n";
+    echo "Done\n";
+  else echo "Error (likely permission/ownership issues)\n";
 }
 if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
   $dir = dirname(__DIR__);
@@ -92,20 +96,20 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
 	require($dir . $ds . "private" . $ds . "newboca." . $t . $ds . 'versionnum.php');
 	$newv = explode('.',$BOCAVERSION);
 	if($curv[0] != $newv[0] || $curv[1] != $newv[1])
-	  echo "<pre>Cannot updated because of major version difference</pre>";
+	  echo "Cannot updated because of major version difference\n";
 	else {
 	  $q = updatebocafile($dir, $dir . $ds . "private" . $ds . "newboca." . $t, $t);
-	  echo "<pre>" . $q . " files updated to " . $BOCAVERSION . "\n</pre>\n";
+	  echo "" . $q . " files updated to " . $BOCAVERSION . "\n\n";
 	  $str = @file_get_contents($dir . $ds . "private" . $ds . "updateboca.log");
 	  @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log",  $str . $t . "\n");
 	}
       } else {
-	echo "<pre>Downloaded file corrupted</pre>";
+	echo "Downloaded file corrupted\n";
       }
       @unlink($tmpfname);
-    } else echo "<pre>Download error</pre>";
+    } else echo "Download error\n";
   } else {
-    echo "<pre>Cannot update log file\n</pre>";
+    echo "Cannot update log file\n";
   }
 }
 if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
@@ -118,17 +122,16 @@ if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
       unset($str[count($str)-1]);
       $str = implode("\n", $str);
       fixbocadir($dir);
-      echo "<pre>Reverting last update\n";
+      echo "Reverting last update\n";
       $q = revertupdatebocafile($dir, $t);
       echo $q . " files reverted properly\n";
-      echo "</pre>";
       fixbocadir($dir);
       @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", $str);
     } else {
-      echo "<pre>No updates to revert</pre>\n";
+      echo "No updates to revert\n";
     }
   } else {
-    echo "<pre>Cannot update log file\n</pre>";
+    echo "Cannot update log file\n";
   }
 }
 if($dotransfer || $doscore || $dotransferall) {
@@ -140,7 +143,6 @@ if($dotransfer || $doscore || $dotransferall) {
       if($doscore) {
 	if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
 	  ForceLoad("index.php");
-	echo "<pre>\n";
 	echo "Building scores\n";
 	$level=$s["sitescorelevel"];
 	$data0 = array();
@@ -179,17 +181,17 @@ if($dotransfer || $doscore || $dotransferall) {
       if($dotransfer) {
 	echo "Processing other data\n";
 	getMainXML($_SESSION["usertable"]["contestnumber"],10,$dotransferall);
-	echo "</pre>\n";
       }
       @unlink($destination . ".lck");
     } else {
       if(file_exists($destination . ".lck") && filemtime($destination . ".lck") < time() - 120)
 	@unlink($destination . ".lck");
-      echo "<pre>Transfers locked by other process - try again soon</pre>\n";
+      echo "Transfers locked by other process - try again soon\n";
     }
   }
 }
 }
 ?>
+</pre>
 </body>
 </html>
