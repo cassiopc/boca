@@ -1122,7 +1122,7 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 		$a = DBGetRow ("select * from sitetable where contestnumber=$contest and sitenumber=$number", 0, $c);
 		if($a != null) {
 		  if($cw)	DBExec($c, "commit work");
-		  return 1;
+		  return false;
 		}
 	}
 	if($duration=='') $duration = $ct["contestduration"];
@@ -1140,7 +1140,7 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 			  $ct["contestlastmileanswer"].",".$ct["contestlastmilescore"].
 			  ", $duration, 't', '$number', '$number', '$number', $sitescorelevel, 0, 0, 0, 0, 10, $updatetime)")) {
 	  if($cw)	DBExec($c, "commit work");
-	  return 1;
+	  return false;
 	}
 
 	$cf=globalconf();
@@ -1160,7 +1160,7 @@ function DBNewSite ($contest, $c=null, $param=array()) {
 	if($cw)	DBExec($c, "commit work");
 	LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . 
 			 " created site $number on contest $contest.",2);
-	return 2;
+	return $number;
 }
 
 function DBUserUpdate($contest, $site, $user, $username, $userfull, $userdesc, $passo, $passn) {

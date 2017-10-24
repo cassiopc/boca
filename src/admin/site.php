@@ -23,9 +23,21 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 if($ct["contestlocalsite"]==$ct["contestmainsite"]) $main=true; else $main=false;
 
 if ($main) {
+  if(isset($_GET["Number"]) && isset($_GET["Go"]) && is_numeric($_GET["Number"]) && $_GET["Number"]>0) {
+    $param = array();
+    $param['number'] = $_GET["Number"];
+    if(($n = DBNewSite($_SESSION["usertable"]["contestnumber"],null,$param)) === false) {
+      MSGError("Error creating site");
+      $n = 1;
+    }
+    ForceLoad("site.php?site=$n");
+  }
   if(isset($_GET["new"]) && $_GET["new"]=="1") {
-        $n = DBNewSite($_SESSION["usertable"]["contestnumber"]);
-        ForceLoad("site.php?site=$n");
+    if(($n = DBNewSite($_SESSION["usertable"]["contestnumber"])) === false) {
+      MSGError("Error creating site");
+      $n = 1;
+    }      
+    ForceLoad("site.php?site=$n");
   }
 }
 if (isset($_GET["site"]) && is_numeric($_GET["site"]))
@@ -282,7 +294,7 @@ if ($main && isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_POST["
       }
     }
     function newsite() {
-      document.location='site.php?new=1';
+      document.getElementById('normal').style.display = "block";
     }
     function sitech(n) {
       if(n==null) {
@@ -599,7 +611,15 @@ if($main) {
   </center>
 		<?php } ?>
 </form>
-
-
+<div id="normal">
+<div id="popupnew">
+<form action="site.php" id="formnew" method="get" name="formnew">
+<h2>Choose site number</h2>
+<input id="new" name="Number" placeholder="new" type="text">
+<input type="submit" name="Go" value="Go">
+</form>
+</div>
+</div>
+    
 </body>
 </html>

@@ -44,7 +44,7 @@ if(system('test "`id -u`" -eq "0"',$retval)===false || $retval!=0) {
   exit;
 }
 
-ini_set('memory_limit','600M');
+ini_set('memory_limit','1200M');
 ini_set('output_buffering','off');
 ini_set('implicit_flush','on');
 @ob_end_flush();
@@ -487,10 +487,14 @@ while(42) {
 	      $answertmp = substr(trim($dif[count($dif)-1]),0,200);
 	    $answertmp = sanitizeText($answertmp);
 	    fclose($fp);
+	    /*
 	    foreach (glob($dir . $ds . '*') as $fne) {
-	      @chown($fne,"nobody");
-	      @chmod($fne,0755);
+	      if(is_file($fne)) {
+		@chown($fne,"nobody");
+		@chmod($fne,0755);
+	      }
 	    }
+	    */
 	    // retval 5 (presentation) and retval 6 (wronganswer) are already compatible with the compare script
 	    if($localretval < 4 || $localretval > 6) {
 	      // contact staff
@@ -616,9 +620,14 @@ while(42) {
     if(count($ans) > 0)
       $anstmp = substr(trim(escape_string($ans[count($ans)-1])),0,100);
     unset($ans);
-    $answer = "(probably runtime error - unusual code: $retval) " . $anstmp;
-    // runtime error
-    $retval = 3;
+    if(strpos(file_get_contents('allerr'),'Error: Could not find or load main class') === false) {
+      $answer = "(probably runtime error - unusual code: $retval) " . $anstmp;
+      // runtime error
+      $retval = 3;
+    } else {
+      $answer = "(probably wrong name of class - unusual code: $retval) "; // . $anstmp;
+      $retval = 8;
+    }
   }
   if($retval == 0 || $retval > 9) {
     $ans = file("allout");
@@ -638,7 +647,7 @@ while(42) {
   //echo "err==> "; system("tail -n1 ". $dir.$ds.'allerr');
   $answer=substr($answer,0,200);
   DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $dir.$ds.'allout', $dir.$ds.'allerr', $retval);
-  LogLevel("Autojudging: answered '$answer' (run=$number, site=$site, contest=$contest)",3);
-  echo "Autojudging answered '$answer' (contest=$contest, site=$site, run=$number)\n";
+  LogLevel("Autojudging: answered $retval '$answer' (run=$number, site=$site, contest=$contest)",3);
+  echo "Autojudging answered $retval '$answer' (contest=$contest, site=$site, run=$number)\n";
 }
 ?>

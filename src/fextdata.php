@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 10/aug/2017 by cassio@ime.usp.br
+// Last modified 16/oct/2017 by cassio@ime.usp.br
 
 function makeurlhttps($siteurl) {
   if(substr($siteurl,0,7) == 'http://')
@@ -30,16 +30,21 @@ function makeurlhttps($siteurl) {
 function scoretransfer($putname, $localsite, $timeo=5) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
+  $logstr='';
 
   if(is_readable('/etc/boca.conf')) {
     $pif=parse_ini_file('/etc/boca.conf');
     $bocaproxy = @trim($pif['proxy']);
-    if($bocaproxy != "" && substr($bocaproxy,0,6) != 'tcp://')
+    if($bocaproxy != "" && substr($bocaproxy,0,6) != 'tcp://') {
       $bocaproxy = 'tcp://' . $bocaproxy;
+      $logstr .= "proxy configuration found\n";
+    }
     $bocaproxylogin = @trim($pif['proxylogin']);
     $bocaproxypass = @trim($pif['proxypassword']);
-    if($bocaproxylogin != "")
+    if($bocaproxylogin != "") {
+      $logstr .= "proxy authentication found\n";
       $bocaproxypass = base64_encode($bocaproxylogin . ":" . $bocaproxypass);
+    }
   } else {
     $bocaproxy = "";
     $bocaproxypass = "";
@@ -72,12 +77,14 @@ function scoretransfer($putname, $localsite, $timeo=5) {
     if(strpos($siteurl,'#') !== false) continue;
     LOGError("scoretransfer: found site $siteurl");
     $siteurl = makeurlhttps($siteurl);
+    $logstr .= "Found site $siteurl to share info\n";
     //		LOGError("url=" .$siteurl . "index.php?getsessionid=1");
     $opts = array();
     $opts['http']['timeout'] = $timeo;
     $context = stream_context_create($opts);		  
     if(($sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context))===false) {
       LOGError("scoretransfer: timeout at get session id for $siteurl");
+      $logstr .= "timeout at get-session-id for $siteurl\n";
       continue;
     }
     //		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
@@ -104,12 +111,14 @@ function scoretransfer($putname, $localsite, $timeo=5) {
     }
     if($ok===false) {
       LOGError("scoretransfer: timeout at login for $siteurl");
+      $logstr .= "timeout at login for $siteurl\n";
       continue;
     }
     //		LOGError("ok=" . $ok);
     if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
       if(($res = @file_get_contents($siteurl . "scoretable.php?remote=-42", 0, $context))===false) {
 	LOGError("scoretransfer: timeout at get score for $siteurl");
+	$logstr .= "timeout at get-score for $siteurl\n";
 	continue;
       }
       @file_put_contents($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip', $res);
@@ -130,16 +139,20 @@ function scoretransfer($putname, $localsite, $timeo=5) {
 	  }
 	  $zip->close();
 	  LOGError("scoretransfer: download OK");
+	  $logstr .= "download OK from $siteurl\n";
 	} else {
+	  $logstr .= "reading failed from $siteurl (zip open error)\n";
 	  LOGError("scoretransfer: download failed (2)");
 	}
 	cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
 	@unlink($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip');
       } else {
 	LOGError("scoretransfer: download failed (3)");
+	$logstr .= "download failed from $siteurl (file error)\n";
       }
     } else {
       LOGError("scoretransfer: download failed (1)");
+      $logstr .= "download failed from $siteurl (connection establishing error)\n";
     }
 
     if(is_readable($putname)) {
@@ -168,11 +181,15 @@ function scoretransfer($putname, $localsite, $timeo=5) {
       }
       if($s===false) {
 	LOGError("scoretransfer: timeout at upload for $siteurl");
+	$logstr .= "timeout at full upload to $siteurl\n";
       } else {			  
-	if(strpos($s,'SCORE UPLOADED OK') !== false)
+	if(strpos($s,'SCORE UPLOADED OK') !== false) {
 	  LOGError("scoretransfer: upload OK");
-	else
+	  $logstr .= "upload of score to $siteurl OK\n";
+	} else {
 	  LOGError("scoretransfer: upload failed (" . $s . ")");
+	  $logstr .= "upload of score to $siteurl failed (" . $s . ")\n";
+	}
       }
     }
     if(is_readable($superlfile)) {
@@ -200,19 +217,25 @@ function scoretransfer($putname, $localsite, $timeo=5) {
       }
       if($s===false) {
 	LOGError("scoretransfer: timeout at full upload for $siteurl");
+	$logstr .= "timeout at full upload to $siteurl\n";
 	continue;
       } else {
-	if(strpos($s,'SCORE UPLOADED OK') !== false)
+	if(strpos($s,'SCORE UPLOADED OK') !== false) {
 	  LOGError("scoretransfer: upload full OK");
-	else
+	  $logstr .= 'upload of full score to $siteurl OK\n';
+	}
+	else {
 	  LOGError("scoretransfer: upload full failed (" . $s . ")");
+	  $logstr .= 'upload of full score to $siteurl failed (' . $s . ')';
+	}
       }
     }
   }
+  return $logstr;
 }
 
 
-function getMainXML($contest,$timeo=5) {
+function getMainXML($contest,$timeo=5,$upd=false) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   
@@ -236,7 +259,7 @@ function getMainXML($contest,$timeo=5) {
   if ($c==null) return false;
   $r = DBExec($c, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
-    echo "Unable to find the contest $contest in the database.";
+    echo "Unable to find the contest $contest in the database.\n";
     LOGError("Unable to find the contest $contest in the database.");
     return false;
   }
@@ -252,7 +275,7 @@ function getMainXML($contest,$timeo=5) {
     LOGError("getMainXML: invalid mainsiteurl entry");
     return false;
   }
-  if(count($sitedata) == 3) {
+  if(count($sitedata) == 3 || $upd) {
     $updatetime=0;
   } else
     $updatetime=trim($sitedata[3]);
@@ -264,12 +287,14 @@ function getMainXML($contest,$timeo=5) {
   $opts = array();
   $opts['http']['timeout'] = $timeo;
   $context = stream_context_create($opts);
+  echo "Connecting to ". $siteurl . "\n";
   try {
     $sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context);
   } catch(Exception $e) {
     $sess=false;
   }
   if($sess===false) {
+    echo "timeout at connection\n";
     LOGError("getMainXML: timeout at get session id for $siteurl");
     return false;
   }
@@ -288,19 +313,21 @@ function getMainXML($contest,$timeo=5) {
     $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
   $opts['http']['timeout'] = $timeo;  
   $context = stream_context_create($opts);
+  echo "Authorizing\n";
   try {
     $ok = @file_get_contents($siteurl . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
   } catch(Exception $e) {
     $ok=false;
   }
   if($ok===false) {
+    echo "timeout at authorization\n";
     LOGError("getMainXML: timeout at login for $siteurl");
     return false;
   }
   $ti = mytime();
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
-
+    echo "Generating local data\n";
     $data = encryptData(generateSiteXML($contest, $localsite, $updatetime-30),myhash(trim($sitedata[2])));
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
@@ -320,27 +347,35 @@ function getMainXML($contest,$timeo=5) {
       $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
     $opts['http']['timeout'] = $timeo;
     $context = stream_context_create($opts);
+    echo "Transferring data\n";
     try {
       $s = @file_get_contents($siteurl . "site/getsite.php", 0, $context);
     } catch(Exception $e) {
       $s=false;
     }
     if($s===false) {
+      echo "timeout at transferring\n";
       LOGError("getMainXML: timeout at transfer for $siteurl");
       return false;
     }
-
-    if(strpos($s,'<OK>') !== false)
+    $chstr = "<!-- <OK> -->\n";
+    if(strpos($s,$chstr) !== false) {
+      echo "Transfer succeeded\n";
       LOGInfo("xmltransfer: OK");
-    else
+    } else {
+      echo "Transfer error (" . $s . ")\n";
       LOGError("xmltransfer: failed (" . $s . ")");
+    }
 
-    $s = substr($s, strpos($s, "\n") + 1);
+    echo "Processing received data\n";
+    $s = substr($s, strpos($s, $chstr) + strlen($chstr));
     //    LOGError("string: " . substr($s,0,50));
     $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
     if(strtoupper(substr($s,0,5)) != "<XML>") {
+      echo "Data corrupted\n";
       return false;
     }
+    echo "Importing data to local server\n";
     if(importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime'])) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
       $ti = 2+$ct['updatetime'];
@@ -348,9 +383,11 @@ function getMainXML($contest,$timeo=5) {
       DBUpdateContest ($param, null);
       return true;
     } else {
+      echo "Importing error\n";
       LOGError("error importing xml");
     }
   } else {
+    echo "Transfer error (" . $ok . ")\n";
     LOGError("xmltransfer: failed (" . $ok . ")");
   }
   return false;
@@ -358,6 +395,7 @@ function getMainXML($contest,$timeo=5) {
 
 function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
   LOGInfo("importFromXML: contest $contest site $site tomain $tomain");
+  if($tomain) $serv='Main'; else $serv='Local';
   $data = implode("",explode("\n",$ar));
   $parser = xml_parser_create('');
   xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 1);
@@ -372,6 +410,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
   //	DBExec($conn,"lock","importFromXML(lock)");
   $r = DBExec($conn, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
+    echo "$serv - error finding contest $contest \n";
     LOGError("importFromXML: Unable to find the contest $contest in the database.");
     //    DBExec($conn,"rollback work");
     return false;
@@ -411,10 +450,12 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	    if($uptime > 0) $param['updatetime']=$uptime;
 	    if(($ret=DBUpdateContest ($param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - Contest " . $param["contestnumber"] . " updated\n";
 		LOGInfo("importFromXML: Contest " . $param["contestnumber"] . " updated");
 	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param["contestnumber"] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param["contestnumber"]);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -427,10 +468,12 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(!$tomain && $table == "answertable") {
 	    if(($ret=DBNewAnswer ($contest, $param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - Answer " . $param["answernumber"] . " updated\n";
 		LOGInfo("importFromXML: Answer " . $param["answernumber"] . " updated");
 	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param["answernumber"] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param["answernumber"]);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -440,10 +483,12 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(!$tomain && $table == "langtable") {
 	    if(($ret=DBNewLanguage ($contest,$param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - Language " . $param['langnumber'] ." updated\n";
 		LOGInfo("importFromXML: Language " . $param['langnumber'] ." updated");
 	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param['langnumber'] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param['langnumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -453,9 +498,11 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(!$tomain && $table == "problemtable") {
 	    if(($ret=DBNewProblem ($contest,$param, $conn))) {
 	      if($ret==2)
+		echo "$serv - Problem " . $param['problemnumber'] ." updated\n";
 		LOGInfo("importFromXML: Problem " . $param['problemnumber'] ." updated");
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param['problemnumber'] . "\n";
 	      LOGError("importFromXML: error to update $table " . $param['problemnumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -466,11 +513,13 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(isset($param['clarsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['clarsitenumber'];              
 	  if(isset($param['runsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['runsitenumber'];              
 	  if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) {
+	    echo "$serv - site mismatch $site " . $param['sitenumber'] . "\n";
 	    LOGError("importFromXML: site mismatch $site " . $param['sitenumber']);
 	    continue;
 	  }
 	  if($tomain && $table == "sitetable") {
 	    if(!DBNewSite($contest, $conn, $param)) {
+	      echo "$serv - error to update $table \n";
 	      LOGError("importFromXML: error to update $table");
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -478,9 +527,11 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	    }
 	    if(($ret=DBUpdateSite($param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - Site " . $param["sitenumber"] . " updated\n";
 		LOGInfo("importFromXML: Site " . $param["sitenumber"] . " updated");
 	      }
 	    } else {
+	      echo "$serv - error to update $table ". $param["sitenumber"] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param["sitenumber"]);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -489,6 +540,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  }
 	  if($tomain && $table == "sitetimetable") {
 	    if(!DBUpdateSiteTime($contest, $param, $firsttimetime, $conn)) {
+	      echo "$serv - error to update $table \n";
 	      LOGError("importFromXML: error to update $table");
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -501,9 +553,11 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if($table == "usertable") {
 	    if(($ret=DBNewUser($param, $conn))) {
 	      if($ret==2) {
+		echo "$serv - User " . $param["usernumber"]."/".$param['sitenumber']. " updated\n";
 		LOGInfo("importFromXML: User " . $param["usernumber"]."/".$param['sitenumber']. " updated");
 	      }
 	    } else {
+	      echo "$serv - error to update $table ". $param["usernumber"]."/".$param['sitenumber'] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param["usernumber"]."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -512,10 +566,13 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  }
 	  if($table == "tasktable") {
 	    if(($ret=DBNewTask ($param, $conn))) {
-	      if($ret==2)
+	      if($ret==2) {
+		echo "$serv - Task " . $param['tasknumber']."/".$param['sitenumber']." updated\n";
 		LOGInfo("importFromXML: Task " . $param['tasknumber']."/".$param['sitenumber']." updated");
+	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table " . $param['tasknumber']."/".$param['sitenumber'] . "\n";
 	      LOGError("importFromXML: error to update $table " . $param['tasknumber']."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -524,10 +581,13 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  }
 	  if($table == "clartable") {
 	    if(($ret=DBNewClar ($param, $conn))) {
-	      if($ret==2)
+	      if($ret==2) {
+		echo "$serv - Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated\n";
 		LOGInfo("importFromXML: Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated");
+	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param['clarnumber']."/".$param['sitenumber'] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param['clarnumber']."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -536,10 +596,13 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  }
 	  if($table == "runtable") {
 	    if(($ret=DBNewRun ($param, $conn))) {
-	      if($ret==2)
+	      if($ret==2) {
+		echo "$serv - Run " . $param['runnumber'] ."/".$param['sitenumber']." updated\n";
 		LOGInfo("importFromXML: Run " . $param['runnumber'] ."/".$param['sitenumber']." updated");
+	      }
 	    }
 	    else {
+	      echo "$serv - error to update $table ". $param['runnumber'] ."/".$param['sitenumber'] . "\n";
 	      LOGError("importFromXML: error to update $table ". $param['runnumber'] ."/".$param['sitenumber']);
 	      if($conn != null)
 		DBExec($conn,"rollback work");
@@ -550,7 +613,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
       }
     }
   }
-  //	DBExec($conn,"commit work","importFromXML(commit)");
+  if($conn != null)
+    DBExec($conn,"commit work","importFromXML(commit)");
   return true;
 }
 
@@ -601,7 +665,7 @@ function generateSiteXML($contest,$site,$updatetime) {
     }
   }
   $str .= "</XML>\n";
-  DBExec($c,"commit work","generateXML(commit)");
+  DBExec($c,"commit work","generateSiteXML(commit)");
   LOGInfo("xml data generated for contest $contest site $site at time $updatetime");
   return $str;
 }

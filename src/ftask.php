@@ -396,7 +396,7 @@ function DBNewTask($param, $c=null, $autotask=false) {
 		$tasknumber = $a["nexttask"] + 1;
 		DBExec($c, "update sitetable set sitenexttask=$tasknumber" .
 		       " where sitenumber=$site and contestnumber=$contest and sitenexttask<$tasknumber", "DBNewTask(update site)");
-		$taskinc = myunique();
+		$taskinc = myunique($tasknumber);
 		if(($taskinc % 2) == 0) $taskinc--;
 		if($autotask) $taskinc++;
 		$tasknumber = $taskinc;
@@ -435,12 +435,17 @@ function DBNewTask($param, $c=null, $autotask=false) {
 		} else $oid="NULL";
 
 		if($taskinc >= $tasknumber) {
-		  while(!DBExecNonStop($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
+		  while(true) {
+		    DBExec($c,"SAVEPOINT sp" . $tasknumber,"DBNewTask(insert task sp)");
+		    if(DBExecNonStop($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .
 				       "taskdatediff, taskdatediffans, taskfilename, taskdata, taskstatus, taskdesc, tasksystem, ".
 				       "color, colorname, updatetime) " . 
 				       "VALUES ($contest, $site, $tasknumber, $user, $taskdate, $taskdatediff, $taskdatediffans, '$filename', $oid, '$status', " .
 				       "'$desc', '$sys', '$color', '$colorname', $updatetime)",
-				       "DBNewTask(insert task)")) {
+				     "DBNewTask(insert task)")) {
+		      break;
+		    }
+		    DBExec($c,"ROLLBACK TO SAVEPOINT sp" . $tasknumber,"DBNewTask(insert task sp rollback)");
 		    $tasknumber+=2;
 		    if($tasknumber > $taskinc + 6) {
 		      DBExec($c, "INSERT INTO tasktable (contestnumber, sitenumber, tasknumber, usernumber, taskdate, " .

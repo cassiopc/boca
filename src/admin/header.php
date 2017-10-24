@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 21/jul/2012 by cassio@ime.usp.br
+// Last modified 19/oct/2017 by cassio@ime.usp.br
 
 ob_start();
 header ("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -53,7 +53,7 @@ if($_SESSION["usertable"]["usertype"] != "admin") {
 }
 
 if(!isset($_POST['noflush'])) {
-	echo "</head><body><table border=1 width=\"100%\">\n";
+	echo "</head><body id=\"body\"><table border=1 width=\"100%\">\n";
 	echo "<tr><td nowrap bgcolor=\"eeee00\" align=center>";
 	echo "<img src=\"../images/smallballoontransp.png\" alt=\"\">";
 	echo "<font color=\"#000000\">BOCA</font>";
@@ -71,7 +71,7 @@ if(!isset($_POST['noflush'])) {
 	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=problem.php>Problems</a></td>\n";
 	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=language.php>Languages</a></td>\n";
 	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=answer.php>Answers</a></td>\n";
-	//	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=export.php>Export</a></td>\n";
+	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=misc.php>Misc</a></td>\n";
 //echo " </tr></table><hr><table border=0 width=\"100%\" align=center><tr>\n";
 	echo " </tr><tr>\n";
 	echo "  <td align=center><a class=menu style=\"font-weight:bold\" href=task.php>Tasks</a></td>\n";

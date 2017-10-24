@@ -40,8 +40,107 @@ function filedownload($oid,$fname,$msg='') {
 	if($msg != '') $str .= "&msg=" . rawurlencode($msg);
 	return $str;
 }
+function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=array()) {
+  $ds = DIRECTORY_SEPARATOR;
+  if($ds=="") $ds = "/";
+  if(is_dir($dir)) {
+    $u = posix_getpwuid(fileowner($dir));
+    $un = $u['name'];
+    $ug = $u['gid'];
+    if($un != $user) echo "user of $dir must be fixed!!\n";
+    if($ug != $group) echo "group of $dir must be fixed!!\n";
+    if(@chmod($dir, $dirPermissions) === false) echo "cannot chmod $dir\n";
+    if(($dp = @opendir($dir)) === false) return;
+    while($file = readdir($dp)) {
+      if (($file == ".") || ($file == ".."))
+	continue;
+      $cont = false;
+      for($i = 0; $i < count($avoid); $i++)
+	if(substr($file, strlen($file)-strlen($avoid[$i])) == $avoid[$i]) {
+	  $cont = true;
+	  break;
+	}
+      if($cont) continue;
+      $fullPath = $dir . $ds . $file;
+      dirrec($fullPath, $user, $group, $dirPermissions, $filePermissions, $avoid);
+    }
+    closedir($dp);
+  } else {
+    if(!is_link($dir)) {
+      $t = myunique();
+      @copy($dir, $dir . '.tmp' . $t);
+      @rename($dir . '.tmp' . $t, $dir);
+      if(@chmod($dir, $filePermissions)=== false) echo "cannot chmod $dir\n";
+    }
+  }
+}
 
-function cleardir($dir,$cddir=true,$secure=false) {
+function fixbocadir($dir,$full=false) {
+	if(is_dir($dir)) {
+	  $ds = DIRECTORY_SEPARATOR;
+	  if($ds=="") $ds = "/";
+	  $u = posix_getpwuid(fileowner($dir));
+	  $un = $u['name'];
+	  $ug = $u['gid'];
+	  @file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n");
+	  @touch($dir . $ds . 'private' . $ds . 'remotescores' . $ds . 'otherservers');
+	  if($full)
+	    $d = array('problemtmp','runtmp','scoretmp','remotescores','remotescoresfull','comp','logexternal','runslog');
+	  else
+	    $d = array('problemtmp','runtmp','scoretmp');
+	  foreach($d as $a) cleardir($a,true,true,false);
+	  dirrec($dir, $un, $ug, 0755, 0644, array('private', '.oldboca'));
+	  dirrec($dir . $ds . 'private', $un, $ug, 0750, 0640, array('.oldboca'));
+	  if(@file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n") === false) return false;
+	  return true;
+	} else {
+	  return false;
+	}	
+}
+function updatebocafile($dirboca, $dirz, $t) {
+  $ok = 0;
+  if(is_dir($dirz)) {
+    $ds = DIRECTORY_SEPARATOR;
+    if($ds=="") $ds = "/";
+    $d = @opendir($dirz);
+    while (($file = @readdir($d)) !== false) {
+      if($file != '.' && $file != '..')
+	$ok = $ok + updatebocafile($dirboca . $ds . $file, $dirz . $ds . $file, $t);
+    }
+    @closedir($d);
+    @cleardir($dirz);
+  } else {
+    if(is_file($dirboca)) {
+      copy($dirboca, $dirboca . '.' . $t . '.oldboca');
+    } else {
+      file_put_contents($dirboca . '.' . $t . '.oldboca', "");
+    }
+    @chmod($dirboca . '.' . $t . '.oldboca', 0000);
+    if(rename($dirz, $dirboca) === true) $ok=1;
+  }
+  return $ok;
+}
+function revertupdatebocafile($dirboca, $t) {
+  $ok = 0;
+  if(is_dir($dirboca)) {
+    $ds = DIRECTORY_SEPARATOR;
+    if($ds=="") $ds = "/";
+    $d = @opendir($dirboca);
+    while (($file = @readdir($d)) !== false) {
+      if($file != '.' && $file != '..')
+	$ok = $ok + revertupdatebocafile($dirboca . $ds . $file, $t);
+    }
+    @closedir($d);
+  } else {
+    if(is_file($dirboca) && substr($dirboca, strlen($dirboca) - strlen('.' . $t . '.oldboca')) == '.' . $t . '.oldboca') {
+      @chmod($dirboca, 0600);
+      if(@copy($dirboca, substr($dirboca, 0, strlen($dirboca) - strlen('.' . $t . '.oldboca'))) === true) $ok=1;
+      @chmod($dirboca, 0000);
+    }
+  }
+  return $ok;
+}
+function cleardir($dir,$cddir=true,$secure=true,$removedir=true) {
 	if(is_dir($dir)) {
 		$ds = DIRECTORY_SEPARATOR;
 		if($ds=="") $ds = "/";
@@ -51,26 +150,12 @@ function cleardir($dir,$cddir=true,$secure=false) {
 		}
 		$d = @opendir($dir);
 		while (($file = @readdir($d)) !== false) {
-			if(!is_dir($dir . $ds . $file)) {
-				if($secure)
-					file_put_contents($dir . $ds . $file,str_repeat('XXXXXXXXXX',10000));
-				@unlink($dir . $ds . $file);
-			}
-			else {
-				if($file != '.' && $file != '..') {
-					$cdir1 = $dir . $ds . $file;
-					$d1 = @opendir($cdir1);
-					while (($file1 = @readdir($d1)) !== false)
-						if(!is_dir($cdir1 . $ds . $file1)) {
-							if($secure)
-								file_put_contents($cdir1 . $ds . $file1,str_repeat('XXXXXXXXXX',10000));
-							@unlink($cdir1 . $ds . $file1);
-						}
-					@rmdir($cdir1);
-				}
-			}
+		  if($file != '.' && $file != '..')
+		    cleardir($dir . $ds . $file, false, $secure, true);
 		}
-		@rmdir($dir);
+		@closedir($d);
+		if($removedir)
+		  @rmdir($dir);
 	} else {
 		if($secure)
 			file_put_contents($dir,str_repeat('XXXXXXXXXX',10000));
@@ -284,8 +369,8 @@ function mytime() {
 function mymtime() {
   return microtime(true);
 }
-function myunique() {
-  return ((int)(100*microtime(true))) % 100000000;
+function myunique($val=0) {
+  return (((int)(100*microtime(true))) % 10000000)*100 + ($val % 100);
 }
 //retorna data e hora atuais
 function now () {
