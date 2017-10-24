@@ -67,9 +67,14 @@ function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=a
     closedir($dp);
   } else {
     if(!is_link($dir)) {
-      $t = myunique();
-      @copy($dir, $dir . '.tmp' . $t);
-      @rename($dir . '.tmp' . $t, $dir);
+      //      $t = myunique();
+      //@copy($dir, $dir . '.tmp' . $t);
+      //@rename($dir . '.tmp' . $t, $dir);
+      $u = posix_getpwuid(fileowner($dir));
+      $un = $u['name'];
+      $ug = $u['gid'];
+      if($un != $user) echo "user of $dir must be fixed!!\n";
+      if($ug != $group) echo "group of $dir must be fixed!!\n";
       if(@chmod($dir, $filePermissions)=== false) echo "cannot chmod $dir\n";
     }
   }
