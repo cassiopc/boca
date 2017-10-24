@@ -102,6 +102,7 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
       } else {
 	echo "<pre>Downloaded file corrupted</pre>";
       }
+      @unlink($tmpfname);
     } else echo "<pre>Download error</pre>";
   } else {
     echo "<pre>Cannot update log file\n</pre>";
