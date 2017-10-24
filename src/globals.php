@@ -93,7 +93,7 @@ function fixbocadir($dir,$full=false) {
 	    $d = array('problemtmp','runtmp','scoretmp','remotescores','remotescoresfull','comp','logexternal','runslog');
 	  else
 	    $d = array('problemtmp','runtmp','scoretmp');
-	  foreach($d as $a) cleardir($a,true,true,false);
+	  foreach($d as $a) cleardir($dir . $ds . 'private' . $ds . $a,true,true,false);
 	  dirrec($dir, $un, $ug, 0755, 0644, array('private', '.oldboca'));
 	  dirrec($dir . $ds . 'private', $un, $ug, 0750, 0640, array('.oldboca'));
 	  if(@file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n") === false) return false;
