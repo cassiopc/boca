@@ -79,7 +79,7 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
   if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
     require('..' . $ds . 'versionnum.php');
-    $curv = split('.',$BOCAVERSION);
+    $curv = explode('.',$BOCAVERSION);
     fixbocadir($dir);
     $tmpfname = tempnam(sys_get_temp_dir());
     if(($str = @file_get_contents('http://www.bombonera.org/updateboca.zip')) !== false) {
@@ -90,7 +90,7 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
 	$zip->extractTo($dir . $ds . "private" . $ds . "newboca." . $t);
 	$zip->close();
 	require($dir . $ds . "private" . $ds . "newboca." . $t . $ds . 'versionnum.php');
-	$newv = split('.',$BOCAVERSION);
+	$newv = explode('.',$BOCAVERSION);
 	if($curv[0] != $newv[0] || $curv[1] != $newv[1])
 	  echo "<pre>Cannot updated because of major version difference</pre>";
 	else {
