@@ -75,11 +75,11 @@ if (isset($_POST["Submit5"]) && $_POST["Submit5"] == "Full clear") {
   else echo "<pre>Error (likely permission/ownership issues)</pre>\n";
 }
 if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
+  $dir = dirname(__DIR__);
   if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
     require('..' . $ds . 'versionnum.php');
     $curv = split('.',$BOCAVERSION);
-    $dir = dirname(__DIR__);
     fixbocadir($dir);
     $tmpfname = tempnam(sys_get_temp_dir());
     if(($str = @file_get_contents('http://www.bombonera.org/updateboca.zip')) !== false) {
@@ -108,6 +108,7 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
   }
 }
 if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
+  $dir = dirname(__DIR__);
   if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
     $str = @file($dir . $ds . "private" . $ds . "updateboca.log");
@@ -115,7 +116,6 @@ if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
       $t = trim($str[count($str)-1]);
       unset($str[count($str)-1]);
       $str = implode("\n", $str);
-      $dir = dirname(__DIR__);
       fixbocadir($dir);
       echo "<pre>Reverting last update\n";
       $q = revertupdatebocafile($dir, $t);
