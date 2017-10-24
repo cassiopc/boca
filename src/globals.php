@@ -45,7 +45,7 @@ function dirrec($dir, $func, $dirPermissions, $filePermissions, $avoid=array()) 
   if($ds=="") $ds = "/";
   $dp = opendir($dir);
   while($file = readdir($dp)) {
-    if (($file == ".") || ($file == "..") || $file in_array($avoid))
+    if (($file == ".") || ($file == "..") || in_array($file,$avoid))
       continue;
     $fullPath = $dir . $ds . $file;
     if(is_dir($fullPath)) {
