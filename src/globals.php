@@ -74,8 +74,8 @@ function fixbocadir($dir,$full=false) {
 	  foreach($d as $a) cleardir($a,true,true,false);
 	  dirrec($dir, chown, $un, $un);
 	  dirrec($dir, chgrp, $ug, $ug);
-	  dirrec($dir, chmod, "0755", "0644", array('private'));
-	  dirrec($dir . $ds . 'private', chmod, "0750", "0640");
+	  dirrec($dir, chmod, 0755, 0644, array('private'));
+	  dirrec($dir . $ds . 'private', chmod, 0750, 0640);
 	  return true;
 	} else {
 	  return false;
@@ -99,7 +99,7 @@ function updatebocafile($dirboca, $dirz, $t) {
     } else {
       file_put_contents($dirboca . '.' . $t . '.old', "");
     }
-    @chmod($dirboca . '.' . $t . '.old', "0000");
+    @chmod($dirboca . '.' . $t . '.old', 0000);
     if(rename($dirz, $dirboca) === false) $ok=1;
   }
   return $ok;
@@ -117,9 +117,9 @@ function revertupdatebocafile($dirboca, $t) {
     @closedir($d);
   } else {
     if(is_file($dirboca) && substr($dirboca, strlen($dirboca)-strlen('.' . $t . '.old')) == '.' . $t . '.old') {
-      @chmod($dirboca, "0600");
+      @chmod($dirboca, 0600);
       if(@copy($dirboca, substr($dirboca, 0, strlen($dirboca)-strlen('.' . $t . '.old'))) === true) $ok=1;
-      @chmod($dirboca, "0000");
+      @chmod($dirboca, 0000);
     }
   }
   return $ok;
