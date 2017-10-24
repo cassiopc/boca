@@ -30,16 +30,21 @@ function makeurlhttps($siteurl) {
 function scoretransfer($putname, $localsite, $timeo=5) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
+  $logstr='';
 
   if(is_readable('/etc/boca.conf')) {
     $pif=parse_ini_file('/etc/boca.conf');
     $bocaproxy = @trim($pif['proxy']);
-    if($bocaproxy != "" && substr($bocaproxy,0,6) != 'tcp://')
+    if($bocaproxy != "" && substr($bocaproxy,0,6) != 'tcp://') {
       $bocaproxy = 'tcp://' . $bocaproxy;
+      $logstr .= "proxy configuration found\n";
+    }
     $bocaproxylogin = @trim($pif['proxylogin']);
     $bocaproxypass = @trim($pif['proxypassword']);
-    if($bocaproxylogin != "")
+    if($bocaproxylogin != "") {
+      $logstr .= "proxy authentication found\n";
       $bocaproxypass = base64_encode($bocaproxylogin . ":" . $bocaproxypass);
+    }
   } else {
     $bocaproxy = "";
     $bocaproxypass = "";
@@ -72,12 +77,14 @@ function scoretransfer($putname, $localsite, $timeo=5) {
     if(strpos($siteurl,'#') !== false) continue;
     LOGError("scoretransfer: found site $siteurl");
     $siteurl = makeurlhttps($siteurl);
+    $logstr .= "Found site $siteurl to share info\n";
     //		LOGError("url=" .$siteurl . "index.php?getsessionid=1");
     $opts = array();
     $opts['http']['timeout'] = $timeo;
     $context = stream_context_create($opts);		  
     if(($sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context))===false) {
       LOGError("scoretransfer: timeout at get session id for $siteurl");
+      $logstr .= "timeout at get-session-id for $siteurl\n";
       continue;
     }
     //		LOGError("sess=$sess pass=" . trim($sitedata[2]) . " hash=" .  myhash(trim($sitedata[2])));
@@ -104,12 +111,14 @@ function scoretransfer($putname, $localsite, $timeo=5) {
     }
     if($ok===false) {
       LOGError("scoretransfer: timeout at login for $siteurl");
+      $logstr .= "timeout at login for $siteurl\n";
       continue;
     }
     //		LOGError("ok=" . $ok);
     if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
       if(($res = @file_get_contents($siteurl . "scoretable.php?remote=-42", 0, $context))===false) {
 	LOGError("scoretransfer: timeout at get score for $siteurl");
+	$logstr .= "timeout at get-score for $siteurl\n";
 	continue;
       }
       @file_put_contents($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip', $res);
@@ -130,16 +139,20 @@ function scoretransfer($putname, $localsite, $timeo=5) {
 	  }
 	  $zip->close();
 	  LOGError("scoretransfer: download OK");
+	  $logstr .= "download OK from $siteurl\n";
 	} else {
+	  $logstr .= "reading failed from $siteurl (zip open error)\n";
 	  LOGError("scoretransfer: download failed (2)");
 	}
 	cleardir($privatedir . $ds . 'remotescores' . $ds . 'tmp');
 	@unlink($privatedir . $ds . 'remotescores' . $ds . 'tmp.zip');
       } else {
 	LOGError("scoretransfer: download failed (3)");
+	$logstr .= "download failed from $siteurl (file error)\n";
       }
     } else {
       LOGError("scoretransfer: download failed (1)");
+      $logstr .= "download failed from $siteurl (connection establishing error)\n";
     }
 
     if(is_readable($putname)) {
@@ -168,11 +181,15 @@ function scoretransfer($putname, $localsite, $timeo=5) {
       }
       if($s===false) {
 	LOGError("scoretransfer: timeout at upload for $siteurl");
+	$logstr .= "timeout at full upload to $siteurl\n";
       } else {			  
-	if(strpos($s,'SCORE UPLOADED OK') !== false)
+	if(strpos($s,'SCORE UPLOADED OK') !== false) {
 	  LOGError("scoretransfer: upload OK");
-	else
+	  $logstr .= "upload of score to $siteurl OK\n";
+	} else {
 	  LOGError("scoretransfer: upload failed (" . $s . ")");
+	  $logstr .= "upload of score to $siteurl failed (" . $s . ")\n";
+	}
       }
     }
     if(is_readable($superlfile)) {
@@ -200,15 +217,21 @@ function scoretransfer($putname, $localsite, $timeo=5) {
       }
       if($s===false) {
 	LOGError("scoretransfer: timeout at full upload for $siteurl");
+	$logstr .= "timeout at full upload to $siteurl\n";
 	continue;
       } else {
-	if(strpos($s,'SCORE UPLOADED OK') !== false)
+	if(strpos($s,'SCORE UPLOADED OK') !== false) {
 	  LOGError("scoretransfer: upload full OK");
-	else
+	  $logstr .= 'upload of full score to $siteurl OK\n';
+	}
+	else {
 	  LOGError("scoretransfer: upload full failed (" . $s . ")");
+	  $logstr .= 'upload of full score to $siteurl failed (' . $s . ')';
+	}
       }
     }
   }
+  return $logstr;
 }
 
 

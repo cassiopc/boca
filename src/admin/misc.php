@@ -45,7 +45,6 @@ require 'header.php';
    <input type="submit" name="Submit7" value="Revert Update" onClick="conf2()"> 
   </center>
 </form>
-<br>
 <pre>
 OPERATION LOG DISPLAYS BELOW:
 
@@ -98,8 +97,9 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
 	if($curv[0] != $newv[0] || $curv[1] != $newv[1])
 	  echo "Cannot updated because of major version difference\n";
 	else {
+	  echo "Updating\n";
 	  $q = updatebocafile($dir, $dir . $ds . "private" . $ds . "newboca." . $t, $t);
-	  echo "" . $q . " files updated to " . $BOCAVERSION . "\n\n";
+	  echo $q . " files updated to " . $BOCAVERSION . "\n\n";
 	  $str = @file_get_contents($dir . $ds . "private" . $ds . "updateboca.log");
 	  @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log",  $str . $t . "\n");
 	}
@@ -167,7 +167,7 @@ if($dotransfer || $doscore || $dotransferall) {
 	@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 	@rename($fname . ".tmp",$fname . ".dat");
 	echo "Transferring scores\n";
-	scoretransfer($fname . ".dat", $localsite);
+	echo scoretransfer($fname . ".dat", $localsite);
 	echo "Saving scores\n";
 	if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$fname . ".tmp") != 1) {
 	  LOGError("Cannot create score zip file");

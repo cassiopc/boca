@@ -40,29 +40,31 @@ function filedownload($oid,$fname,$msg='') {
 	if($msg != '') $str .= "&msg=" . rawurlencode($msg);
 	return $str;
 }
-function dirrec($dir, $func, $dirPermissions, $filePermissions, $avoid=array()) {
+function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=array()) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
-  $dp = opendir($dir);
-  while($file = readdir($dp)) {
-    if (($file == ".") || ($file == ".."))
-      continue;
-    $cont = false;
-    for($i = 0; $i < count($avoid); $i++)
-      if(substr($file, strlen($file)-strlen($avoid[$i])) == $avoid[$i]) {
-	$cont = true;
-	break;
-      }
-    if($cont) continue;
-    $fullPath = $dir . $ds . $file;
-    if(is_dir($fullPath)) {
-      $func($fullPath, $dirPermissions);
-      dirrec($fullPath, $func, $dirPermissions, $filePermissions, $avoid);
-    } else {
-      $func($fullPath, $filePermissions);
+  chown($dir, $user);
+  chgrp($dir, $group);
+  if(is_dir($dir)) {
+    chmod($dir, $dirPermissions);
+    if(($dp = opendir($dir)) === false) return;
+    while($file = readdir($dp)) {
+      if (($file == ".") || ($file == ".."))
+	continue;
+      $cont = false;
+      for($i = 0; $i < count($avoid); $i++)
+	if(substr($file, strlen($file)-strlen($avoid[$i])) == $avoid[$i]) {
+	  $cont = true;
+	  break;
+	}
+      if($cont) continue;
+      $fullPath = $dir . $ds . $file;
+      dirrec($fullPath, $user, $group, $dirPermissions, $filePermissions, $avoid);
     }
+    closedir($dp);
+  } else {
+      chmod($dir, $filePermissions);
   }
-  closedir($dp);
 }
 
 function fixbocadir($dir,$full=false) {
@@ -79,10 +81,8 @@ function fixbocadir($dir,$full=false) {
 	  else
 	    $d = array('problemtmp','runtmp','scoretmp');
 	  foreach($d as $a) cleardir($a,true,true,false);
-	  dirrec($dir, chown, $un, $un);
-	  dirrec($dir, chgrp, $ug, $ug);
-	  dirrec($dir, chmod, 0755, 0644, array('private', '.oldboca'));
-	  dirrec($dir . $ds . 'private', chmod, 0750, 0640, array('.oldboca'));
+	  dirrec($dir, $un, $ug, 0755, 0644, array('private', '.oldboca'));
+	  dirrec($dir . $ds . 'private', $un, $ug, 0750, 0640, array('.oldboca'));
 	  if(@file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n") === false) return false;
 	  return true;
 	} else {
