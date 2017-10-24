@@ -49,7 +49,7 @@ function dirrec($dir, $func, $dirPermissions, $filePermissions, $avoid=array()) 
       continue;
     $cont = false;
     for($i = 0; $i < count($avoid); $i++)
-      if(substr($file, 0, strlen($avoid[$i])) = $avoid[$i]) {
+      if(substr($file, 0, strlen($avoid[$i])) == $avoid[$i]) {
 	$cont = true;
 	break;
       }
