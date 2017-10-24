@@ -44,8 +44,11 @@ function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=a
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   if(is_dir($dir)) {
-    if(chown($dir, $user) === false) echo "cannot chown $dir\n";
-    if(chgrp($dir, $group) === false) echo "cannot chgrp $dir\n";
+    $u = posix_getpwuid(fileowner($dir));
+    $un = $u['name'];
+    $ug = $u['gid'];
+    if($un != $user) echo "user of $dir must be fixed!!\n";
+    if($ug != $group) echo "group of $dir must be fixed!!\n";
     if(chmod($dir, $dirPermissions) === false) echo "cannot chmod $dir\n";
     if(($dp = opendir($dir)) === false) return;
     while($file = readdir($dp)) {
@@ -63,10 +66,12 @@ function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=a
     }
     closedir($dp);
   } else {
-    $t = myunique();
-    copy($dir, $dir . '.tmp' . $t);
-    rename($dir . '.tmp' . $t, $dir);
-    if(chmod($dir, $filePermissions)=== false) echo "cannot chmod $dir\n";
+    if(!is_link($dir)) {
+      $t = myunique();
+      copy($dir, $dir . '.tmp' . $t);
+      rename($dir . '.tmp' . $t, $dir);
+      if(chmod($dir, $filePermissions)=== false) echo "cannot chmod $dir\n";
+    }
   }
 }
 
