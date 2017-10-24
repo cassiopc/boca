@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 16/oct/2017 by cassio@ime.usp.br
+//Last updated 24/oct/2017 by cassio@ime.usp.br
 require 'header.php';
 ?>
 <br>
