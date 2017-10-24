@@ -45,12 +45,19 @@ function dirrec($dir, $func, $dirPermissions, $filePermissions, $avoid=array()) 
   if($ds=="") $ds = "/";
   $dp = opendir($dir);
   while($file = readdir($dp)) {
-    if (($file == ".") || ($file == "..") || in_array($file,$avoid))
+    if (($file == ".") || ($file == ".."))
       continue;
+    $cont = false;
+    for($i = 0; $i < count($avoid); $i++)
+      if(substr($file, 0, strlen($avoid[$i])) = $avoid[$i]) {
+	$cont = true;
+	break;
+      }
+    if($cont) continue;
     $fullPath = $dir . $ds . $file;
     if(is_dir($fullPath)) {
       $func($fullPath, $dirPermissions);
-      dirrec($fullPath, $func, $dirPermissions, $filePermissions);
+      dirrec($fullPath, $func, $dirPermissions, $filePermissions, $avoid);
     } else {
       $func($fullPath, $filePermissions);
     }
@@ -74,8 +81,8 @@ function fixbocadir($dir,$full=false) {
 	  foreach($d as $a) cleardir($a,true,true,false);
 	  dirrec($dir, chown, $un, $un);
 	  dirrec($dir, chgrp, $ug, $ug);
-	  dirrec($dir, chmod, 0755, 0644, array('private'));
-	  dirrec($dir . $ds . 'private', chmod, 0750, 0640);
+	  dirrec($dir, chmod, 0755, 0644, array('private', 'old.'));
+	  dirrec($dir . $ds . 'private', chmod, 0750, 0640, array('old.'));
 	  if(@file_put_contents($dir . $ds . 'private' . $ds . '.htaccess', "Deny from all\n") === false) return false;
 	  return true;
 	} else {
@@ -96,11 +103,11 @@ function updatebocafile($dirboca, $dirz, $t) {
     @cleardir($dirz);
   } else {
     if(is_file($dirboca)) {
-      copy($dirboca, $dirboca . '.' . $t . '.old');
+      copy($dirboca, 'old.' . $t . '.' . $dirboca);
     } else {
-      file_put_contents($dirboca . '.' . $t . '.old', "");
+      file_put_contents('old.' . $t . '.' . $dirboca, "");
     }
-    @chmod($dirboca . '.' . $t . '.old', 0000);
+    @chmod('old.' . $t . '.' . $dirboca, 0000);
     if(rename($dirz, $dirboca) === true) $ok=1;
   }
   return $ok;
@@ -117,9 +124,9 @@ function revertupdatebocafile($dirboca, $t) {
     }
     @closedir($d);
   } else {
-    if(is_file($dirboca) && substr($dirboca, strlen($dirboca)-strlen('.' . $t . '.old')) == '.' . $t . '.old') {
+    if(is_file($dirboca) && substr($dirboca, 0, strlen('old.' . $t . '.')) == 'old.' . $t . '.') {
       @chmod($dirboca, 0600);
-      if(@copy($dirboca, substr($dirboca, 0, strlen($dirboca)-strlen('.' . $t . '.old'))) === true) $ok=1;
+      if(@copy($dirboca, substr($dirboca, strlen('old.' . $t . '.' .))) === true) $ok=1;
       @chmod($dirboca, 0000);
     }
   }
