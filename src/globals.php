@@ -43,12 +43,9 @@ function filedownload($oid,$fname,$msg='') {
 function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=array()) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
-  $t = myunique();
-  rename($dir, $dir . '.tmp' . $t);
-  rename($dir . '.tmp' . $t, $dir);
-  //if(chown($dir, $user) === false) echo "cannot chown $dir\n";
-  //if(chgrp($dir, $group) === false) echo "cannot chgrp $dir\n";
   if(is_dir($dir)) {
+    if(chown($dir, $user) === false) echo "cannot chown $dir\n";
+    if(chgrp($dir, $group) === false) echo "cannot chgrp $dir\n";
     if(chmod($dir, $dirPermissions) === false) echo "cannot chmod $dir\n";
     if(($dp = opendir($dir)) === false) return;
     while($file = readdir($dp)) {
@@ -66,6 +63,9 @@ function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=a
     }
     closedir($dp);
   } else {
+    $t = myunique();
+    copy($dir, $dir . '.tmp' . $t);
+    rename($dir . '.tmp' . $t, $dir);
     if(chmod($dir, $filePermissions)=== false) echo "cannot chmod $dir\n";
   }
 }
