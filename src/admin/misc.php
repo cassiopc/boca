@@ -39,13 +39,14 @@ require 'header.php';
    <input type="submit" name="Submit1" value="Transfer" onClick="conf()"> &nbsp;
    <input type="submit" name="Submit2" value="Transfer all" onClick="conf()"> &nbsp;
    <input type="submit" name="Submit3" value="Transfer scores"> &nbsp;
-   <input type="submit" name="Submit4" value="Clear cache" onClick="conf()"> 
-   <input type="submit" name="Submit5" value="Full clear" onClick="conf2()"> 
-   <input type="submit" name="Submit6" value="Update BOCA" onClick="conf2()"> 
+   <input type="submit" name="Submit4" value="Clear cache" onClick="conf()"> &nbsp; 
+   <input type="submit" name="Submit5" value="Full clear" onClick="conf2()">  &nbsp;
+   <input type="submit" name="Submit6" value="Update BOCA" onClick="conf2()">  &nbsp;
    <input type="submit" name="Submit7" value="Revert Update" onClick="conf2()"> 
   </center>
 </form>
 <?php
+if(isset($_POST['confirmation']) && $_POST['confirmation'] == 'confirm') {
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 $dotransfer=false;
@@ -103,16 +104,20 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
 }
 if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
   $str = @file($dir . $ds . "private" . $ds . "updateboca.log");
-  $t = trim($str[count($str)-1]);
-  unset($str[count($str)-1]);
-  $str = implode("\n", $str);
-  $dir = dirname(__DIR__);
-  fixbocadir($dir);
-  echo "<pre>Reverting last update\n";
-  $q = revertupdatebocafile($dir, $t);
-  echo $q . " files reverted properly\n";
-  echo "</pre>";
-  @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", $str);
+  if(count($str) >= 1) {
+    $t = trim($str[count($str)-1]);
+    unset($str[count($str)-1]);
+    $str = implode("\n", $str);
+    $dir = dirname(__DIR__);
+    fixbocadir($dir);
+    echo "<pre>Reverting last update\n";
+    $q = revertupdatebocafile($dir, $t);
+    echo $q . " files reverted properly\n";
+    echo "</pre>";
+    @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", $str);
+  } else {
+    echo "<pre>No updates to revert</pre>\n";
+  }
 }
 if($dotransfer || $doscore || $dotransferall) {
   $privatedir = $_SESSION['locr'] . $ds . "private";
@@ -171,6 +176,7 @@ if($dotransfer || $doscore || $dotransferall) {
       echo "<pre>Transfers locked by other process - try again soon</pre>\n";
     }
   }
+}
 }
 ?>
 </body>
