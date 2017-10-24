@@ -75,48 +75,59 @@ if (isset($_POST["Submit5"]) && $_POST["Submit5"] == "Full clear") {
   else echo "<pre>Error (likely permission/ownership issues)</pre>\n";
 }
 if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
-  require('..' . $ds . 'versionnum.php');
-  $curv = split('.',$BOCAVERSION);
-  $dir = dirname(__DIR__);
-  fixbocadir($dir);
-  $tmpfname = tempnam(sys_get_temp_dir());
-  if(($str = @file_get_contents('http://www.bombonera.org/updateboca.zip')) !== false) {
-    @file_put_contents($tmpfname, $str);
-    $t = mytime();
-    $zip = new ZipArchive;
-    if ($zip->open($tmpfname) === true) {
-      $zip->extractTo($dir . $ds . "private" . $ds . "newboca." . $t);
-      $zip->close();
-      require($dir . $ds . "private" . $ds . "newboca." . $t . $ds . 'versionnum.php');
-      $newv = split('.',$BOCAVERSION);
-      if($curv[0] != $newv[0] || $curv[1] != $newv[1])
-	echo "<pre>Cannot updated because of major version difference</pre>";
-      else {
-	$q = updatebocafile($dir, $dir . $ds . "private" . $ds . "newboca." . $t, $t);
-	echo "<pre>" . $q . " files updated to " . $BOCAVERSION . "\n</pre>\n";
-	$str = @file_get_contents($dir . $ds . "private" . $ds . "updateboca.log");
-	@file_put_contents($dir . $ds . "private" . $ds . "updateboca.log",  $str . $t . "\n");
-      }
-    } else {
-      echo "<pre>Downloaded file corrupted</pre>";
-    }
-  } else echo "<pre>Download error</pre>";
-}
-if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
-  $str = @file($dir . $ds . "private" . $ds . "updateboca.log");
-  if(count($str) >= 1) {
-    $t = trim($str[count($str)-1]);
-    unset($str[count($str)-1]);
-    $str = implode("\n", $str);
+  if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
+  if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
+    require('..' . $ds . 'versionnum.php');
+    $curv = split('.',$BOCAVERSION);
     $dir = dirname(__DIR__);
     fixbocadir($dir);
-    echo "<pre>Reverting last update\n";
-    $q = revertupdatebocafile($dir, $t);
-    echo $q . " files reverted properly\n";
-    echo "</pre>";
-    @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", $str);
+    $tmpfname = tempnam(sys_get_temp_dir());
+    if(($str = @file_get_contents('http://www.bombonera.org/updateboca.zip')) !== false) {
+      @file_put_contents($tmpfname, $str);
+      $t = mytime();
+      $zip = new ZipArchive;
+      if ($zip->open($tmpfname) === true) {
+	$zip->extractTo($dir . $ds . "private" . $ds . "newboca." . $t);
+	$zip->close();
+	require($dir . $ds . "private" . $ds . "newboca." . $t . $ds . 'versionnum.php');
+	$newv = split('.',$BOCAVERSION);
+	if($curv[0] != $newv[0] || $curv[1] != $newv[1])
+	  echo "<pre>Cannot updated because of major version difference</pre>";
+	else {
+	  $q = updatebocafile($dir, $dir . $ds . "private" . $ds . "newboca." . $t, $t);
+	  echo "<pre>" . $q . " files updated to " . $BOCAVERSION . "\n</pre>\n";
+	  $str = @file_get_contents($dir . $ds . "private" . $ds . "updateboca.log");
+	  @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log",  $str . $t . "\n");
+	}
+      } else {
+	echo "<pre>Downloaded file corrupted</pre>";
+      }
+    } else echo "<pre>Download error</pre>";
   } else {
-    echo "<pre>No updates to revert</pre>\n";
+    echo "<pre>Cannot update log file\n</pre>";
+  }
+}
+if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
+  if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
+  if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
+    $str = @file($dir . $ds . "private" . $ds . "updateboca.log");
+    if(count($str) >= 1) {
+      $t = trim($str[count($str)-1]);
+      unset($str[count($str)-1]);
+      $str = implode("\n", $str);
+      $dir = dirname(__DIR__);
+      fixbocadir($dir);
+      echo "<pre>Reverting last update\n";
+      $q = revertupdatebocafile($dir, $t);
+      echo $q . " files reverted properly\n";
+      echo "</pre>";
+      fixbocadir($dir);
+      @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", $str);
+    } else {
+      echo "<pre>No updates to revert</pre>\n";
+    }
+  } else {
+    echo "<pre>Cannot update log file\n</pre>";
   }
 }
 if($dotransfer || $doscore || $dotransferall) {
