@@ -268,9 +268,11 @@ for ($i=0; $i<count($prob); $i++) {
 			  "')\">" . $prob[$i]["number"];
 	  }
 	  echo "</a></td>\n";
-	  echo "  <td nowrap>";
-	  echo "<input type=\"text\" name=\"problemname" . $prob[$i]['number'] . "\" value=\"" . $prob[$i]["name"] . "\" size=\"4\" maxlength=\"20\" />";
-	  echo "</td>\n";
+	  echo "<input type=hidden name=\"problemname" . $prob[$i]['number'] . "\" value=\"" . $prob[$i]["name"] . "\" />";
+	  echo "  <td nowrap>" . $prob[$i]["name"] . "</td>\n";
+	  //echo "  <td nowrap>";
+	  //echo "<input type=\"text\" name=\"problemname" . $prob[$i]['number'] . "\" value=\"" . $prob[$i]["name"] . "\" size=\"4\" maxlength=\"20\" />";
+	  //echo "</td>\n";
   } else {
     echo "  <td nowrap>" . $prob[$i]["number"] . " (fake)</td>\n";
     echo "  <td nowrap>" . $prob[$i]["name"] . "</td>\n";
