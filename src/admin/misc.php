@@ -49,6 +49,7 @@ require 'header.php';
 OPERATION LOG DISPLAYS BELOW:
 
 <?php
+echo "Start: " . now() . "\n";
 if(isset($_GET['confirmation']) && $_GET['confirmation'] == 'confirm') {
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
@@ -68,19 +69,16 @@ if (isset($_GET["Submit3"]) && $_GET["Submit3"] == "Transfer scores") {
   $doscore=true;
 }
 if (isset($_GET["Submit4"]) && $_GET["Submit4"] == "Clear cache") {
-  echo "Start: " . now() . "\n";
   if(fixbocadir(dirname(__DIR__)))
     echo "Done\n";
   else echo "Error (likely permission/ownership issues)\n";
 }
 if (isset($_GET["Submit5"]) && $_GET["Submit5"] == "Full clear") {
-  echo "Start: " . now() . "\n";
   if(fixbocadir(dirname(__DIR__),true))
     echo "Done\n";
   else echo "Error (likely permission/ownership issues)\n";
 }
 if (isset($_GET["Submit6"]) && $_GET["Submit6"] == "Update BOCA") {
-  echo "Start: " . now() . "\n";
   $dir = dirname(__DIR__);
   if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
@@ -116,7 +114,6 @@ if (isset($_GET["Submit6"]) && $_GET["Submit6"] == "Update BOCA") {
   }
 }
 if (isset($_GET["Submit7"]) && $_GET["Submit7"] == "Revert Update") {
-  echo "Start: " . now() . "\n";
   $dir = dirname(__DIR__);
   if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
@@ -141,7 +138,6 @@ if (isset($_GET["Submit7"]) && $_GET["Submit7"] == "Revert Update") {
   }
 }
 if($dotransfer || $doscore || $dotransferall) {
-  echo "Start: " . now() . "\n";
   $privatedir = $_SESSION['locr'] . $ds . "private";
   $remotedir = $_SESSION['locr'] . $ds . "private" . $ds . "remotescores";
   $destination = $remotedir . $ds ."scores.zip";
@@ -198,6 +194,7 @@ if($dotransfer || $doscore || $dotransferall) {
   }
 }
 }
+echo "End: " . now() . "\n";
 ?>
 </pre>
 </body>
