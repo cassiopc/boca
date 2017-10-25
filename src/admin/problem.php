@@ -219,6 +219,7 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
 	  }
     }
   </script>
+<form name="form0" enctype="multipart/form-data" method="post" action="problem.php">
 <table width="100%" border=1>
  <tr>
   <td><b>Problem #</b></td>
@@ -248,7 +249,9 @@ for ($i=0; $i<count($prob); $i++) {
   } else {
     echo "  <td nowrap>" . $prob[$i]["number"] . " (fake)</td>\n";
   }
-  echo "  <td nowrap>" . $prob[$i]["name"] . "</td>\n";
+  echo "  <td nowrap>";
+  echo "<input type=\"text\" name=\"problemname\" value=\"" . $prob[$i]["name"] . "\" size=\"6\" maxlength=\"20\" />";
+  echo "</td>\n";
   echo "  <td nowrap>" . $prob[$i]["fullname"] . "&nbsp;</td>\n";
   echo "  <td nowrap>" . $prob[$i]["basefilename"] . "&nbsp;</td>\n";
   if (isset($prob[$i]["descoid"]) && $prob[$i]["descoid"] != null && isset($prob[$i]["descfilename"])) {
@@ -281,15 +284,18 @@ for ($i=0; $i<count($prob); $i++) {
   else
     echo "  <td nowrap>&nbsp;</td>\n";
 */
+  echo "  <td nowrap>";
   if ($prob[$i]["color"]!="") {
-	  echo "  <td nowrap>" . $prob[$i]["colorname"] . 
-		  "<img title=\"".$prob[$i]["color"]."\" alt=\"".$prob[$i]["colorname"]."\" width=\"25\" src=\"" . 
-		  balloonurl($prob[$i]["color"]) . "\" /></td>\n";
-  } else
-    echo "  <td nowrap>&nbsp;</td>\n";
+	  echo "<img title=\"".$prob[$i]["color"]."\" alt=\"".$prob[$i]["colorname"]."\" width=\"25\" src=\"" . 
+	    balloonurl($prob[$i]["color"]) . "\" />\n";
+  }
+  echo "<input type=\"text\" name=\"colorname\" value=\"" . $prob[$i]["colorname"] . "\" size=\"6\" maxlength=\"6\" />";
+  echo "<input type=\"text\" name=\"color\" value=\"" . $prob[$i]["color"]. "\" size=\"6\" maxlength=\"6\" />";
+  echo "<input type=\"submit\" name=\"SubmitProblem" . $prob[$i]["number"] . "\" value=\"Update\">";
+  echo "</td>\n";
   echo " </tr>\n";
 }
-echo "</table>";
+echo "</table></form>";
 if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NO PROBLEMS DEFINED</font></b></center>";
 
 ?>
