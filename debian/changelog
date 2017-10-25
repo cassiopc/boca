@@ -1,3 +1,17 @@
+boca (1:1.5.12) xenial; urgency=medium
+
+  * Bug Fixes
+  * Add new option to download contest results in S4RiS JSON format Fix user institution in webcast report
+  * Add flag for Puerto Rico
+  * Fix error when appending the contestant's institution.
+  * new options to admin
+  * new features
+  * choice of site number
+  * visual change
+  * clean empty lines from updatelog
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Tue, 24 Oct 2017 13:45:14 -0200
+
 boca (1:1.5.11-5) xenial; urgency=medium
 
   * Revert "control: Change boca depends libapache2-mod-php -> php-fpm"
