@@ -146,6 +146,7 @@ function revertupdatebocafile($dirboca, $t) {
   return $ok;
 }
 function cleardir($dir,$cddir=true,$secure=true,$removedir=true) {
+  if(file_exists($dir)) {
 	if(is_dir($dir)) {
 		$ds = DIRECTORY_SEPARATOR;
 		if($ds=="") $ds = "/";
@@ -166,6 +167,7 @@ function cleardir($dir,$cddir=true,$secure=true,$removedir=true) {
 	    file_put_contents($dir,str_repeat('XXXXXXXXXX',10000));
 	  @unlink($dir);
 	}
+  }
 }
 
 // gen random alphanum string

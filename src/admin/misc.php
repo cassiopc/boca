@@ -182,7 +182,7 @@ if($dotransfer || $doscore || $dotransferall) {
 	@fclose($fp);
       }
       if($dotransfer) {
-	echo "Processing other data\n";
+	echo "Processing contest data\n";
 	echo getMainXML($_SESSION["usertable"]["contestnumber"],10,$dotransferall);
       }
       @unlink($destination . ".lck");

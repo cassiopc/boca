@@ -156,6 +156,8 @@ while(42) {
     DBExec($c, "commit", "Autojudging(exportcommit)");
     continue;
   }
+  cleardir($dir . $ds . "problemdatalocal");
+  cleardir($dir . $ds . "problemdata");
   if(is_readable($cache . $ds . $run["inputoid"] . "." . $run["inputname"])) {
     DBExec($c, "commit", "Autojudging(exportcommit)");
     echo "Getting problem package file from local cache: " . $cache . $ds . $run["inputoid"] . "." . $run["inputname"] . "\n";
@@ -167,21 +169,30 @@ while(42) {
     if(!is_readable($flocal)) $flocal = '/root/icpc-latam-packages/' . trim($run["problemname"]) . ".ZIP";
     if(!is_readable($flocal)) $flocal = '';
     if($flocal != '') {
-      DBExec($c, "commit", "Autojudging(foundlocalcommit)");
       echo "Getting problem package file from local version: " . $flocal . "\n";
-      $s = file_get_contents($flocal);
-      file_put_contents($dir . $ds . $run["inputname"], $s);
-    } else {
-      echo "Downloading problem package file from db into: " . $dir . $ds . $run["inputname"] . "\n";
-      if(DB_lo_export($contest,$c, $run["inputoid"], $dir . $ds . $run["inputname"]) === false) {
-	DBExec($c, "rollback work", "Autojudging(rollback-input)");
-	LogLevel("Autojudging: Unable to export problem package file (run=$number, site=$site, contest=$contest)",1);
-	echo "Error exporting problem package file ${run["inputname"]} (contest=$contest, site=$site, run=$number)\n";
-	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: unable to export problem package file");
+      $zip = new ZipArchive;
+      if ($zip->open($flocal) === true) {
+	$zip->extractTo($dir . $ds . "problemdatalocal");
+	$zip->close();
+      } else {
+	DBExec($c, "rollback work", "Autojudging(zipfailed)");
+	echo "Failed to unzip the package file -- please check the problem package (maybe it is encrypted?)\n";
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (1)");
+	cleardir($dir . $ds . "problemdata");
 	continue;
       }
-      DBExec($c, "commit", "Autojudging(exportcommit)");
     }
+
+    @unlink($dir . $ds . $run["inputname"]);
+    echo "Downloading problem package file from db into: " . $dir . $ds . $run["inputname"] . "\n";
+    if(DB_lo_export($contest,$c, $run["inputoid"], $dir . $ds . $run["inputname"]) === false) {
+      DBExec($c, "rollback work", "Autojudging(rollback-input)");
+      LogLevel("Autojudging: Unable to export problem package file (run=$number, site=$site, contest=$contest)",1);
+      echo "Error exporting problem package file ${run["inputname"]} (contest=$contest, site=$site, run=$number)\n";
+      DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: unable to export problem package file");
+      continue;
+    }
+    DBExec($c, "commit", "Autojudging(exportcommit)");
     @chmod($dir . $ds . $run["inputname"], 0600);
     @chown($dir . $ds . $run["inputname"],"root");
 
@@ -196,11 +207,14 @@ while(42) {
       cleardir($dir . $ds . "problemdata");
       continue;
     }
-    if(($info=@parse_ini_file($dir . $ds . "problemdata" . $ds . "description" . $ds . 'problem.info'))===false) {
-      echo "Problem content missing (description/problem.info) -- please check the problem package\n";
-      DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (2)");
-      cleardir($dir . $ds . "problemdata");
-      continue;
+    if(($info=@parse_ini_file($dir . $ds . "problemdatalocal" . $ds . "description" . $ds . 'problem.info'))===false) {
+      if(($info=@parse_ini_file($dir . $ds . "problemdata" . $ds . "description" . $ds . 'problem.info'))===false) {
+	echo "Problem content missing (description/problem.info) -- please check the problem package\n";
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (2)");
+	cleardir($dir . $ds . "problemdata");
+	cleardir($dir . $ds . "problemdatalocal");
+	continue;
+      }
     }
     if(isset($info['descfile']))
       $descfile=trim(sanitizeFilename($info['descfile']));
@@ -210,6 +224,7 @@ while(42) {
       echo "Problem content missing (description/problem.info) -- please check the problem package\n";
       DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (3)");
       cleardir($dir . $ds . "problemdata");
+      cleardir($dir . $ds . "problemdatalocal");
       continue;
     }
     $basenames[$run['inputoid']. "." . $run["inputname"]]=$basename;
@@ -217,11 +232,16 @@ while(42) {
       echo "Problem content missing (limits) -- please check the problem package\n";
       DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (4)");
       cleardir($dir . $ds . "problemdata");
+      cleardir($dir . $ds . "problemdatalocal");
       continue;
     }
-    chdir($dir . $ds . "problemdata" . $ds . "limits");
+    $pd = 'problemdata';
+    if(is_dir($dir . $ds . "problemdatalocal" . $ds . "limits"))
+      $pd = 'problemdatalocal';
+    chdir($dir . $ds . $pd . $ds . "limits");
     $limits[$basename]=array();
-    foreach(glob($dir . $ds . "problemdata" . $ds . "limits" .$ds . '*') as $file) {
+    $cont=false;
+    foreach(glob($dir . $ds . $pd . $ds . "limits" .$ds . '*') as $file) {
       chmod($file,0700);
       $ex = escapeshellcmd($file);
       $ex .= " >stdout 2>stderr";
@@ -232,38 +252,47 @@ while(42) {
       if($retval != 0) {
 	echo "Error running script -- please check the problem package\n";
 	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: problem package file is invalid (5)");
-	cleardir($dir . $ds . "problemdata");
-	continue;
-      }
-      $limits[$basename][basename($file)] = file('stdout',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    }
-    $cont=false;
-    foreach(glob($dir . $ds . "problemdata" . $ds . "tests" .$ds . '*') as $file) {
-      chdir($dir . $ds . "problemdata" . $ds . "tests");
-      chmod($file,0700);
-      $ex = escapeshellcmd($file);
-      $ex .= " >stdout 2>stderr";
-      @unlink('stdout');
-      @unlink('stderr');
-      echo "Executing TEST SCRIPT " . $ex . " at " . getcwd() . "\n";
-      if(system($ex, $retval)===false) $retval=-1;
-      if($retval != 0) {
-	echo "Error running test script -- please check the problem package or your installation\n";
-	echo "=====stderr======\n";
-	echo file_get_contents('stderr');
-	echo "\n=====stdout======\n";
-	echo file_get_contents('stdout');
-	echo "\n===========\n";
-	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: internal test script failed (" . $file . ")");
 	$cont=true;
 	break;
       }
+      $limits[$basename][basename($file)] = file('stdout',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     }
+    if(!$cont) {
+      $pd = 'problemdata';
+      if(is_dir($dir . $ds . "problemdatalocal" . $ds . "tests"))
+	$pd = 'problemdatalocal';
+      foreach(glob($dir . $ds . $pd . $ds . "tests" .$ds . '*') as $file) {
+	chdir($dir . $ds . $pd . $ds . "tests");
+	chmod($file,0700);
+	$ex = escapeshellcmd($file);
+	$ex .= " >stdout 2>stderr";
+	@unlink('stdout');
+	@unlink('stderr');
+	echo "Executing TEST SCRIPT " . $ex . " at " . getcwd() . "\n";
+	if(system($ex, $retval)===false) $retval=-1;
+	if($retval != 0) {
+	  echo "Error running test script -- please check the problem package or your installation\n";
+	  echo "=====stderr======\n";
+	  echo file_get_contents('stderr');
+	  echo "\n=====stdout======\n";
+	  echo file_get_contents('stdout');
+	  echo "\n===========\n";
+	  DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: internal test script failed (" . $file . ")");
+	  $cont=true;
+	  break;
+	}
+      }
+    }
+    if(is_dir($dir . $ds . "problemdatalocal" . $ds . "output"))
+      $s = file_get_contents($flocal);
+    else
+      $s = file_get_contents($dir . $ds . $run["inputname"]);
+
     cleardir($dir . $ds . "problemdata");
+    cleardir($dir . $ds . "problemdatalocal");
     if($cont)
       continue;
 
-    $s = file_get_contents($dir . $ds . $run["inputname"]);
     file_put_contents($cache . $ds . $run["inputoid"] . "." . $run["inputname"], encryptData($s,$key));
   }
 
