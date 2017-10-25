@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2013 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) 2003-2017 by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 29/aug/2017 by cassio@ime.usp.br
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 
@@ -164,19 +163,29 @@ while(42) {
     file_put_contents($dir . $ds . $run["inputname"], decryptData($s,$key));
     $basename=$basenames[$run['inputoid']. "." . $run["inputname"]];
   } else {
-    echo "Downloading problem package file from db into: " . $dir . $ds . $run["inputname"] . "\n";
-    if(DB_lo_export($contest,$c, $run["inputoid"], $dir . $ds . $run["inputname"]) === false) {
-      DBExec($c, "rollback work", "Autojudging(rollback-input)");
-      LogLevel("Autojudging: Unable to export problem package file (run=$number, site=$site, contest=$contest)",1);
-      echo "Error exporting problem package file ${run["inputname"]} (contest=$contest, site=$site, run=$number)\n";
-      DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: unable to export problem package file");
-      continue;
+    $flocal = '/root/icpc-latam-packages/' . trim($run["problemname"]) . ".zip"; //cassiopc: HARDCODED FOR ICPC 2017
+    if(!is_readable($flocal)) $flocal = '/root/icpc-latam-packages/' . trim($run["problemname"]) . ".ZIP";
+    if(!is_readable($flocal)) $flocal = '';
+    if($flocal != '') {
+      DBExec($c, "commit", "Autojudging(foundlocalcommit)");
+      echo "Getting problem package file from local version: " . $flocal . "\n";
+      $s = file_get_contents($flocal);
+      file_put_contents($dir . $ds . $run["inputname"], $s);
+    } else {
+      echo "Downloading problem package file from db into: " . $dir . $ds . $run["inputname"] . "\n";
+      if(DB_lo_export($contest,$c, $run["inputoid"], $dir . $ds . $run["inputname"]) === false) {
+	DBExec($c, "rollback work", "Autojudging(rollback-input)");
+	LogLevel("Autojudging: Unable to export problem package file (run=$number, site=$site, contest=$contest)",1);
+	echo "Error exporting problem package file ${run["inputname"]} (contest=$contest, site=$site, run=$number)\n";
+	DBGiveUpRunAutojudging($contest, $site, $number, $ip, "error: unable to export problem package file");
+	continue;
+      }
+      DBExec($c, "commit", "Autojudging(exportcommit)");
     }
-    DBExec($c, "commit", "Autojudging(exportcommit)");
     @chmod($dir . $ds . $run["inputname"], 0600);
     @chown($dir . $ds . $run["inputname"],"root");
 
-    echo "Problem package downloaded -- running init scripts to obtain limits and other information\n";
+    echo "Problem package obtained -- running init scripts to obtain limits and other information\n";
     $zip = new ZipArchive;
     if ($zip->open($dir . $ds . $run["inputname"]) === true) {
       $zip->extractTo($dir . $ds . "problemdata");
