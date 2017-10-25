@@ -381,7 +381,9 @@ function getMainXML($contest,$timeo=5,$upd=false) {
       return $logstr;
     }
     $logstr .=  "Importing data to local server\n";
-    if(importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime'])) {
+    $resp = importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime']);
+    echo $resp[1];
+    if($resp[0]) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
       $ti = 2+$ct['updatetime'];
       $param = array('contestnumber' => $contest, 'mainsiteurl' => $str, 'updatetime' => $ti);
