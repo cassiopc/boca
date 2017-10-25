@@ -190,12 +190,35 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
 		$param['inputfilename'] = $name;
 		$param['inputfilepath'] = $temp;
 		$param['fake'] = 'f';
-		$param['colorname'] = $_POST["colorname"];
-		$param['color'] = $_POST["color"];
+		$param['colorname'] = trim($_POST["colorname"]);
+		$param['color'] = trim($_POST["color"]);
 		DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
 	}
 	}
 	ForceLoad("problem.php");
+}
+
+$prob = DBGetFullProblemData($_SESSION["usertable"]["contestnumber"],true);
+for ($i=0; $i<count($prob); $i++) {
+  if($prob[$i]["fake"]!='t') {
+    if (isset($_POST["SubmitProblem" . $prob[$i]['number']]) && $_POST["SubmitProblem" . $prob[$i]['number']] == 'Update' &&
+	isset($_POST["colorname"]) && strlen($_POST["colorname"]) <= 100 && 
+	isset($_POST["color"]) && strlen($_POST["color"]) <= 6 && 
+	isset($_POST["problemname"]) && $_POST["problemname"] != "" && strlen($_POST["problemname"]) <= 20) {
+      if(strpos(trim($_POST["problemname"]),' ')!==false) {
+	MSGError('Problem short name cannot have spaces');
+      } else {
+	$param = array();
+	$param['number'] = $prob[$i]['number'];
+	$param['name'] = trim($_POST["problemname"]);
+	$param['fake'] = 'f';
+	$param['colorname'] = trim($_POST["colorname"]);
+	$param['color'] = trim($_POST["color"]);
+	DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
+      }
+    }
+    ForceLoad("problem.php");
+  }
 }
 ?>
 <br>
@@ -233,7 +256,6 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
   <td><b>Color</b></td>
  </tr>
 <?php
-	$prob = DBGetFullProblemData($_SESSION["usertable"]["contestnumber"],true);
 for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
   if($prob[$i]["fake"]!='t') {
@@ -247,7 +269,7 @@ for ($i=0; $i<count($prob); $i++) {
 	  }
 	  echo "</a></td>\n";
 	  echo "  <td nowrap>";
-	  echo "<input type=\"text\" name=\"problemname\" value=\"" . $prob[$i]["name"] . "\" size=\"6\" maxlength=\"20\" />";
+	  echo "<input type=\"text\" name=\"problemname\" value=\"" . $prob[$i]["name"] . "\" size=\"4\" maxlength=\"20\" />";
 	  echo "</td>\n";
   } else {
     echo "  <td nowrap>" . $prob[$i]["number"] . " (fake)</td>\n";
@@ -291,7 +313,7 @@ for ($i=0; $i<count($prob); $i++) {
       echo "<img title=\"".$prob[$i]["color"]."\" alt=\"".$prob[$i]["colorname"]."\" width=\"25\" src=\"" . 
 	balloonurl($prob[$i]["color"]) . "\" />\n";
     }
-    echo "<input type=\"text\" name=\"colorname\" value=\"" . $prob[$i]["colorname"] . "\" size=\"6\" maxlength=\"6\" />";
+    echo "<input type=\"text\" name=\"colorname\" value=\"" . $prob[$i]["colorname"] . "\" size=\"10\" maxlength=\"100\" />";
     echo "<input type=\"text\" name=\"color\" value=\"" . $prob[$i]["color"]. "\" size=\"6\" maxlength=\"6\" />";
     echo "<input type=\"submit\" name=\"SubmitProblem" . $prob[$i]["number"] . "\" value=\"Update\">";
   } else echo "&nbsp;";
