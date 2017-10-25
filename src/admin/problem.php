@@ -216,8 +216,8 @@ for ($i=0; $i<count($prob); $i++) {
 	$param['color'] = trim($_POST["color"]);
 	DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
       }
+      ForceLoad("problem.php");
     }
-    ForceLoad("problem.php");
   }
 }
 ?>
