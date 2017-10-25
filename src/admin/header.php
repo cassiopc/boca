@@ -51,8 +51,10 @@ if($_SESSION["usertable"]["usertype"] != "admin") {
 	ForceLoad("$loc/index.php");
 }
 
-if (isset($_GET["Submit1"]) && $_GET["Submit1"] == "Transfer")
+if ((isset($_GET["Submit1"]) && $_GET["Submit1"] == "Transfer") ||
+    (isset($_GET["Submit3"]) && $_GET["Submit3"] == "Transfer scores")) {
   echo "<meta http-equiv=\"refresh\" content=\"60\" />";
+}
 
 if(!isset($_POST['noflush'])) {
 	echo "</head><body id=\"body\"><table border=1 width=\"100%\">\n";
