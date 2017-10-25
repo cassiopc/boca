@@ -269,7 +269,7 @@ for ($i=0; $i<count($prob); $i++) {
 	  }
 	  echo "</a></td>\n";
 	  echo "  <td nowrap>";
-	  echo "<input type=\"text\" name=\"problemname\" value=\"" . $prob[$i]["name"] . "\" size=\"4\" maxlength=\"20\" />";
+	  echo "<input type=\"text\" name=\"problemname" . $prob[$i]['number'] . "\" value=\"" . $prob[$i]["name"] . "\" size=\"4\" maxlength=\"20\" />";
 	  echo "</td>\n";
   } else {
     echo "  <td nowrap>" . $prob[$i]["number"] . " (fake)</td>\n";
@@ -313,8 +313,8 @@ for ($i=0; $i<count($prob); $i++) {
       echo "<img title=\"".$prob[$i]["color"]."\" alt=\"".$prob[$i]["colorname"]."\" width=\"25\" src=\"" . 
 	balloonurl($prob[$i]["color"]) . "\" />\n";
     }
-    echo "<input type=\"text\" name=\"colorname\" value=\"" . $prob[$i]["colorname"] . "\" size=\"10\" maxlength=\"100\" />";
-    echo "<input type=\"text\" name=\"color\" value=\"" . $prob[$i]["color"]. "\" size=\"6\" maxlength=\"6\" />";
+    echo "<input type=\"text\" name=\"colorname" . $prob[$i]['number'] . "\" value=\"" . $prob[$i]["colorname"] . "\" size=\"10\" maxlength=\"100\" />";
+    echo "<input type=\"text\" name=\"color" . $prob[$i]['number'] . "\" value=\"" . $prob[$i]["color"]. "\" size=\"6\" maxlength=\"6\" />";
     echo "<input type=\"submit\" name=\"SubmitProblem" . $prob[$i]["number"] . "\" value=\"Update\">";
   } else echo "&nbsp;";
   echo "</td>\n";
