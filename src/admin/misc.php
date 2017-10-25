@@ -169,7 +169,7 @@ if($dotransfer || $doscore || $dotransferall) {
 	$fname = $remotedir . $ds . "score_site" . $localsite . "_" . $localsite . "_x"; // . md5($_SERVER['HTTP_HOST']);
 	@file_put_contents($fname . ".tmp",base64_encode(serialize($data0)));
 	@rename($fname . ".tmp",$fname . ".dat");
-	echo "Transferring scores\n";
+	echo "Checking for transfers\n";
 	echo scoretransfer($fname . ".dat", $localsite);
 	echo "Saving scores\n";
 	if(@create_zip($remotedir,glob($remotedir . '/*.dat'),$fname . ".tmp") != 1) {

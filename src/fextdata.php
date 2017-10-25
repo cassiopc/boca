@@ -66,8 +66,10 @@ function scoretransfer($putname, $localsite, $timeo=5) {
       $tmp = explode(' ',$ct['contestmainsiteurl']);
       if(count($tmp) >= 3) {
 	$remotesite[count($remotesite)] = $ct['contestmainsiteurl'];
-      }
-    }
+      } else $logstr .= "Main site URL is invalid\n";
+    } else $logstr .= "Main site URL not defined\n";
+  } else {
+    $logstr .= "Error to load contest data\n";
   }
 
   for($i = 0; $i < count($remotesite); $i++) {
