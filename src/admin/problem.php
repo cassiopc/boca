@@ -202,18 +202,18 @@ $prob = DBGetFullProblemData($_SESSION["usertable"]["contestnumber"],true);
 for ($i=0; $i<count($prob); $i++) {
   if($prob[$i]["fake"]!='t') {
     if (isset($_POST["SubmitProblem" . $prob[$i]['number']]) && $_POST["SubmitProblem" . $prob[$i]['number']] == 'Update' &&
-	isset($_POST["colorname"]) && strlen($_POST["colorname"]) <= 100 && 
-	isset($_POST["color"]) && strlen($_POST["color"]) <= 6 && 
-	isset($_POST["problemname"]) && $_POST["problemname"] != "" && strlen($_POST["problemname"]) <= 20) {
-      if(strpos(trim($_POST["problemname"]),' ')!==false) {
+	isset($_POST["colorname" . $prob[$i]['number']]) && strlen($_POST["colorname" . $prob[$i]['number']]) <= 100 && 
+	isset($_POST["color" . $prob[$i]['number']]) && strlen($_POST["color" . $prob[$i]['number']]) <= 6 && 
+	isset($_POST["problemname" . $prob[$i]['number']]) && $_POST["problemname" . $prob[$i]['number']] != "" && strlen($_POST["problemname" . $prob[$i]['number']]) <= 20) {
+      if(strpos(trim($_POST["problemname" . $prob[$i]['number']]),' ')!==false) {
 	MSGError('Problem short name cannot have spaces');
       } else {
 	$param = array();
 	$param['number'] = $prob[$i]['number'];
-	$param['name'] = trim($_POST["problemname"]);
+	$param['name'] = trim($_POST["problemname" . $prob[$i]['number']]);
 	$param['fake'] = 'f';
-	$param['colorname'] = trim($_POST["colorname"]);
-	$param['color'] = trim($_POST["color"]);
+	$param['colorname'] = trim($_POST["colorname" . $prob[$i]['number']]);
+	$param['color'] = trim($_POST["color" . $prob[$i]['number']]);
 	DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
       }
       ForceLoad("problem.php");
