@@ -246,12 +246,13 @@ for ($i=0; $i<count($prob); $i++) {
 			  "')\">" . $prob[$i]["number"];
 	  }
 	  echo "</a></td>\n";
+	  echo "  <td nowrap>";
+	  echo "<input type=\"text\" name=\"problemname\" value=\"" . $prob[$i]["name"] . "\" size=\"6\" maxlength=\"20\" />";
+	  echo "</td>\n";
   } else {
     echo "  <td nowrap>" . $prob[$i]["number"] . " (fake)</td>\n";
+    echo "  <td nowrap>" . $prob[$i]["name"] . "</td>\n";
   }
-  echo "  <td nowrap>";
-  echo "<input type=\"text\" name=\"problemname\" value=\"" . $prob[$i]["name"] . "\" size=\"6\" maxlength=\"20\" />";
-  echo "</td>\n";
   echo "  <td nowrap>" . $prob[$i]["fullname"] . "&nbsp;</td>\n";
   echo "  <td nowrap>" . $prob[$i]["basefilename"] . "&nbsp;</td>\n";
   if (isset($prob[$i]["descoid"]) && $prob[$i]["descoid"] != null && isset($prob[$i]["descfilename"])) {
@@ -285,13 +286,15 @@ for ($i=0; $i<count($prob); $i++) {
     echo "  <td nowrap>&nbsp;</td>\n";
 */
   echo "  <td nowrap>";
-  if ($prob[$i]["color"]!="") {
-	  echo "<img title=\"".$prob[$i]["color"]."\" alt=\"".$prob[$i]["colorname"]."\" width=\"25\" src=\"" . 
-	    balloonurl($prob[$i]["color"]) . "\" />\n";
-  }
-  echo "<input type=\"text\" name=\"colorname\" value=\"" . $prob[$i]["colorname"] . "\" size=\"6\" maxlength=\"6\" />";
-  echo "<input type=\"text\" name=\"color\" value=\"" . $prob[$i]["color"]. "\" size=\"6\" maxlength=\"6\" />";
-  echo "<input type=\"submit\" name=\"SubmitProblem" . $prob[$i]["number"] . "\" value=\"Update\">";
+  if($prob[$i]["fake"]!='t') {
+    if ($prob[$i]["color"]!="") {
+      echo "<img title=\"".$prob[$i]["color"]."\" alt=\"".$prob[$i]["colorname"]."\" width=\"25\" src=\"" . 
+	balloonurl($prob[$i]["color"]) . "\" />\n";
+    }
+    echo "<input type=\"text\" name=\"colorname\" value=\"" . $prob[$i]["colorname"] . "\" size=\"6\" maxlength=\"6\" />";
+    echo "<input type=\"text\" name=\"color\" value=\"" . $prob[$i]["color"]. "\" size=\"6\" maxlength=\"6\" />";
+    echo "<input type=\"submit\" name=\"SubmitProblem" . $prob[$i]["number"] . "\" value=\"Update\">";
+  } else echo "&nbsp;";
   echo "</td>\n";
   echo " </tr>\n";
 }
