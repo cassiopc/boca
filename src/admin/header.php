@@ -42,7 +42,6 @@ if(!isset($_POST['noflush'])) {
 	echo "<link rel=stylesheet href=\"$loc/Css.php\" type=\"text/css\">\n";
 }
 
-//echo "<meta http-equiv=\"refresh\" content=\"60\" />";
 if(!ValidSession()) {
 	InvalidSession("admin/index.php");
         ForceLoad("$loc/index.php");
@@ -51,6 +50,9 @@ if($_SESSION["usertable"]["usertype"] != "admin") {
 	IntrusionNotify("admin/index.php");
 	ForceLoad("$loc/index.php");
 }
+
+if (isset($_GET["Submit1"]) && $_GET["Submit1"] == "Transfer")
+  echo "<meta http-equiv=\"refresh\" content=\"60\" />";
 
 if(!isset($_POST['noflush'])) {
 	echo "</head><body id=\"body\"><table border=1 width=\"100%\">\n";

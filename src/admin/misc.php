@@ -19,7 +19,7 @@
 require 'header.php';
 ?>
 <br>
-<form name="form1" enctype="multipart/form-data" method="post" action="misc.php">
+<form name="form1" enctype="multipart/form-data" method="get" action="misc.php">
   <input type=hidden name="confirmation" value="noconfirm" />
   <script language="javascript" type="text/javascript">
     function conf() {
@@ -49,35 +49,35 @@ require 'header.php';
 OPERATION LOG DISPLAYS BELOW:
 
 <?php
-if(isset($_POST['confirmation']) && $_POST['confirmation'] == 'confirm') {
+if(isset($_GET['confirmation']) && $_GET['confirmation'] == 'confirm') {
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 $dotransfer=false;
 $doscore=false;
 $dotransferall=false;
-if (isset($_POST["Submit1"]) && $_POST["Submit1"] == "Transfer") {
+if (isset($_GET["Submit1"]) && $_GET["Submit1"] == "Transfer") {
   $dotransfer=true;
   $doscore=true;
 }
-if (isset($_POST["Submit2"]) && $_POST["Submit2"] == "Transfer all") {
+if (isset($_GET["Submit2"]) && $_GET["Submit2"] == "Transfer all") {
   $dotransfer=true;
   $dotransferall=true;
   $doscore=true;
 }
-if (isset($_POST["Submit3"]) && $_POST["Submit3"] == "Transfer scores") {
+if (isset($_GET["Submit3"]) && $_GET["Submit3"] == "Transfer scores") {
   $doscore=true;
 }
-if (isset($_POST["Submit4"]) && $_POST["Submit4"] == "Clear cache") {
+if (isset($_GET["Submit4"]) && $_GET["Submit4"] == "Clear cache") {
   if(fixbocadir(dirname(__DIR__)))
     echo "Done\n";
   else echo "Error (likely permission/ownership issues)\n";
 }
-if (isset($_POST["Submit5"]) && $_POST["Submit5"] == "Full clear") {
+if (isset($_GET["Submit5"]) && $_GET["Submit5"] == "Full clear") {
   if(fixbocadir(dirname(__DIR__),true))
     echo "Done\n";
   else echo "Error (likely permission/ownership issues)\n";
 }
-if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
+if (isset($_GET["Submit6"]) && $_GET["Submit6"] == "Update BOCA") {
   $dir = dirname(__DIR__);
   if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
@@ -112,7 +112,7 @@ if (isset($_POST["Submit6"]) && $_POST["Submit6"] == "Update BOCA") {
     echo "Cannot update log file\n";
   }
 }
-if (isset($_POST["Submit7"]) && $_POST["Submit7"] == "Revert Update") {
+if (isset($_GET["Submit7"]) && $_GET["Submit7"] == "Revert Update") {
   $dir = dirname(__DIR__);
   if(!is_readable($dir . $ds . "private" . $ds . "updateboca.log")) @file_put_contents($dir . $ds . "private" . $ds . "updateboca.log", "");
   if(is_writable($dir . $ds . "private" . $ds . "updateboca.log")) {
