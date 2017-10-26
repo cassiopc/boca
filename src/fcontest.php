@@ -1179,11 +1179,12 @@ function DBUserUpdate($contest, $site, $user, $username, $userfull, $userdesc, $
 		else $temp = $a["userpassword"];
 		$lentmp = strlen($temp);
 		$temp = bighexsub($passn, $temp);
-		if($lentmp > strlen($temp))
-			$newpass = '0' . $temp;
-		else
-			$newpass = substr($temp, strlen($temp)-$lentmp);
-
+		if($lentmp > strlen($temp)) {
+		  $newpass = '0' . $temp;
+		  while(strlen($newpass) < $lentmp) $newpass = '0' . $newpass;
+		} else {
+		  $newpass = substr($temp, strlen($temp)-$lentmp);
+		}
 		$c = DBConnect();
 		DBExec($c, "begin work");
 		DBExec($c, "lock table usertable");

@@ -21,7 +21,7 @@
 //			todos os usuarios
 require_once("globals.php");
 
-if(!ValidSession()) {
+if(!ValidSession()) { // || $_SESSION["usertable"]["usertype"] == 'team') {
         InvalidSession("optionlower.php");
         ForceLoad("index.php");
 }
