@@ -15,9 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 26/oct/2014 by cassio@ime.usp.br
-//   allow passwords to be changed by default
-//
 require('header.php');
 
 if (isset($_GET["site"]) && isset($_GET["user"]) && is_numeric($_GET["site"]) && is_numeric($_GET["user"]) &&
@@ -66,13 +63,14 @@ if (isset($_POST["username"]) && isset($_POST["userfullname"]) && isset($_POST["
 */
 
 
-	$passcheck = htmlspecialchars($_POST["passwordo"]);
+	$passcheck = $_POST["passwordo"];
 	$a = DBUserInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"], $_SESSION["usertable"]["usernumber"], null, false);
 	if(myhash($a['userpassword'] . session_id()) != $passcheck) {
 		MSGError('Admin password is incorrect');
 	} else {
 		if ($_POST["passwordn1"] == $_POST["passwordn2"]) {
-			$param['pass'] = bighexsub(htmlspecialchars($_POST["passwordn1"]),$a['userpassword']);
+			$param['pass'] = bighexsub($_POST["passwordn1"],$a['userpassword']);
+			while(strlen($param['pass']) < strlen($a['userpassword'])) $param['pass'] = '0' . $param['pass'];
 			if($param['user'] != 1000)
 				DBNewUser($param);
 		}
