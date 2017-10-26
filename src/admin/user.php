@@ -49,6 +49,7 @@ if (isset($_POST["username"]) && isset($_POST["userfullname"]) && isset($_POST["
 	$param['permitip'] = htmlspecialchars($_POST["userip"]);
 	$param['contest'] = $_SESSION["usertable"]["contestnumber"];
 	$param['changepass']='t';
+	if(isset($_POST['changepass']) && $_POST['changepass'] != 't') $param['changepass']='f';
 /*
 	$param['user'] = myhtmlspecialchars($_POST["usernumber"]);
 	$param['site'] = myhtmlspecialchars($_POST["usersitenumber"]);
@@ -468,6 +469,15 @@ echo $u["userdesc"]; } ?>" size="50" maxlength="300" />
         <td width="35%" align=right>Retype Password:</td>
         <td width="65%">
 	  <input type="password" name="passwordn2" value="" size="20" maxlength="200" />
+        </td>
+      </tr>
+      <tr> 
+        <td width="35%" align=right>Allow password change:</td>
+        <td width="65%">
+		<select name="usermultilogin">
+		<option <?php if(isset($u) && $u["changepass"] == "t") echo "selected"; ?> value="t">Yes</option>
+		<option <?php if(!isset($u) || $u["changepass"] != "t") echo "selected"; ?> value="f">No</option>
+		</select>
         </td>
       </tr>
       <tr> 
