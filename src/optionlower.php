@@ -32,16 +32,16 @@ if (isset($_GET["username"]) && isset($_GET["userfullname"]) && isset($_GET["use
 	$username = myhtmlspecialchars($_GET["username"]);
 	$userfullname = myhtmlspecialchars($_GET["userfullname"]);
 	$userdesc = myhtmlspecialchars($_GET["userdesc"]);
-	$passwordo = myhtmlspecialchars($_GET["passwordo"]);
-	$passwordn = myhtmlspecialchars($_GET["passwordn"]);
+	$passwordo = $_GET["passwordo"];
+	$passwordn = $_GET["passwordn"];
 	DBUserUpdate($_SESSION["usertable"]["contestnumber"],
-				 $_SESSION["usertable"]["usersitenumber"],
-				 $_SESSION["usertable"]["usernumber"],
-				 $_SESSION["usertable"]["username"], // $username, but users should not change their names
-				 $userfullname,
-				 $userdesc,
-				 $passwordo,
-				 $passwordn);
+		     $_SESSION["usertable"]["usersitenumber"],
+		     $_SESSION["usertable"]["usernumber"],
+		     $_SESSION["usertable"]["username"], // $username, but users should not change their names
+		     $userfullname,
+		     $userdesc,
+		     $passwordo,
+		     $passwordn);
 	ForceLoad("option.php");
 }
 
