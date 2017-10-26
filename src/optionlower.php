@@ -58,6 +58,7 @@ function computeHASH()
 {
 	var username, userdesc, userfull, passHASHo, passHASHn1, passHASHn2;
 	if (document.form1.passwordn1.value != document.form1.passwordn2.value) return;
+	if (document.form1.passwordn1.value == document.form1.passwordo.value) return;
 	username = document.form1.username.value;
 	userdesc = document.form1.userdesc.value;
 	userfull = document.form1.userfull.value;
