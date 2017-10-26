@@ -474,7 +474,7 @@ echo $u["userdesc"]; } ?>" size="50" maxlength="300" />
       <tr> 
         <td width="35%" align=right>Allow password change:</td>
         <td width="65%">
-		<select name="usermultilogin">
+		<select name="changepass">
 		<option <?php if(isset($u) && $u["changepassword"]) echo "selected"; ?> value="t">Yes</option>
 		<option <?php if(!isset($u) || !$u["changepassword"]) echo "selected"; ?> value="f">No</option>
 		</select>
