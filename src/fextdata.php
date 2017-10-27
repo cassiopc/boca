@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 24/oct/2017 by cassio@ime.usp.br
 
 function makeurlhttps($siteurl) {
   if(substr($siteurl,0,7) == 'http://')
@@ -224,7 +223,7 @@ function scoretransfer($putname, $localsite, $timeo=5) {
       } else {
 	if(strpos($s,'SCORE UPLOADED OK') !== false) {
 	  LOGError("scoretransfer: upload full OK");
-	  $logstr .= 'upload of full score to $siteurl OK\n';
+	  $logstr .= "upload of full score to $siteurl OK\n";
 	}
 	else {
 	  LOGError("scoretransfer: upload full failed (" . $s . ")");
