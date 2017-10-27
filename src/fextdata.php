@@ -24,7 +24,7 @@ function makeurlhttps($siteurl) {
     $siteurl = 'https://' . $siteurl;
   if(substr($siteurl,strlen($siteurl)-1,1) != '/')
     $siteurl .= '/';
-  return $siterul;
+  return $siteurl;
 }
 
 function scoretransfer($putname, $localsite, $timeo=5) {
