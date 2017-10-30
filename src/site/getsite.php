@@ -36,10 +36,11 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	      //		$fp=fopen('/tmp/aaa',"w"); fwrite($fp,$_POST['xml']); fclose($fp);
 	      if(!isset($gc['doenc']) || $gc['doenc'])
 		$s = decryptData($_POST['xml'],$u["userpassword"],'xml from local not ok');
-	      else $s = $_POST['xml'];
+	      else $s = base64_decode($_POST['xml']);
 	      //		$fp=fopen('/tmp/aaa1',"w"); fwrite($fp,$s); fclose($fp);
 	      if(strtoupper(substr($s,0,5)) != "<XML>") {
 		echo "<!-- <ERROR8> ".session_id() . " -->\n";
+		echo "<!-- <NOTOK> -->";
 	      } else {
 		$resp = importFromXML($s,$_SESSION["usertable"]["contestnumber"],$fromsite,true);
 		echo $resp[1];
@@ -54,7 +55,7 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	      if(!isset($gc['doenc']) || $gc['doenc'])
 		echo "<!-- " . encryptData($xml,$u["userpassword"]) . " -->";
 	      else
-		echo "<!-- " . $xml . " -->";
+		echo "<!-- " . base64_encode($xml) . " -->";
 	    }
 	  } else { 
 	    echo "<!-- <ERROR3> ".session_id() . " -->\n";

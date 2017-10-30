@@ -339,6 +339,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     $gc = globalconf();
     if(!isset($gc['doenc']) || $gc['doenc'])
       $data = encryptData($data, myhash(trim($sitedata[2])));
+    else $data = base64_encode($data);
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
 				       ));
@@ -384,6 +385,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     //    LOGError("string: " . substr($s,0,50));
     if(!isset($gc['doenc']) || $gc['doenc'])
       $s = decryptData($s,myhash(trim($sitedata[2])),'xml from main not ok');
+    else $s = base64_decode($s);
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       $logstr .=  "Data corrupted\n";
       return $logstr;
