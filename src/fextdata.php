@@ -82,7 +82,7 @@ function scoretransfer($putname, $localsite, $timeo=20) {
     //		LOGError("url=" .$siteurl . "index.php?getsessionid=1");
     $opts = array();
     $opts['http']['timeout'] = $timeo;
-    $context = stream_context_create($opts);		  
+    $context = stream_context_create($opts);	  
     if(($sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context))===false) {
       LOGError("scoretransfer: timeout at get session id for $siteurl");
       $logstr .= "timeout at get-session-id for $siteurl\n";
@@ -96,13 +96,14 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 		  'http' => array(
 				  'method' => 'GET',
 				  'request_fulluri' => true, 
-				  'header' => 'Cookie: PHPSESSID=' . $sess
+				  'header' => 'Cookie: PHPSESSID=' . $sess . "\r\n"
 				  )
 		  );
     if($bocaproxy != "")
       $opts['http']['proxy'] = $bocaproxy;
     if($bocaproxypass != "")
-      $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+      $opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
+    $opts['http']['header'] .= "Connection: close\r\n";
     $opts['http']['timeout'] = $timeo;
     $context = stream_context_create($opts);
     try {
@@ -165,14 +166,15 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 		    'http' => array(
 				    'method' => 'POST',
 				    'request_fulluri' => true, 
-				    'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
+				    'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded\r\n",
 				    'content' => $data_url
 				    )
 		    );
       if($bocaproxy != "")
 	$opts['http']['proxy'] = $bocaproxy;
       if($bocaproxypass != "")
-	$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+	$opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
+      $opts['http']['header'] .= "Connection: close\r\n";
       $opts['http']['timeout'] = $timeo;
       $context = stream_context_create($opts);
       try {
@@ -201,14 +203,14 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 		    'http' => array(
 				    'method' => 'POST',
 				    'request_fulluri' => true,
-				    'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
+				    'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded\r\n",
 				    'content' => $data_url
 				    )
 		    );
       if($bocaproxy != "")
 	$opts['http']['proxy'] = $bocaproxy;
       if($bocaproxypass != "")
-	$opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+	$opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
       $opts['http']['timeout'] = $timeo;
       $context = stream_context_create($opts);
       try {
@@ -311,13 +313,14 @@ function getMainXML($contest,$timeo=20,$upd=false) {
 		'http' => array(
 				'method' => 'GET',
 				'request_fulluri' => true, 
-				'header' => 'Cookie: PHPSESSID=' . $sess
+				'header' => 'Cookie: PHPSESSID=' . $sess . "\r\n"
 				)
 		);
   if($bocaproxy != "")
     $opts['http']['proxy'] = $bocaproxy;
   if($bocaproxypass != "")
-    $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+    $opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
+  $opts['http']['header'] .= "Connection: close\r\n";
   $opts['http']['timeout'] = $timeo;  
   $context = stream_context_create($opts);
   $logstr .=  "Authorizing\n";
@@ -353,14 +356,15 @@ function getMainXML($contest,$timeo=20,$upd=false) {
 		  'http' => array(
 				  'method' => 'POST',
 				  'request_fulluri' => true,
-				  'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded",
+				  'header' => 'Cookie: PHPSESSID=' . $sess . "\r\nContent-Type: application/x-www-form-urlencoded\r\n",
 				  'content' => $data_url
 				  )
 		  );
     if($bocaproxy != "")
       $opts['http']['proxy'] = $bocaproxy;
     if($bocaproxypass != "")
-      $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
+      $opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
+    $opts['http']['header'] .= "Connection: close\r\n";
     $opts['http']['timeout'] = $timeo;
     $context = stream_context_create($opts);
     $logstr .=  "Transferring data to main server\n";
