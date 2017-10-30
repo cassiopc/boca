@@ -112,7 +112,9 @@ if [[ "x$bdcreated" == "x" || "$1" == "-f" ]] ; then
 fi
 
 if ! echo "$*" | grep -q 'nocreate'; then
-  php ${bocadir}/src/private/createdb.php
+    php ${bocadir}/src/private/createdb.php
+    chown www-data.www-data ${bocadir}/src/private/conf.php
+    chmod 600 ${bocadir}/src/private/conf.php
 fi
 
 exit 0
