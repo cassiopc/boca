@@ -227,7 +227,7 @@ function scoretransfer($putname, $localsite, $timeo=5) {
 	}
 	else {
 	  LOGError("scoretransfer: upload full failed (" . $s . ")");
-	  $logstr .= 'upload of full score to $siteurl failed (' . $s . ')';
+	  $logstr .= "upload of full score to $siteurl failed (" . $s . ")\n";
 	}
       }
     }
@@ -383,7 +383,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     }
     $logstr .=  "Importing data to local server\n";
     $resp = importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime']);
-    echo $resp[1];
+    $logstr .= $resp[1];
     if($resp[0]) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
       $ti = 2+$ct['updatetime'];

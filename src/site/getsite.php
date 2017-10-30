@@ -39,8 +39,8 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 		echo "<!-- <ERROR8> ".session_id() . " -->\n";
 	      } else {
 		$resp = importFromXML($s,$_SESSION["usertable"]["contestnumber"],$fromsite,true);
-		echo $resp[0];
-		if($resp[1])
+		echo $resp[1];
+		if($resp[0])
 		  echo "<!-- <OK> -->\n";
 		else
 		  echo "<!-- <NOTOK> -->\n";
