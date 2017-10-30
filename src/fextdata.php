@@ -422,7 +422,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
   return $logstr;
 }
 
-function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=1) {
+function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=-1) {
   LOGInfo("importFromXML: contest $contest site $site tomain $tomain");
   $logstr = '';
   if($tomain) $serv='Main'; else $serv='Local';

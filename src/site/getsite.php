@@ -42,7 +42,7 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 		echo "<!-- <ERROR8> ".session_id() . " -->\n";
 		echo "<!-- <NOTOK> -->";
 	      } else {
-		$resp = importFromXML($s,$_SESSION["usertable"]["contestnumber"],$fromsite,true,-1);
+		$resp = importFromXML($s,$_SESSION["usertable"]["contestnumber"],$fromsite,true,0,-1);
 		echo $resp[1];
 		if($resp[0])
 		  echo "<!-- <OK> -->";
