@@ -407,7 +407,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
 
 function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
   LOGInfo("importFromXML: contest $contest site $site tomain $tomain");
-  $logstr .= '';
+  $logstr = '';
   if($tomain) $serv='Main'; else $serv='Local';
   $data = implode("",explode("\n",$ar));
   $parser = xml_parser_create('');

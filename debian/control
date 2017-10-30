@@ -11,7 +11,7 @@ Description: Virtual package that depends on BOCA
 
 Package: boca
 Architecture: amd64
-Depends: php-zip, debootstrap, schroot, quotatool, makepasswd, apache2, libapache2-mod-php, sharutils, wget, coreutils, php, php-cli, php-mcrypt, php-pgsql, php-gd, postgresql, postgresql-client, libany-uri-escape-perl
+Depends: php-zip, debootstrap, schroot, quotatool, makepasswd, apache2, libapache2-mod-php, sharutils, wget, coreutils, php, php-cli, php-mcrypt, php-pgsql, php-gd, postgresql, postgresql-client, libany-uri-escape-perl, php-xml
 Description: BOCA is a software created to control a contest with the ACM ICPC rules.
   BOCA is a software created to control a contest with the ACM International
   Collegiate Programming Contest rules. It has been developed in PHP and the
