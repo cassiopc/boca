@@ -382,7 +382,8 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     $s = substr($s, strpos($s, $chstr) + strlen($chstr));
     $s = substr($s, 0, strpos($s, " -->"));
     //    LOGError("string: " . substr($s,0,50));
-    $s = decryptData($s,myhash(trim($sitedata[2])),'xml from main not ok');
+    if(!isset($gc['doenc']) || $gc['doenc'])
+      $s = decryptData($s,myhash(trim($sitedata[2])),'xml from main not ok');
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       $logstr .=  "Data corrupted\n";
       return $logstr;
