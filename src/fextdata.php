@@ -333,8 +333,10 @@ function getMainXML($contest,$timeo=5,$upd=false) {
   $ti = mytime();
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
-    $logstr .=  "Generating local data for site [$localsite]\n";
-    $data = encryptData(generateSiteXML($contest, $localsite, $updatetime-30),myhash(trim($sitedata[2])));
+    $logstr .=  "Generating local data for site [$localsite] at time [$updatetime]\n";
+    $s = generateSiteXML($contest, $localsite, $updatetime-30);
+    // $logstr .= $s;
+    $data = encryptData($s, myhash(trim($sitedata[2])));
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
 				       ));
@@ -371,6 +373,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     } else {
       $logstr .=  "Transfer error (" . $s . ")\n";
       LOGError("xmltransfer: failed (" . $s . ")");
+      $chstr = "<!-- <NOTOK> --><!-- ";
     }
 
     $logstr .=  "Processing received data\n";
@@ -456,7 +459,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(count($param) < 2) continue;
 	  unset($param['number']);
 
-	  if(!$tomain && $table == "contesttable") {
+	  if($table == "contesttable") {
+	    if($tomain) continue;
 	    if($uptime > 0) $param['updatetime']=$uptime;
 	    if(($ret=DBUpdateContest ($param, $conn))) {
 	      if($ret==2) {
@@ -475,7 +479,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 
 	  
 	  //	  LOGInfo("importFromXML: $key params " .print_r( $param,true));
-	  if(!$tomain && $table == "answertable") {
+	  if($table == "answertable") {
+	    if($tomain) continue;
 	    if(($ret=DBNewAnswer ($contest, $param, $conn))) {
 	      if($ret==2) {
 		$logstr .= "$serv - Answer " . $param["answernumber"] . " updated\n";
@@ -490,7 +495,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	      return array(false, $logstr);
 	    }
 	  }
-	  if(!$tomain && $table == "langtable") {
+	  if($table == "langtable") {
+	    if($tomain) continue;
 	    if(($ret=DBNewLanguage ($contest,$param, $conn))) {
 	      if($ret==2) {
 		$logstr .= "$serv - Language " . $param['langnumber'] ." updated\n";
@@ -505,7 +511,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	      return array(false, $logstr);
 	    }
 	  }
-	  if(!$tomain && $table == "problemtable") {
+	  if($table == "problemtable") {
+	    if($tomain) continue;
 	    if(($ret=DBNewProblem ($contest,$param, $conn))) {
 	      if($ret==2)
 		$logstr .= "$serv - Problem " . $param['problemnumber'] ." updated\n";
@@ -528,14 +535,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	    continue;
 	  }
 	  if($tomain && $table == "sitetable") {
-	    if(!DBNewSite($contest, $conn, $param)) {
-	      $logstr .= "$serv - error to update $table \n";
-	      LOGError("importFromXML: error to update $table");
-	      if($conn != null)
-		DBExec($conn,"rollback work");
-	      return array(false, $logstr);
-	    }
-	    if(($ret=DBUpdateSite($param, $conn))) {
+	    DBNewSite($contest, $conn, $param);
+	    if(($ret=DBUpdateSite($param, $conn)) !== false) {
 	      if($ret==2) {
 		$logstr .= "$serv - Site " . $param["sitenumber"] . " updated\n";
 		LOGInfo("importFromXML: Site " . $param["sitenumber"] . " updated");
