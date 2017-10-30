@@ -480,6 +480,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 		DBExec($conn,"rollback work");
 	      return array(false, $logstr);
 	    }
+	    continue;
 	  }
 
 	  
@@ -499,6 +500,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 		DBExec($conn,"rollback work");
 	      return array(false, $logstr);
 	    }
+	    continue;
 	  }
 	  if($table == "langtable") {
 	    if($tomain) continue;
@@ -515,6 +517,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 		DBExec($conn,"rollback work");
 	      return array(false, $logstr);
 	    }
+	    continue;
 	  }
 	  if($table == "problemtable") {
 	    if($tomain) continue;
@@ -530,6 +533,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 		DBExec($conn,"rollback work");
 	      return array(false, $logstr);
 	    }
+	    continue;
 	  }
 	  if(isset($param['usersitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['usersitenumber'];              
 	  if(isset($param['clarsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['clarsitenumber'];              
