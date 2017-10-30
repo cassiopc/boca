@@ -26,7 +26,7 @@ function makeurlhttps($siteurl) {
   return $siteurl;
 }
 
-function scoretransfer($putname, $localsite, $timeo=5) {
+function scoretransfer($putname, $localsite, $timeo=20) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   $logstr='';
@@ -236,10 +236,11 @@ function scoretransfer($putname, $localsite, $timeo=5) {
 }
 
 
-function getMainXML($contest,$timeo=5,$upd=false) {
+function getMainXML($contest,$timeo=20,$upd=false) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   $logstr = '';  
+  //  $logstr .= "A: " . now() . "\n"
   if(is_readable('/etc/boca.conf')) {
     $pif=parse_ini_file('/etc/boca.conf');
     $bocaproxy = @trim($pif['proxy']);
@@ -253,7 +254,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     $bocaproxy = "";
     $bocaproxypass = "";
   }
-  
+  //  $logstr .= "AA: " . now() . "\n"
   $privatedir = $_SESSION['locr'] . $ds . "private";
   
   $c = DBConnect();
@@ -330,16 +331,20 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     LOGError("getMainXML: timeout at login for $siteurl");
     return $logstr;
   }
+  //  $logstr .= "AAA: " . now() . "\n"
   $ti = mytime();
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
     $logstr .=  "Generating local data for site [$localsite] at time [$updatetime]\n";
     $data = generateSiteXML($contest, $localsite, $updatetime-30);
+    $logstr .= $data[1];
+    $data = $data[0];
     // $logstr .= $s;
     $gc = globalconf();
     if(!isset($gc['doenc']) || $gc['doenc'])
       $data = encryptData($data, myhash(trim($sitedata[2])));
     else $data = base64_encode($data);
+    //    $logstr .= "AB: " . now() . "\n"
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
 				       ));
@@ -364,6 +369,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     } catch(Exception $e) {
       $s=false;
     }
+    //    $logstr .= "ABB: " . now() . "\n"
     if($s===false) {
       $logstr .=  "timeout at transferring\n";
       LOGError("getMainXML: timeout at transfer for $siteurl");
@@ -386,12 +392,14 @@ function getMainXML($contest,$timeo=5,$upd=false) {
     if(!isset($gc['doenc']) || $gc['doenc'])
       $s = decryptData($s,myhash(trim($sitedata[2])),'xml from main not ok');
     else $s = base64_decode($s);
+    //    $logstr .= "ABBB: " . now() . "\n"
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       $logstr .=  "Data corrupted\n";
       return $logstr;
     }
     $logstr .=  "Importing data to local server\n";
     $resp = importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime']);
+    //    $logstr .= "AC: " . now() . "\n"
     $logstr .= $resp[1];
     if($resp[0]) {
       $str = $sitedata[0] . ' ' . $sitedata[1] . ' ' . $sitedata[2] . ' ' . $ti;
@@ -672,6 +680,7 @@ function generateSiteXML($contest,$site,$updatetime) {
   $sql = genSQLs($contest, $site, $updatetime);
   $c = DBConnect();
   $str = "<XML>\n";
+  $logstr = '';
   if ($c==null) return null;
   DBExec($c, "begin work");
   foreach($sql as $kk => $vv) {
@@ -679,6 +688,7 @@ function generateSiteXML($contest,$site,$updatetime) {
     if (!is_array($meta)) return null;
     $r = DBExec ($c, $vv, "generateSiteXML($kk)");
     $n = DBnLines ($r);
+    $logstr .= "$kk has $n records to update\n";
     for($i=0; $i<$n; $i++) {
       $atual = DBRow($r,$i);
       $str .= "<" . $kk . ">\n";
@@ -700,6 +710,6 @@ function generateSiteXML($contest,$site,$updatetime) {
   $str .= "</XML>\n";
   DBExec($c,"commit work","generateSiteXML(commit)");
   LOGInfo("xml data generated for contest $contest site $site at time $updatetime");
-  return $str;
+  return array($str,$logstr);
 }
 
