@@ -336,7 +336,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
     $logstr .=  "Generating local data for site [$localsite] at time [$updatetime]\n";
-    $data = generateSiteXML($contest, $localsite, $updatetime-30);
+    $data = generateSiteXML($contest, $localsite, $updatetime-30, $localsite);
     $logstr .= $data[1];
     $data = $data[0];
     // $logstr .= $s;
@@ -646,7 +646,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
   return array(true, $logstr);
 }
 
-function genSQLs($contest, $site, $updatetime) {
+function genSQLs($contest, $site, $updatetime, $mainsite=1) {
   $sql = array();
   $sql['contesttable']="select contestnumber, contestname, conteststartdate, contestduration, contestlastmileanswer," .
     "contestlastmilescore, contestpenalty, contestmaxfilesize, contestmainsite, contestkeys " .
@@ -669,15 +669,15 @@ function genSQLs($contest, $site, $updatetime) {
     "updatetime" .
     " from problemtable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
   $sql['sitetimetable']="select * from sitetimetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
-  $sql['usertable']="select * from usertable where contestnumber=$contest and usersitenumber=$site and updatetime >= $updatetime";
+  $sql['usertable']="select * from usertable where contestnumber=$contest and (usersitenumber=$site or usersitenumber=$mainsite) and updatetime >= $updatetime";
   $sql['clartable']="select * from clartable where contestnumber=$contest and clarsitenumber=$site and updatetime >= $updatetime";
   $sql['runtable']="select * from runtable where contestnumber=$contest and runsitenumber=$site and updatetime >= $updatetime";
   $sql['tasktable']="select * from tasktable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   return $sql;
 }
 
-function generateSiteXML($contest,$site,$updatetime) {
-  $sql = genSQLs($contest, $site, $updatetime);
+function generateSiteXML($contest,$site,$updatetime, $mainsite=1) {
+  $sql = genSQLs($contest, $site, $updatetime, $mainsite);
   $c = DBConnect();
   $str = "<XML>\n";
   $logstr = '';
