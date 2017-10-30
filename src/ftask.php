@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 13/aug/2017 by cassio@ime.usp.br
 function DBDropTaskTable() {
 	 $c = DBConnect();
 	 $r = DBExec($c, "drop table \"tasktable\"", "DBDropTaskTable(drop table)");
