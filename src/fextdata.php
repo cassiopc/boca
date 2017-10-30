@@ -333,7 +333,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
   $ti = mytime();
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
-    $logstr .=  "Generating local data\n";
+    $logstr .=  "Generating local data for site [$localsite]\n";
     $data = encryptData(generateSiteXML($contest, $localsite, $updatetime-30),myhash(trim($sitedata[2])));
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
@@ -395,8 +395,8 @@ function getMainXML($contest,$timeo=5,$upd=false) {
       LOGError("error importing xml");
     }
   } else {
-    $logstr .=  "Transfer error (" . $ok . ")\n";
-    LOGError("xmltransfer: failed (" . $ok . ")");
+    $logstr .=  "Transfer init connection error (" . $ok . ")\n";
+    LOGError("xmltransfer: init connection failed (" . $ok . ")");
   }
   return $logstr;
 }
@@ -522,8 +522,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(isset($param['clarsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['clarsitenumber'];              
 	  if(isset($param['runsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['runsitenumber'];              
 	  if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) {
-	    $logstr .= "$serv - site mismatch $site " . $param['sitenumber'] . "\n";
-	    LOGError("importFromXML: site mismatch $site " . $param['sitenumber']);
+	    $logstr .= "$serv - site mismatch should be [$site] and is [" . $param['sitenumber'] . "]\n";
+	    LOGError("importFromXML: site mismatch should be [$site] and is [" . $param['sitenumber'] . "]");
 	    continue;
 	  }
 	  if($tomain && $table == "sitetable") {
