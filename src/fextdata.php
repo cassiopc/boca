@@ -378,7 +378,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
 
     $logstr .=  "Processing received data from main server\n";
     $s = substr($s, strpos($s, $chstr) + strlen($chstr));
-    $s = substr($s, 0, strpos(" -->"));
+    $s = substr($s, 0, strpos($s, " -->"));
     //    LOGError("string: " . substr($s,0,50));
     $s = decryptData($s,myhash(trim($sitedata[2])),'xml from main not ok');
     if(strtoupper(substr($s,0,5)) != "<XML>") {
