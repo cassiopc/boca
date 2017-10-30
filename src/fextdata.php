@@ -355,7 +355,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
       $opts['http']['header'] .= "\r\nProxy-Authorization: Basic " . $bocaproxypass;
     $opts['http']['timeout'] = $timeo;
     $context = stream_context_create($opts);
-    $logstr .=  "Transferring data\n";
+    $logstr .=  "Transferring data to main server\n";
     try {
       $s = @file_get_contents($siteurl . "site/getsite.php", 0, $context);
     } catch(Exception $e) {
@@ -376,11 +376,11 @@ function getMainXML($contest,$timeo=5,$upd=false) {
       $chstr = "<!-- <NOTOK> --><!-- ";
     }
 
-    $logstr .=  "Processing received data\n";
+    $logstr .=  "Processing received data from main server\n";
     $s = substr($s, strpos($s, $chstr) + strlen($chstr));
     $s = substr($s, 0, strpos(" -->"));
     //    LOGError("string: " . substr($s,0,50));
-    $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
+    $s = decryptData($s,myhash(trim($sitedata[2])),'xml from main not ok');
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       $logstr .=  "Data corrupted\n";
       return $logstr;

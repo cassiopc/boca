@@ -48,7 +48,8 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	    }
 	    if(isset($_POST['updatetime']) && is_numeric($_POST['updatetime'])) {
 	      $xml = generateSiteXML($_SESSION["usertable"]["contestnumber"],$fromsite,$_POST['updatetime']);
-	      echo "<!-- " . encryptData($xml,$u["userpassword"]) . " -->";
+	      echo "<!-- " . $xml . " -->";
+	      //	      echo "<!-- " . encryptData($xml,$u["userpassword"]) . " -->";
 	    }
 	  } else { 
 	    echo "<!-- <ERROR3> ".session_id() . " -->\n";
