@@ -41,14 +41,14 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 		$resp = importFromXML($s,$_SESSION["usertable"]["contestnumber"],$fromsite,true);
 		echo $resp[1];
 		if($resp[0])
-		  echo "<!-- <OK> -->\n";
+		  echo "<!-- <OK> -->";
 		else
-		  echo "<!-- <NOTOK> -->\n";
+		  echo "<!-- <NOTOK> -->";
 	      }
 	    }
 	    if(isset($_POST['updatetime']) && is_numeric($_POST['updatetime'])) {
 	      $xml = generateSiteXML($_SESSION["usertable"]["contestnumber"],$fromsite,$_POST['updatetime']);
-	      echo encryptData($xml,$u["userpassword"]);
+	      echo "<!-- " . encryptData($xml,$u["userpassword"]) . " -->";
 	    }
 	  } else { 
 	    echo "<!-- <ERROR3> ".session_id() . " -->\n";

@@ -364,7 +364,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
       LOGError("getMainXML: timeout at transfer for $siteurl");
       return $logstr;
     }
-    $chstr = "<!-- <OK> -->\n";
+    $chstr = "<!-- <OK> --><!-- ";
     if(strpos($s,$chstr) !== false) {
       $logstr .=  "Transfer succeeded\n";
       LOGInfo("xmltransfer: OK");
@@ -375,6 +375,7 @@ function getMainXML($contest,$timeo=5,$upd=false) {
 
     $logstr .=  "Processing received data\n";
     $s = substr($s, strpos($s, $chstr) + strlen($chstr));
+    $s = substr($s, 0, strpos(" -->"));
     //    LOGError("string: " . substr($s,0,50));
     $s = decryptData($s,myhash (trim($sitedata[2])),'xml from main not ok');
     if(strtoupper(substr($s,0,5)) != "<XML>") {
