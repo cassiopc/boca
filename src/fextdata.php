@@ -402,7 +402,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
       return $logstr;
     }
     $logstr .=  "Importing data to local server\n";
-    $resp = importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime']);
+    $resp = importFromXML($s, $contest, $localsite, false, 1+$ct['updatetime'], $mainsite);
     //    $logstr .= "AC: " . now() . "\n"
     $logstr .= $resp[1];
     if($resp[0]) {
@@ -422,7 +422,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
   return $logstr;
 }
 
-function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
+function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=1) {
   LOGInfo("importFromXML: contest $contest site $site tomain $tomain");
   $logstr = '';
   if($tomain) $serv='Main'; else $serv='Local';
@@ -550,7 +550,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0) {
 	  if(isset($param['usersitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['usersitenumber'];              
 	  if(isset($param['clarsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['clarsitenumber'];              
 	  if(isset($param['runsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['runsitenumber'];              
-	  if(!isset($param['sitenumber']) || $param['sitenumber'] != $site) {
+	  if(!isset($param['sitenumber']) || ($param['sitenumber'] != $site && $param['sitenumber'] != $mainsite)) {
 	    $logstr .= "$serv - site mismatch should be [$site] and is [" . $param['sitenumber'] . "]\n";
 	    LOGError("importFromXML: site mismatch should be [$site] and is [" . $param['sitenumber'] . "]");
 	    continue;
