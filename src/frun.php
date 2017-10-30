@@ -585,7 +585,7 @@ function DBOpenRunsSNS($contest,$site,$st,$order='run') {
 		"r.runproblem=p.problemnumber and l.contestnumber=r.contestnumber and r.usernumber=u.usernumber and r.runsitenumber=u.usersitenumber and " .
 		"l.langnumber=r.runlangnumber and a.answernumber=r.runanswer and " .
 		"a.contestnumber=r.contestnumber";
-	if ($site != "x") {
+	if (strpos($site,"x")===false) {
 		$str = explode(",", $site);
 		$sql .= " and (r.runsitenumber=-1";
 		for ($i=0;$i<count($str);$i++) {

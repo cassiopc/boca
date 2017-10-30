@@ -478,7 +478,7 @@ function DBOpenClarsSNS($contest,$site,$st,$order='clar') {
                              "from clartable as c, problemtable as p " .
                              "where c.contestnumber=$contest and p.contestnumber=c.contestnumber and " .
                                     "c.clarproblem=p.problemnumber";
-	if ($site != "x") {
+	if (strpos($site,"x")===false) {
 		$str = explode(",", $site);
 		$sql .= " and (c.clarstatus='answeredall'";
 		for ($i=0;$i<count($str);$i++) {

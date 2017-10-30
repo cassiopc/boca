@@ -81,6 +81,9 @@ if (isset($_GET["done"]) && is_numeric($_GET["done"]) && isset($_GET["site"]) &&
 if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
         ForceLoad("../index.php");
 
+if (trim($s["sitetasking"])!="") $s["sitetasking"].=",".$_SESSION["usertable"]["usersitenumber"];
+else $s["sitetasking"]=$_SESSION["usertable"]["usersitenumber"];
+
 $task = DBAllTasksInSites($_SESSION["usertable"]["contestnumber"], $s["sitetasking"], $order, true);
 for ($i=0; $i<count($task); $i++) {
   $st = $task[$i]["status"];
