@@ -26,7 +26,6 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null) {
 	exit;
 }
 if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
-  $gc = globalconf();
 	$fromsite = $_SESSION["usertable"]["usericpcid"];
 	LOGLevel("Connection received from site=$fromsite",2); // PHPID=".$_COOKIE['PHPSESSID'].",extra=".$_SESSION['usertable']['usersessionextra'].",session=".session_id(),2);
 	if($fromsite != '' && is_numeric($fromsite) && $fromsite > 0) {
@@ -34,9 +33,7 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	    $u = DBUserInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"], $_SESSION["usertable"]["usernumber"],null,false);
 	    if(isset($_POST['xml'])) {
 	      //		$fp=fopen('/tmp/aaa',"w"); fwrite($fp,$_POST['xml']); fclose($fp);
-	      if(!isset($gc['doenc']) || $gc['doenc'])
-		$s = decryptData($_POST['xml'],$u["userpassword"],'xml from local not ok');
-	      else $s = base64_decode($_POST['xml']);
+	      $s = decryptData($_POST['xml'],$u["userpassword"],'xml from local not ok');
 	      //		$fp=fopen('/tmp/aaa1',"w"); fwrite($fp,$s); fclose($fp);
 	      if(strtoupper(substr($s,0,5)) != "<XML>") {
 		echo "<!-- <ERROR8> ".session_id() . " -->\n";
@@ -52,11 +49,8 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	    }
 	    if(isset($_POST['updatetime']) && is_numeric($_POST['updatetime'])) {
 	      $xml = generateSiteXML($_SESSION["usertable"]["contestnumber"],$fromsite,$_POST['updatetime'],$ct["contestmainsite"]);
-	      if(!isset($gc['doenc']) || $gc['doenc'])
-		echo "<!-- " . encryptData($xml[0],$u["userpassword"]) . " -->";
-	      else
-		echo "<!-- " . base64_encode($xml[0]) . " -->";
-	      echo "MAIN\n" . $xml[1];
+	      echo "<!-- " . encryptData($xml[0],$u["userpassword"]) . " -->";
+	      //	      echo "MAIN\n" . $xml[1];
 	    }
 	  } else { 
 	    echo "<!-- <ERROR3> ".session_id() . " -->\n";

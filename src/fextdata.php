@@ -82,6 +82,8 @@ function scoretransfer($putname, $localsite, $timeo=20) {
     //		LOGError("url=" .$siteurl . "index.php?getsessionid=1");
     $opts = array();
     $opts['http']['timeout'] = $timeo;
+    $opts['ssl'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
+    $opts['https'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
     $context = stream_context_create($opts);	  
     if(($sess = @file_get_contents($siteurl . "index.php?getsessionid=1", 0, $context))===false) {
       LOGError("scoretransfer: timeout at get session id for $siteurl");
@@ -105,6 +107,8 @@ function scoretransfer($putname, $localsite, $timeo=20) {
       $opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
     $opts['http']['header'] .= "Connection: close\r\n";
     $opts['http']['timeout'] = $timeo;
+    $opts['ssl'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
+    $opts['https'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
     $context = stream_context_create($opts);
     try {
       $ok = @file_get_contents($siteurl . "index.php?name=${user}&password=${res}&action=transfer", 0, $context);
@@ -176,6 +180,8 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 	$opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
       $opts['http']['header'] .= "Connection: close\r\n";
       $opts['http']['timeout'] = $timeo;
+    $opts['ssl'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
+    $opts['https'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
       $context = stream_context_create($opts);
       try {
 	$s = @file_get_contents($siteurl . "site/putfile.php", 0, $context);
@@ -212,6 +218,8 @@ function scoretransfer($putname, $localsite, $timeo=20) {
       if($bocaproxypass != "")
 	$opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
       $opts['http']['timeout'] = $timeo;
+    $opts['ssl'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
+    $opts['https'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
       $context = stream_context_create($opts);
       try {
 	$s = @file_get_contents($siteurl . "site/putfilesuper.php", 0, $context);
@@ -295,6 +303,8 @@ function getMainXML($contest,$timeo=20,$upd=false) {
   //		LOGError("url=" .$siteurl . "index.php?getsessionid=1");
   $opts = array();
   $opts['http']['timeout'] = $timeo;
+    $opts['ssl'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
+    $opts['https'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
   $context = stream_context_create($opts);
   $logstr .=  "Connecting to ". $siteurl . " (updatetime=" . $updatetime . ")\n";
   try {
@@ -322,6 +332,8 @@ function getMainXML($contest,$timeo=20,$upd=false) {
     $opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
   $opts['http']['header'] .= "Connection: close\r\n";
   $opts['http']['timeout'] = $timeo;  
+    $opts['ssl'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
+    $opts['https'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
   $context = stream_context_create($opts);
   $logstr .=  "Authorizing\n";
   try {
@@ -343,10 +355,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
     $logstr .= $data[1];
     $data = $data[0];
     // $logstr .= $s;
-    $gc = globalconf();
-    if(!isset($gc['doenc']) || $gc['doenc'])
-      $data = encryptData($data, myhash(trim($sitedata[2])));
-    else $data = base64_encode($data);
+    $data = encryptData($data, myhash(trim($sitedata[2])));
     //    $logstr .= "AB: " . now() . "\n"
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
@@ -366,6 +375,8 @@ function getMainXML($contest,$timeo=20,$upd=false) {
       $opts['http']['header'] .= "Proxy-Authorization: Basic " . $bocaproxypass . "\r\n";
     $opts['http']['header'] .= "Connection: close\r\n";
     $opts['http']['timeout'] = $timeo;
+    $opts['ssl'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
+    $opts['https'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
     $context = stream_context_create($opts);
     $logstr .=  "Transferring data to main server\n";
     try {
@@ -393,9 +404,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
     $s = substr($s, strpos($s, $chstr) + strlen($chstr));
     $s = substr($s, 0, strpos($s, " -->"));
     //    LOGError("string: " . substr($s,0,50));
-    if(!isset($gc['doenc']) || $gc['doenc'])
-      $s = decryptData($s,myhash(trim($sitedata[2])),'xml from main not ok');
-    else $s = base64_decode($s);
+    $s = decryptData($s,myhash(trim($sitedata[2])),'xml from main not ok');
     //    $logstr .= "ABBB: " . now() . "\n"
     if(strtoupper(substr($s,0,5)) != "<XML>") {
       $logstr .=  "Data corrupted\n";
