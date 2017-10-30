@@ -226,7 +226,7 @@ function DBOpenTasksSNS($contest,$site,$st,$order='task',$adm=false) {
 		"usertable as u " .
 		"where t.contestnumber=$contest and u.contestnumber=t.contestnumber and ".
 		"u.usernumber=t.usernumber and u.usersitenumber=t.sitenumber";
-	if ($site != "x") {
+	if (strpos($site,"x")===false) {
 	        $str = explode(",", $site);
         	$sql .= " and (t.sitenumber=-1";
 	        for ($i=0;$i<count($str);$i++) {
