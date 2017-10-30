@@ -334,9 +334,11 @@ function getMainXML($contest,$timeo=5,$upd=false) {
   //		LOGError("ok=" . $ok);
   if(substr($ok,strlen($ok)-strlen('TRANSFER OK'),strlen('TRANSFER OK')) == 'TRANSFER OK') {
     $logstr .=  "Generating local data for site [$localsite] at time [$updatetime]\n";
-    $s = generateSiteXML($contest, $localsite, $updatetime-30);
+    $data = generateSiteXML($contest, $localsite, $updatetime-30);
     // $logstr .= $s;
-    $data = encryptData($s, myhash(trim($sitedata[2])));
+    $gc = globalconf();
+    if(!isset($gc['doenc']) || $gc['doenc'])
+      $data = encryptData($data, myhash(trim($sitedata[2])));
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
 				       ));
