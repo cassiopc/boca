@@ -315,14 +315,22 @@ function DBDeleteUser($contest, $site, $user) {
 	DBExec($c, "begin work");
 	DBExec($c, "lock table usertable");
 	$sql = "select * from usertable where usernumber=$user and usersitenumber=$site and " .
-               "contestnumber=$contest";
+               "contestnumber=$contest for update";
 	$a = DBGetRow ($sql, 0);
 	if ($a != null) {
-		$sql = "delete from usertable where usernumber=$user and usersitenumber=$site and " .
+		$sql = "update usertable set userenabled='f', userlastlogin=NULL, usersessionextra='', usersession='', updatetime=".time(). " where usernumber=$user and usersitenumber=$site and " .
         	       "contestnumber=$contest";
+		//		$sql = "delete from usertable where usernumber=$user and usersitenumber=$site and " .
+		//     "contestnumber=$contest";
 		DBExec ($c, $sql);
+		$r = DBExec($c,"select runnumber as number, runsitenumber as site from runtable where contestnumber=$contest and usernumber=$user and runsitenumber=$site for update");
+		$n = DBnlines($r);
+		for ($i=0;$i<$n;$i++) {
+		  $a = DBRow($r,$i);
+		  DBRunDelete($a["number"],$a["site"],$contestnumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"]);
+		}
 		DBExec($c, "commit work");
-		LOGLevel("User $user (site=$site,contest=$contest) removed.", 1);
+		LOGLevel("User $user (site=$site,contest=$contest) marked as inactive.", 1);
 		return true;
 	} else {
 		DBExec($c, "rollback work");
