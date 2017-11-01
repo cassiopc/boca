@@ -246,7 +246,7 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 }
 
 
-function getMainXML($contest,$timeo=20,$upd=false) {
+function getMainXML($contest,$timeo=30,$upd=false) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   $logstr = '';  
@@ -354,7 +354,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
     $data = generateSiteXML($contest, $localsite, $updatetime-30, $localsite);
     $logstr .= $data[1];
     // $logstr .= $s;
-    $data = encryptData($data[0], myhash(trim($sitedata[2])));
+    $data = encryptData($data[0], myhash(trim($sitedata[2])),false);
     //    $logstr .= "AB: " . now() . "\n"
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
@@ -444,7 +444,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=-1) 
   //	print_r($values);
   $conn = DBConnect();
   if ($conn==null) return array(false, $logstr);
-  DBExec($conn,"begin work","importFromXML(begin)");
+  //DBExec($conn,"begin work","importFromXML(begin)");
   //	DBExec($conn,"lock","importFromXML(lock)");
   $r = DBExec($conn, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
@@ -663,23 +663,46 @@ function genSQLs($contest, $site, $updatetime, $mainsite=1) {
   $sql['contesttable']="select contestnumber, contestname, conteststartdate, contestduration, contestlastmileanswer," .
     "contestlastmilescore, contestpenalty, contestmaxfilesize, contestmainsite, contestkeys " .
     "from contesttable where contestnumber=$contest"; // and updatetime >= $updatetime";
-  $sql['sitetable']="select * from sitetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
-  $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
-  $sql['langtable']="select * from langtable where contestnumber=$contest and updatetime >= $updatetime";
-  $sql['problemtable']="select " .
-    "contestnumber, " .
-    "problemnumber, " .
-    "problemname, " .
-    "problemfullname, " .
-    "problembasefilename, " .
-    "probleminputfilename, " .
-    "probleminputfile, " .
-    "probleminputfilehash, " .
-    "fake, " .
-    //"problemcolorname, " .
-    //"problemcolor, " .
-    "updatetime" .
-    " from problemtable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
+  $sql['sitetable']="select " .
+    "contestnumber, " . 
+    "sitenumber, " .
+    "siteip, " . 
+    "sitename, " . 
+    "siteactive, " . 
+    "sitepermitlogins, " . 
+    "sitelastmileanswer, " . 
+    "sitelastmilescore, " . 
+    "siteduration, " . 
+    "siteautoend, " .
+    "sitejudging, " . 
+    "sitetasking, " . 
+    "siteglobalscore, " . 
+    "sitescorelevel, " . 
+    "sitemaxtask, " . 
+    "sitechiefname, " . 
+    "siteautojudge, " . 
+    "sitemaxruntime, " .
+    "sitemaxjudgewaittime, " . 
+    "updatetime " .
+    " from sitetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
+  if($site != $mainsite) {
+    $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
+    $sql['langtable']="select * from langtable where contestnumber=$contest and updatetime >= $updatetime";
+    $sql['problemtable']="select " .
+      "contestnumber, " .
+      "problemnumber, " .
+      "problemname, " .
+      "problemfullname, " .
+      "problembasefilename, " .
+      "probleminputfilename, " .
+      "probleminputfile, " .
+      "probleminputfilehash, " .
+      "fake, " .
+      //"problemcolorname, " .
+      //"problemcolor, " .
+      "updatetime" .
+      " from problemtable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
+  }
   $sql['sitetimetable']="select * from sitetimetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   $sql['usertable']="select * from usertable where contestnumber=$contest and (usersitenumber=$site or usersitenumber=$mainsite) and updatetime >= $updatetime";
   $sql['clartable']="select * from clartable where contestnumber=$contest and clarsitenumber=$site and updatetime >= $updatetime";
@@ -700,14 +723,15 @@ function generateSiteXML($contest,$site,$updatetime, $mainsite=1) {
     if (!is_array($meta)) return null;
     $r = DBExec ($c, $vv, "generateSiteXML($kk)");
     $n = DBnLines ($r);
-    $logstr .= "$kk has $n records to update\n";
+    if($n > 0)
+      $logstr .= "$kk has $n records to update\n";
     for($i=0; $i<$n; $i++) {
       $atual = DBRow($r,$i);
       $str .= "<" . $kk . ">\n";
       foreach($atual as $key => $val) {
 	if($meta[$key]['type'] == 'oid' && $val != '') {
 	  if (($lo = DB_lo_open ($c, $val, "r")) !== false) {
-	    $str .= "  <" . $key . ">" . base64_encode("base64:" . base64_encode(DB_lo_read($contest,$lo))) . "</" . $key . ">\n";
+	    $str .= "  <" . $key . ">" . base64_encode("base64:" . base64_encode(DB_lo_read($contest,$lo,-1,$c))) . "</" . $key . ">\n";
 	    DB_lo_close($lo);
 	  } else {
 	    LOGError("large object ($key,$val) not readable");

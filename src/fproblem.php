@@ -457,6 +457,8 @@ function DBGetProblems($contest,$showanyway=false) {
 
   if ($b["currenttime"] < 0 && !$showanyway)
     return array();
+  if(($c = DBContestInfo($contest)) == null) return array();
+  if (time() < $c['conteststartdate'] && !$showanyway) return array();
 
   $c = DBConnect();
   $sql = "select distinct p.problemnumber as number, p.problemname as problem, " .
