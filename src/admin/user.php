@@ -256,9 +256,11 @@ for ($i=0; $i < count($usr); $i++) {
 	 ($usr[$i]["usernumber"] != $_SESSION["usertable"]["usernumber"] || 
 	  $usr[$i]["usersitenumber"] != $_SESSION["usertable"]["usersitenumber"]))
 	  echo "  <td nowrap><a href=\"user.php?site=" . $usr[$i]["usersitenumber"] . "&user=" .
-		  $usr[$i]["usernumber"] . "\">" . $usr[$i]["usernumber"] . "</a></td>\n";
+		  $usr[$i]["usernumber"] . "\">" . $usr[$i]["usernumber"] . "</a>";
   else
-	  echo "  <td nowrap>" . $usr[$i]["usernumber"] . "</td>\n";
+	  echo "  <td nowrap>" . $usr[$i]["usernumber"];
+  if($usr[$i]['userenabled'] != 't' && $usr[$i]['userlastlogin'] < 1) echo "(inactive)";
+  echo "</td>\n";
 
   echo "  <td nowrap>" . $usr[$i]["usersitenumber"] . "</td>\n";
   echo "  <td nowrap>" . $usr[$i]["username"] . "&nbsp;</td>\n";
