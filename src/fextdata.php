@@ -144,7 +144,7 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 	      @rename($file, $privatedir . $ds . 'remotescores' . $ds . $bn);
 	  }
 	  $zip->close();
-	  LOGError("scoretransfer: download OK");
+	  LOGInfo("scoretransfer: download OK");
 	  $logstr .= "download OK from $siteurl\n";
 	} else {
 	  $logstr .= "reading failed from $siteurl (zip open error)\n";
@@ -193,7 +193,7 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 	$logstr .= "timeout at full upload to $siteurl\n";
       } else {			  
 	if(strpos($s,'SCORE UPLOADED OK') !== false) {
-	  LOGError("scoretransfer: upload OK");
+	  LOGInfo("scoretransfer: upload OK");
 	  $logstr .= "upload of score to $siteurl OK\n";
 	} else {
 	  LOGError("scoretransfer: upload failed (" . $s . ")");
@@ -232,7 +232,7 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 	continue;
       } else {
 	if(strpos($s,'SCORE UPLOADED OK') !== false) {
-	  LOGError("scoretransfer: upload full OK");
+	  LOGInfo("scoretransfer: upload full OK");
 	  $logstr .= "upload of full score to $siteurl OK\n";
 	}
 	else {
