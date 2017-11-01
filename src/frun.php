@@ -289,18 +289,21 @@ function DBRunGiveUp($number,$site,$contest,$usernumber,$usersite) {
 			 "newstatus=$newstatus", 3);
 	return true;
 }
-function DBRunDelete($number,$site,$contest,$user,$usersite) {
-	$c = DBConnect();
-	DBExec($c, "begin work", "DBRunDelete(transaction)");
+function DBRunDelete($number,$site,$contest,$user,$usersite,$cc=null) {
+  if($cc == null) {
+    $c = DBConnect();
+    DBExec($c, "begin work", "DBRunDelete(transaction)");
+  } else $c = $cc;
 	$sql = "select * from runtable as r where r.contestnumber=$contest and " .
 		"r.runsitenumber=$site and r.runnumber=$number";
 	$r = DBExec ($c, $sql . " for update", "DBRunDelete(get run for update)");
 	$n = DBnlines($r);
 	if ($n != 1) {
-		DBExec($c, "rollback work", "DBRunDelete(rollback)");
-		LogLevel("Unable to delete a run. ".
-				 "(run=$number, site=$site, contest=$contest)",1);
-		return false;
+	  if($cc == null)
+	    DBExec($c, "rollback work", "DBRunDelete(rollback)");
+	  LogLevel("Unable to delete a run. ".
+		   "(run=$number, site=$site, contest=$contest)",1);
+	  return false;
 	}
 	$temp = DBRow($r, 0);
 
@@ -320,8 +323,8 @@ function DBRunDelete($number,$site,$contest,$user,$usersite) {
 											   ": " . $p[0]["fullname"]), "", "", "t", $p[0]["color"], $p[0]["colorname"], $c);
 		}
 	}
-
-	DBExec($c, "commit work", "DBRunDelete(commit)");
+	if($cc == null)
+	  DBExec($c, "commit work", "DBRunDelete(commit)");
 	LOGLevel("Run deleted (run=$number, site=$site, contest=$contest, user=$user(site=$usersite)).", 3);
 	return true;
 }
