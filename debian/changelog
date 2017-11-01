@@ -1,3 +1,10 @@
+boca (1:1.5.13-1) xenial; urgency=medium
+
+  * Soft delete of users
+  * Bug Fixes
+
+ -- Bruno Ribas <brunoribas@utfpr.edu.br>  Wed, 01 Nov 2017 09:46:06 -0200
+
 boca (1:1.5.13) xenial; urgency=medium
 
   * Bump to new version
