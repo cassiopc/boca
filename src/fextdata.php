@@ -444,7 +444,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=-1) 
   //	print_r($values);
   $conn = DBConnect();
   if ($conn==null) return array(false, $logstr);
-  //DBExec($conn,"begin work","importFromXML(begin)");
+  DBExec($conn,"begin work","importFromXML(begin)");
   //	DBExec($conn,"lock","importFromXML(lock)");
   $r = DBExec($conn, "select * from contesttable where contestnumber=$contest");
   if (DBnLines($r)==0) {
@@ -455,8 +455,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=-1) 
   }
   $ct = DBRow($r,0);
 
-  DBClose($conn); 
-  $conn=null;
+  //  DBClose($conn); 
+  //$conn=null;
   $firsttimetime=true;
   $tables = array('contesttable','answertable','langtable','problemtable','sitetable','sitetimetable','usertable','clartable','runtable','tasktable');
 

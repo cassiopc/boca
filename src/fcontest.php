@@ -327,7 +327,7 @@ function DBDeleteUser($contest, $site, $user) {
 		$n = DBnlines($r);
 		for ($i=0;$i<$n;$i++) {
 		  $a = DBRow($r,$i);
-		  DBRunDelete($a["number"],$a["site"],$contestnumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"]);
+		  DBRunDelete($a["number"],$a["site"],$contest,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"]);
 		}
 		DBExec($c, "commit work");
 		LOGLevel("User $user (site=$site,contest=$contest) marked as inactive.", 1);
