@@ -316,7 +316,7 @@ function DBDeleteUser($contest, $site, $user) {
 	DBExec($c, "lock table usertable");
 	$sql = "select * from usertable where usernumber=$user and usersitenumber=$site and " .
                "contestnumber=$contest for update";
-	$a = DBGetRow ($sql, 0);
+	$a = DBGetRow ($sql, 0, $c);
 	if ($a != null) {
 		$sql = "update usertable set userenabled='f', userlastlogin=NULL, usersessionextra='', usersession='', updatetime=".time(). " where usernumber=$user and usersitenumber=$site and " .
         	       "contestnumber=$contest";
@@ -1304,9 +1304,10 @@ function DBNewUser($param, $c=null) {
 	$r = DBExec($c, "select * from sitetable where sitenumber=$site and contestnumber=$contest", "DBNewUser(get site)");
 	$n = DBnlines ($r);
 	if($n == 0) {
-		DBExec ($c, "rollback work","DBNewUser(no-site)");
-		MSGError("DBNewUser param error: site $site does not exist");
-		return false;
+	  if($cw)
+	    DBExec ($c, "rollback work","DBNewUser(no-site)");
+	  MSGError("DBNewUser param error: site $site does not exist");
+	  return false;
 	}
 	if($pass != myhash("") && $type != "admin" && $changepass != "t") $pass='!'.$pass;
 	$r = DBExec($c, "select * from usertable where username='$username' and usernumber!=$user and ".
@@ -1320,11 +1321,12 @@ function DBNewUser($param, $c=null) {
 		if ($a == null) {
 			$ret=2;
 		  $sql = "select * from sitetable where sitenumber=$site and contestnumber=$contest";
-		  $aa = DBGetRow ($sql, 0);
+		  $aa = DBGetRow ($sql, 0, $c);
 		   if($aa==null) {
+		     if($cw)
 		   	DBExec ($c, "rollback work");
-			MSGError("Site $site does not exist");
-			return false;
+		     MSGError("Site $site does not exist");
+		     return false;
 		   }
 			$sql = "insert into usertable (contestnumber, usersitenumber, usernumber, username, usericpcid, userfullname, " .
 				"userdesc, usertype, userenabled, usermultilogin, userpassword, userpermitip) values " .
@@ -1356,11 +1358,13 @@ function DBNewUser($param, $c=null) {
 			}
 		}
 	} else {
-		DBExec ($c, "rollback work");
-		LOGLevel ("Update problem for user $user (site=$site,contest=$contest) (maybe username already in use).",1);
-		MSGError ("Update problem for user $user, site $site (maybe username already in use).");
-		return false;
+	  if($cw)
+	    DBExec ($c, "rollback work");
+	  LOGLevel ("Update problem for user $user (site=$site,contest=$contest) (maybe username already in use).",1);
+	  MSGError ("Update problem for user $user, site $site (maybe username already in use).");
+	  return false;
 	}
+	if($cw) DBExec($c, "commit work");
 	return $ret;
 }
 
