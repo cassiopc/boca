@@ -685,22 +685,24 @@ function genSQLs($contest, $site, $updatetime, $mainsite=1) {
     "sitemaxjudgewaittime, " . 
     "updatetime " .
     " from sitetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
-  $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
-  $sql['langtable']="select * from langtable where contestnumber=$contest and updatetime >= $updatetime";
-  $sql['problemtable']="select " .
-    "contestnumber, " .
-    "problemnumber, " .
-    "problemname, " .
-    "problemfullname, " .
-    "problembasefilename, " .
-    "probleminputfilename, " .
-    "probleminputfile, " .
-    "probleminputfilehash, " .
-    "fake, " .
-    //"problemcolorname, " .
-    //"problemcolor, " .
-    "updatetime" .
-    " from problemtable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
+  if($site != $mainsite) {
+    $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
+    $sql['langtable']="select * from langtable where contestnumber=$contest and updatetime >= $updatetime";
+    $sql['problemtable']="select " .
+      "contestnumber, " .
+      "problemnumber, " .
+      "problemname, " .
+      "problemfullname, " .
+      "problembasefilename, " .
+      "probleminputfilename, " .
+      "probleminputfile, " .
+      "probleminputfilehash, " .
+      "fake, " .
+      //"problemcolorname, " .
+      //"problemcolor, " .
+      "updatetime" .
+      " from problemtable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
+  }
   $sql['sitetimetable']="select * from sitetimetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   $sql['usertable']="select * from usertable where contestnumber=$contest and (usersitenumber=$site or usersitenumber=$mainsite) and updatetime >= $updatetime";
   $sql['clartable']="select * from clartable where contestnumber=$contest and clarsitenumber=$site and updatetime >= $updatetime";
