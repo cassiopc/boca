@@ -26,7 +26,7 @@ function makeurlhttps($siteurl) {
   return $siteurl;
 }
 
-function scoretransfer($putname, $localsite, $timeo=20) {
+function scoretransfer($putname, $localsite, $timeo=30) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   $logstr='';
@@ -246,7 +246,7 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 }
 
 
-function getMainXML($contest,$timeo=20,$upd=false) {
+function getMainXML($contest,$timeo=30,$upd=false) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   $logstr = '';  
@@ -377,7 +377,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
     $opts['ssl'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
     $opts['https'] = array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true);
     $context = stream_context_create($opts);
-    $logstr .=  "Transferring data to main server\n";
+    $logstr .=  "Transfering data to main server\n";
     try {
       $s = @file_get_contents($siteurl . "site/getsite.php", 0, $context);
     } catch(Exception $e) {
@@ -385,7 +385,7 @@ function getMainXML($contest,$timeo=20,$upd=false) {
     }
     //    $logstr .= "ABB: " . now() . "\n"
     if($s===false) {
-      $logstr .=  "timeout at transferring\n";
+      $logstr .=  "timeout at transfering\n";
       LOGError("getMainXML: timeout at transfer for $siteurl");
       return $logstr;
     }

@@ -913,8 +913,8 @@ function DBNewRun($param,$c=null) {
 				   "autostdout=$oid1, autostderr=$oid2 " .
 				   "where runnumber=$runnumber and contestnumber=$contest and runsitenumber=$site", "DBNewRun(update run)");
 
-			if(is_numeric($oldoid1)) DB_lo_unlink($c,$oldoid1);
-			if(is_numeric($oldoid2)) DB_lo_unlink($c,$oldoid2);
+			if(isset($oldoid1) && is_numeric($oldoid1)) DB_lo_unlink($c,$oldoid1);
+			if(isset($oldoid2) && is_numeric($oldoid2)) DB_lo_unlink($c,$oldoid2);
 		}
 		if($cw) DBExec($c, "commit work", "DBNewRun(commit-update)");
 	}
