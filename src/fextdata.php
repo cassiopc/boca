@@ -26,7 +26,7 @@ function makeurlhttps($siteurl) {
   return $siteurl;
 }
 
-function scoretransfer($putname, $localsite, $timeo=20) {
+function scoretransfer($putname, $localsite, $timeo=60) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   $logstr='';
@@ -246,7 +246,7 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 }
 
 
-function getMainXML($contest,$timeo=30,$upd=false) {
+function getMainXML($contest,$timeo=60,$upd=false) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   $logstr = '';  
