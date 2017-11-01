@@ -246,7 +246,7 @@ function scoretransfer($putname, $localsite, $timeo=20) {
 }
 
 
-function getMainXML($contest,$timeo=20,$upd=false) {
+function getMainXML($contest,$timeo=30,$upd=false) {
   $ds = DIRECTORY_SEPARATOR;
   if($ds=="") $ds = "/";
   $logstr = '';  
@@ -663,7 +663,28 @@ function genSQLs($contest, $site, $updatetime, $mainsite=1) {
   $sql['contesttable']="select contestnumber, contestname, conteststartdate, contestduration, contestlastmileanswer," .
     "contestlastmilescore, contestpenalty, contestmaxfilesize, contestmainsite, contestkeys " .
     "from contesttable where contestnumber=$contest"; // and updatetime >= $updatetime";
-  $sql['sitetable']="select * from sitetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
+  $sql['sitetable']="select " .
+    "contestnumber, " . 
+    "sitenumber, " .
+    "siteip, " . 
+    "sitename, " . 
+    "siteactive, " . 
+    "sitepermitlogins, " . 
+    "sitelastmileanswer, " . 
+    "sitelastmilescore, " . 
+    "siteduration, " . 
+    "siteautoend, " .
+    "sitejudging, " . 
+    "sitetasking, " . 
+    "siteglobalscore, " . 
+    "sitescorelevel, " . 
+    "sitemaxtask, " . 
+    "sitechiefname, " . 
+    "siteautojudge, " . 
+    "sitemaxruntime, " .
+    "sitemaxjudgewaittime, " . 
+    "updatetime " .
+    " from sitetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   $sql['answertable']="select * from answertable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
   $sql['langtable']="select * from langtable where contestnumber=$contest and updatetime >= $updatetime";
   $sql['problemtable']="select " .
