@@ -33,28 +33,28 @@ function DB_lo_open($conn, $file, $mode) {
 	else
 		return pg_lo_open ($conn, $file, $mode);
 }
-function DB_lo_read_tobrowser($contest,$id) {
-	$str = DB_lo_read($contest,$id);
-	echo $str;
-	return true;
+function DB_lo_read_tobrowser($contest,$id,$c=null) {
+  $str = DB_lo_read($contest,$id,-1,$c);
+  echo $str;
+  return true;
 }
 
-function DB_lo_read($contest,$id,$s=-1) {
+function DB_lo_read($contest,$id,$s=-1,$c=null) {
 	if (strcmp(phpversion(),'4.2.0')<0) {
 		if($s<0) {
 			$str='';
-			while (($buf = pg_loread ($id, 100000)) != false) $str .= $buf;
+			while (($buf = pg_loread ($id, 1000000)) != false) $str .= $buf;
 		} else
 			$str = pg_loread ($id, $s);
 	}
 	else {
 		if($s<0) {
 			$str='';
-			while (($buf = pg_lo_read ($id, 100000)) != false) $str .= $buf;
+			while (($buf = pg_lo_read ($id, 1000000)) != false) $str .= $buf;
 		} else
 			$str = pg_lo_read ($id, $s);
 	}
-	if(($str2 = DB_unlock($contest,$str))===false) return $str;
+	if(($str2 = DB_unlock($contest,$str,$c))===false) return $str;
 	return $str2;
 }
 function DB_unlock($contest,$str,$c=null) {
@@ -296,7 +296,7 @@ function DBcrc($contest,$id, $c=null) {
         // just to return a unique string that will not match any other...
 		return "no-HASH-" . rand() . "-" . rand() . "-" . time();
 	}
-	$str = DB_lo_read($contest,$f);
+	$str = DB_lo_read($contest,$f,-1,$c);
 	DB_lo_close($f);
 	if($docommit)
 		DBExec($c, "commit work", "DBcrc(commit)");

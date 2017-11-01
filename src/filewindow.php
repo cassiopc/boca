@@ -79,7 +79,7 @@ if ($_GET["oid"]>=0) {
     echo $msg ."\n\n\n";
   }
 //  echo "<pre>\n";
-  if (DB_lo_read_tobrowser ($_SESSION["usertable"]["contestnumber"],$lo) === false) {
+  if (DB_lo_read_tobrowser ($_SESSION["usertable"]["contestnumber"],$lo,$c) === false) {
         header ("Content-type: text/html");
 	echo "<html><head><title>View Page</title>";
 	DBExec($c, "rollback work");

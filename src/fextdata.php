@@ -730,7 +730,7 @@ function generateSiteXML($contest,$site,$updatetime, $mainsite=1) {
       foreach($atual as $key => $val) {
 	if($meta[$key]['type'] == 'oid' && $val != '') {
 	  if (($lo = DB_lo_open ($c, $val, "r")) !== false) {
-	    $str .= "  <" . $key . ">" . base64_encode("base64:" . base64_encode(DB_lo_read($contest,$lo))) . "</" . $key . ">\n";
+	    $str .= "  <" . $key . ">" . base64_encode("base64:" . base64_encode(DB_lo_read($contest,$lo,-1,$c))) . "</" . $key . ">\n";
 	    DB_lo_close($lo);
 	  } else {
 	    LOGError("large object ($key,$val) not readable");

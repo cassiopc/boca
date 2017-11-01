@@ -74,7 +74,7 @@ if ($_GET["oid"]>=0) {
 	header ("Content-Disposition: attachment; filename=" . basename($fname));
 	ob_end_flush();
 
-	if (DB_lo_read_tobrowser ($_SESSION["usertable"]["contestnumber"],$lo) === false) {
+	if (DB_lo_read_tobrowser ($_SESSION["usertable"]["contestnumber"],$lo,$c) === false) {
 		echo "<html><head><title>Download Page</title>";
 		DBExec($c, "rollback work");
 		LOGError ("Unable to download file (" . basename($fname) . ")");
