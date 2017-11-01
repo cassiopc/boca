@@ -354,7 +354,7 @@ function getMainXML($contest,$timeo=30,$upd=false) {
     $data = generateSiteXML($contest, $localsite, $updatetime-30, $localsite);
     $logstr .= $data[1];
     // $logstr .= $s;
-    $data = encryptData($data[0], myhash(trim($sitedata[2])));
+    $data = encryptData($data[0], myhash(trim($sitedata[2])),false);
     //    $logstr .= "AB: " . now() . "\n"
     
     $data_url = http_build_query(array('xml' => $data, 'updatetime' => ($updatetime-30)
