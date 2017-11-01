@@ -693,12 +693,12 @@ function DBUpdateSite ($param,$c=null) {
 	$ret=1;
 	if($updatetime > $a['updatetime']) {
 		$ret=2;
-		if($sitenextrun==0)
-			DBSiteDeleteAllRuns($contestnumber,$sitenumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"],$c);
-		if($sitenextclar==0)
-			DBSiteDeleteAllClars($contestnumber,$sitenumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"],$c);
-		if($sitenexttask==0)
-			DBSiteDeleteAllTasks($contestnumber,$sitenumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"],$c);
+		//		if($sitenextrun==0)
+		//	DBSiteDeleteAllRuns($contestnumber,$sitenumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"],$c);
+		//if($sitenextclar==0)
+		//	DBSiteDeleteAllClars($contestnumber,$sitenumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"],$c);
+		//if($sitenexttask==0)
+		//	DBSiteDeleteAllTasks($contestnumber,$sitenumber,$_SESSION["usertable"]["usernumber"],$_SESSION["usertable"]["usersitenumber"],$c);
 
 		$sql = "update sitetable set sitename='$sitename', ";
 		if ($sitepermitlogins!="") $sql .= "sitepermitlogins='$sitepermitlogins', ";
