@@ -723,7 +723,8 @@ function generateSiteXML($contest,$site,$updatetime, $mainsite=1) {
     if (!is_array($meta)) return null;
     $r = DBExec ($c, $vv, "generateSiteXML($kk)");
     $n = DBnLines ($r);
-    $logstr .= "$kk has $n records to update\n";
+    if($n > 0)
+      $logstr .= "$kk has $n records to update\n";
     for($i=0; $i<$n; $i++) {
       $atual = DBRow($r,$i);
       $str .= "<" . $kk . ">\n";
