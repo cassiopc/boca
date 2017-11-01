@@ -323,7 +323,7 @@ function DBDeleteUser($contest, $site, $user) {
 		//		$sql = "delete from usertable where usernumber=$user and usersitenumber=$site and " .
 		//     "contestnumber=$contest";
 		DBExec ($c, $sql);
-		$r = DBExec($c,"select runnumber as number, runsitenumber as site from runtable where contestnumber=$contestnumber and usernumber=$user and runsitenumber=$site for update");
+		$r = DBExec($c,"select runnumber as number, runsitenumber as site from runtable where contestnumber=$contest and usernumber=$user and runsitenumber=$site for update");
 		$n = DBnlines($r);
 		for ($i=0;$i<$n;$i++) {
 		  $a = DBRow($r,$i);
