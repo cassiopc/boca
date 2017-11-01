@@ -245,9 +245,10 @@ function DBGetRow ($sql,$i,$c=null,$txt='') {
 	if (DBnlines($r) < $i+1) return null;
 	$a = DBRow ($r, $i);
 	if (!$a) {
-		LOGError("Unable to get row $i from a query ($txt). SQL=(" . $sql . ")");
-		MSGError("Unable to get row from query ($txt).");
-		exit;
+	  DBClose($c);
+	  LOGError("Unable to get row $i from a query ($txt). SQL=(" . $sql . ")");
+	  MSGError("Unable to get row from query ($txt).");
+	  exit;
 	}
 	return $a;
 }
