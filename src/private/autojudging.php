@@ -215,7 +215,7 @@ while(42) {
 	cleardir($dir . $ds . "problemdatalocal");
 	continue;
       }
-    }
+    } else echo "Problem info obtained from local package file\n";
     if(isset($info['descfile']))
       $descfile=trim(sanitizeFilename($info['descfile']));
     $basename=trim(sanitizeFilename($info['basename']));
@@ -236,8 +236,10 @@ while(42) {
       continue;
     }
     $pd = 'problemdata';
-    if(is_dir($dir . $ds . "problemdatalocal" . $ds . "limits"))
+    if(is_dir($dir . $ds . "problemdatalocal" . $ds . "limits")) {
+      echo "Obtaining limits from local package file\n";
       $pd = 'problemdatalocal';
+    }
     chdir($dir . $ds . $pd . $ds . "limits");
     $limits[$basename]=array();
     $cont=false;
@@ -259,8 +261,10 @@ while(42) {
     }
     if(!$cont) {
       $pd = 'problemdata';
-      if(is_dir($dir . $ds . "problemdatalocal" . $ds . "tests"))
+      if(is_dir($dir . $ds . "problemdatalocal" . $ds . "tests")) {
+	echo "Running test scripts from local package file\n";
 	$pd = 'problemdatalocal';
+      }
       foreach(glob($dir . $ds . $pd . $ds . "tests" .$ds . '*') as $file) {
 	chdir($dir . $ds . $pd . $ds . "tests");
 	chmod($file,0700);
@@ -283,16 +287,18 @@ while(42) {
 	}
       }
     }
-    if(is_dir($dir . $ds . "problemdatalocal" . $ds . "output"))
+    if(is_dir($dir . $ds . "problemdatalocal" . $ds . "output")) {
+      echo "Using scripts and inputs/outputs from local package file\n";
       $s = file_get_contents($flocal);
-    else
+    } else {
       $s = file_get_contents($dir . $ds . $run["inputname"]);
-
+    }
     cleardir($dir . $ds . "problemdata");
     cleardir($dir . $ds . "problemdatalocal");
-    if($cont)
+    if($cont) {
+      echo "Aborting judging because of issues in the package\n";
       continue;
-
+    }
     file_put_contents($cache . $ds . $run["inputoid"] . "." . $run["inputname"], encryptData($s,$key));
   }
 
