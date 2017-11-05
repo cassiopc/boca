@@ -283,9 +283,10 @@ while(42) {
 	}
       }
     }
-    if(is_dir($dir . $ds . "problemdatalocal" . $ds . "output"))
+    if(is_dir($dir . $ds . "problemdatalocal" . $ds . "output")) {
       $s = file_get_contents($flocal);
-    else
+      @copy($flocal, $dir . $ds . $run["inputname"]);
+    } else
       $s = file_get_contents($dir . $ds . $run["inputname"]);
 
     cleardir($dir . $ds . "problemdata");
