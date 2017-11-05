@@ -289,11 +289,9 @@ while(42) {
     }
     if(is_dir($dir . $ds . "problemdatalocal" . $ds . "output")) {
       echo "Using scripts and inputs/outputs from local package file\n";
-      $s = file_get_contents($flocal);
       @copy($flocal, $dir . $ds . $run["inputname"]);
-    } else {
-      $s = file_get_contents($dir . $ds . $run["inputname"]);
     }
+    $s = file_get_contents($dir . $ds . $run["inputname"]);
     cleardir($dir . $ds . "problemdata");
     cleardir($dir . $ds . "problemdatalocal");
     if($cont) {
