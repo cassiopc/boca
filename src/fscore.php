@@ -265,7 +265,7 @@ function DBRecentNews($contest, $site, $verifylastmile, $minutes=3) {
 	      "u.usernumber as usernumber, p.problemnumber as problemnumber, p.problemname, (r.rundatediffans>$ta) as fut, min(r.rundatediff) as time from " .
 	      "runtable as r, answertable as a, problemtable as p, usertable as u where r.runanswer=a.answernumber and " .
 	      "p.contestnumber=$contest and a.contestnumber=$contest and r.usernumber = u.usernumber and u.usertype='team' and " .
-	      "p.problemnumber=r.runproblem and r.contestnumber=$contest and r.runsitenumber=$site and u.userenabled='t' and (not r.runstatus ~ 'deleted')" .
+	      "p.problemnumber=r.runproblem and r.contestnumber=$contest and r.runsitenumber=$site and u.userenabled='t' and (not r.runstatus ~ 'deleted') and " .
 	      "r.rundatediff>=$taa and r.rundatediff<=$tf and r.rundatediff<=$ta and u.contestnumber=$contest and u.usersitenumber=$site and " . 
 	      "((a.yes='t' and r.rundatediffans<=$ta) or (r.rundatediffans>$ta)) " .
 	      "group by a.yes,p.problemcolor,p.problemcolorname,p.problemname,u.userfullname,u.usernumber,p.problemnumber,fut order by time", "DBRecentNews(get runs)");
