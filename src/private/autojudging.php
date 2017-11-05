@@ -288,8 +288,6 @@ while(42) {
       }
     }
     if(is_dir($dir . $ds . "problemdatalocal" . $ds . "output")) {
-      $s = file_get_contents($flocal);
-    } else
       echo "Using scripts and inputs/outputs from local package file\n";
       $s = file_get_contents($flocal);
       @copy($flocal, $dir . $ds . $run["inputname"]);
