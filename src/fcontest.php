@@ -1309,7 +1309,7 @@ function DBNewUser($param, $c=null) {
 	  MSGError("DBNewUser param error: site $site does not exist");
 	  return false;
 	}
-	if($pass != myhash("") && $type != "admin" && $changepass != "t") $pass='!'.$pass;
+	if($pass != myhash("") && $type != "admin" && $changepass != "t" && substr($pass,0,1) != "!") $pass='!'.$pass;
 	$r = DBExec($c, "select * from usertable where username='$username' and usernumber!=$user and ".
 				"usersitenumber=$site and contestnumber=$contest", "DBNewUser(get user)");
 	$n = DBnlines ($r);

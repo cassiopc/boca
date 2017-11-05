@@ -702,10 +702,11 @@ function genSQLs($contest, $site, $updatetime, $mainsite=1) {
       //"problemcolor, " .
       "updatetime" .
       " from problemtable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
-  }
+    $sql['usertable']="select * from usertable where contestnumber=$contest and usersitenumber!=$site and updatetime >= $updatetime";
+  } else
+    $sql['usertable']="select * from usertable where contestnumber=$contest and usersitenumber=$site and updatetime >= $updatetime";
   $sql['sitetimetable']="select * from sitetimetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
-  $sql['usertable']="select * from usertable where contestnumber=$contest and (usersitenumber=$site or usersitenumber=$mainsite) and updatetime >= $updatetime";
-  $sql['clartable']="select * from clartable where contestnumber=$contest and clarsitenumber=$site and updatetime >= $updatetime";
+  $sql['clartable']="select * from clartable where contestnumber=$contest and updatetime >= $updatetime";
   $sql['runtable']="select * from runtable where contestnumber=$contest and runsitenumber=$site and updatetime >= $updatetime";
   $sql['tasktable']="select * from tasktable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   return $sql;
