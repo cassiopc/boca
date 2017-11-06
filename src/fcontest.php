@@ -502,11 +502,11 @@ function DBSiteDeleteAllClars ($contest, $site, $user, $usersite, $c=null) {
 	DBExec($c, "lock table sitetable");
 	DBExec($c, "lock table clartable");
 	DBExec($c, "select * from sitetable where contestnumber=$contest and sitenumber=$site for update");
-	$r = DBExec($c, "select * from clartable as c where c.contestnumber=$contest and " .
-				"c.clarsitenumber=$site for update");
-	DBExec($c, "delete from clartable where contestnumber=$contest and clarsitenumber=$site");
+	$r = DBExec($c, "select * from clartable as c where c.contestnumber=$contest " .
+				" and (c.clarsitenumber=$site or $site < 0) for update");
+	DBExec($c, "delete from clartable where contestnumber=$contest and (clarsitenumber=$site or $site < 0)");
 	DBExec($c, "update sitetable set sitenextclar=0, updatetime=".time()." " .
-		   "where contestnumber=$contest and sitenumber=$site");
+		   "where contestnumber=$contest and (sitenumber=$site or $site < 0)");
 	if($cw) {
         DBExec($c, "commit work");
 		LOGLevel("All Clarifications deleted (site=$site, contest=$contest, user=$user(site=$usersite)).", 3);
@@ -524,10 +524,10 @@ function DBSiteDeleteAllTasks ($contest, $site, $user, $usersite,$c=null) {
 	DBExec($c, "lock table tasktable");
 	DBExec($c, "select * from sitetable where contestnumber=$contest and sitenumber=$site for update");
 	$r = DBExec($c, "select * from tasktable as t where t.contestnumber=$contest and " .
-				"t.sitenumber=$site for update");
-	DBExec($c, "delete from tasktable where contestnumber=$contest and sitenumber=$site");
+				"(t.sitenumber=$site or $site < 0) for update");
+	DBExec($c, "delete from tasktable where contestnumber=$contest and (sitenumber=$site or $site < 0)");
 	DBExec($c, "update sitetable set sitenexttask=0, updatetime=".time()." " .
-		   "where contestnumber=$contest and sitenumber=$site");
+		   "where contestnumber=$contest and (sitenumber=$site or $site < 0)");
 	if($cw) {
 		DBExec($c, "commit work");
 		LOGLevel("All Tasks deleted (site=$site, contest=$contest, user=$user(site=$usersite)).", 3);
@@ -542,13 +542,13 @@ function DBSiteDeleteAllBkps ($contest, $site, $user, $usersite,$c=null) {
         DBExec($c, "begin work");
 	}
 	DBExec($c, "lock table bkptable");
-	$r = DBExec($c, "select bkpdata from bkptable where contestnumber=$contest and sitenumber=$site and bkpstatus='active'");
+	$r = DBExec($c, "select bkpdata from bkptable where contestnumber=$contest and (sitenumber=$site or $site < 0) and bkpstatus='active'");
 	$n = DBnlines($r);
 	for ($i=0;$i<$n;$i++) {
 		$a = DBRow($r,$i);
 		DB_lo_unlink($c,$a["bkpdata"]);
 	}
-	DBExec($c, "delete from bkptable where contestnumber=$contest and sitenumber=$site");
+	DBExec($c, "delete from bkptable where contestnumber=$contest and (sitenumber=$site or $site < 0)");
 	if($cw) {
 		DBExec($c, "commit work");
 		LOGLevel("All Bkps deleted (site=$site, contest=$contest, user=$user(site=$usersite)).", 3);
@@ -564,13 +564,13 @@ function DBSiteDeleteAllRuns ($contest, $site, $user, $usersite,$c=null) {
 	}
 	DBExec($c, "lock table sitetable");
 	DBExec($c, "lock table runtable");
-	DBExec($c, "select * from sitetable where contestnumber=$contest and sitenumber=$site for update");
+	DBExec($c, "select * from sitetable where contestnumber=$contest and (sitenumber=$site or $site < 0) for update");
 	$sql = "select * from runtable as r where r.contestnumber=$contest and " .
 		"r.runsitenumber=$site";
 	$r = DBExec ($c, $sql . " for update");
-	DBExec($c, "delete from runtable where contestnumber=$contest and runsitenumber=$site");
+	DBExec($c, "delete from runtable where contestnumber=$contest and (runsitenumber=$site or $site < 0)");
 	DBExec($c, "update sitetable set sitenextrun=0, updatetime=".time()." " .
-		   "where contestnumber=$contest and sitenumber=$site");
+		   "where contestnumber=$contest and (sitenumber=$site or $site < 0)");
 	if($cw) {
 		DBExec($c, "commit work");
 		LOGLevel("All Runs deleted (site=$site, contest=$contest, user=$user(site=$usersite)).", 3);

@@ -26,6 +26,37 @@ $localsite=$ct["contestlocalsite"];
 $mainsite=$ct["contestmainsite"];
 if ($localsite == $mainsite) $main=true; else $main=false;
 
+if($main) {
+  if (isset($_POST["SubmitDC"]) && $_POST["SubmitDC"] == "Delete ALL clars") {
+	if ($_POST["confirmation"] == "confirm") {
+		DBSiteDeleteAllClars ($_SESSION["usertable"]["contestnumber"], -1,
+			$_SESSION["usertable"]["usernumber"], $_SESSION["usertable"]["usersitenumber"]);
+	}
+	ForceLoad("contest.php");
+  }
+  if (isset($_POST["SubmitDR"]) && $_POST["SubmitDR"] == "Delete ALL runs") {
+	if ($_POST["confirmation"] == "confirm") {
+		DBSiteDeleteAllRuns ($_SESSION["usertable"]["contestnumber"], -1,
+			$_SESSION["usertable"]["usernumber"], $_SESSION["usertable"]["usersitenumber"]);
+	}
+	ForceLoad("contest.php");
+  }
+  if (isset($_POST["SubmitDT"]) && $_POST["SubmitDT"] == "Delete ALL tasks") {
+	if ($_POST["confirmation"] == "confirm") {
+		DBSiteDeleteAllTasks ($_SESSION["usertable"]["contestnumber"], -1,
+			$_SESSION["usertable"]["usernumber"], $_SESSION["usertable"]["usersitenumber"]);
+	}
+	ForceLoad("contest.php");
+  }
+  if (isset($_POST["SubmitDB"]) && $_POST["SubmitDB"] == "Delete ALL bkps") {
+	if ($_POST["confirmation"] == "confirm") {
+		DBSiteDeleteAllBkps ($_SESSION["usertable"]["contestnumber"], -1,
+			$_SESSION["usertable"]["usernumber"], $_SESSION["usertable"]["usersitenumber"]);
+	}
+	ForceLoad("contest.php");
+  }
+}
+
 if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["penalty"]) && 
     isset($_POST["maxfilesize"]) && isset($_POST["mainsite"]) && isset($_POST["name"]) && 
     $_POST["name"] != "" && isset($_POST["lastmileanswer"]) && is_numeric($_POST["lastmileanswer"]) && 
@@ -254,6 +285,11 @@ echo $contest;
 	  <input type="submit" name="Submit3" value="Update" onClick="conf()">
 	   <input type="submit" name="Submit3" value="Update Contest and All Sites" onClick="conf2()">
 	   <input type="reset" name="Submit4" value="Clear">
+<br><br>
+      <input type="submit" name="SubmitDC" value="Delete ALL clars" onClick="conf2()">
+      <input type="submit" name="SubmitDR" value="Delete ALL runs" onClick="conf2()">
+      <input type="submit" name="SubmitDT" value="Delete ALL tasks" onClick="conf2()">
+      <input type="submit" name="SubmitDB" value="Delete ALL bkps" onClick="conf2()">
 <?php } else { ?>
       <input type="submit" name="Submit3" value="Update" onClick="conf()">
 	   <input type="submit" name="Submit3" value="Become Main Site" onClick="conf3()">
