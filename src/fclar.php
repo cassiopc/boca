@@ -253,7 +253,7 @@ function DBClarDelete($number,$site,$contest,$user,$usersite,$c=null) {
   LOGInfo("Clarification deleted (clar=$number, site=$site, contest=$contest, user=$user(site=$usersite)).");
   return true;
 }
-function DBNewClar($param,$c=null,,$allowupdate=true) {
+function DBNewClar($param,$c=null,$allowupdate=true) {
 	if(isset($param['contestnumber']) && !isset($param['contest'])) $param['contest']=$param['contestnumber'];
 	if(isset($param['sitenumber']) && !isset($param['site'])) $param['site']=$param['sitenumber'];
 	if(isset($param['clarsitenumber']) && !isset($param['site'])) $param['site']=$param['clarsitenumber'];
