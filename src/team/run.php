@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 12/aug/2017 by cassio@ime.usp.br
 require('header.php');
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
@@ -290,7 +289,7 @@ $runtmp = $_SESSION["locr"] . $ds . "private" . $ds . "runtmp" . $ds . "run-cont
   "-site". $_SESSION["usertable"]["usersitenumber"] . "-user" . $_SESSION["usertable"]["usernumber"] . ".php";
 $redo = TRUE;
 if(!isset($_SESSION['forceredo']) || $_SESSION['forceredo']==false) {
-  $actualdelay = 30;
+  $actualdelay = 15;
   if(file_exists($runtmp)) {
     if(isset($strtmp) || (($strtmp = file_get_contents($runtmp,FALSE,NULL,-1,1000000)) !== FALSE)) {
       list($d) = sscanf($strtmp,"%*s %d");
