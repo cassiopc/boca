@@ -149,6 +149,7 @@ function DBUpdateClarC($contest, $usersite, $usernumber, $clarsite, $clarnumber,
 		MSGError("Unable to answer the clarification (maybe it was already answered or catched by a chief)");
 		return false;
 	}
+	$theclar = DBRow($r,0);
 
 	if ($type=="all") $status="answeredall";
 	else if ($type=="site") $status="answeredsite";
@@ -157,10 +158,18 @@ function DBUpdateClarC($contest, $usersite, $usernumber, $clarsite, $clarnumber,
 	$time = time();
 	$t = $b["currenttime"];
 
-	DBExec($c, "update clartable set clarstatus='$status', clarjudge=$usernumber, clarjudgesite=$usersite, " . 
-		"claranswer='$answer', clardatediffans=$t, updatetime=".time()." " .
-		"where contestnumber=$contest and clarnumber=$clarnumber and clarsitenumber=$clarsite",
-               "DBUpdateClarC(update clar)");
+	LOGInfo("CLAR number $clarnumber site $clarsite contest $contest: user " . $theclar['usernumber'] . " replaced");
+	if($type=="all") {
+	  DBExec($c, "update clartable set clarstatus='$status', clarjudge=$usernumber, clarjudgesite=$usersite, " .
+		 "clarsitenumber=$usersite, usernumber=$usernumber, " .
+		 "claranswer='$answer', clardatediffans=$t, updatetime=".time()." " .
+		 "where contestnumber=$contest and clarnumber=$clarnumber and clarsitenumber=$clarsite",
+		 "DBUpdateClarC(update clar)");
+	} else 
+	  DBExec($c, "update clartable set clarstatus='$status', clarjudge=$usernumber, clarjudgesite=$usersite, " . 
+		 "claranswer='$answer', clardatediffans=$t, updatetime=".time()." " .
+		 "where contestnumber=$contest and clarnumber=$clarnumber and clarsitenumber=$clarsite",
+		 "DBUpdateClarC(update clar)");
 
 	DBExec($c, "commit work", "DBUpdateClarC(commit)");
 	LOGLevel("Clarification updated (clar=$clarnumber, site=$clarsite, contest=$contest, status=$status, " .

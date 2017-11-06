@@ -558,8 +558,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=-1) 
 	  if(isset($param['usersitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['usersitenumber'];              
 	  if(isset($param['clarsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['clarsitenumber'];              
 	  if(isset($param['runsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['runsitenumber'];              
-	  if(!isset($param['sitenumber']) || ($param['sitenumber'] != $site && ($param['sitenumber'] != $mainsite || $tomain) &&
-					      ($table != 'clartable' || $tomain))) {
+	  if(!isset($param['sitenumber']) || ($param['sitenumber'] != $site && ($param['sitenumber'] != $mainsite || $tomain))) {
 	    $logstr .= "$serv - site mismatch should be [$site] and is [" . $param['sitenumber'] . "]\n";
 	    LOGError("importFromXML: site mismatch should be [$site] and is [" . $param['sitenumber'] . "]");
 	    continue;
@@ -703,9 +702,8 @@ function genSQLs($contest, $site, $updatetime, $mainsite=1) {
       //"problemcolor, " .
       "updatetime" .
       " from problemtable where contestnumber=$contest and fake='f' and updatetime >= $updatetime";
-    $sql['usertable']="select * from usertable where contestnumber=$contest and usersitenumber!=$site and updatetime >= $updatetime";
-  } else
-    $sql['usertable']="select * from usertable where contestnumber=$contest and usersitenumber=$site and updatetime >= $updatetime";
+  }
+  $sql['usertable']="select * from usertable where contestnumber=$contest and usersitenumber=$site and updatetime >= $updatetime";
   $sql['sitetimetable']="select * from sitetimetable where contestnumber=$contest and sitenumber=$site and updatetime >= $updatetime";
   $sql['clartable']="select * from clartable where contestnumber=$contest and updatetime >= $updatetime";
   $sql['runtable']="select * from runtable where contestnumber=$contest and runsitenumber=$site and updatetime >= $updatetime";
