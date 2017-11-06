@@ -175,11 +175,13 @@ function DBUpdateClarC($contest, $usersite, $usernumber, $clarsite, $clarnumber,
 	      } else {
 		DBExec($c, "rollback work", "DBUpdateClarC(rollback promoted)");
 		LOGError("CLAR number $clarnumber site $clarsite contest $contest should be promoted (delete)");
+		MSGError("Clarification not update (error promoting it for answer all)");
 		return false;
 	      }
 	    } else {
 	      DBExec($c, "rollback work", "DBUpdateClarC(rollback promoted2)");
 	      LOGError("CLAR number $clarnumber site $clarsite contest $contest should be promoted (insert)");
+	      MSGError("Clarification not update (error2 promoting it for answer all)");
 	      return false;
 	    }
 	} else 
