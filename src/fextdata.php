@@ -558,7 +558,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=-1) 
 	  if(isset($param['usersitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['usersitenumber'];              
 	  if(isset($param['clarsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['clarsitenumber'];              
 	  if(isset($param['runsitenumber']) && !isset($param['sitenumber'])) $param['sitenumber']=$param['runsitenumber'];              
-	  if(!isset($param['sitenumber']) || ($param['sitenumber'] != $site && $param['sitenumber'] != $mainsite)) {
+	  if(!isset($param['sitenumber']) || ($param['sitenumber'] != $site && ($param['sitenumber'] != $mainsite || $tomain) &&
+					      ($table != 'clartable' || $tomain))) {
 	    $logstr .= "$serv - site mismatch should be [$site] and is [" . $param['sitenumber'] . "]\n";
 	    LOGError("importFromXML: site mismatch should be [$site] and is [" . $param['sitenumber'] . "]");
 	    continue;
@@ -635,7 +636,7 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=-1) 
 	    }
 	  }
 	  if($table == "runtable") {
-	    if(($ret=DBNewRun ($param, $conn))) {
+	    if(($ret=DBNewRun ($param, $conn, $tomain))) {
 	      if($ret==2) {
 		$logstr .= "$serv - Run " . $param['runnumber'] ."/".$param['sitenumber']." updated\n";
 		LOGInfo("importFromXML: Run " . $param['runnumber'] ."/".$param['sitenumber']." updated");

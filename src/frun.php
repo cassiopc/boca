@@ -644,7 +644,7 @@ function DBOpenRunsSNS($contest,$site,$st,$order='run') {
 		$a[$i] = DBRow($r,$i);
 	return $a;
 }
-function DBNewRun($param,$c=null) {
+function DBNewRun($param,$c=null,$allowinsert=true) {
 	if(isset($param['contestnumber']) && !isset($param['contest'])) $param['contest']=$param['contestnumber'];
 	if(isset($param['sitenumber']) && !isset($param['site'])) $param['site']=$param['sitenumber'];
 	if(isset($param['runsitenumber']) && !isset($param['site'])) $param['site']=$param['runsitenumber'];
@@ -760,9 +760,20 @@ function DBNewRun($param,$c=null) {
 				$oid1 = $lr['autostdout'];
 			if(isset($lr['autostderr']))
 				$oid2 = $lr['autostderr'];
+		} else {
+		  if(!$allowinsert) {
+		    if($cw)
+		      DBExec($c, "rollback work", "DBNewRun(rollback-noinsert)");
+		    return -1;
+		  }
 		}
 		$runinc = $runnumber - 1;
 	} else {
+	  if(!$allowinsert) {
+	    if($cw)
+	      DBExec($c, "rollback work", "DBNewRun(rollback-noinsert)");
+	    return -1;
+	  }
 	  $runnumber = $a["nextrun"] + 1;
 	  DBExec($c, "update sitetable set sitenextrun=$runnumber" .
 		 " where sitenumber=$site and contestnumber=$contest and sitenextrun<$runnumber", "DBNewRun(update site)");
