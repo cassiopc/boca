@@ -625,7 +625,8 @@ function importFromXML($ar,$contest,$site,$tomain=false,$uptime=0,$mainsite=-1) 
 		$logstr .= "$serv - Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated\n";
 		LOGInfo("importFromXML: Clarification " . $param['clarnumber']."/".$param['sitenumber'] ." updated");
 		if($param['sitenumber'] == $mainsite && $mainsite != $site) {
-		  DBClarDelete($param['clarnumber'], $site, $param['contestnumber'], $param['usernumber'], $param['sitenumber']);
+		  if(DBClarDelete($param['clarnumber'], $site, $param['contestnumber'], $param['usernumber'], $param['sitenumber']))
+		    $logstr .= "$serv - Clarification " . $param['clarnumber']."/".$site . " was promoted\n";
 		}
 	      }
 	    }
