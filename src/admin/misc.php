@@ -38,7 +38,7 @@ require 'header.php';
    <center>
    <input type="submit" name="Submit1" value="Transfer" onClick="conf()"> &nbsp;
    <input type="submit" name="Submit2" value="Transfer all" onClick="conf()"> &nbsp;
-   <input type="submit" name="Submit3" value="Transfer scores"> &nbsp;
+   <input type="submit" name="Submit3" value="Transfer scores" onClick="conf()"> &nbsp;
    <input type="submit" name="Submit4" value="Clear cache" onClick="conf()"> &nbsp; 
    <input type="submit" name="Submit5" value="Full clear" onClick="conf2()">  &nbsp;
    <input type="submit" name="Submit6" value="Update BOCA" onClick="conf2()">  &nbsp;
