@@ -125,6 +125,10 @@ CREATE TABLE \"sitetimetable\" (
 	$r = DBexec($c, "CREATE INDEX \"sitetimesite_index\" ON \"sitetimetable\" USING btree ".
 	            "(\"contestnumber\" int4_ops, \"sitenumber\" int4_ops)", "DBCreateSiteTimeTable(create site_index)");
 }
+// begin; update answertable set updatetime=EXTRACT(EPOCH FROM now());
+// begin; update langtable set updatetime=EXTRACT(EPOCH FROM now()); select * from langtable;
+// begin; update problemtable set updatetime=EXTRACT(EPOCH FROM now()); select * from problemtable;
+
 function DBDropUserTable() {
 	 $c = DBConnect();
 	 $r = DBExec($c, "drop table \"usertable\"", "DBDropUserTable(drop table)");
@@ -298,8 +302,8 @@ function cleanuserdesc($a) {
 			$inst = explode('[',$inst[1]);
 			if(isset($inst[1])) {
 			  $inst2 = explode(',',trim($inst[1]));
-			  $a['userflag'] = $inst2[0];
-			  if(isset($inst2[1])) $a['usersitename']=trim($inst2[1]);
+			  $a['userflag'] = strtolower($inst2[0]);
+			  if(isset($inst2[1])) $a['usersitename']=strtoupper(trim($inst2[1]));
 			}
 		} else {
 			$a['userdesc']=trim($inst[1]);

@@ -320,12 +320,13 @@ function ValidSession() {
 //		$_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
   //      } else {
 	if($_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
-    //    }
-	if($_SESSION["usertable"]["usermultilogin"] == 't') return(TRUE);
-	
+    //    }	
 	$tmp = DBUserInfo($_SESSION["usertable"]["contestnumber"], 
 					  $_SESSION["usertable"]["usersitenumber"], 
 					  $_SESSION["usertable"]["usernumber"]);
+	if($tmp['usersession']=='') return(FALSE);
+	if($_SESSION["usertable"]["usermultilogin"] == 't') return(TRUE);
+
 	if ($tmp["userip"] != $gip) return(FALSE); //cassiopc: they may create a problem here too...
 	return(TRUE);
 }
