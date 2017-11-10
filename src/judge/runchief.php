@@ -89,7 +89,7 @@ if(isset($_POST)) {
 
 
 for ($i=0; $i<count($run); $i++) {
-  if($run[$i]["answer1"] != 0 && $run[$i]["answer2"] != 0 && $run[$i]["status"] != "judged") {
+  if($run[$i]["answer1"] != 0 && $run[$i]["answer2"] != 0 && ($run[$i]["status"] != "judged" && $run[$i]["status"] != 'deleted')) {
     if($runphp == "runchief.php")
       echo " <tr bgcolor=\"ff0000\">\n";
     else echo "<tr>\n";

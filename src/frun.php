@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 29/aug/2017 by cassio@ime.usp.br
 
 function DBDropRunTable() {
 	$c = DBConnect();
@@ -499,16 +498,16 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 	     $a["runproblem"] == 11 ||
 	     $a["runproblem"] == 12 ||
 	     $a["runproblem"] == 13)
-	    && $retval != 4 && $retval != 6)) { // but WA and TLE are automatic for all problems
-	
-          if($b["siteautojudge"]!="t") {
+	    && $retval != 4 && $retval != 6)) { // but WA:6 and TLE:4 are automatic for all problems
+	 if($retval != 1 && $retval != 6 && $retval != 4) {
+	   //if($b["siteautojudge"]!="t") {
 	  // && (($retval != 1 && $retval != 6) || $a["runproblem"] == 1 || $a["runproblem"] == 2) ) { //cassiopc incluir automatic judging of some codes 1:YES WA:6
 		DBExec($c, "commit work", "DBUpdateRunAutojudging(commit)");
 		LOGLevel("Autojudging answered a run (run=$number, site=$site, contest=$contest, answer='$answer', retval=$retval)", 3);
 		return true;
-	  }
+		//}
 	}
-
+	}
 	//echo "DEBUG: $contest, $site, " .$a["usernumber"].", $site, $number, $retval\n";
 	if(DBUpdateRunO($contest, $site, $a["usernumber"], $site, $number, $retval, $c)==false) {
 		DBExec($c, "rollback work", "DBUpdateRunAutoJudging(rollback)");
