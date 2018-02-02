@@ -186,6 +186,7 @@ if [ $ret -gt 10 ]; then
 	    echo "> > > Nonzero return code - possible runtime error - do check < < <"
 	fi
 	ret=9
+    fi
 fi
 if [ -f stdout0 ]; then
   cat stdout0
