@@ -22,6 +22,7 @@ install-scripts:
 	install tools/dump.sh $(DESTDIR)/usr/sbin/boca-dump
 
 install-bocadb:
+	mkdir -p $(DESTDIR)/usr/sbin/
 	install tools/boca-createdb.sh $(DESTDIR)/usr/sbin/boca-createdb
 
 install-bocacommon:
