@@ -20,17 +20,26 @@ install-bocaapache: install-bocawww
 install-scripts:
 	mkdir -p $(DESTDIR)/usr/sbin/
 	install tools/dump.sh $(DESTDIR)/usr/sbin/boca-dump
-	install tools/boca-createjail $(DESTDIR)/usr/sbin/boca-createjail
-	install tools/boca-createdb.sh $(DESTDIR)/usr/sbin/boca-createdb
-	install tools/boca-autojudge.sh $(DESTDIR)/usr/sbin/boca-autojudge
-	install tools/boca-config-dbhost.sh $(DESTDIR)/usr/sbin/boca-config-dbhost
 
-install: install-bocawww install-bocaapache install-scripts tools/safeexec
-	mkdir -p $(DESTDIR)/usr/bin/
+install-bocadb:
+	install tools/boca-createdb.sh $(DESTDIR)/usr/sbin/boca-createdb
+
+install-bocacommon:
+	mkdir -p $(DESTDIR)/usr/sbin/
 	mkdir -p $(DESTDIR)/etc/
 	cp tools/boca.conf $(DESTDIR)/etc/
+	install tools/boca-config-dbhost.sh $(DESTDIR)/usr/sbin/boca-config-dbhost
+
+install-bocaautojudge: tools/safeexec
+	mkdir -p $(DESTDIR)/usr/sbin/
+	mkdir -p $(DESTDIR)/usr/bin/
+	mkdir -p $(DESTDIR)/etc/
 	install tools/safeexec $(DESTDIR)/usr/bin/safeexec
 	chmod 4555 $(DESTDIR)/usr/bin/safeexec
+	install tools/boca-createjail $(DESTDIR)/usr/sbin/boca-createjail
+	install tools/boca-autojudge.sh $(DESTDIR)/usr/sbin/boca-autojudge
+
+install: install-bocawww install-bocaapache install-bocadb install-bocacommon install-bocaautojudge install-scripts
 
 install-submission-tools: tools/boca-submit-run-root-wrapper
 	mkdir -p $(DESTDIR)/usr/bin $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d

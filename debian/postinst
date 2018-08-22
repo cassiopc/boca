@@ -1,6 +1,0 @@
-#!/bin/bash
-
-chown -R www-data.www-data /var/www/boca
-chmod 4555 /usr/bin/safeexec
-
-service apache2 restart || true
