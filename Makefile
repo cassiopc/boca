@@ -23,6 +23,8 @@ install-scripts:
 
 install-bocadb:
 	mkdir -p $(DESTDIR)/usr/sbin/
+	mkdir -p $(DESTDIR)/etc
+	cp -r tools/postgresql $(DESTDIR)/etc
 	install tools/boca-createdb.sh $(DESTDIR)/usr/sbin/boca-createdb
 
 install-bocacommon: install-bocawww
