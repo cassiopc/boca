@@ -40,7 +40,8 @@ Description: BOCA - WEB files
 
 Package: boca-common
 Architecture: all
-Depends: php-zip, makepasswd, sharutils, wget, coreutils, php-cli, php-pgsql, php-gd, postgresql-client
+Pre-Depends: debconf, makepasswd, coreutils, sharutils
+Depends: php-zip, wget, php-cli, php-pgsql, php-gd, postgresql-client
 Description: BOCA - Common files
   BOCA is a software created to control a contest with the ACM International
   Collegiate Programming Contest rules. It has been developed in PHP and the
