@@ -59,3 +59,11 @@ Description: BOCA - AutoJudge
   .
   This package contains files to generate and run the autojudge system for
   BOCA.
+
+Package: boca-submission-tools
+Architecture: amd64
+Depends: sharutils, wget, coreutils, libany-uri-escape-perl, openssl, openssh-server
+Description: BOCA submission tools.
+  This package provides tools to submit codes to a running boca server
+  without using the web interface.
+
