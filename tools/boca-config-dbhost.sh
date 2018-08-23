@@ -35,6 +35,8 @@ bdservernew=$1
 
 . /etc/boca.conf
 
+privatedir=$bocadir/src/private
+
 CHANGE=n
 if [[ "x$bdserver" == "x" ]]; then
   echo "bdserver=$bdservernew" >> /etc/boca.conf
@@ -46,21 +48,23 @@ fi
 
 bdserver=$bdservernew
 
-if [[ "$bdserver" == "localhost" && "x$bdcreated" != "xy" ]]; then
-  if [[ "$CHANGE" == "n" ]]; then
-    boca-createdb
-  else
-    boca-createdb -f
-  fi
-elif [[ "$bdserver" != "localhost" ]]; then
-  printf "You will be asked to prompt the BD password [enter do continue]"
-  read
-  #just to config password
-  if [[ "$CHANGE" == "n" ]]; then
-    boca-createdb nocreate
-  else
-    boca-createdb -f nocreate
-  fi
+#update conf.php
+# PASSWD should be environment defined. While installing boca-common package
+# this variable will be set
+PASS=$PASSWD
+if [[ "x$PASS" == "x" ]]; then
+  read -p "Enter DB password: " -s PASS
 fi
+PASSK=`makepasswd --chars 20`
+awk -v boca="$bdserver" -v pass="$PASS" -v passk="$PASSK" '{ if(index($0,"[\"dbpass\"]")>0) \
+  print "$conf[\"dbpass\"]=\"" pass "\";"; \
+  else if(index($0,"[\"dbhost\"]")>0) print "$conf[\"dbhost\"]=\"" boca "\";"; \
+  else if(index($0,"[\"dbsuperpass\"]")>0) print "$conf[\"dbsuperpass\"]=\"" pass "\";"; \
+  else if(index($0,"[\"key\"]")>0) print "$conf[\"key\"]=\"" passk "\";"; else print $0; }' \
+  < $privatedir/conf.php > $privatedir/conf.php1
+mv -f $privatedir/conf.php1 $privatedir/conf.php
+
+chown www-data.www-data $privatedir/conf.php
+chmod 600 $privatedir/conf.php
 
 exit 0

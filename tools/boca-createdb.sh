@@ -37,7 +37,7 @@ privatedir=$bocadir/src/private
 postgresuser=postgres
 
 if [[ "x$bdserver" == "x" ]]; then
-  echo "Please run boca-config-dbhost"
+  echo "Please run boca-config-dbhost first"
   exit 2
 fi
 
@@ -57,54 +57,10 @@ if [[ "x$bdcreated" == "x" || "$1" == "-f" ]] ; then
   fi
   echo "Keep the DB password safe!"
 
-  PASSK=`makepasswd --chars 20`
-  awk -v boca="$bdserver" -v pass="$PASS" -v passk="$PASSK" '{ if(index($0,"[\"dbpass\"]")>0) \
-    print "$conf[\"dbpass\"]=\"" pass "\";"; \
-    else if(index($0,"[\"dbhost\"]")>0) print "$conf[\"dbhost\"]=\"" boca "\";"; \
-    else if(index($0,"[\"dbsuperpass\"]")>0) print "$conf[\"dbsuperpass\"]=\"" pass "\";"; \
-    else if(index($0,"[\"key\"]")>0) print "$conf[\"key\"]=\"" passk "\";"; else print $0; }' \
-    < $privatedir/conf.php > $privatedir/conf.php1
-  mv -f $privatedir/conf.php1 $privatedir/conf.php
-
   if [[ "$bdserver" == "localhost" ]]; then
     su - $postgresuser -c "echo drop user bocauser | psql -d template1 >/dev/null 2>/dev/null"
     su - $postgresuser -c "echo create user bocauser createdb password \'$PASS\'| psql -d template1"
     su - $postgresuser -c "echo alter user bocauser createdb password \'$PASS\'| psql -d template1"
-    #allowing outside connections
-    if ! echo "$*" | grep -q notouchpgconf; then
-      echo "##########################"
-      echo "     ATENTION"
-      echo "##########################"
-      echo
-      echo "I AM GIVING ACCESS TO THE DATABASE FROM ANY IP (AS LONG AS THE PASSWORD IS OK)"
-      CONTINUE="y"
-      printf "May I give access? [Y/n]"
-      read CONTINUE
-
-      if [[ "$CONTINUE" == "Y" || "$CONTINUE" == "y" ]]; then
-        for i in /etc/postgresql/*/main/pg_hba.conf; do
-          if grep -q "host.*bocadb.*bocauser" $i; then
-            continue;
-          fi
-          echo "host bocadb bocauser 0/0 md5" >> $i
-          echo "host postgres replication 0/0 md5" >> $i
-        done
-        for i in /etc/postgresql/*/main/postgresql.conf; do
-        if ! grep -q "^[^\#]*listen_addresses" $i; then
-          echo "listen_addresses = '*'" >> $i
-        fi
-        done
-        service postgresql restart
-
-      else
-        echo "#### READ THIS ####"
-        echo "If you change your mind later, you may call me again as:"
-        echo "$0 -f"
-        sleep 3
-        echo
-        echo
-      fi
-    fi
   fi
   if [[ "x$bdcreated" == "x" ]]; then
     echo 'bdcreated=y' >> /etc/boca.conf
