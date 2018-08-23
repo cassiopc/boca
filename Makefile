@@ -10,7 +10,7 @@ install-bocawww:
 	cp -r src $(DESTDIR)/var/www/boca/
 	cp -r doc $(DESTDIR)/var/www/boca/
 
-install-bocaapache: install-bocawww
+install-bocaapache:
 	mkdir -p $(DESTDIR)/etc/apache2/sites-enabled/
 	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-enabled/000-boca.conf
 	a2ensite default-ssl || echo a2ensite default-ssl FAILED
@@ -25,7 +25,7 @@ install-bocadb:
 	mkdir -p $(DESTDIR)/usr/sbin/
 	install tools/boca-createdb.sh $(DESTDIR)/usr/sbin/boca-createdb
 
-install-bocacommon:
+install-bocacommon: install-bocawww
 	mkdir -p $(DESTDIR)/usr/sbin/
 	mkdir -p $(DESTDIR)/etc/
 	cp tools/boca.conf $(DESTDIR)/etc/
