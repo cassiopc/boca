@@ -40,10 +40,10 @@ install-submission-tools: tools/boca-submit-run-root-wrapper
 	install tools/boca-submit-run-cron $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-aux $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-root $(DESTDIR)/usr/bin/
-	install tools/boca-submit-logroot $(DESTDIR)/usr/sbin/boca-submit-logroot
-	install tools/cron-submit $(DESTDIR)/etc/cron.d/
-	install tools/cron-fixssh $(DESTDIR)/etc/cron.d/
-	install tools/cron-logroot $(DESTDIR)/etc/cron.d/
+	install tools/boca-submit-log $(DESTDIR)/usr/sbin/boca-submit-log
+	install tools/cron-boca-submit $(DESTDIR)/etc/cron.d/
+	install tools/cron-boca-fixssh $(DESTDIR)/etc/cron.d/
+	install tools/cron-boca-log $(DESTDIR)/etc/cron.d/
 	install tools/boca-submit-run-root-wrapper $(DESTDIR)/usr/bin/
 	install tools/boca-outmanage $(DESTDIR)/usr/sbin/
 	install tools/boca-checkinternet $(DESTDIR)/usr/sbin/

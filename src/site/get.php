@@ -46,7 +46,7 @@ if($ct["contestlocalsite"]==$ct["contestmainsite"]) {
 	}
 	if(isset($_POST) && isset($_POST['xml'])) {
 //		$fp=fopen('/tmp/aaa',"w"); fwrite($fp,$_POST['xml']); fclose($fp);
-		$s = decryptData(rawurldecode($_POST['xml']),myhash($_SESSION["usertable"]["userpassword"]));
+		$s = decryptData($_POST['xml'],myhash($_SESSION["usertable"]["userpassword"]));
 //		$fp=fopen('/tmp/aaa1',"w"); fwrite($fp,$s); fclose($fp);
 
 		$ac=array();

@@ -26,7 +26,7 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 if (isset($_GET["delete"]) && is_numeric($_GET["delete"]) && isset($_GET["input"])) {
 	$param = array();
 	$param['number']=$_GET["delete"];
-	$param['inputfilename']=$_GET["input"];
+	$param['inputfilename']=myrawurldecode($_GET["input"]);
 	if(!DBDeleteProblem ($_SESSION["usertable"]["contestnumber"], $param)) {
 		MSGError('Error deleting problem');
 		LogError('Error deleting problem');
@@ -262,11 +262,11 @@ for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
   if($prob[$i]["fake"]!='t') {
 	  if(strpos($prob[$i]["fullname"],"(DEL)") !== false) {
-		  echo "  <td nowrap><a href=\"javascript: conf3('problem.php?delete=" . $prob[$i]["number"] . "&input=" . rawurlencode($prob[$i]["inputfilename"]) . 
+		  echo "  <td nowrap><a href=\"javascript: conf3('problem.php?delete=" . $prob[$i]["number"] . "&input=" . myrawurlencode($prob[$i]["inputfilename"]) . 
 			  "')\">" . $prob[$i]["number"];
 		  echo "(deleted)";
 	  } else {
-		  echo "  <td nowrap><a href=\"javascript: conf2('problem.php?delete=" . $prob[$i]["number"] . "&input=" . rawurlencode($prob[$i]["inputfilename"]) . 
+		  echo "  <td nowrap><a href=\"javascript: conf2('problem.php?delete=" . $prob[$i]["number"] . "&input=" . myrawurlencode($prob[$i]["inputfilename"]) . 
 			  "')\">" . $prob[$i]["number"];
 	  }
 	  echo "</a></td>\n";

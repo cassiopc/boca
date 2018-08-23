@@ -51,7 +51,7 @@ if(isset($_POST["Submit"]) || isset($_POST['Submit1'])) {
 		if(isset($_POST['nopassword']) && $_POST['nopassword']=='true')
 			echo $xml;
 		else
-			echo rawurlencode($_POST['challenge']) . " " . encryptData($xml,($_POST['password']));
+			echo myrawurlencode($_POST['challenge']) . " " . encryptData($xml,($_POST['password']));
 		exit;
 	}
 }

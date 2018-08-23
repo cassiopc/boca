@@ -101,8 +101,6 @@ $b = DBGetProblemData($_SESSION["usertable"]["contestnumber"], $a["problemnumber
         <td width="83%"> 
 <?php
 for ($i=0;$i<count($b);$i++) {
-        $if = rawurlencode($b[$i]["inputfilename"]);
-
         echo "<a href=\"../filedownload.php?". filedownload($b[$i]["inputoid"],$b[$i]["inputfilename"]) . "\">";
         echo basename($b[$i]["inputfilename"]) . "</a>";
 }

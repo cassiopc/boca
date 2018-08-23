@@ -295,7 +295,9 @@ if(!isset($_SESSION['forceredo']) || $_SESSION['forceredo']==false) {
       list($d) = sscanf($strtmp,"%*s %d");
       if($d > time() - $actualdelay) {
 	$conf=globalconf();
-	$strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")+1),$conf["key"],'runtmp');
+	if(isset($conf['doenc']) && $conf['doenc'])
+	  $strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")+1),$conf["key"],'runtmp');
+	else $strtmp = substr($strtmp,strpos($strtmp,"\n")+1);
 	if($strtmp !== false)
 	  $redo = FALSE;
       }
@@ -416,7 +418,10 @@ if($redo) {
       "</form>\n";
   }
   $conf=globalconf();
-  $strtmp1 = "<!-- " . time() . " --> <?php exit; ?>\t" . encryptData($strcolors,$conf["key"],false) . "\n" . encryptData($strtmp,$conf["key"],false);
+  if(isset($conf['doenc']) && $conf['doenc'])
+    $strtmp1 = "<!-- " . time() . " --> <?php exit; ?>\t" . encryptData($strcolors,$conf["key"],false) . "\n" . encryptData($strtmp,$conf["key"],false);
+  else
+    $strtmp1 = "<!-- " . time() . " --> <?php exit; ?>\t" . $strcolors . "\n" . $strtmp;
   $randnum = session_id() . "_" . rand();
   if(file_put_contents($runtmp . "_" . $randnum, $strtmp1,LOCK_EX)===FALSE) {
     if(!isset($_SESSION['writewarn'])) {
