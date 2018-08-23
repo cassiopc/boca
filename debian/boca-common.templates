@@ -1,0 +1,10 @@
+Template: boca-common/dbhost
+Type: string
+Default: localhost
+Description: Please provide a host within BOCA database:
+
+Template: boca-common/dbpassword
+Type: password
+Description: Please provide a password for BOCA database:
+ Please, do not forget this password. You will need it to provide it while
+ configuring boca-web and boca-autojudge.
