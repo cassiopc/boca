@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. /usr/share/debconf/confmodule
+
 chown -R www-data.www-data /var/www/boca
 chmod -R go-rwx /var/www/boca/src/private
 
@@ -15,3 +17,8 @@ a2dismod php7.2 || true
 a2enconf php7.2-fpm
 
 service apache2 restart || true
+
+#remember to reset possible stored password from debconf
+db_reset boca-common/dbpassword || true
+
+exit 0
