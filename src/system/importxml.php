@@ -156,7 +156,7 @@ if(isset($_POST["Submit"])) {
 			exit;
 		}
 		else
-			$id = rawurldecode(strtok($ar," \n\t"));
+			$id = myrawurldecode(strtok($ar," \n\t"));
 	}
   }
 } else {

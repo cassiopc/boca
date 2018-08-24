@@ -32,12 +32,20 @@ function sanitizeVariables(&$item, $key)
     } 
 } 
 
+function myrawurlencode($txt) {
+  return(rawurlencode(base64_encode($txt)));
+}
+
+function myrawurldecode($txt) {
+  return(rawurldecode(base64_encode($txt)));
+}
+
 function filedownload($oid,$fname,$msg='') {
 	$cf = globalconf();
-	$if = rawurlencode(encryptData($fname, session_id() . $cf['key'],false));
+	$if = myrawurlencode(encryptData($fname, session_id() . $cf['key'],false));
 	$p = myhash($oid . $fname . $msg . session_id() . $cf["key"]);
 	$str = "oid=". $oid . "&filename=". $if . "&check=" . $p;
-	if($msg != '') $str .= "&msg=" . rawurlencode($msg);
+	if($msg != '') $str .= "&msg=" . myrawurlencode($msg);
 	return $str;
 }
 function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=array()) {
@@ -217,6 +225,8 @@ function sanitizeFilename($text)
 }
 
 function unsanitizeText($text) {
+  $text = str_replace("&lt;", "<", $text);
+  $text = str_replace("&gt;", ">", $text); 
     $text = str_replace("&amp;", "&", $text);
 	return $text;
 }

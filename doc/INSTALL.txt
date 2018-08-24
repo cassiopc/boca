@@ -21,9 +21,15 @@ Usually that is true if you have installed the following ubuntu/debian
 packages, as given by an apt-get example line:
 
 apt-get install \
+php-zip debootstrap schroot quotatool makepasswd apache2 \
+libapache2-mod-php sharutils wget coreutils php php-cli \
+php-pgsql php-gd postgresql postgresql-client \
+libany-uri-escape-perl php-xml openssl
+
+
 postgresql postgresql-contrib postgresql-client apache2 \
-libapache2-mod-php5 php5 php5-cli php5-cgi php5-gd \
-php5-mcrypt php5-pgsql
+libapache2-mod-php php php-cli php-cgi php-gd openssl \
+php-pgsql
 
 It may be needed to configure some parameters in php.ini, 
 postgresql.conf and pg_hba.conf files. The following lines

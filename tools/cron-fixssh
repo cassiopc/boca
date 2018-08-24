@@ -1,1 +1,0 @@
-* * * * * root /usr/sbin/boca-fixssh >>/var/log/boca-fixssh.out 2>>/var/log/boca-fixssh.err

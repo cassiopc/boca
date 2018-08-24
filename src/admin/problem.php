@@ -26,7 +26,7 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 if (isset($_GET["delete"]) && is_numeric($_GET["delete"]) && isset($_GET["input"])) {
 	$param = array();
 	$param['number']=$_GET["delete"];
-	$param['inputfilename']=$_GET["input"];
+	$param['inputfilename']=myrawurldecode($_GET["input"]);
 	if(!DBDeleteProblem ($_SESSION["usertable"]["contestnumber"], $param)) {
 		MSGError('Error deleting problem');
 		LogError('Error deleting problem');
@@ -94,9 +94,9 @@ if(isset($_POST['Submit5']) && $_POST['Submit5']=='Send') {
 			@mkdir($dir . $ds . 'output');
 			@mkdir($dir . $ds . 'tests');
 			@mkdir($dir . $ds . 'description');
-			$filea = array('compare' . $ds . 'c','compare' . $ds . 'cpp','compare' . $ds . 'java',
-						   'compile' . $ds . 'c','compile' . $ds . 'cpp','compile' . $ds . 'java',
-						   'run' . $ds . 'c','run' . $ds . 'cpp','run' . $ds . 'java');
+			$filea = array('compare' . $ds . 'c','compare' . $ds . 'cc','compare' . $ds . 'java','compare' . $ds . 'py2','compare' . $ds . 'py3',
+						   'compile' . $ds . 'c','compile' . $ds . 'cc','compile' . $ds . 'java','compile' . $ds . 'py2','compile' . $ds . 'py3',
+						   'run' . $ds . 'c','run' . $ds . 'cc','run' . $ds . 'java','run' . $ds . 'py2','run' . $ds . 'py3');
 			foreach($filea as $file) {
 				$rfile=$locr . $ds . '..' . $ds . 'doc' . $ds . 'problemexamples' . $ds . 'problemtemplate' . $ds . $file;
 				if(is_readable($rfile)) {
@@ -113,8 +113,10 @@ if(isset($_POST['Submit5']) && $_POST['Submit5']=='Send') {
 			if(!isset($tl[1]) || !is_numeric(trim($tl[1]))) $tl[1]='1';
 			$str = "echo " . trim($tl[0]) . "\necho " . trim($tl[1]) . "\necho 512\necho " . floor(10 + $size1 / 512) . "\nexit 0\n";
 			file_put_contents($dir . $ds . 'limits' . $ds . 'c',$str);
-			file_put_contents($dir . $ds . 'limits' . $ds . 'cpp',$str);
+			file_put_contents($dir . $ds . 'limits' . $ds . 'cc',$str);
 			file_put_contents($dir . $ds . 'limits' . $ds . 'java',$str);
+            file_put_contents($dir . $ds . 'limits' . $ds . 'py2',$str);
+            file_put_contents($dir . $ds . 'limits' . $ds . 'py3',$str);
 			$str = "basename=" . trim($_POST['basename']) . "\nfullname=" . trim($_POST['fullname']);
 			if($name2) {
 				@copy($temp2, $dir . $ds . 'description' . $ds . $name2);
@@ -260,11 +262,11 @@ for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
   if($prob[$i]["fake"]!='t') {
 	  if(strpos($prob[$i]["fullname"],"(DEL)") !== false) {
-		  echo "  <td nowrap><a href=\"javascript: conf3('problem.php?delete=" . $prob[$i]["number"] . "&input=" . rawurlencode($prob[$i]["inputfilename"]) . 
+		  echo "  <td nowrap><a href=\"javascript: conf3('problem.php?delete=" . $prob[$i]["number"] . "&input=" . myrawurlencode($prob[$i]["inputfilename"]) . 
 			  "')\">" . $prob[$i]["number"];
 		  echo "(deleted)";
 	  } else {
-		  echo "  <td nowrap><a href=\"javascript: conf2('problem.php?delete=" . $prob[$i]["number"] . "&input=" . rawurlencode($prob[$i]["inputfilename"]) . 
+		  echo "  <td nowrap><a href=\"javascript: conf2('problem.php?delete=" . $prob[$i]["number"] . "&input=" . myrawurlencode($prob[$i]["inputfilename"]) . 
 			  "')\">" . $prob[$i]["number"];
 	  }
 	  echo "</a></td>\n";

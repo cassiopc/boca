@@ -1,1 +1,0 @@
-*/2 * * * * root /usr/bin/boca-submit-run-cron >>/var/log/bocacron.out 2>>/var/log/bocacron.err

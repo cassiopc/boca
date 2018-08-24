@@ -34,10 +34,10 @@ if(!isset($_GET["oid"]) || !is_numeric($_GET["oid"]) || !isset($_GET["filename"]
 }
 
 $cf = globalconf();
-$fname = decryptData(rawurldecode($_GET["filename"]), session_id() . $cf["key"]);
+$fname = decryptData(myrawurldecode($_GET["filename"]), session_id() . $cf["key"]);
 
 if(isset($_GET["msg"]))
-	$p = myhash($_GET["oid"] . $fname . rawurldecode($_GET["msg"]) . session_id() . $cf["key"]);
+	$p = myhash($_GET["oid"] . $fname . myrawurldecode($_GET["msg"]) . session_id() . $cf["key"]);
 else
 	$p = myhash($_GET["oid"] . $fname . session_id() . $cf["key"]);
 

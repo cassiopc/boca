@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified: 21/july/2012 by cassio@ime.usp.br
+// Last modified: 22/aug/2018 by cassio@ime.usp.br
 function myshorthash($k) {
 	return hash('sha1',$k);
 }
@@ -27,26 +27,30 @@ function myhmac($k,$d) {
 }
 
 function encryptData($text,$key,$compress=true) {
-	if(!function_exists('mcrypt_get_iv_size')) {
-		MSGError("Encryption error -- mcrypt not installed -- contact an admin (" . getFunctionName() .")");
-		LogError("Encryption error -- mcrypt not installed -- contact an admin (" . getFunctionName() .")");
+	if(!function_exists('openssl_cipher_iv_length')) {
+		MSGError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
+		LogError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
 		return "";
 	}
-	$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
-	$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+	$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
 	$key = myhash($key . "123456789012345678901234567890"); // . myhash($key);
 	$grade='##';
 	if($compress) {
 		$text = zipstr($text);
 		$grade = '@#';
 	}
-	$crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, substr(pack("H*", $key),0,32), $text . myshorthash($text) . $grade, MCRYPT_MODE_CBC, $iv);
+	$crypttext = openssl_encrypt($text . myshorthash($text) . $grade, 'aes-256-cbc', substr(pack("H*", $key),0,32), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 	return base64_encode($crypttext . $iv);
 }
 
 function decryptData($crypttext,$key,$txt='') {
+	if(!function_exists('openssl_cipher_iv_length')) {
+		MSGError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
+		LogError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
+		return "";
+	}
 	$crypttext = base64_decode($crypttext);
-	$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
+	$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
 	$test1='';
 	$test2='x';
 	$clen = strlen($crypttext);
@@ -54,7 +58,8 @@ function decryptData($crypttext,$key,$txt='') {
 		$iv = substr($crypttext, $clen-$iv_size, $iv_size);
 		$crypttext = substr($crypttext, 0, $clen-$iv_size);
 		$key = myhash($key . "123456789012345678901234567890"); // . myhash($key);
-		$decrypttext = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, substr(pack("H*", $key),0,32), $crypttext, MCRYPT_MODE_CBC, $iv);
+
+		$decrypttext = openssl_decrypt($crypttext, 'aes-256-cbc', substr(pack("H*", $key),0,32), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 		$pos = strrpos($decrypttext,"#");
 		$iscompressed=false;
 		if(substr($decrypttext,$pos-1,1)=='@') $iscompressed=true;

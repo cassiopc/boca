@@ -59,7 +59,6 @@ for ($i=0; $i<count($run); $i++) {
 
   echo "  <td nowrap>" . dateconvsimple($run[$i]["timestamp"]) . "</td>\n";
   echo "  <td nowrap>" . $run[$i]["usernumber"] . " (" . $run[$i]["usersitenumber"] . ")</td>\n";
-  $if = rawurlencode($run[$i]["filename"]);
   if($run[$i]["status"]=="active") {
     echo "<td nowrap><a href=\"../filedownload.php?". filedownload($run[$i]["oid"],$run[$i]["filename"]) . "\">";
     echo $run[$i]["filename"] . "</a>";
