@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -e
+
+. /usr/share/debconf/confmodule
+
+priority=high
+
+case "$1" in
+  configure|reconfigure)
+    if [[ -e "/etc/boca.conf" ]]; then
+      . /etc/boca.conf
+      if [[ "$bdserver" != "" ]]; then
+        echo "If you want to reset DB configuration, please unset \"bdserver\" in /etc/boca.conf"
+        exit 0
+      fi
+    fi
+    db_input high boca-common/dbhost || true
+    db_go || true
+
+    db_get boca-common/dbhost || true
+    DBHOST="$RET"
+
+    if [[ "x$DBHOST" == "x" ]]; then
+      DBHOST=localhost
+    fi
+
+    db_input high boca-common/dbpassword || true
+    db_go || true
+
+    db_get boca-common/dbpassword || true
+    PASSWORD="$RET"
+
+    if [[ "x$PASSWORD" == "x" ]]; then
+      printf "Generating password with makepasswd"
+      PASSWORD="$(makepasswd --chars 20)"
+      echo .
+    fi
+    export PASSWD="$PASSWORD"
+    boca-config-dbhost $DBHOST
+    unset PASSWD
+    ;;
+  *)
+    ;;
+esac
+
+chmod 600 /var/www/boca/src/private/conf.php
+chown www-data.www-data /var/www/boca/src/private/conf.php
+
+exit 0

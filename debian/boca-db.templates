@@ -1,0 +1,11 @@
+Template: boca-db/dbpassword
+Type: password
+Description: Please provide a password for BOCA database:
+ Please, do not forget this password. You will need it to provide it while
+ configuring boca-web and boca-autojudge.
+
+Template: boca-db/createdb
+Type: select
+Choices: Yes, No
+Description: Should a new DB be created for BOCA?
+ Warning: This operation will erase any existing previously created BOCA DB

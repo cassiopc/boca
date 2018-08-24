@@ -3,8 +3,14 @@
 override_dh_auto_install:
 	mkdir -p debian/boca-submission-tools
 	make -j1 install-submission-tools DESTDIR=debian/boca-submission-tools
-	mkdir -p debian/boca
-	make -j1 install DESTDIR=debian/boca
+	mkdir -p debian/boca-web
+	make -j1 install-bocaapache DESTDIR=debian/boca-web
+	mkdir -p debian/boca-autojudge
+	make -j1 install-bocaautojudge DESTDIR=debian/boca-autojudge
+	mkdir -p debian/boca-db
+	make -j1 install-bocadb DESTDIR=debian/boca-db
+	mkdir -p debian/boca-common
+	make -j1 install-bocacommon DESTDIR=debian/boca-common
 
 %:
 	dh $@

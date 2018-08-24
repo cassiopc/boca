@@ -1,0 +1,24 @@
+#!/bin/bash
+
+. /usr/share/debconf/confmodule
+
+chown -R www-data.www-data /var/www/boca
+chmod -R go-rwx /var/www/boca/src/private
+
+a2ensite default-ssl
+a2enmod ssl
+a2enmod socache_shmcb
+a2enmod proxy_fcgi
+
+# Make sure embedded apache php module is not loaded
+a2dismod php7.2 || true
+
+#enable php fpm instead
+a2enconf php7.2-fpm
+
+service apache2 restart || true
+
+#remember to reset possible stored password from debconf
+db_reset boca-common/dbpassword || true
+
+exit 0

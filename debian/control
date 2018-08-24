@@ -2,20 +2,63 @@ Source: boca
 Section: misc
 Priority: optional
 Maintainer: BOCA Development Team <bocasystem@gmail.com>
+Uploaders: Cassio Polpo de Campos <cassiopc@gmail.com>, Bruno Cesar Ribas <brunoribas@gmail.com>
 Build-Depends: debhelper, build-essential
 
-Package: maratona-boca
-Architecture: all
-Depends: boca
-Description: Virtual package that depends on BOCA
-
 Package: boca
-Architecture: amd64
-Depends: php-zip, debootstrap, schroot, quotatool, makepasswd, apache2, libapache2-mod-php, sharutils, wget, coreutils, php, php-cli, php-pgsql, php-gd, postgresql, postgresql-client, libany-uri-escape-perl, php-xml, openssl
+Architecture: all
+Depends: boca-common, boca-web, boca-db, boca-autojudge
+Provides: maratona-boca
 Description: BOCA is a software created to control a contest with the ACM ICPC rules.
   BOCA is a software created to control a contest with the ACM International
   Collegiate Programming Contest rules. It has been developed in PHP and the
   interaction between judges and the system is done through a web browser.
+  .
+  This package install all boca related packages to run everything in one
+  single machine.
+
+Package: boca-db
+Architecture: all
+Pre-depends: postgresql
+Depends: boca-common
+Description: BOCA - database
+  BOCA is a software created to control a contest with the ACM International
+  Collegiate Programming Contest rules. It has been developed in PHP and the
+  interaction between judges and the system is done through a web browser.
+  .
+  This package provides a full database to run a contest on.
+
+Package: boca-web
+Architecture: all
+Depends: boca-common, apache2, php-fpm, php
+Description: BOCA - WEB files
+  BOCA is a software created to control a contest with the ACM International
+  Collegiate Programming Contest rules. It has been developed in PHP and the
+  interaction between judges and the system is done through a web browser.
+  .
+  This package provides only web contents.
+
+Package: boca-common
+Architecture: all
+Pre-Depends: debconf, makepasswd, coreutils, sharutils
+Depends: php-zip, wget, php-cli, php-pgsql, php-gd, postgresql-client, php-xml, openssl, libany-uri-escape-perl
+Description: BOCA - Common files
+  BOCA is a software created to control a contest with the ACM International
+  Collegiate Programming Contest rules. It has been developed in PHP and the
+  interaction between judges and the system is done through a web browser.
+  .
+  This package contains shared files with all BOCA packages.
+
+Package: boca-autojudge
+Architecture: amd64
+Depends: boca-common, debootstrap, schroot, quotatool, makepasswd
+Description: BOCA - AutoJudge
+  BOCA is a software created to control a contest with the ACM International
+  Collegiate Programming Contest rules. It has been developed in PHP and the
+  interaction between judges and the system is done through a web browser.
+  .
+  This package contains files to generate and run the autojudge system for
+  BOCA.
 
 Package: boca-submission-tools
 Architecture: amd64
@@ -23,3 +66,4 @@ Depends: sharutils, wget, coreutils, libany-uri-escape-perl, openssl, openssh-se
 Description: BOCA submission tools.
   This package provides tools to submit codes to a running boca server
   without using the web interface.
+

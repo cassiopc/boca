@@ -1,0 +1,75 @@
+#!/bin/bash
+
+set -e
+
+. /usr/share/debconf/confmodule
+
+priority=high
+
+case "$1" in
+  configure|reconfigure)
+
+    if [[ -e "/etc/boca.conf" ]]; then
+      . /etc/boca.conf
+      if [[ "$bdcreated" != "" ]]; then
+        echo "If you want to reset DB configuration, please unset \"bdcreated\" in /etc/boca.conf"
+        exit 0
+      fi
+    fi
+
+    #Assume DBHOST will be localhost, since this is the package that
+    #provides postgresql
+    #XXX future work make it work as a backup DB server
+    DBHOST=localhost
+
+    db_get boca-common/dbpassword || true
+    PASSWORD="$RET"
+
+    #If we don't have a password from boca-common 2 things could be
+    #happened
+    #1) dpkg cleaned the password already
+    #2) The user did not provide a password
+    #So we will ask for a password
+    if [[ "x$PASSWORD" == "x" ]]; then
+      db_input critical boca-db/dbpassword || true
+      db_go || true
+      db_get boca-db/dbpassword || true
+      PASSWORD="$RET"
+      db_reset boca-db/dbpassword
+    else
+      db_reset boca-common/dbpassword
+    fi
+
+    if [[ "x$PASSWORD" == "x" ]]; then
+      printf "Generating password with makepasswd"
+      PASSWORD="$(makepasswd --chars 20)"
+      echo .
+      echo "Your DB password is '$PASSWORD' take care of it."
+    fi
+    export PASSWD="$PASSWORD"
+    boca-config-dbhost $DBHOST
+    unset PASSWD
+    postgresuser=postgres
+    su - $postgresuser -c "echo drop user bocauser | psql -d template1 >/dev/null 2>/dev/null"
+    su - $postgresuser -c "echo create user bocauser createdb password \'$PASSWORD\'| psql -d template1"
+    su - $postgresuser -c "echo alter user bocauser createdb password \'$PASSWORD\'| psql -d template1"
+
+    db_input critical boca-db/createdb || true
+    db_go || true
+
+    db_get boca-db/createdb || true
+
+    if  [[ "$RET" == "Yes" ]]; then
+      echo YES |php /var/www/boca/src/private/createdb.php
+      echo "bdcreated=y" >> /etc/boca.conf
+    fi
+    db_reset boca-db/createdb
+
+    ;;
+  *)
+    ;;
+esac
+
+service postgresql restart || true
+
+exit 0
