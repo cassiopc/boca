@@ -1,1 +1,1 @@
-* * * * * root /usr/sbin/boca-submit-logroot >>/var/log/boca-submit-logroot.out 2>>/var/log/boca-submit-logroot.err
+* * * * * root /usr/sbin/boca-submit-log >>/var/log/boca-submit-log.out 2>>/var/log/boca-submit-log.err
