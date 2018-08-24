@@ -9,6 +9,14 @@ priority=high
 case "$1" in
   configure|reconfigure)
 
+    if [[ -e "/etc/boca.conf" ]]; then
+      . /etc/boca.conf
+      if [[ "$bdcreated" != "" ]]; then
+        echo "If you want to reset DB configuration, please unset \"bdcreated\" in /etc/boca.conf"
+        exit 0
+      fi
+    fi
+
     #Assume DBHOST will be localhost, since this is the package that
     #provides postgresql
     #XXX future work make it work as a backup DB server
@@ -53,6 +61,7 @@ case "$1" in
 
     if  [[ "$RET" == "Yes" ]]; then
       echo YES |php /var/www/boca/src/private/createdb.php
+      echo "bdcreated=y" >> /etc/boca.conf
     fi
     db_reset boca-db/createdb
 

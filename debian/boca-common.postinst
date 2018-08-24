@@ -8,6 +8,13 @@ priority=high
 
 case "$1" in
   configure|reconfigure)
+    if [[ -e "/etc/boca.conf" ]]; then
+      . /etc/boca.conf
+      if [[ "$bdserver" != "" ]]; then
+        echo "If you want to reset DB configuration, please unset \"bdserver\" in /etc/boca.conf"
+        exit 0
+      fi
+    fi
     db_input high boca-common/dbhost || true
     db_go || true
 
