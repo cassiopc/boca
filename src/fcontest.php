@@ -125,7 +125,7 @@ CREATE TABLE \"sitetimetable\" (
 	$r = DBexec($c, "CREATE INDEX \"sitetimesite_index\" ON \"sitetimetable\" USING btree ".
 	            "(\"contestnumber\" int4_ops, \"sitenumber\" int4_ops)", "DBCreateSiteTimeTable(create site_index)");
 }
-// begin; update answertable set updatetime=EXTRACT(EPOCH FROM now());
+// begin; update answertable set updatetime=EXTRACT(EPOCH FROM now()); select * from answertable;
 // begin; update langtable set updatetime=EXTRACT(EPOCH FROM now()); select * from langtable;
 // begin; update problemtable set updatetime=EXTRACT(EPOCH FROM now()); select * from problemtable;
 

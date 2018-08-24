@@ -49,7 +49,7 @@ $clar = DBOpenClarsInSites($_SESSION["usertable"]["contestnumber"], $s["sitejudg
 
 for ($i=0; $i<count($clar); $i++) {
   echo " <tr>\n";
-  if (strpos($clar[$i]["status"], "answered") === false)
+  if (strpos($clar[$i]["status"], "answered") === false) // && strpos($_SESSION["usertable"]['username'], "setter") !== false)
     echo "  <td nowrap><a href=\"claredit.php?clarnumber=".$clar[$i]["number"]."&clarsitenumber=".$clar[$i]["site"] .
          "\">" . $clar[$i]["number"] . "</td>\n";
   else

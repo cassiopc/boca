@@ -60,7 +60,7 @@ $runtmp = $_SESSION["locr"] . $ds . "private" . $ds . "runtmp" . $ds . "run-cont
 	"-site". $_SESSION["usertable"]["usersitenumber"] . "-user" . $_SESSION["usertable"]["usernumber"] . ".php";
 $doslow=true;
 if(file_exists($runtmp)) {
-	if(($strtmp = file_get_contents($runtmp,FALSE,NULL,-1,1000000)) !== FALSE) {
+	if(($strtmp = file_get_contents($runtmp,FALSE,NULL,0,1000000)) !== FALSE) {
 		$postab=strpos($strtmp,"\t");
 		$conf=globalconf();
 		$strcolors = decryptData(substr($strtmp,$postab+1,strpos($strtmp,"\n")-$postab-1),$conf['key'],'');

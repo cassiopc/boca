@@ -359,13 +359,14 @@ function DBGetRunToAnswerC($number,$site,$contest,$chief) {
 		"r.runnumber=$number";
 	if ($chief != 1) {
 		$sql .= " and (r.runstatus='openrun' or " .
-			"(r.runstatus='judged+' and r.runjudge is NULL) or " .
-			"((r.runstatus='judging' or r.runstatus='judged+') and " .
-			" (r.runjudge1 is null or r.runjudge2 is null or " .
-			" ((r.runjudge1=" . $_SESSION["usertable"]["usernumber"] . " and " .
-			"   r.runjudgesite1=" . $_SESSION["usertable"]["usersitenumber"] . ") or " .
-			" (r.runjudge2=" . $_SESSION["usertable"]["usernumber"] . " and " .
-			"  r.runjudgesite2=" . $_SESSION["usertable"]["usersitenumber"] . ")))))";
+		  "(r.runstatus='judged+' and r.runjudge is NULL) or " .
+		  "((r.runstatus='judging' or r.runstatus='judged+') and " .
+		  " (r.runjudge1 is null or " .
+		  "  (r.runjudge2 is null)" . // " and (" . $_SESSION["usertable"]["usernumber"] . ">=120000 or r.runjudge1>=120000))" .
+		  " or ((r.runjudge1=" . $_SESSION["usertable"]["usernumber"] . " and " .
+		  "   r.runjudgesite1=" . $_SESSION["usertable"]["usersitenumber"] . ") or " .
+		  " (r.runjudge2=" . $_SESSION["usertable"]["usernumber"] . " and " .
+		  "  r.runjudgesite2=" . $_SESSION["usertable"]["usersitenumber"] . ")))))";
 		$tx = "Judge";
 	} else $tx = "Chief";
 	$r = DBExec ($c, $sql . " for update", "DBGetRunToAnswerC(get run/prob/lang for update)");

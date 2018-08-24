@@ -75,7 +75,7 @@ $redo = TRUE;
 if(!isset($_SESSION['forceredo']) || $_SESSION['forceredo']==false) {
 	$actualdelay = 30;
 	if(file_exists($runtmp)) {
-		if(isset($strtmp) || (($strtmp = file_get_contents($runtmp,FALSE,NULL,-1,1000000)) !== FALSE)) {
+		if(isset($strtmp) || (($strtmp = file_get_contents($runtmp,FALSE,NULL,0,1000000)) !== FALSE)) {
 			list($d) = sscanf($strtmp,"%*s %d");
 			if($d > time() - $actualdelay) {
 				$conf=globalconf();

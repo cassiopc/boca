@@ -91,7 +91,7 @@ if($ds=="") $ds = "/";
 $scoretmp = $_SESSION["locr"] . $ds . "private" . $ds . "scoretmp" . $ds . $_SESSION["usertable"]["usertype"] . '-' . $_SESSION["usertable"]["username"] . ".php";
 $redo = TRUE;
 if(file_exists($scoretmp)) {
-	if(($strtmp = file_get_contents($scoretmp,FALSE,NULL,-1,100000)) !== FALSE) {
+	if(($strtmp = file_get_contents($scoretmp,FALSE,NULL,0,5000000)) !== FALSE) {
 		list($d) = sscanf($strtmp,"%*s %d");
 		if($d > time() - $actualdelay) {
 			$redo = FALSE;
@@ -398,11 +398,14 @@ if($redo) {
 	if(isset($conf['doenc']) && $conf['doenc'])
 	  $strtmp = "<!-- " . time() . " --> <?php exit; ?>\n" . encryptData($strtmp,$conf["key"],false);
 	else $strtmp = "<!-- " . time() . " --> <?php exit; ?>\n" . $strtmp;
-	if(file_put_contents($scoretmp, $strtmp,LOCK_EX)===FALSE) {
+	$randnum = session_id() . "_" . rand();
+	if(file_put_contents($scoretmp . "_" . $randnum, $strtmp,LOCK_EX)===FALSE) {
 		if($_SESSION["usertable"]["usertype"] == 'admin') {
 			MSGError("Cannot write to the score cache file -- performance might be compromised");
 		}
 		LOGError("Cannot write to the ".$_SESSION["usertable"]["usertype"]."-score cache file -- performance might be compromised");
+	} else {
+	  @rename($scoretmp . "_" . $randnum, $scoretmp);
 	}
 	$conf=globalconf();
 	if(isset($conf['doenc']) && $conf['doenc'])
