@@ -17,17 +17,17 @@ ob_end_flush();
 
 function sanitizeFilename($text) 
 {
-  $text = str_replace("*", "", $text);
-  $text = str_replace("$", "", $text);
-  $text = str_replace(")", "", $text);
-  $text = str_replace("(", "", $text);
-  $text = str_replace(";", "", $text);
-  $text = str_replace("&", "", $text);
-  $text = str_replace("<", "", $text);
-  $text = str_replace(">", "", $text); 
-  $text = str_replace("\"", "", $text); 
-  $text = str_replace("'", "", $text);
-  $text = str_replace("`", "", $text);
+  $text = str_replace("*", "_", $text);
+  $text = str_replace("$", "_", $text);
+  $text = str_replace(")", "_", $text);
+  $text = str_replace("(", "_", $text);
+  $text = str_replace(";", "_", $text);
+  $text = str_replace("&", "_", $text);
+  $text = str_replace("<", "_", $text);
+  $text = str_replace(">", "_", $text); 
+  $text = str_replace("\"", "_", $text); 
+  $text = str_replace("'", "_", $text);
+  $text = str_replace("`", "_", $text);
   $text = addslashes($text); 
   return $text; 
 }
@@ -45,7 +45,12 @@ if(isset($_POST["comp"]) && $_POST["comp"] != "" ) {
     $p = myhash($secret[2] . session_id());
     if($p == $password) {
       @mkdir('/var/www/boca/src/private/logexternal/',0770,true);
-      @file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name, '\nbegin ' .  time() . ' ' . base64_decode($_POST['data']), LOCK_EX | FILE_APPEND);
+      if(isset($_POST['logsession']))
+	@file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name . '.logsession', '\nbegin ' .  time() . ' ' . base64_decode($_POST['logsession']), LOCK_EX | FILE_APPEND);
+      if(isset($_POST['logfs']))
+	@file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name . '.logfs', '\nbegin ' .  time() . ' ' . base64_decode($_POST['logfs']), LOCK_EX | FILE_APPEND);
+      if(isset($_POST['logkeys']))
+	@file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name . '.logkeys', '\nbegin ' .  time() . ' ' . base64_decode($_POST['logkeys']), LOCK_EX | FILE_APPEND);
       @file_put_contents("/var/www/boca/src/private/logexternal/logexternal.log", $name . "|" . $secret[0] . '|' . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
       echo "ok\n";
       exit;
