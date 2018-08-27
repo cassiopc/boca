@@ -1,3 +1,11 @@
+boca (1.5.14-2) bionic; urgency=medium
+
+  * New upstream release
+  * Build for ubuntu 18.04
+  * Multiple packages for better granularity
+
+ -- Bruno Cesar Ribas <brunoribas@gmail.com>  Mon, 27 Aug 2018 11:46:18 -0300
+
 boca (1:1.5.13-5) xenial; urgency=high
 
   * Bug Fixes
