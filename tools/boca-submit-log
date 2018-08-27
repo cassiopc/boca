@@ -17,22 +17,22 @@ fi
 
 for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
 
-    grep -e sudo -e "password:session" /var/log/auth.log | tail -n 100 > /root/.logsession.tmp
+    grep -e sudo -e "password:session" /var/log/auth.log | tail -n 500 > /root/.logsession.tmp
     [ -f /root/.logsession ] || touch /root/.logsession
     diff /root/.logsession /root/.logsession.tmp > /root/.logsession.diff 2>/dev/null
     res=$?
 
-    journalctl | grep -i mount | grep -i -e "filesystem" -e "file system" | tail -n 100 > /root/.logfs.tmp
+    journalctl | grep -i mount | tail -n 500 > /root/.logfs.tmp
     [ -f /root/.logfs ] || touch /root/.logfs
     diff /root/.logfs /root/.logfs.tmp > /root/.logfs.diff 2>/dev/null
     resfs=$?
-    grep -i mount /var/log/kern.log | grep -i -e "filesystem" -e "file system" | tail -n 100 > /root/.logkfs.tmp
+    grep -i mount /var/log/kern.log | grep -i -e "filesystem" -e "file system" | tail -n 500 > /root/.logkfs.tmp
     [ -f /root/.logkfs ] || touch /root/.logkfs
     diff /root/.logkfs /root/.logkfs.tmp > /root/.logkfs.diff 2>/dev/null
     reskfs=$?
 
     if [ "$zcount" == "1" ]; then
-	tail -n 1000 /var/log/logkeys.log > /root/.logkeys.tmp
+	tail -n 10000 /var/log/logkeys.log > /root/.logkeys.tmp
 	[ -f /root/.logkeys ] || touch /root/.logkeys
 	diff /root/.logkeys /root/.logkeys.tmp > /root/.logkeys.diff 2>/dev/null
 	reskeys=$?
