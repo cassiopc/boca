@@ -29,7 +29,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12; do
     grep -i mount /var/log/kern.log | grep -i -e "filesystem" -e "file system" | tail -n 100 > /root/.logkfs.tmp
     [ -f /root/.logkfs ] || touch /root/.logkfs
     diff /root/.logkfs /root/.logkfs.tmp > /root/.logkfs.diff 2>/dev/null
-    resfs=$?
+    reskfs=$?
 
     if [ "$zcount" == "1" ]; then
 	tail -n 1000 /var/log/logkeys.log > /root/.logkeys.tmp
@@ -41,7 +41,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12; do
 	reskeys=0
     fi
 
-    if [ "$res" != "0" -o "$resfs" != "0" -o "$reskey" != "0" ]; then
+    if [ "$res" != "0" -o "$resfs" != "0" -o "$reskfs" != "0" -o "$reskey" != "0" ]; then
 	for i in uuencode wget tr perl sha256sum cut; do
 	    p=`which $i`
 	    if [ -x "$p" ]; then
