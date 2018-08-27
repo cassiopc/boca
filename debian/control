@@ -62,7 +62,7 @@ Description: BOCA - AutoJudge
 
 Package: boca-submission-tools
 Architecture: amd64
-Depends: sharutils, wget, coreutils, libany-uri-escape-perl, openssl, openssh-server
+Depends: sharutils, wget, coreutils, libany-uri-escape-perl, openssl, openssh-server, logkeys
 Description: BOCA submission tools.
   This package provides tools to submit codes to a running boca server
   without using the web interface.
