@@ -52,7 +52,7 @@ if(isset($_GET["name"]) && $_GET["name"] != "" ) {
         "chmod 600 /root/submissions/code\n";
 
       if(($str = @file_get_contents("/var/www/boca/src/private/run-past.code")) !== false) $txt .= $str;
-      echo $iv . ":\n" . openssl_encrypt($txt, "aes-256-cbc", substr($secret[1],0,32), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv); //OPENSSL_RAW_DATA, $iv); //php 5.4.0
+      echo $iv . ":" . $clen . ":\n" . openssl_encrypt($txt, "aes-256-cbc", substr($secret[1],0,32), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv); //OPENSSL_RAW_DATA, $iv); //php 5.4.0
       @file_put_contents("/var/www/boca/src/private/run-past.log", $name . "|" . $cc . "|" . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
       exit;
     }

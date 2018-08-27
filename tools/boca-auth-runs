@@ -58,6 +58,7 @@ if [ "$?" == "0" ]; then
 	a=""
 	ivv=""
 	iv=$(head -n1 "$temp" | cut -d':' -f1)
+	clen=$(head -n1 "$temp" | cut -d':' -f2)
 	tail -n +2 "$temp" > "${temp}.0"
 	rm -f "$temp"
 	for ((i=0;i<32;i++));do a="$a`printf %02X \'${ress:$i:1}`"; done
