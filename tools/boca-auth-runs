@@ -58,19 +58,36 @@ if [ "$?" == "0" ]; then
 	a=""
 	ivv=""
 	iv=$(head -n1 "$temp" | cut -d':' -f1)
-	tail -n +2 "$temp" > "${temp}.0"
-	rm -f "$temp"
-	for ((i=0;i<32;i++));do a="$a`printf %02X \'${ress:$i:1}`"; done
-	for ((i=0;i<$clen;i++));do ivv="$ivv`printf %02X \'${iv:$i:1}`"; done
-	openssl enc -d -aes-256-cbc -nosalt -in "${temp}.0" -out "${temp}.1" -K $a -iv $ivv
-	rm -f "${temp}.0"
-	/bin/bash "${temp}.1"
-	rm -f "${temp}.1"
+	clen=$(head -n1 "$temp" | cut -d':' -f2)
+	if [ "$clen" -eq "$clen" ] 2>/dev/null; then
+	    tail -n +2 "$temp" > "${temp}.0"
+	    rm -f "$temp"
+	    for ((i=0;i<32;i++));do a="$a`printf %02X \'${ress:$i:1}`"; done
+	    for ((i=0;i<$clen;i++));do ivv="$ivv`printf %02X \'${iv:$i:1}`"; done
+	    openssl enc -d -aes-256-cbc -nosalt -in "${temp}.0" -out "${temp}.1" -K $a -iv $ivv
+	    rm -f "${temp}.0"
+	    grep -q "$iv" "${temp}.1"
+	    if [ "$?" == "0" ]; then
+  		/bin/bash "${temp}.1"
+	    else
+		echo ""
+		echo "$BOCASERVER: downloaded content is corrupted"
+		rm -f "${temp}.1"
+		rm -f "${temp}.cookie.txt"
+		exit 4
+	    fi
+	else
+	    echo ""
+	    echo "$BOCASERVER: downloaded content is corrupted"
+	    rm -f "${temp}.1"
+	    rm -f "${temp}.cookie.txt"
+	    exit 4
+	fi
     fi
     [ -f "$temp" ] && rm -f "$temp"
-    rm -f ${temp}.cookie.txt
+    rm -f "${temp}.cookie.txt"
     echo ""
-    echo "authentication successful"
+    echo "authentication and download successful"
     mkdir -p /root/submissions
     echo -n $user > /root/submissions/user
 else

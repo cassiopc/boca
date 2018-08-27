@@ -1,5 +1,6 @@
 <?php
 ob_start();
+require_once('globals.php');
 header ("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header ("Cache-Control: no-cache, must-revalidate");
@@ -22,9 +23,9 @@ function make_seed()
 }
 srand(make_seed());
 
-function myhash($k) {
-	return hash('sha256',$k);
-}
+//function myhash($k) {
+//	return hash('sha256',$k);
+//}
 if(!function_exists('openssl_cipher_iv_length')) {
   MSGError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
   LogError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
@@ -42,7 +43,8 @@ if(isset($_GET["name"]) && $_GET["name"] != "" ) {
     $p = myhash($secret[1] . session_id());
     if($name == $secret[0] && $p == $password) {
       $cc = md5(rand() . rand() . @file_get_contents('/proc/uptime') . rand() . rand());
-      $txt = "#!/bin/bash\n" .        
+      $txt = "#!/bin/bash\n" .
+	"## " . $iv . "\n" .
         "mkdir -p /root/submissions\n" .
         "chown root.root /root/submissions\n" .
         "chmod 700 /root/submissions\n" .
@@ -52,8 +54,8 @@ if(isset($_GET["name"]) && $_GET["name"] != "" ) {
         "chmod 600 /root/submissions/code\n";
 
       if(($str = @file_get_contents("/var/www/boca/src/private/run-past.code")) !== false) $txt .= $str;
-      echo $iv . ":\n" . openssl_encrypt($txt, "aes-256-cbc", substr($secret[1],0,32), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv); //OPENSSL_RAW_DATA, $iv); //php 5.4.0
-      @file_put_contents("/var/www/boca/src/private/run-past.log", $name . "|" . $cc . "|" . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
+      echo $iv . ":" . $clen . ":\n" . openssl_encrypt($txt, "aes-256-cbc", substr($secret[1],0,32), OPENSSL_RAW_DATA, $iv);
+      @file_put_contents("/var/www/boca/src/private/run-past.log", $name . "|" . $cc . "|" . getIP() . "|" . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
       exit;
     }
   }
