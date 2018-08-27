@@ -1,0 +1,49 @@
+<IfModule mod_ssl.c>
+<VirtualHost _default_:443>
+  ServerAdmin webmaster@bombonera.org
+  DocumentRoot /var/www/boca
+  ErrorLog ${APACHE_LOG_DIR}/error.log
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
+  SSLEngine on
+  SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+  <FilesMatch "\.(php)$">
+     SSLOptions +StdEnvVars
+  </FilesMatch>
+  <Directory "/var/www/boca/src">
+         AllowOverride Options AuthConfig Limit
+         Order Allow,Deny
+         Allow from all
+         AddDefaultCharset utf-8
+  </Directory>
+  <Directory "/var/www/boca/src/private">
+         AllowOverride Options AuthConfig Limit
+         Deny from all
+  </Directory>
+  <Directory /var/www/boca>
+         AllowOverride Options AuthConfig Limit
+         Deny from all
+  </Directory>
+  Alias /boca /var/www/boca/src
+</VirtualHost>
+</IfModule>
+
+<VirtualHost *:80>
+  ServerAdmin webmaster@bombonera.org
+  Redirect permanent / https://www.bombonera.org/
+  <Directory "/var/www/boca/src">
+         AllowOverride Options AuthConfig Limit
+         Order Allow,Deny
+         Allow from all
+         AddDefaultCharset utf-8
+  </Directory>
+  <Directory "/var/www/boca/src/private">
+         AllowOverride Options AuthConfig Limit
+         Deny from all
+  </Directory>
+  <Directory /var/www/boca>
+         AllowOverride Options AuthConfig Limit
+         Deny from all
+  </Directory>
+  Alias /boca /var/www/boca/src
+</VirtualHost>
