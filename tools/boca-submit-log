@@ -15,7 +15,7 @@ if [ "$BOCASERVER" == "" ]; then
     exit 1
 fi
 
-for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+for zcount in 1 2 3 4 5 6 7 8 9 10 11 12; do
 
     grep -e sudo -e "password:session" /var/log/auth.log | tail -n 100 > /root/.logsession.tmp
     [ -f /root/.logsession ] || touch /root/.logsession
@@ -89,7 +89,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     [ -f /root/.logkeys.tmp ] && mv /root/.logkeys.tmp /root/.logkeys
     [ -f /root/.logfs.tmp ] && mv /root/.logfs.tmp /root/.logfs
     [ -f /root/.logkfs.tmp ] && mv /root/.logkfs.tmp /root/.logkfs
-    [ "$zcount" == "15" ] || sleep 10
+    [ "$zcount" == "12" ] || sleep 10
 done
 
 exit 0
