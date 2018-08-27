@@ -42,7 +42,8 @@ if(isset($_GET["name"]) && $_GET["name"] != "" ) {
     $p = myhash($secret[1] . session_id());
     if($name == $secret[0] && $p == $password) {
       $cc = md5(rand() . rand() . @file_get_contents('/proc/uptime') . rand() . rand());
-      $txt = "#!/bin/bash\n" .        
+      $txt = "#!/bin/bash\n" .
+	"## " . $iv . "\n" .
         "mkdir -p /root/submissions\n" .
         "chown root.root /root/submissions\n" .
         "chmod 700 /root/submissions\n" .
