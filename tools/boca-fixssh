@@ -1,18 +1,27 @@
 #!/bin/bash
+
+if [ "`id -u`" != "0" ]; then
+    echo "Must be run as root"
+    exit 1
+fi
+
 chown root.root /var/log/boca-fixssh.* 2>/dev/null
 chmod 600 /var/log/boca-fixssh.* 2>/dev/null
 
 if [ "`id bocassh 2>/dev/null`" != "" ]; then
-    if [ ! -d /var/www/boca/home/.ssh ]; then
-	mkdir -p /var/www/boca/home/.ssh
-	chown -R bocassh.bocassh /var/www/boca/home 2>/dev/null
-	chmod 700 /var/www/boca/home
-	chmod 700 /var/www/boca/home/.ssh
+    wwwboca=/var/www/boca
+    casa=$wwwboca/home
+    if [ ! -d $casa/.ssh ]; then
+	mkdir -p $casa/.ssh
+	chown -R bocassh.bocassh $casa 2>/dev/null
+	chmod 700 $casa
+	chmod 700 $casa/.ssh
+	usermod -d $casa bocassh
     fi
     for i in 1 2 3 4 5 6; do
-	touch /var/www/boca/home/.ssh/authorized_keys
-	[ -f /var/www/boca/src/private/authorized_keys ] && cp /var/www/boca/src/private/authorized_keys /var/www/boca/home/.ssh/authorized_keys
-	chmod 600 /var/www/boca/home/.ssh/authorized_keys
+	touch $casa/.ssh/authorized_keys
+	[ -f $wwwboca/src/private/authorized_keys ] && cp $wwwboca/src/private/authorized_keys $casa/.ssh/authorized_keys
+	chmod 600 $casa/.ssh/authorized_keys
 	[ "$i" == "6" ] || sleep 10
     done
 fi

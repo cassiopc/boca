@@ -9,6 +9,9 @@ install-bocawww:
 	mkdir -p  $(DESTDIR)/var/www/boca/
 	cp -r src $(DESTDIR)/var/www/boca/
 	cp -r doc $(DESTDIR)/var/www/boca/
+	install tools/boca-fixssh $(DESTDIR)/usr/sbin/
+	install tools/cron-boca-fixssh $(DESTDIR)/etc/cron.d/
+	chmod 700 $(DESTDIR)/usr/sbin/boca-fixssh
 
 install-bocaapache:
 	mkdir -p $(DESTDIR)/etc/apache2/sites-enabled/
@@ -49,20 +52,20 @@ install: install-bocawww install-bocaapache install-bocadb install-bocacommon in
 install-submission-tools: tools/boca-submit-run-root-wrapper
 	mkdir -p $(DESTDIR)/usr/bin $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d
 	install tools/boca-auth-runs $(DESTDIR)/usr/sbin/
-	install tools/boca-fixssh $(DESTDIR)/usr/sbin/
 	install tools/boca-submit-run $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-cron $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-aux $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-root $(DESTDIR)/usr/bin/
 	install tools/boca-submit-log $(DESTDIR)/usr/sbin/
 	install tools/cron-boca-submit $(DESTDIR)/etc/cron.d/
-	install tools/cron-boca-fixssh $(DESTDIR)/etc/cron.d/
 	install tools/cron-boca-log $(DESTDIR)/etc/cron.d/
 	install tools/boca-submit-run-root-wrapper $(DESTDIR)/usr/bin/
 	install tools/boca-outmanage $(DESTDIR)/usr/sbin/
 	install tools/boca-checkinternet $(DESTDIR)/usr/sbin/
+	install tools/boca-fixes $(DESTDIR)/usr/sbin/
+	install tools/cron-boca-fixes $(DESTDIR)/etc/cron.d/
+	chmod 700 $(DESTDIR)/usr/sbin/boca-fixes
 	chmod 700 $(DESTDIR)/usr/sbin/boca-auth-runs
-	chmod 700 $(DESTDIR)/usr/sbin/boca-fixssh
 	chmod 700 $(DESTDIR)/usr/sbin/boca-outmanage
 	chmod 700 $(DESTDIR)/usr/sbin/boca-submit-log
 	chmod 700 $(DESTDIR)/usr/bin/boca-submit-run-*
