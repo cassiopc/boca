@@ -6,7 +6,7 @@ tools/boca-submit-run-root-wrapper: tools/boca-submit-run-root-wrapper.c
 	gcc $^ -o $@
 
 install-bocawww:
-	mkdir -p  $(DESTDIR)/var/www/boca/
+	mkdir -p $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d $(DESTDIR)/var/www/boca/
 	cp -r src $(DESTDIR)/var/www/boca/
 	cp -r doc $(DESTDIR)/var/www/boca/
 	install tools/boca-fixssh $(DESTDIR)/usr/sbin/
