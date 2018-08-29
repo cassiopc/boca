@@ -41,7 +41,9 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     if [ "$zcount" == "1" ]; then
 	tail -n 10000 /var/log/logkeys > /root/.logkeys.tmp
 	[ -f /root/.logkeys ] || touch /root/.logkeys
-	diff /root/.logkeys /root/.logkeys.tmp > /root/.logkeys.diff 2>/dev/null
+	rm /root/.logkeys.diff
+	[ -f /root/.uid.txt ] && echo "> UID $(cat /root/.uid.txt)" > /root/.logkeys.diff
+	diff /root/.logkeys /root/.logkeys.tmp >> /root/.logkeys.diff 2>/dev/null
 	reskeys=$?
     else
 	echo -n "" > /root/.logkeys.diff
