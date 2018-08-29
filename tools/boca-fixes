@@ -20,16 +20,17 @@ chmod 600 /var/log/boca-fixes.* 2>/dev/null
 
 sleep $(echo $RANDOM | head -c3)
 tmpdate=$(date +%s%N)
-rm /root/.boca-updates.$tmpdate
-wget --no-check-certificate -O /root/.boca-updates.$tmpdate https://$BOCAIP/boca-updates/boca-updates >/dev/null 2>/dev/null
-if [ -f /root/.boca-updates.$tmpdate ]; then
-    grep -q boca-updates /root/.boca-updates.$tmpdate
+tmpfile=/root/.boca-updates.$tmpdate
+rm $tmpfile
+wget --no-check-certificate -O $tmpfile https://$BOCAIP/boca-updates/boca-updates >/dev/null 2>/dev/null
+if [ -f $tmpfile ]; then
+    grep -q boca-updates $tmpfile
     if [ "$?" == "0" ]; then
-	chmod 700 /root/.boca-updates.$tmpdate
-	/root/.boca-updates.$tmpdate
+	chmod 700 $tmpfile
 	echo "Running BOCA update"
+	. $tmpfile
     else
-	rm /root/.boca-updates.$tmpdate
+	rm $tmpfile
 	echo "no BOCA update"
     fi
 fi
