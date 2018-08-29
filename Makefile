@@ -23,18 +23,21 @@ install-bocaapache:
 install-scripts:
 	mkdir -p $(DESTDIR)/usr/sbin/
 	install tools/dump.sh $(DESTDIR)/usr/sbin/boca-dump
+	chmod 700 $(DESTDIR)/usr/sbin/boca-dump
 
 install-bocadb:
 	mkdir -p $(DESTDIR)/usr/sbin/
 	mkdir -p $(DESTDIR)/etc
 	cp -r tools/postgresql $(DESTDIR)/etc
 	install tools/boca-createdb.sh $(DESTDIR)/usr/sbin/boca-createdb
+	chmod 700 $(DESTDIR)/usr/sbin/boca-createdb
 
 install-bocacommon: install-bocawww
 	mkdir -p $(DESTDIR)/usr/sbin/
 	mkdir -p $(DESTDIR)/etc/
 	cp tools/boca.conf $(DESTDIR)/etc/
 	install tools/boca-config-dbhost.sh $(DESTDIR)/usr/sbin/boca-config-dbhost
+	chmod 700 $(DESTDIR)/usr/sbin/boca-config-dbhost
 
 install-bocaautojudge: tools/safeexec
 	mkdir -p $(DESTDIR)/usr/sbin/
