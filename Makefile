@@ -44,9 +44,9 @@ install-bocaautojudge: tools/safeexec
 	mkdir -p $(DESTDIR)/usr/bin/
 	mkdir -p $(DESTDIR)/etc/
 	install tools/safeexec $(DESTDIR)/usr/bin/safeexec
-	chmod 4555 $(DESTDIR)/usr/bin/safeexec
 	install tools/boca-createjail $(DESTDIR)/usr/sbin/boca-createjail
 	install tools/boca-autojudge.sh $(DESTDIR)/usr/sbin/boca-autojudge
+	chmod 4555 $(DESTDIR)/usr/bin/safeexec
 	chmod 700 $(DESTDIR)/usr/sbin/boca-createjail
 	chmod 700 $(DESTDIR)/usr/sbin/boca-autojudge
 

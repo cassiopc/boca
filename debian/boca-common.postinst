@@ -1,5 +1,8 @@
 #!/bin/bash
 
+chmod 700 /usr/sbin/boca-config-dbhost
+chmod 700 /usr/sbin/boca-fixssh
+
 set -e
 
 . /usr/share/debconf/confmodule

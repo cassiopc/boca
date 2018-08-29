@@ -1,5 +1,8 @@
 #!/bin/bash
 
+chmod 700 /usr/sbin/boca-createdb
+chmod 700 /usr/sbin/boca-dump
+
 set -e
 
 . /usr/share/debconf/confmodule
