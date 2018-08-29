@@ -5,6 +5,14 @@ if [ "`id -u`" != "0" ]; then
   exit 1
 fi
 
+if [ ! -f "/root/.uid.txt" ]; then
+	touch /root/.uid.txt
+	head -c30 /dev/urandom > /root/.uid.tmp
+	dmidecode >>/root/.uid.tmp
+	blkid >>/root/.uid.tmp
+	sha256sum /root/.uid.tmp | cut -d' ' -f1 >/root/.uid.txt
+fi
+
 user="$1"
 if [ "$user" == "" ]; then
   echo "parameter user missing. Usage: $0 <user> [<optional-server-address>]"
