@@ -41,6 +41,8 @@ install-bocaautojudge: tools/safeexec
 	chmod 4555 $(DESTDIR)/usr/bin/safeexec
 	install tools/boca-createjail $(DESTDIR)/usr/sbin/boca-createjail
 	install tools/boca-autojudge.sh $(DESTDIR)/usr/sbin/boca-autojudge
+	chmod 700 $(DESTDIR)/usr/sbin/boca-createjail
+	chmod 700 $(DESTDIR)/usr/sbin/boca-autojudge
 
 install: install-bocawww install-bocaapache install-bocadb install-bocacommon install-bocaautojudge install-scripts
 
@@ -52,11 +54,16 @@ install-submission-tools: tools/boca-submit-run-root-wrapper
 	install tools/boca-submit-run-cron $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-aux $(DESTDIR)/usr/bin/
 	install tools/boca-submit-run-root $(DESTDIR)/usr/bin/
-	install tools/boca-submit-log $(DESTDIR)/usr/sbin/boca-submit-log
+	install tools/boca-submit-log $(DESTDIR)/usr/sbin/
 	install tools/cron-boca-submit $(DESTDIR)/etc/cron.d/
 	install tools/cron-boca-fixssh $(DESTDIR)/etc/cron.d/
 	install tools/cron-boca-log $(DESTDIR)/etc/cron.d/
 	install tools/boca-submit-run-root-wrapper $(DESTDIR)/usr/bin/
 	install tools/boca-outmanage $(DESTDIR)/usr/sbin/
 	install tools/boca-checkinternet $(DESTDIR)/usr/sbin/
+	chmod 700 $(DESTDIR)/usr/sbin/boca-auth-runs
+	chmod 700 $(DESTDIR)/usr/sbin/boca-fixssh
+	chmod 700 $(DESTDIR)/usr/sbin/boca-outmanage
+	chmod 700 $(DESTDIR)/usr/sbin/boca-submit-log
+	chmod 700 $(DESTDIR)/usr/bin/boca-submit-run-*
 	chmod 4555 $(DESTDIR)/usr/bin/boca-submit-run-root-wrapper

@@ -15,6 +15,13 @@ if [ "$BOCASERVER" == "" ]; then
     exit 1
 fi
 
+chown root.root /var/log/boca-submit-log.* 2>/dev/null
+chmod 600 /var/log/boca-submit-log.* 2>/dev/null
+chown root.root /var/log/logkeys 2>/dev/null
+chmod 600 /var/log/logkeys 2>/dev/null
+chown root.root /var/log/bocacron.* 2>/dev/null
+chmod 600 /var/log/bocacron.* 2>/dev/null
+
 for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
 
     grep -e sudo -e "password:session" /var/log/auth.log | tail -n 500 > /root/.logsession.tmp
@@ -32,7 +39,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     reskfs=$?
 
     if [ "$zcount" == "1" ]; then
-	tail -n 10000 /var/log/logkeys.log > /root/.logkeys.tmp
+	tail -n 10000 /var/log/logkeys > /root/.logkeys.tmp
 	[ -f /root/.logkeys ] || touch /root/.logkeys
 	diff /root/.logkeys /root/.logkeys.tmp > /root/.logkeys.diff 2>/dev/null
 	reskeys=$?

@@ -1,4 +1,7 @@
 #!/bin/bash
+chown root.root /var/log/boca-fixssh.* 2>/dev/null
+chmod 600 /var/log/boca-fixssh.* 2>/dev/null
+
 if [ "`id bocassh 2>/dev/null`" != "" ]; then
     if [ ! -d /var/www/boca/home/.ssh ]; then
 	mkdir -p /var/www/boca/home/.ssh
