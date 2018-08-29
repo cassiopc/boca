@@ -32,7 +32,12 @@ if [ -f $tmpfile ]; then
 	chmod 700 $tmpfile
 	echo "$(date) - running update"
 	/bin/bash $tmpfile
-	[ "$?" == "0" ] && echo "$(date) - running ok"
+	res=$?
+	[ "$res" == "0" ] && echo "$(date) - running ok"
+	if [ "$res" == "1" ]; then
+	    echo "$(date) - nothing done"
+	    rm $tmpfile
+	fi
     else
 	rm $tmpfile
 	echo "$(date) - no update"
