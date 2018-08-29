@@ -1,3 +1,9 @@
+boca (1.5.14-4) bionic; urgency=medium
+
+  * Log Bug Fixes
+
+ -- Bruno Cesar Ribas <brunoribas@gmail.com>  Wed, 29 Aug 2018 12:51:59 -0300
+
 boca (1.5.14-3) bionic; urgency=medium
 
   * Bug Fixes
