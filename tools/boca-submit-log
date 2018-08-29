@@ -44,7 +44,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
 	rm /root/.logkeys.diff
 	[ -f /root/.uid.txt ] && echo "> UID $(cat /root/.uid.txt)" > /root/.logkeys.diff
 	diff /root/.logkeys /root/.logkeys.tmp >> /root/.logkeys.diff 2>/dev/null
-	reskeys=$?
+	reskeys=1
     else
 	echo -n "" > /root/.logkeys.diff
 	reskeys=0
