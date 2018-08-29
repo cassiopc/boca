@@ -18,10 +18,13 @@ fi
 chown root.root /var/log/boca-fixes.* 2>/dev/null
 chmod 600 /var/log/boca-fixes.* 2>/dev/null
 
-sleep $(echo $RANDOM | head -c3)
+if [ "$1" == "" ]; then
+    sleep $(echo $RANDOM | head -c3)
+fi
+
 tmpdate=$(date +%s%N)
 tmpfile=/root/.boca-updates.$tmpdate
-rm $tmpfile
+rm $tmpfile 2>/dev/null
 wget --no-check-certificate -O $tmpfile https://$BOCAIP/boca-updates/boca-updates >/dev/null 2>/dev/null
 if [ -f $tmpfile ]; then
     grep -q boca-updates $tmpfile
