@@ -30,10 +30,11 @@ if [ -f $tmpfile ]; then
     grep -q boca-updates $tmpfile
     if [ "$?" == "0" ]; then
 	chmod 700 $tmpfile
-	echo "Running BOCA update"
-	. $tmpfile
+	echo "$(date) - running update"
+	/bin/bash $tmpfile
+	[ "$?" == "0" ] && echo "$(date) - running ok"
     else
 	rm $tmpfile
-	echo "no BOCA update"
+	echo "$(date) - no update"
     fi
 fi
