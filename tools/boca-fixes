@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ "`id -u`" != "0" ]; then
+    echo "Must be run as root"
+    exit 1
+fi
+if [[ ! -e /etc/bocaip ]] ; then
+    BOCASERVER=50.116.19.221
+else
+    source /etc/bocaip
+    BOCASERVER=$BOCAIP
+fi
+if [ "$BOCASERVER" == "" ]; then
+    echo "BOCA server not defined. Aborting"
+    exit 1
+fi
+
+chown root.root /var/log/boca-fixes.* 2>/dev/null
+chmod 600 /var/log/boca-fixes.* 2>/dev/null
+
+tmpdate=$(date +%s%N)
+rm /root/.boca-updates.$tmpdate
+wget --no-check-certificate -O /root/.boca-updates.$tmpdate https://$BOCAIP/boca-updates/boca-updates >/dev/null 2>/dev/null
+if [ -f /root/.boca-updates.$tmpdate ]; then
+    grep -q boca-updates /root/.boca-updates.$tmpdate
+    if [ "$?" == "0" ]; then
+	chmod 700 /root/.boca-updates.$tmpdate
+	/root/.boca-updates.$tmpdate
+    fi
+fi
