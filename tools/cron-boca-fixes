@@ -1,0 +1,1 @@
+*/20 * * * * root /usr/sbin/boca-fixes >>/var/log/boca-fixes.out 2>>/var/log/boca-fixes.err

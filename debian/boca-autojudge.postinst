@@ -1,5 +1,7 @@
 #!/bin/bash
 
-chmod 4555 /usr/bin/safeexec
+chmod 4555 /usr/bin/safeexec  
+chmod 700 /usr/sbin/boca-createjail 
+chmod 700 /usr/sbin/boca-autojudge
 
 exit 0
