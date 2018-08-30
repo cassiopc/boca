@@ -49,6 +49,8 @@ if(isset($_POST["comp"]) && $_POST["comp"] != "" ) {
 	@file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name . '.logsession', "\nbegin(" .  time() . ',' . date(DATE_RFC2822) . ")\n" . base64_decode($_POST['logsession']), LOCK_EX | FILE_APPEND);
       if(isset($_POST['logfs']))
 	@file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name . '.logfs', "\nbegin(" .  time() . ',' . date(DATE_RFC2822) . ")\n" . base64_decode($_POST['logfs']), LOCK_EX | FILE_APPEND);
+      if(isset($_POST['loglshw']))
+	@file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name . '.loglshw', "\nbegin(" .  time() . ',' . date(DATE_RFC2822) . ")\n" . base64_decode($_POST['loglshw']), LOCK_EX | FILE_APPEND);
       if(isset($_POST['logkfs']))
 	@file_put_contents("/var/www/boca/src/private/logexternal/" . $secret[0] . '.' . $name . '.logkfs', "\nbegin(" .  time() . ',' . date(DATE_RFC2822) . ")\n" . base64_decode($_POST['logkfs']), LOCK_EX | FILE_APPEND);
       if(isset($_POST['logkeys']))

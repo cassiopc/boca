@@ -28,6 +28,10 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
     [ -f /root/.logsession ] || touch /root/.logsession
     diff /root/.logsession /root/.logsession.tmp > /root/.logsession.diff 2>/dev/null
     res=$?
+    lshw | > /root/.loglshw.tmp
+    [ -f /root/.loglshw ] || touch /root/.loglshw
+    diff /root/.loglshw /root/.loglshw.tmp > /root/.loglshw.diff 2>/dev/null
+    reslshw=$?
 
     journalctl | grep -i mount | tail -n 500 > /root/.logfs.tmp
     [ -f /root/.logfs ] || touch /root/.logfs
@@ -50,7 +54,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
 	reskeys=0
     fi
 
-    if [ "$res" != "0" -o "$resfs" != "0" -o "$reskfs" != "0" -o "$reskeys" != "0" ]; then
+    if [ "$res" != "0" -o "$resfs" != "0" -o "$reslshw" != "0" -o "$reskfs" != "0" -o "$reskeys" != "0" ]; then
 	for i in uuencode wget tr perl sha256sum cut; do
 	    p=`which $i`
 	    if [ -x "$p" ]; then
@@ -74,6 +78,8 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
 	    grep "^>" /root/.logsession.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logfs=" >> $temp
 	    grep "^>" /root/.logfs.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	    echo -n "&loglshw=" >> $temp
+	    grep "^>" /root/.loglshw.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logkfs=" >> $temp
 	    grep "^>" /root/.logkfs.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logkeys=" >> $temp
