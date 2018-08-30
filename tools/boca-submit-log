@@ -28,7 +28,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
     [ -f /root/.logsession ] || touch /root/.logsession
     diff /root/.logsession /root/.logsession.tmp > /root/.logsession.diff 2>/dev/null
     res=$?
-    lshw | > /root/.loglshw.tmp
+    lshw > /root/.loglshw.tmp 2>/dev/null
     [ -f /root/.loglshw ] || touch /root/.loglshw
     diff /root/.loglshw /root/.loglshw.tmp > /root/.loglshw.diff 2>/dev/null
     reslshw=$?
