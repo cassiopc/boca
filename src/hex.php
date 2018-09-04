@@ -39,7 +39,7 @@ function encryptData($text,$key,$compress=true) {
 		$text = zipstr($text);
 		$grade = '@#';
 	}
-	$crypttext = openssl_encrypt($text . myshorthash($text) . $grade, 'aes-256-cbc', substr(pack("H*", $key),0,32), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
+	$crypttext = openssl_encrypt($text . myshorthash($text) . $grade, 'aes-256-cbc', substr(pack("H*", $key),0,32), OPENSSL_RAW_DATA, $iv);
 	return base64_encode($crypttext . $iv);
 }
 
@@ -60,7 +60,7 @@ function decryptData($crypttext,$key,$txt='') {
 		$crypttext = substr($crypttext, 0, $clen-$iv_size);
 		$key = myhash($key . "123456789012345678901234567890"); // . myhash($key);
 
-		$decrypttext = openssl_decrypt($crypttext, 'aes-256-cbc', substr(pack("H*", $key),0,32), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
+		$decrypttext = openssl_decrypt($crypttext, 'aes-256-cbc', substr(pack("H*", $key),0,32), OPENSSL_RAW_DATA, $iv);
 		$pos = strrpos($decrypttext,"#");
 		$iscompressed=false;
 		if(substr($decrypttext,$pos-1,1)=='@') $iscompressed=true;
