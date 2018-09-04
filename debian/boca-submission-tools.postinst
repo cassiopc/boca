@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #Make sure wrapper is suid and others are not readable
-chmod 4555 /usr/bin/boca-submit-run-root-wrapper 
 chmod 700 /usr/sbin/boca-fixes
 chmod 700 /usr/sbin/boca-auth-runs 
 chmod 700 /usr/sbin/boca-outmanage 
 chmod 700 /usr/sbin/boca-submit-log  
 chmod 700 /usr/bin/boca-submit-run-*
+chmod 4555 /usr/bin/boca-submit-run-root-wrapper 
 
 for i in boca-submit-list boca-submit-oldlist; do
   rm -f /usr/bin/$i || true
