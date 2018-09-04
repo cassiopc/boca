@@ -50,7 +50,8 @@ function decryptData($crypttext,$key,$txt='') {
 		return "";
 	}
 	$crypttext = base64_decode($crypttext);
-	$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+	$iv_size = openssl_cipher_iv_length('aes-256-cbc');
+	$iv = openssl_random_pseudo_bytes($iv_size);
 	$test1='';
 	$test2='x';
 	$clen = strlen($crypttext);
