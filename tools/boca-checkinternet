@@ -4,14 +4,22 @@ debug=0
 if [ "$1" == "-d" -o "$1" == "--debug" -o "$1" == "debug" ]; then
     debug=1
 fi
+long=0
+if [ "$1" == "-l" -o "$2" == "-l" ]; then
+    long=1
+fi
+test1=1
+test2=1
+test3=1
 
-wget -4 -t 2 -T 7 -O - http://www.internic.net 2>/dev/null | grep -iq html
+wget -4 -t 1 -T 2 -O - http://www.internic.net 2>/dev/null | grep -iq html
 test1=$?
-wget -4 -t 2 -T 7 -O - http://maratona.ime.usp.br 2>/dev/null | grep -iq html
-test2=$?
-wget -4 --no-check-certificate -t 2 -T 7 -O - https://www.wikipedia.org 2>/dev/null | grep -iq html
-test3=$?
-
+if [ "$long" == "1" ]; then
+    wget -4 -t 2 -T 7 -O - http://maratona.ime.usp.br 2>/dev/null | grep -iq html
+    test2=$?
+    wget -4 --no-check-certificate -t 2 -T 7 -O - https://www.wikipedia.org 2>/dev/null | grep -iq html
+    test3=$?
+fi
 if [ "$test1" == "0" -o "$test2" == "0" -o "$test3" == "0" ]; then
     if [ $debug == 1 ]; then
 	echo "internet problem (1-$test1-$test2-$test3)"
@@ -19,13 +27,14 @@ if [ "$test1" == "0" -o "$test2" == "0" -o "$test3" == "0" ]; then
     exit 1
 fi
 
-wget -4 -t 2 -T 7 -O - http://192.0.32.9 2>/dev/null | grep -iq html
+[ "$long" == "0" ] && exit 0
+
+wget -4 -t 1 -T 2 -O - http://192.0.32.9 2>/dev/null | grep -iq html
 test1=$?
 wget -4 -t 2 -T 7 -O - http://143.107.45.22 2>/dev/null | grep -iq html
 test2=$?
 wget -4 --no-check-certificate -t 2 -T 7 -O - https://91.198.174.192 2>/dev/null | grep -iq html
 test3=$?
-
 if [ "$test1" == "0" -o "$test2" == "0" -o "$test3" == "0" ]; then
     if [ $debug == 1 ]; then
 	echo "internet problem (2-$test1-$test2-$test3)"
