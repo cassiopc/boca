@@ -22,40 +22,46 @@ chmod 600 /var/log/logkeys 2>/dev/null
 chown root.root /var/log/bocacron.* 2>/dev/null
 chmod 600 /var/log/bocacron.* 2>/dev/null
 
+umask 0077
+ROOTLOGS=/dev/shm/.rootlogs
+mkdir -p "$ROOTLOGS"
+
+cp -a /root/.log* $ROOTLOGS/ 2>/dev/null || true
+
 for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
 
-    grep -e sudo -e "password:session" /var/log/auth.log | tail -n 500 > /root/.logsession.tmp
-    [ -f /root/.logsession ] || touch /root/.logsession
-    diff /root/.logsession /root/.logsession.tmp > /root/.logsession.diff 2>/dev/null
+    grep -e sudo -e "password:session" /var/log/auth.log | tail -n 500 > $ROOTLOGS/.logsession.tmp
+    [ -f $ROOTLOGS/.logsession ] || touch $ROOTLOGS/.logsession
+    diff $ROOTLOGS/.logsession $ROOTLOGS/.logsession.tmp > $ROOTLOGS/.logsession.diff 2>/dev/null
     res=$?
-    lshw > /root/.loglshw.tmp 2>/dev/null
-    [ -f /root/.loglshw ] || touch /root/.loglshw
-    diff /root/.loglshw /root/.loglshw.tmp > /root/.loglshw.diff 2>/dev/null
+    lshw > $ROOTLOGS/.loglshw.tmp 2>/dev/null
+    [ -f $ROOTLOGS/.loglshw ] || touch $ROOTLOGS/.loglshw
+    diff $ROOTLOGS/.loglshw $ROOTLOGS/.loglshw.tmp > $ROOTLOGS/.loglshw.diff 2>/dev/null
     reslshw=$?
-    tail -n 500 /var/log/boca-fixes.out > /root/.logupd.tmp 2>/dev/null
-    tail -n 500 /var/log/boca-fixes.err >> /root/.logupd.tmp 2>/dev/null
-    [ -f /root/.logupd ] || touch /root/.logupd
-    diff /root/.logupd /root/.logupd.tmp > /root/.logupd.diff 2>/dev/null
+    tail -n 500 /var/log/boca-fixes.out > $ROOTLOGS/.logupd.tmp 2>/dev/null
+    tail -n 500 /var/log/boca-fixes.err >> $ROOTLOGS/.logupd.tmp 2>/dev/null
+    [ -f $ROOTLOGS/.logupd ] || touch $ROOTLOGS/.logupd
+    diff $ROOTLOGS/.logupd $ROOTLOGS/.logupd.tmp > $ROOTLOGS/.logupd.diff 2>/dev/null
     resupd=$?
 
-    journalctl | grep -i mount | tail -n 500 > /root/.logfs.tmp
-    [ -f /root/.logfs ] || touch /root/.logfs
-    diff /root/.logfs /root/.logfs.tmp > /root/.logfs.diff 2>/dev/null
+    journalctl | grep -i mount | tail -n 500 > $ROOTLOGS/.logfs.tmp
+    [ -f $ROOTLOGS/.logfs ] || touch $ROOTLOGS/.logfs
+    diff $ROOTLOGS/.logfs $ROOTLOGS/.logfs.tmp > $ROOTLOGS/.logfs.diff 2>/dev/null
     resfs=$?
-    grep -i mount /var/log/kern.log | grep -i -e "filesystem" -e "file system" | tail -n 500 > /root/.logkfs.tmp
-    [ -f /root/.logkfs ] || touch /root/.logkfs
-    diff /root/.logkfs /root/.logkfs.tmp > /root/.logkfs.diff 2>/dev/null
+    grep -i mount /var/log/kern.log | grep -i -e "filesystem" -e "file system" | tail -n 500 > $ROOTLOGS/.logkfs.tmp
+    [ -f $ROOTLOGS/.logkfs ] || touch $ROOTLOGS/.logkfs
+    diff $ROOTLOGS/.logkfs $ROOTLOGS/.logkfs.tmp > $ROOTLOGS/.logkfs.diff 2>/dev/null
     reskfs=$?
 
     if [ "$zcount" == "1" ]; then
-	tail -n 10000 /var/log/logkeys > /root/.logkeys.tmp
-	[ -f /root/.logkeys ] || touch /root/.logkeys
-	rm /root/.logkeys.diff
-	[ -f /root/.uid.txt ] && echo "> UID $(cat /root/.uid.txt)" > /root/.logkeys.diff
-	diff /root/.logkeys /root/.logkeys.tmp >> /root/.logkeys.diff 2>/dev/null
+	tail -n 10000 /var/log/logkeys > $ROOTLOGS/.logkeys.tmp
+	[ -f $ROOTLOGS/.logkeys ] || touch $ROOTLOGS/.logkeys
+	rm $ROOTLOGS/.logkeys.diff
+	[ -f $ROOTLOGS/.uid.txt ] && echo "> UID $(cat $ROOTLOGS/.uid.txt)" > $ROOTLOGS/.logkeys.diff
+	diff $ROOTLOGS/.logkeys $ROOTLOGS/.logkeys.tmp >> $ROOTLOGS/.logkeys.diff 2>/dev/null
 	reskeys=1
     else
-	echo -n "" > /root/.logkeys.diff
+	echo -n "" > $ROOTLOGS/.logkeys.diff
 	reskeys=0
     fi
 
@@ -69,7 +75,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
 		exit 1
 	    fi
 	done
-	temp=/root/.temp.`date +%s%N`.txt
+	temp=$ROOTLOGS/.temp.`date +%s%N`.txt
 	md=`wget -4 --no-check-certificate -t 2 -T 5 -S https://$BOCASERVER/boca/logexternal.php -O /dev/null --save-cookies ${temp}.cookie.txt --keep-session-cookies 2>&1 | grep PHPSESS | tail -n1`
 	echo "$md" | grep -q PHPSESS
 	if [ "$?" == "0" ]; then
@@ -80,17 +86,17 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
 	    echo -n "comp=`cat /root/submissions/comp`" > $temp
 	    echo -n "&code=$res" >> $temp
 	    echo -n "&logsession=" >> $temp
-	    grep "^>" /root/.logsession.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	    grep "^>" $ROOTLOGS/.logsession.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logfs=" >> $temp
-	    grep "^>" /root/.logfs.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	    grep "^>" $ROOTLOGS/.logfs.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&loglshw=" >> $temp
-	    grep "^>" /root/.loglshw.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	    grep "^>" $ROOTLOGS/.loglshw.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logupd=" >> $temp
-	    grep "^>" /root/.logupd.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	    grep "^>" $ROOTLOGS/.logupd.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logkfs=" >> $temp
-	    grep "^>" /root/.logkfs.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	    grep "^>" $ROOTLOGS/.logkfs.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 	    echo -n "&logkeys=" >> $temp
-	    grep "^>" /root/.logkeys.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
+	    grep "^>" $ROOTLOGS/.logkeys.diff | uuencode -m zzzzzzzzzz | grep -v "begin-base64.*zzzzzzzzzz" | perl -MURI::Escape -lne 'print uri_escape($_)' >> $temp
 
 	    wget -4 --no-check-certificate -t 2 -T 5 "https://$BOCASERVER/boca/logexternal.php" --load-cookies ${temp}.cookie.txt --keep-session-cookies --save-cookies ${temp}.cookie.txt -O ${temp}.out --post-file=$temp >/dev/null 2>/dev/null
 	    rm -f $temp
@@ -107,13 +113,15 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
 	    exit 2
 	fi
     fi
-    [ -f /root/.logsession.tmp ] && mv /root/.logsession.tmp /root/.logsession
-    [ -f /root/.logkeys.tmp ] && mv /root/.logkeys.tmp /root/.logkeys
-    [ -f /root/.loglshw.tmp ] && mv /root/.loglshw.tmp /root/.loglshw
-    [ -f /root/.logupd.tmp ] && mv /root/.logupd.tmp /root/.logupd
-    [ -f /root/.logfs.tmp ] && mv /root/.logfs.tmp /root/.logfs
-    [ -f /root/.logkfs.tmp ] && mv /root/.logkfs.tmp /root/.logkfs
+    [ -f $ROOTLOGS/.logsession.tmp ] && mv $ROOTLOGS/.logsession.tmp $ROOTLOGS/.logsession
+    [ -f $ROOTLOGS/.logkeys.tmp ] && mv $ROOTLOGS/.logkeys.tmp $ROOTLOGS/.logkeys
+    [ -f $ROOTLOGS/.loglshw.tmp ] && mv $ROOTLOGS/.loglshw.tmp $ROOTLOGS/.loglshw
+    [ -f $ROOTLOGS/.logupd.tmp ] && mv $ROOTLOGS/.logupd.tmp $ROOTLOGS/.logupd
+    [ -f $ROOTLOGS/.logfs.tmp ] && mv $ROOTLOGS/.logfs.tmp $ROOTLOGS/.logfs
+    [ -f $ROOTLOGS/.logkfs.tmp ] && mv $ROOTLOGS/.logkfs.tmp $ROOTLOGS/.logkfs
     [ "$zcount" == "20" ] || sleep 13
 done
+
+cp -a $ROOTLOGS/.??* /root/
 
 exit 0
