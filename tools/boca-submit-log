@@ -17,8 +17,14 @@ fi
 
 chown root.root /var/log/boca-submit-log.* 2>/dev/null
 chmod 600 /var/log/boca-submit-log.* 2>/dev/null
-chown root.root /var/log/logkeys 2>/dev/null
-chmod 600 /var/log/logkeys 2>/dev/null
+logkeysf=/var/log/logkeys
+chown root.root $logkeysf 2>/dev/null
+chmod 600 $logkeysf 2>/dev/null
+if [ -f "/dev/shm/logkeys" ]; then
+    logkeysf=/dev/shm/logkeys
+    chown root.root $logkeysf 2>/dev/null
+    chmod 600 $logkeysf 2>/dev/null
+fi
 chown root.root /var/log/bocacron.* 2>/dev/null
 chmod 600 /var/log/bocacron.* 2>/dev/null
 
@@ -54,7 +60,7 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
     reskfs=$?
 
     if [ "$zcount" == "1" ]; then
-	tail -n 10000 /var/log/logkeys > $ROOTLOGS/.logkeys.tmp
+	tail -n 10000 $logkeysf > $ROOTLOGS/.logkeys.tmp
 	[ -f $ROOTLOGS/.logkeys ] || touch $ROOTLOGS/.logkeys
 	rm $ROOTLOGS/.logkeys.diff
 	[ -f $ROOTLOGS/.uid.txt ] && echo "> UID $(cat $ROOTLOGS/.uid.txt)" > $ROOTLOGS/.logkeys.diff
