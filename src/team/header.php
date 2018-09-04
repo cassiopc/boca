@@ -63,7 +63,8 @@ if(file_exists($runtmp)) {
 	if(($strtmp = file_get_contents($runtmp,FALSE,NULL,0,1000000)) !== FALSE) {
 		$postab=strpos($strtmp,"\t");
 		$conf=globalconf();
-		$strcolors = decryptData(substr($strtmp,$postab+1,strpos($strtmp,"\n")-$postab-1),$conf['key'],'');
+		if(isset($conf['doenc']) && $conf['doenc'])
+		  $strcolors = decryptData(substr($strtmp,$postab+1,strpos($strtmp,"\n")-$postab-1),$conf['key'],'');
 		$doslow=false;
 		$rn=explode("\t",$strcolors);
 		$n=count($rn);
