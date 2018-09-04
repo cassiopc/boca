@@ -37,7 +37,7 @@ function myrawurlencode($txt) {
 }
 
 function myrawurldecode($txt) {
-  return(rawurldecode(base64_encode($txt)));
+  return(base64_decode(rawurldecode($txt)));
 }
 
 function filedownload($oid,$fname,$msg='') {
