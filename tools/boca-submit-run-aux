@@ -38,8 +38,8 @@ if [ "$?" == "0" ]; then
 	exit 3
     else
 	oknet=9
-	if [ -f /usr/bin/boca-checkinternet ]; then
-	    /usr/bin/boca-checkinternet
+	if [ -f /usr/sbin/boca-checkinternet ]; then
+	    /usr/sbin/boca-checkinternet
 	    oknet=$?
 	else
 	    echo "system must be updated - missing script"
