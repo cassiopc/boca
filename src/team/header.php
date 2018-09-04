@@ -65,6 +65,8 @@ if(file_exists($runtmp)) {
 		$conf=globalconf();
 		if(isset($conf['doenc']) && $conf['doenc'])
 		  $strcolors = decryptData(substr($strtmp,$postab+1,strpos($strtmp,"\n")-$postab-1),$conf['key'],'');
+		else
+		  $strcolors = substr($strtmp,$postab+1,strpos($strtmp,"\n")-$postab-1);
 		$doslow=false;
 		$rn=explode("\t",$strcolors);
 		$n=count($rn);
