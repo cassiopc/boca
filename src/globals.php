@@ -229,6 +229,7 @@ function unsanitizeText($text) {
   $text = str_replace("&gt;", ">", $text); 
     $text = str_replace("&#39;", "'", $text);
     $text = str_replace("&#96;", "`", $text);
+    $text = str_replace("&quot;", "\"", $text); 
     $text = str_replace("&amp;", "&", $text);
 	return $text;
 }
