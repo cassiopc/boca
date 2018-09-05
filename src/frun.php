@@ -166,9 +166,10 @@ function DBUpdateRunC($contest, $usersite, $usernumber, $runsite, $runnumber, $a
 	if($chief == 1 || ($outra != 0 && $outra == $answer && $temp["runstatus"] != "judged+") || 
 	   ($outra != 0 && $outra == $answer && $temp["runanswer"]==$answer)) {
 		$newstatus = 'judged';
+		$tans = max($t,$temp['rundatediff']);
 		DBExec($c, "update runtable set runstatus='judged', " .
 			   "runjudge=$usernumber, runjudgesite=$usersite, " . 
-			   "runanswer=$answer, rundatediffans=$t, updatetime=".time()." " .
+			   "runanswer=$answer, rundatediffans=$tans, updatetime=".time()." " .
 			   "where contestnumber=$contest and runnumber=$runnumber and runsitenumber=$runsite",
 			   "DBUpdateRunC(update run)");
 

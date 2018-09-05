@@ -1387,6 +1387,10 @@ function siteclock() {
 		return array("contest not running",-1000000000);
 	if ($s["currenttime"]<0) {
 		$t = - $s["currenttime"];
+                if($t>3600*24) {
+                        $t = ((int) ($t/(360*24)))/10;
+                        return array("&gt; ". $t . " day(s) to start",$s["currenttime"]);
+                }
 		if($t>3600) {
 			$t = ((int) ($t/360))/10;
 			return array("&gt; ". $t . " hour(s) to start",$s["currenttime"]);
@@ -1401,6 +1405,10 @@ function siteclock() {
 	if ($s["currenttime"]>=0) {
 		$t = $s["siteduration"] - $s["currenttime"];
 		$str = '';
+                if($t >= 3600*24) {
+                        $str .= ((int)($t/(3600*24))) . 'd ';
+                        $t = $t % (3600*24);
+                }
 		if($t >= 3600) {
 			$str .= ((int)($t/3600)) . 'h ';
 			$t = $t % 3600;
