@@ -111,13 +111,13 @@ if (($a = DBGetClarToAnswer($clarnumber, $clarsitenumber,
       <tr> 
         <td width="20%" align=right><b>Clarification:</b></td>
         <td width="80%">
-          <textarea name="message" readonly cols="60" rows="8"><?php echo $a["question"]; ?></textarea>
+  <textarea name="message" readonly cols="60" rows="8"><?php echo unsanitizeText($a["question"]); ?></textarea>
         </td>
       </tr>
       <tr> 
         <td width="20%" align=right><b>Answer:</b></td>
         <td width="80%">
-          <textarea name="answer" cols="60" rows="8"><?php echo $a["answer"]; ?></textarea>
+  <textarea name="answer" cols="60" rows="8"><?php echo unsanitizeText($a["answer"]); ?></textarea>
         </td>
       </tr>
       <tr> 

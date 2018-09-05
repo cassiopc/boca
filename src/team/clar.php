@@ -56,13 +56,13 @@ for ($i=0; $i<count($clar); $i++) {
   if ($clar[$i]["question"] == "") $clar[$i]["question"] = "&nbsp;";
   echo "  <td>";
 //  echo "<pre>" . $clar[$i]["question"] . "</pre>";
-  echo "  <textarea name=\"m$i\" cols=\"60\" rows=\"8\" readonly>".$clar[$i]["question"]."</textarea>\n";
+  echo "  <textarea name=\"m$i\" cols=\"60\" rows=\"8\" readonly>". unsanitizeText($clar[$i]["question"]) ."</textarea>\n";
   echo "</td>\n";
 
   if (trim($clar[$i]["answer"]) == "") $clar[$i]["answer"] = "Not answered yet";
   echo "  <td>";
 //  echo "  <pre>" . $clar[$i]["answer"] . "</pre>";
-  echo "  <textarea name=\"a$i\" cols=\"60\" rows=\"8\" readonly>".$clar[$i]["answer"]."</textarea>\n";
+  echo "  <textarea name=\"a$i\" cols=\"60\" rows=\"8\" readonly>". unsanitizeText($clar[$i]["answer"]) ."</textarea>\n";
   echo "</td>\n";
   echo " </tr>\n";
 }

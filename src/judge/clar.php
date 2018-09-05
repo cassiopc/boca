@@ -71,7 +71,7 @@ for ($i=0; $i<count($clar); $i++) {
   echo "  <td>";
 //  echo "<pre>" . $clar[$i]["question"] . "</pre>";
 //  echo $clar[$i]["question"];
-  echo "  <textarea name=\"m$i\" cols=\"60\" rows=\"8\" readonly>".$clar[$i]["question"]."</textarea>\n";
+  echo "  <textarea name=\"m$i\" cols=\"60\" rows=\"8\" readonly>". unsanitizeText($clar[$i]["question"]) ."</textarea>\n";
   echo "</td>\n";
 
   echo " </tr>\n";
