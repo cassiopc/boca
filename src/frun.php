@@ -501,7 +501,7 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 	     $a["runproblem"] == 12 ||
 	     $a["runproblem"] == 13)
 	    && $retval != 4 && $retval != 6)) { // but WA:6 and TLE:4 are automatic for all problems
-	  // if($retval != 1 && $retval != 6 && $retval != 4) {
+	  //if($retval != 1 && $retval != 6 && $retval != 4) {
 	   if($b["siteautojudge"]!="t") {
 	  // && (($retval != 1 && $retval != 6) || $a["runproblem"] == 1 || $a["runproblem"] == 2) ) { //cassiopc incluir automatic judging of some codes 1:YES WA:6
 		DBExec($c, "commit work", "DBUpdateRunAutojudging(commit)");
