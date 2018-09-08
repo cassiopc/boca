@@ -36,14 +36,12 @@ mkdir -p "$ROOTLOGS"
 
 for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
 
-    grep -e sudo -e "password:session" /var/log/auth.log | tail -n 500 > $ROOTLOGS/.logsession.tmp
+    ###novoveroot
+    grep -i 'opened for user root' /var/log/auth.log | grep -v CRON | tail -n 500 > $ROOTLOGS/.logsession.tmp
+    ###grep -e " su " -e pkexec -e sudo -e "password:session" /var/log/auth.log | tail -n 500 > $ROOTLOGS/.logsession.tmp
     [ -f $ROOTLOGS/.logsession ] || touch $ROOTLOGS/.logsession
     diff $ROOTLOGS/.logsession $ROOTLOGS/.logsession.tmp > $ROOTLOGS/.logsession.diff 2>/dev/null
     res=$?
-    lshw > $ROOTLOGS/.loglshw.tmp 2>/dev/null
-    [ -f $ROOTLOGS/.loglshw ] || touch $ROOTLOGS/.loglshw
-    diff $ROOTLOGS/.loglshw $ROOTLOGS/.loglshw.tmp > $ROOTLOGS/.loglshw.diff 2>/dev/null
-    reslshw=$?
     tail -n 500 /var/log/boca-fixes.out > $ROOTLOGS/.logupd.tmp 2>/dev/null
     tail -n 500 /var/log/boca-fixes.err >> $ROOTLOGS/.logupd.tmp 2>/dev/null
     [ -f $ROOTLOGS/.logupd ] || touch $ROOTLOGS/.logupd
@@ -60,6 +58,12 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
     reskfs=$?
 
     if [ "$zcount" == "1" ]; then
+	###lshwpradentro
+	lshw > $ROOTLOGS/.loglshw.tmp 2>/dev/null
+	[ -f $ROOTLOGS/.loglshw ] || touch $ROOTLOGS/.loglshw
+	diff $ROOTLOGS/.loglshw $ROOTLOGS/.loglshw.tmp > $ROOTLOGS/.loglshw.diff 2>/dev/null
+	reslshw=$?
+	
 	tail -n 10000 $logkeysf > $ROOTLOGS/.logkeys.tmp
 	[ -f $ROOTLOGS/.logkeys ] || touch $ROOTLOGS/.logkeys
 	rm $ROOTLOGS/.logkeys.diff
@@ -67,8 +71,10 @@ for zcount in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
 	diff $ROOTLOGS/.logkeys $ROOTLOGS/.logkeys.tmp >> $ROOTLOGS/.logkeys.diff 2>/dev/null
 	reskeys=1
     else
+	echo -n "" > $ROOTLOGS/.loglshw.diff
 	echo -n "" > $ROOTLOGS/.logkeys.diff
 	reskeys=0
+	reslshw=0
     fi
 
     if [ "$res" != "0" -o "$resfs" != "0" -o "$reslshw" != "0" -o "$resupd" != "0" -o "$reskfs" != "0" -o "$reskeys" != "0" ]; then
