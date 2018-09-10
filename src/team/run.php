@@ -74,7 +74,9 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 
     }
     if(isset($_POST['name']) && $_POST['name'] != '') {
-      $temp = tempnam("/tmp","bkp-");
+      $runsfiles = $_SESSION["locr"] . $ds . "private" . $ds . 'runsfiles';
+      @mkdir($runsfiles,0770);
+      $temp = tempnam($runsfiles,"bkp-");
       $fout = fopen($temp,"wb");
       fwrite($fout,base64_decode($_POST['data']));
       fclose($fout);
@@ -111,9 +113,14 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
       MSGError("File name cannot contain spaces.");
       ForceLoad($runteam);		
     }
-  if(isset($_POST['pastcode']) && $_POST['pastcode'] != '')
+
+    if(isset($_POST['pastcode']) && $_POST['pastcode'] != '')
       $shaf = myhtmlspecialchars($_POST["pastcode"]);
     else $shaf = @sha1_file($temp);
+
+    if(@rename($temp, $temp . "." . sanitizeFilename($shaf)))
+      $temp = $temp . "." . sanitizeFilename($shaf);
+
     //		$ac=array('contest','site','user','problem','lang','filename','filepath');
     //		$ac1=array('runnumber','rundate','rundatediff','rundatediffans','runanswer','runstatus','runjudge','runjudgesite',
     //			   'runjudge1','runjudgesite1','runanswer1','runjudge2','runjudgesite2','runanswer2',
