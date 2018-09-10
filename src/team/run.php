@@ -111,7 +111,7 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
       MSGError("File name cannot contain spaces.");
       ForceLoad($runteam);		
     }
-    if(isset($_POST['pastcode']) && $_POST['pastcode'] != '')
+  if(isset($_POST['pastcode']) && $_POST['pastcode'] != '')
       $shaf = myhtmlspecialchars($_POST["pastcode"]);
     else $shaf = @sha1_file($temp);
     //		$ac=array('contest','site','user','problem','lang','filename','filepath');
@@ -133,6 +133,7 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
 	exit;
       }
     }
+    $name = str_replace("-", "_", $name);
     $verify = $compv . '-'. $shaf . '-' . $name . '-'. $prob . '-' . $lang . '-' . 
       $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"];
     
@@ -154,6 +155,7 @@ if (isset($_POST["problem"]) && isset($_POST["language"]) &&
       @file_put_contents($fcnamex, $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"], LOCK_EX);
     } else {
       if(trim($prevcomp) != $_SESSION["usertable"]["contestnumber"].'-'.$_SESSION["usertable"]["usersitenumber"].'-'.$_SESSION["usertable"]["usernumber"]) {
+	@file_put_contents($fcname . ".try", $verify1 . "-UNAUTH\n", FILE_APPEND | LOCK_EX);
 	if(isset($_POST['name']) && $_POST['name'] != '') {
 	  echo "\nRESULT: UNAUTHORIZED COMPUTER";
 	  exit;
