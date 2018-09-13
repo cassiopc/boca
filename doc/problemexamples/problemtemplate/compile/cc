@@ -16,7 +16,7 @@
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
 #Last modified: 26/august/2014 by cassio@ime.usp.br
-# definition of -std=c++11
+# definition of -std=c++14
 #
 # parameters are:
 # $1 source_file
@@ -116,7 +116,7 @@ if [ ! -x "\$cc" ]; then
     exit 47
 fi
 cd src
-"\$cc" -std=c++11 -static -O2 -o "../$exe" "$name" -lm
+"\$cc" -std=c++14 -static -O2 -o "../$exe" "$name" -lm
 echo \$? > ../compileit.retcode
 exit 0
 EOF
