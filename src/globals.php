@@ -209,6 +209,8 @@ function sanitizeText($text, $doamp=true)
 }
 function sanitizeFilename($text) 
 {
+  $text = preg_replace('/[^[:print:]]/', '',$text);
+  $text = str_replace(" ", "_", $text);
   $text = str_replace("*", "_", $text);
   $text = str_replace("$", "_", $text);
   $text = str_replace(")", "_", $text);
