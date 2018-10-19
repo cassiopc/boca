@@ -15,6 +15,11 @@ if [ "$BOCASERVER" == "" ]; then
     exit 1
 fi
 
+if [[ ! -e "/root/submissions/code" ]]; then
+  echo "Machine not enabled to submit logs code is missing"
+  exit 0
+fi
+
 chown root.root /var/log/boca-submit-log.* 2>/dev/null
 chmod 600 /var/log/boca-submit-log.* 2>/dev/null
 logkeysf=/var/log/logkeys
