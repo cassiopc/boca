@@ -59,8 +59,8 @@ if [ "$?" == "0" ]; then
     if [ $? == 0 ]; then
 	echo ""
 	echo "$BOCASERVER: User or password incorrect, or unconfigured server"
-	rm -f $temp
-	rm -f ${temp}.cookie.txt
+	rm -f "$temp"
+	rm -f "${temp}.cookie.txt"
 	exit 3
     else
 	a=""
@@ -94,6 +94,7 @@ if [ "$?" == "0" ]; then
 	else
 	    echo ""
 	    echo "$BOCASERVER: downloaded content is corrupted"
+	    [ -f "$temp" ] && rm -f "$temp"
 	    rm -f "${temp}.cookie.txt"
 	    exit 4
 	fi
