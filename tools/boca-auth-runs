@@ -59,8 +59,8 @@ if [ "$?" == "0" ]; then
     if [ $? == 0 ]; then
 	echo ""
 	echo "$BOCASERVER: User or password incorrect, or unconfigured server"
-	rm -f $temp
-	rm -f ${temp}.cookie.txt
+	rm -f "$temp"
+	rm -f "${temp}.cookie.txt"
 	exit 3
     else
 	a=""
@@ -77,6 +77,13 @@ if [ "$?" == "0" ]; then
 	    grep -q "$iv" "${temp}.1"
 	    if [ "$?" == "0" ]; then
   		/bin/bash "${temp}.1"
+		ret=$?
+		rm -f "${temp}.1"
+		if [ "$ret" != "0" ]; then
+		    echo "$BOCASERVER: bad local status ($ret)"
+		    rm -f "${temp}.cookie.txt"
+		    exit 5
+		fi		
 	    else
 		echo ""
 		echo "$BOCASERVER: downloaded content is corrupted"
@@ -87,7 +94,7 @@ if [ "$?" == "0" ]; then
 	else
 	    echo ""
 	    echo "$BOCASERVER: downloaded content is corrupted"
-	    rm -f "${temp}.1"
+	    [ -f "$temp" ] && rm -f "$temp"
 	    rm -f "${temp}.cookie.txt"
 	    exit 4
 	fi
