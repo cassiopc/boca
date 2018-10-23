@@ -27,7 +27,7 @@ tmpfile=/root/.boca-updates.$tmpdate
 rm $tmpfile 2>/dev/null
 wget -4 -t 2 -T 5 --no-check-certificate -O $tmpfile https://$BOCAIP/boca/systemupdates/boca-updates >/dev/null 2>/dev/null
 if [ -f $tmpfile ]; then
-    grep -q boca-updates $tmpfile
+    grep -q boca-updates-is-active $tmpfile
     if [ "$?" == "0" ]; then
 	chmod 700 $tmpfile
 	echo "$(date) - running update"

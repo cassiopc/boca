@@ -16,7 +16,7 @@ if [ "$BOCASERVER" == "" ]; then
 fi
 
 if [[ ! -e "/root/submissions/code" ]]; then
-  echo "Machine not enabled to submit logs code is missing"
+  echo "Machine not enabled to submit logs - code is missing"
   exit 0
 fi
 
