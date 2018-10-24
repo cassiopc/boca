@@ -1,3 +1,9 @@
+boca (1.5.14-8) bionic; urgency=medium
+
+  * LATAM fixes
+
+ -- Bruno Cesar Ribas <brunoribas@gmail.com>  Wed, 24 Oct 2018 15:55:09 -0300
+
 boca (1.5.14-7) bionic; urgency=medium
 
   * Bug fixes
