@@ -83,7 +83,7 @@ if [ "$7" != "" ]; then
  	    mv "$nom" "/root/submissions/`basename $nom .tmp`"
 	    echo "Run submission included in the queue -- it shall appear in the system later when connection is available"
 	else
-	    [ -f "$nom" ] && rm -f $nom
+	    [ -f "$nom" ] && mv "$nom" "/root/submissions/`basename $nom .tmp`.processed"
 	fi
 fi
 fi
