@@ -163,13 +163,13 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	  unset($_SESSION["usertable"]);
 	  return false;
 	}
-	$ccode = explode(' ',trim($_SERVER['HTTP_USER_AGENT']),100);
-	$ccode = $ccode[count($ccode)-1];
+	$ccode = trim($_SERVER['HTTP_USER_AGENT']);
 	$ds = DIRECTORY_SEPARATOR;
 	if($ds=="") $ds = "/";
 	$dircode=$_SESSION["locr"] . $ds . "private" . $ds . "agentcode";
 	@mkdir($dircode);
 	$dircode .= $ds . $contest . '-' . $name;
+	@file_put_contents($dircode . '.log', $ccode . "\n", FILE_APPEND | LOCK_EX);
 	if(@file_exists($dircode)) {
 	  if(($prevuser = @file_get_contents($dircode)) === false) {
 	    LOGLevel("User $name tried to log in contest $contest but computer file cannot be read.",2);
@@ -177,14 +177,15 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	    unset($_SESSION["usertable"]);
 	    return false;
 	  }
-	  if($prevuser != $ccode) {
-	    LOGLevel("User $name tried to log in contest $contest but computer is invalid.",2);
+	  if($prevuser != $ccode && $a["usertype"] == "team") {
+	    LOGLevel("User $name tried to log in contest $contest but computer is invalid ($ccode).",2);
 	    if($msg) MSGError("Invalid computer (3).");
 	    unset($_SESSION["usertable"]);
 	    return false;
 	  }
 	} else {
-	  @file_put_contents($dircode, $ccode);
+	  if($a["usertype"] == "team")
+	    @file_put_contents($dircode, $ccode);
 	}
 			  
 	$gip=getIP();
