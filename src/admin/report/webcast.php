@@ -18,6 +18,46 @@
 //Last updated 07/nov/2012 by cassio@ime.usp.br
 
 require('header.php');
+$ds = DIRECTORY_SEPARATOR;
+if($ds=="") $ds = "/";
+if(isset($_SESSION['locr'])) {
+	$webcastdir = $_SESSION['locr'] . $ds . 'private' .$ds. 'webcast';
+	$webcastparentdir = $_SESSION['locr'] . $ds. 'private';
+} else {
+	$webcastdir = $locr . $ds . 'private' . $ds . 'webcast';
+	$webcastparentdir = $locr . $ds . 'private';
+}
+if(!isset($_GET['webcastcode']) || !ctype_alnum($_GET['webcastcode'])) exit;
+
+$webcastcode=$_GET['webcastcode'];
+$wcdata=@file($webcastparentdir . $ds . 'webcast.sep');
+$wcsite = array();
+$wcloweruser = array();
+$wcupperuser = array();
+for($i=0; $i<count($wcdata);$i++) {
+  $wccode = explode(' ', $wcdata);
+  if($wccode[0] == $webcastcode) {
+    for($j=1; $j < count($wccode); $j++) {
+      $temp = explode('/', $wccode[$j]);
+      if(is_numeric($temp[0])) {
+	$wcsite[count($wcsite)] = $temp[0];
+	$wcloweruser[count($wcloweruser)] = 0;
+	$wcupperuser[count($wcupperuser)] = -1;      
+	if(count($temp) > 1 && is_numeric($temp[1]))
+	  $wcloweruser[count($wcloweruser)-1] = $temp[1];
+	if(count($temp) > 2 && is_numeric($temp[2]))
+	  $wcupperuser[count($wcupperuser)-1] = $temp[2];
+      }
+    }
+    break;
+  }
+}
+if($i>=count($wcdata)) {
+  exit;
+}
+
+cleardir($webcastdir);
+@mkdir($webcastdir);
 
 $contest = $_SESSION["usertable"]["contestnumber"];
 $site = $_SESSION["usertable"]["usersitenumber"];
@@ -26,10 +66,11 @@ $ct = DBContestInfo($contest);
 if(($st =  DBSiteInfo($contest, $site)) == null)
 	ForceLoad("../index.php");
 
-//if(isset($_GET['full']) && $_GET['full'] > 0)
-	$freezeTime = $st['siteduration'];
-//else
-//	$freezeTime = $st['sitelastmilescore'];
+if(isset($_GET['full']) && $_GET['full'] > 0)
+  $freezeTime = $st['siteduration'];
+else
+  $freezeTime = $st['sitelastmilescore'];
+
 
 $contestfile = $ct['contestname'] . "\n";
 
@@ -45,17 +86,39 @@ $r = DBExec($c,
 	' WHERE contestnumber = ' . $contest .
 	' AND problemnumber > 0');
 $numProblems = DBnlines($r);
-$r = DBExec($c,
-	'SELECT * FROM usertable' .
-	' WHERE contestnumber = ' . $contest .
-	' AND userenabled = \'t\' AND usersitenumber = ' . $site .
-	' AND usertype = \'team\'');
+
+$sql = 'SELECT username, userfullname, userdesc FROM usertable' .
+  ' WHERE contestnumber = ' . $contest .
+  ' AND userenabled = \'t\' AND usertype = \'team\' AND ((0 = 1)';
+for($i=0; $i < count($wcloweruser); $i++)
+  $sql .= ' OR (usersitenumber = ' . $wcsite[$i] . ' AND usernumber >= ' . $wcloweruser[$i] . ' AND usernumber <= ' . $wcupperuser[$i] . ')';
+$sql .= ')';
+$r = DBExec($c,$sql);
+
 $numTeams = DBnlines($r);
 
 $contestfile = $contestfile .
 	$numTeams . '' .
 	$numProblems . "\n";
+$teamIDs = array();
+for ($i = 0; $i < $numTeams; $i++) {
+	$a = DBRow($r, $i);
+	$teamID = $a['username'];
+	$teamIDs[count($teamIDs)] = $teamID;
+	$pieces = explode('</b>', $a['userfullname']);
+	$teamName = $a['userfullname'];
+	$pieces = explode(']', $a['userdesc']);
+	$pieces = explode('[', trim($pieces[0]));
+	$teamUni = trim($pieces[1]);
+	//print_r( array_keys($a));
 
+	$contestfile = $contestfile .
+		$teamID . '' .
+		$teamUni . '' .
+		$teamName . "\n";
+}
+
+/*
 for ($i = 0; $i < $numTeams; $i++) {
 	$a = cleanuserdesc(DBRow($r, $i));
 	$teamID = $a['username'];
@@ -73,118 +136,58 @@ for ($i = 0; $i < $numTeams; $i++) {
 		$teamUni . '' .
 		$teamName . "\n";
 }
-
+*/
 $contestfile = $contestfile .
 	'1' . '' . '1' . "\n";
 $contestfile = $contestfile .
 	$numProblems . '' . 'Y' . "\n";
 
-$score = DBScore($_SESSION["usertable"]["contestnumber"], false, -1, $ct["contestlocalsite"]);
+$run = DBAllRunsInSites($contest, $site, 'run');
+$numRuns = count($run);
+$runfile = '';
+for ($i = 0; $i < $numRuns; $i++) {
+	$u = DBUserInfo($contest, $site, $run[$i]['user']);
+	$runID = $run[$i]['number'];
+	$runTime = dateconvminutes($run[$i]['timestamp']);
+	$runTeam = $u['username'];
+	if(in_array($runTeam, $teamIDs)) {
+	  $runProblem = $run[$i]['problem'];
 
-//$contestfile = $contestfile .
-//	"<h2>ICPC Output</h2>";
-//$contestfile = $contestfile .
-//	"<pre>";
-$n=0;
-$class=1;
-while(list($e, $c) = each($score)) {
-	if(isset($score[$e]["site"]) && isset($score[$e]["user"])) {
-		if(DBSiteInfo($_SESSION["usertable"]["contestnumber"],$score[$e]["site"]) != null) {
-			$r = DBUserInfo($_SESSION["usertable"]["contestnumber"], 
-							$score[$e]["site"], $score[$e]["user"]);
-			$contestfile = $contestfile .
-				$r["usericpcid"] . "," .
-				$class++ . "," .
-				$score[$e]["totalcount"] . "," . 
-				$score[$e]["totaltime"] . ",";
-			
-			if($score[$e]["first"])
-				$contestfile = $contestfile . $score[$e]["first"] . "\n";
-			else $contestfile = $contestfile . "0\n";
-			$n++;
-		}
+	  $runfile = $runfile .
+	    $runID . '' .
+	    $runTime . '' .
+	    $runTeam . '' .
+	    $runProblem . '';
+
+	  if ($runTime > $freezeTime) {
+	    $runfile = $runfile . '?' . "\n";
+	  } else if ($run[$i]['yes'] == 't') {
+	    $runfile = $runfile . 'Y' . "\n";
+	  } else if ($run[$i]['answer'] == 'Not answered yet') {
+	    $runfile = $runfile . '?' . "\n";
+	  } else {
+	    $runfile = $runfile . 'N' . "\n";
+	  }
 	}
 }
-//$contestfile = $contestfile .
-//	"</pre>";
 
 $timefile = $st['currenttime'];
 $versionfile = '1.0' . "\n";
 
-$run = DBAllRunsInSites($contest, $site, 'run');
-
-$numRuns = count($run);
-
-$runfile = '';
-for ($i = 0; $i < $numRuns; $i++) {
-	$u = DBUserInfo($contest, $site, $run[$i]['user']);
-
-	$runID = $run[$i]['number'];
-	$runTime = dateconvminutes($run[$i]['timestamp']);
-	$runTeam = $u['username'];
-	$runProblem = $run[$i]['problem'];
-
-	if ($runTime > $freezeTime) {
-		continue;
-	}
-
-	$runfile = $runfile .
-		$runID . '' .
-		$runTime . '' .
-		$runTeam . '' .
-		$runProblem . '';
-
-	if ($run[$i]['yes']=='t') {
-		$runfile = $runfile .
-			'Y' . "\n";
-	} else if ($run[$i]['answer'] == 'Not answered yet') {
-		$runfile = $runfile .
-			'?' . "\n";
-	} else {
-		$runfile = $runfile .
-			'N' . "\n";
-	}
-}
-
-$ds = DIRECTORY_SEPARATOR;
-if($ds=="") $ds = "/";
-
-if(isset($_SESSION['locr'])) {
-	$webcastdir = $_SESSION['locr'] . $ds . 'private' .$ds. 'webcast';
-	$webcastparentdir = $_SESSION['locr'] . $ds. 'private';
-} else {
-	$webcastdir = $locr . $ds . 'private' . $ds . 'webcast';
-	$webcastparentdir = $locr . $ds . 'private';
-}
-cleardir($webcastdir);
-@mkdir($webcastdir);
 if(is_writable($webcastdir)) {
-	file_put_contents($webcastdir . $ds . 'runs',$runfile);
-	file_put_contents($webcastdir . $ds . 'contest',$contestfile);
-	file_put_contents($webcastdir . $ds . 'version',$versionfile);
-	file_put_contents($webcastdir . $ds . 'time',$timefile);
-	if(@create_zip($webcastparentdir,array('webcast'),$webcastdir . ".tmp") != 1) {
+	@file_put_contents($webcastdir . $ds . 'runs',$runfile);
+	@file_put_contents($webcastdir . $ds . 'contest',$contestfile);
+	@file_put_contents($webcastdir . $ds . 'version',$versionfile);
+	@file_put_contents($webcastdir . $ds . 'time',$timefile);
+	if(@create_zip($webcastparentdir,array('webcast'),$webcastdir . "." . $webcastcode . ".tmp") != 1) {
 		LOGError("Cannot create score webcast.tmp file");
 		MSGError("Cannot create score webcast.tmp file");
 	} else {
-		$cf = globalconf();
-		file_put_contents($webcastdir . ".tmp",encryptData(file_get_contents($webcastdir . ".tmp"), $cf["key"],false));
-		@rename($webcastdir . ".tmp",$webcastdir . '.zip');
+	  echo file_get_contents($webcastdir . "." . $webcastcode . ".tmp");
 	}
-	echo "<br><br><br><center>";
-	echo "<a href=\"$locr/filedownload.php?". 
-		filedownload(-1,$webcastdir . '.zip') . "\">CLICK TO DOWNLOAD</a>";
-	echo "</center>";
 } else {
 	LOGError('Error creating the folder for the ZIP file: '. $webcastdir);
 	MSGError('Error creating the folder for the ZIP file: '.$webcastdir);
 	ForceLoad("../index.php");
 }
-echo "<br><br><br>\n";
-echo "<br><br><br>\n";
-echo "<br><br><br>\n";
-echo "<br><br><br>\n";
-echo "<br><br><br>\n";
-echo "<br><br><br>\n";
 ?>
-<?php include("$locr/footnote.php"); ?>
