@@ -18,9 +18,11 @@
 
 require('header.php');
 if(!isset($_GET['webcastcode']) || !ctype_alnum($_GET['webcastcode'])) exit;
+$webcastcode=$_GET['webcastcode'];
 
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
+
 if(isset($_SESSION['locr'])) {
 	$webcastdir = $_SESSION['locr'] . $ds . 'private' .$ds. 'webcast.' . $webcastcode;
 	$webcastparentdir = $_SESSION['locr'] . $ds. 'private';
@@ -29,15 +31,12 @@ if(isset($_SESSION['locr'])) {
 	$webcastparentdir = $locr . $ds . 'private';
 }
 
-$webcastcode=$_GET['webcastcode'];
-@file_put_contents($webcastparentdir . $ds . 'webcast.log', $webcastcode . "|" . getIP() . "|" . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
-
 $wcdata=@file($webcastparentdir . $ds . 'webcast.sep');
 $wcsite = array();
 $wcloweruser = array();
 $wcupperuser = array();
 for($i=0; $i<count($wcdata);$i++) {
-  $wccode = explode(' ', $wcdata);
+  $wccode = explode(' ', $wcdata[$i]);
   if($wccode[0] == $webcastcode) {
     for($j=1; $j < count($wccode); $j++) {
       $temp = explode('/', $wccode[$j]);
@@ -51,10 +50,12 @@ for($i=0; $i<count($wcdata);$i++) {
 	  $wcupperuser[count($wcupperuser)-1] = $temp[2];
       }
     }
+    @file_put_contents($webcastparentdir . $ds . 'webcast.log', $webcastcode . "|Y|" . getIP() . "|" . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
     break;
   }
 }
 if($i>=count($wcdata)) {
+  @file_put_contents($webcastparentdir . $ds . 'webcast.log', $webcastcode . "|N|" . getIP() . "|" . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
   exit;
 }
 

@@ -26,7 +26,6 @@ header ("Pragma: no-cache");
 //$loc = $_SESSION['loc'];
 $loc = $locr = "../..";
 
-require $locr.'/version.php';
 require_once($locr . "/globals.php");
 require_once($locr."/db.php");
 require_once($locr."/freport.php");
@@ -37,6 +36,7 @@ if(isset($_GET['webcastcode']) && ctype_alnum($_GET['webcastcode'])) {
   ob_end_flush();
 } else {
   header ("Content-Type: text/html; charset=utf-8");
+  require $locr.'/version.php';
   if(!ValidSession()) {
     InvalidSession($_SERVER['PHP_SELF']);
     ForceLoad($loc."/index.php");
