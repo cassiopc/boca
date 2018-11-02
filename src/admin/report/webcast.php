@@ -17,18 +17,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 require('header.php');
+if(!isset($_GET['webcastcode']) || !ctype_alnum($_GET['webcastcode'])) exit;
+
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 if(isset($_SESSION['locr'])) {
-	$webcastdir = $_SESSION['locr'] . $ds . 'private' .$ds. 'webcast';
+	$webcastdir = $_SESSION['locr'] . $ds . 'private' .$ds. 'webcast.' . $webcastcode;
 	$webcastparentdir = $_SESSION['locr'] . $ds. 'private';
 } else {
-	$webcastdir = $locr . $ds . 'private' . $ds . 'webcast';
+	$webcastdir = $locr . $ds . 'private' . $ds . 'webcast.' . $webcastcode;
 	$webcastparentdir = $locr . $ds . 'private';
 }
-if(!isset($_GET['webcastcode']) || !ctype_alnum($_GET['webcastcode'])) exit;
 
 $webcastcode=$_GET['webcastcode'];
+@file_put_contents($webcastparentdir . $ds . 'webcast.log', $webcastcode . "|" . getIP() . "|" . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
+
 $wcdata=@file($webcastparentdir . $ds . 'webcast.sep');
 $wcsite = array();
 $wcloweruser = array();
@@ -178,11 +181,11 @@ if(is_writable($webcastdir)) {
 	@file_put_contents($webcastdir . $ds . 'contest',$contestfile);
 	@file_put_contents($webcastdir . $ds . 'version',$versionfile);
 	@file_put_contents($webcastdir . $ds . 'time',$timefile);
-	if(@create_zip($webcastparentdir,array('webcast'),$webcastdir . "." . $webcastcode . ".tmp") != 1) {
+	if(@create_zip($webcastparentdir,array('webcast'),$webcastdir . ".zip") != 1) {
 		LOGError("Cannot create score webcast.tmp file");
 		MSGError("Cannot create score webcast.tmp file");
 	} else {
-	  echo file_get_contents($webcastdir . "." . $webcastcode . ".tmp");
+	  echo file_get_contents($webcastdir . ".zip");
 	}
 } else {
 	LOGError('Error creating the folder for the ZIP file: '. $webcastdir);
