@@ -17,8 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 require('header.php');
-if(!isset($_GET['webcastcode']) || !ctype_alnum($_GET['webcastcode'])) exit;
-$webcastcode=$_GET['webcastcode'];
+if(!isset($_POST['webcastcode']) || !ctype_alnum($_POST['webcastcode'])) exit;
+$webcastcode=$_POST['webcastcode'];
 
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
@@ -69,7 +69,7 @@ $ct = DBContestInfo($contest);
 if(($st =  DBSiteInfo($contest, $site)) == null)
 	ForceLoad("../index.php");
 
-if(isset($_GET['full']) && $_GET['full'] > 0)
+if(isset($_POST['full']) && $_POST['full'] > 0)
   $freezeTime = $st['siteduration'];
 else
   $freezeTime = $st['sitelastmilescore'];

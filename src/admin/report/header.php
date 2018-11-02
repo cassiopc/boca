@@ -30,7 +30,7 @@ require_once($locr . "/globals.php");
 require_once($locr."/db.php");
 require_once($locr."/freport.php");
 
-if(isset($_GET['webcastcode']) && ctype_alnum($_GET['webcastcode'])) {
+if(isset($_POST['webcastcode']) && ctype_alnum($_POST['webcastcode'])) {
   header ("Content-transfer-encoding: binary\n");
   header ("Content-type: application/force-download");
   ob_end_flush();
