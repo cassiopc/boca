@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-//Last updated 07/nov/2012 by cassio@ime.usp.br
 
 require('header.php');
 $ds = DIRECTORY_SEPARATOR;
