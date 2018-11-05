@@ -156,6 +156,38 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 		unset($_SESSION["usertable"]);
 		return false;
 	}
+
+	if(!ctype_alnum($name)) {
+	  LOGLevel("User $name tried to log in contest $contest but username is not alphanum.",2);
+	  if($msg) MSGError("Username must be alpha numeric.");
+	  unset($_SESSION["usertable"]);
+	  return false;
+	}
+	$ccode = trim($_SERVER['HTTP_USER_AGENT']);
+	$ds = DIRECTORY_SEPARATOR;
+	if($ds=="") $ds = "/";
+	$dircode=$_SESSION["locr"] . $ds . "private" . $ds . "agentcode";
+	@mkdir($dircode);
+	$dircode .= $ds . $contest . '-' . $name;
+	@file_put_contents($dircode . '.log', $ccode . "\n", FILE_APPEND | LOCK_EX);
+	if(@file_exists($dircode)) {
+	  if(($prevuser = @file_get_contents($dircode)) === false) {
+	    LOGLevel("User $name tried to log in contest $contest but computer file cannot be read.",2);
+	    if($msg) MSGError("Invalid computer (2).");
+	    unset($_SESSION["usertable"]);
+	    return false;
+	  }
+	  if($prevuser != $ccode && $a["usertype"] == "team") {
+	    LOGLevel("User $name tried to log in contest $contest but computer is invalid ($ccode).",2);
+	    if($msg) MSGError("Invalid computer (3).");
+	    unset($_SESSION["usertable"]);
+	    return false;
+	  }
+	} else {
+	  if($a["usertype"] == "team")
+	    @file_put_contents($dircode, $ccode);
+	}
+			  
 	$gip=getIP();
 	if ($a["userip"] != $gip && $a["userip"] != "" && $a["usertype"] != "score") {
 		LOGLevel("User $name is using two different IPs: " . $a["userip"] . 

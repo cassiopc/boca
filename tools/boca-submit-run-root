@@ -46,9 +46,17 @@ if [ "$7" != "" ]; then
 	tmpvar=`echo "$1" | tr -cd '[[:alnum:]]._+-/'`
 	echo "BOCASERVER=$tmpvar" > "$nom"
 	tmpvar=`echo "$2" | tr -cd '[[:alnum:]]._+-/'`
+	if [ -f "/root/submissions/user.ok" && "`cat /root/submissions/user.ok`" != "$tmpvar" ]; then
+           echo "WARNING: different username had been successfully used before - I will try to continue but you better check, this may fail later"
+        fi
 	echo "user=$tmpvar" >> "$nom"
+	tmpuser=$tmpvar
 	tmpvar=`echo "$3" | tr -cd '[[:alnum:]]._+-/'`
+	if [ -f "/root/submissions/pass.ok" && "`cat /root/submissions/pass.ok`" != "$tmpvar" ]; then
+           echo "WARNING: different password had been successfully used before - I will try to continue but you better check, this may fail later"
+        fi
 	echo "pass=$tmpvar" >> "$nom"
+	tmppass=$tmpvar
 	tmpvar=`echo "$4" | tr -cd '[[:alnum:]]._+-/'`
 	echo "problem=$tmpvar" >> "$nom"
 	tmpvar=`echo "$5" | tr -cd '[[:alnum:]]._+-/'`
@@ -83,7 +91,9 @@ if [ "$7" != "" ]; then
  	    mv "$nom" "/root/submissions/`basename $nom .tmp`"
 	    echo "Run submission included in the queue -- it shall appear in the system later when connection is available"
 	else
-	    [ -f "$nom" ] && rm -f $nom
+	    [ -f "$nom" ] && mv "$nom" "/root/submissions/`basename $nom .tmp`.processed"
+	    echo -n "$tmpuser" > /root/submissions/user.ok
+	    echo -n "$tmpvar" > /root/submissions/pass.ok
 	fi
 fi
 fi

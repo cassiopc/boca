@@ -74,8 +74,12 @@ if [ -r "$5" ]; then
     fi
     
     nom=`echo -n "$5" | perl -MURI::Escape -lne 'print uri_escape($_)'`
+    if [ "$nom" != "$5" ]; then
+       echo "Invalid file name"
+       exit 1
+    fi
     for BOCASERVER in `echo $BOCASERVERS | tr ';' ' '`; do
-	$runroot "$BOCASERVER" "$1" "$2" "$3" "$4" "`basename $5`" "$5"
+	$runroot "$BOCASERVER" "$1" "$2" "$3" "$4" "`basename $nom`" "$nom"
     done
 else
     echo "file $5 not found/readable"
