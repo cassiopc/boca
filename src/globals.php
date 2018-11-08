@@ -325,10 +325,61 @@ function IntrusionNotify($where) {
 	LOGLevel($msg,1);
 	MSGError("Violation ($where). Admin warned.");
 }
+
+function ValidCookie($dolog=false,$gip='') {
+  if (!isset($_SESSION["usertable"])) return(FALSE);
+  $contest = $_SESSION["usertable"]["contestnumber"];
+  $name = $_SESSION["usertable"]["username"];
+  $coo = array();
+  if(isset($_COOKIE['biscoitobocabombonera'])) {
+    $coo = explode('-',$_COOKIE['biscoitobocabombonera']);
+    if(count($coo) != 2 ||
+       strlen($coo[1])!=strlen(myhash('xxx')) ||
+       !is_numeric($coo[0]) ||
+       !ctype_alnum($coo[1]))
+      $coo = array();
+  }
+  if(count($coo) == 2) {
+    $ds = DIRECTORY_SEPARATOR;
+    if($ds=="") $ds = "/";
+    $dircode=$_SESSION["locr"] . $ds . "private" . $ds . "cookies";  
+    @mkdir($dircode);
+    $dircode .= $ds . $contest  . '-' . $name;
+    if(@file_exists($dircode)) {
+      if(($prevuser = @file_get_contents($dircode)) === false) {
+	if($dolog) {
+	  @file_put_contents($dircode . '.log', time() . '|' . $prevuser . '|' . $coo[0] . '|' . $coo[1] . '|' . $gip . "|file\n", FILE_APPEND | LOCK_EX);
+	  LOGLevel("User $name contest $contest has a cookie file problem.",2);
+	}
+	return false;
+      }
+      if($prevuser != $coo[1]) {
+	if($dolog) {
+	  @file_put_contents($dircode . '.log', time() . '|' . $prevuser . '|' . $coo[0] . '|' . $coo[1] . '|' . $gip . "|invalid\n", FILE_APPEND | LOCK_EX);
+	  LOGLevel("User $name contest $contest has invalid cookie.",2);
+	}
+	if($_SESSION["usertable"]["usertype"] == 'team' && $coo[0] < time()-10)
+	  return false;
+	@file_put_contents($dircode, $coo[1]);
+      }
+    } else {
+      @file_put_contents($dircode, $coo[1]);
+    }
+  } else {
+    LOGLevel("User $name contest $contest has bad cookie.",2);
+    return false;
+  }
+  return true;
+}
+
 // verifica se a sessao esta aberta e ok
 function ValidSession() {
-	if (!isset($_SESSION["usertable"])) return(FALSE);
-	$gip = getIP();
+  if (!isset($_SESSION["usertable"])) return(FALSE);
+  if($_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
+  $gip = getIP();
+  if(!ValidCookie()) return false;
+  
+  
 	// cassiopc: sites that use multiple IP addresses to go out create a serious problem to check IPs...
 //	if(substr($_SESSION["usertable"]["userip"],0,6) != '157.92') {
 //	if ($_SESSION["usertable"]["userip"] != $gip ||

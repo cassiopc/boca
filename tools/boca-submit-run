@@ -69,7 +69,7 @@ if [ "$1" == "" ]; then
 fi
 
 if [ -r "$5" ]; then
-    if [ "$4" != "C" -a "$4" != "C++11" -a "$4" != "Java" -a "$4" != "Python2" -a "$4" != "Python3" ]; then
+    if [ "$4" != "C" -a "$4" != "C++14" -a "$4" != "Java" -a "$4" != "Python2" -a "$4" != "Python3" ]; then
 	echo "Warning: language name is not standard, be sure it is correct (this is not necessarily an error)"
     fi
     
