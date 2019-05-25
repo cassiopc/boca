@@ -17,8 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 require('header.php');
-if(!isset($_POST['webcastcode']) || !ctype_alnum($_POST['webcastcode'])) exit;
-$webcastcode=$_POST['webcastcode'];
+if(!isset($_GET['webcastcode']) || !ctype_alnum($_GET['webcastcode'])) exit;
+$webcastcode=$_GET['webcastcode'];
 
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
@@ -39,7 +39,7 @@ for($i=0; $i<count($wcdata);$i++) {
   $wccode = explode(' ', $wcdata[$i]);
   if($wccode[0] == $webcastcode) {
     for($j=1; $j < count($wccode); $j++) {
-      $temp = explode('/', $wccode[$j]);
+      $temp = explode('/', trim($wccode[$j]));
       if(is_numeric($temp[0])) {
 	$wcsite[count($wcsite)] = $temp[0];
 	$wcloweruser[count($wcloweruser)] = 0;
@@ -59,17 +59,17 @@ if($i>=count($wcdata)) {
   exit;
 }
 
-cleardir($webcastdir);
+//cleardir($webcastdir);
 @mkdir($webcastdir);
 
-$contest = $_SESSION["usertable"]["contestnumber"];
-$site = $_SESSION["usertable"]["usersitenumber"];
+$contest = 1; //$_SESSION["usertable"]["contestnumber"];
+$site = 1; //$_SESSION["usertable"]["usersitenumber"];
 
 $ct = DBContestInfo($contest);
 if(($st =  DBSiteInfo($contest, $site)) == null)
 	ForceLoad("../index.php");
 
-if(isset($_POST['full']) && $_POST['full'] > 0)
+if(isset($_GET['full']) && $_GET['full'] > 0)
   $freezeTime = $st['siteduration'];
 else
   $freezeTime = $st['sitelastmilescore'];
@@ -87,12 +87,12 @@ $c = DBConnect();
 $r = DBExec($c,
 	'SELECT problemnumber FROM problemtable' .
 	' WHERE contestnumber = ' . $contest .
-	' AND problemnumber > 0');
+	    ' AND problemnumber > 0 AND not (problemfullname ~ \'(DEL)\')');
 $numProblems = DBnlines($r);
 
 $sql = 'SELECT username, userfullname, userdesc FROM usertable' .
   ' WHERE contestnumber = ' . $contest .
-  ' AND userenabled = \'t\' AND usertype = \'team\' AND ((0 = 1)';
+  ' AND userenabled = \'t\' AND not (usericpcid = \'\') AND not (usericpcid = \'000000\') AND not (usericpcid = \'0\') AND usertype = \'team\' AND ((0 = 1)';
 for($i=0; $i < count($wcloweruser); $i++)
   $sql .= ' OR (usersitenumber = ' . $wcsite[$i] . ' AND usernumber >= ' . $wcloweruser[$i] . ' AND usernumber <= ' . $wcupperuser[$i] . ')';
 $sql .= ')';
@@ -149,6 +149,7 @@ $run = DBAllRunsInSites($contest, $site, 'run');
 $numRuns = count($run);
 $runfile = '';
 for ($i = 0; $i < $numRuns; $i++) {
+  if($run[$i]['status'] == 'deleted') continue;
 	$u = DBUserInfo($contest, $site, $run[$i]['user']);
 	$runID = $run[$i]['number'];
 	$runTime = dateconvminutes($run[$i]['timestamp']);
@@ -182,11 +183,12 @@ if(is_writable($webcastdir)) {
 	@file_put_contents($webcastdir . $ds . 'contest',$contestfile);
 	@file_put_contents($webcastdir . $ds . 'version',$versionfile);
 	@file_put_contents($webcastdir . $ds . 'time',$timefile);
-	if(@create_zip($webcastparentdir,array('webcast'),$webcastdir . ".zip") != 1) {
-		LOGError("Cannot create score webcast.tmp file");
-		MSGError("Cannot create score webcast.tmp file");
+	if(@create_zip($webcastdir,array('.'),$webcastdir . ".zip") != 1) {
+		LOGError("Cannot create score webcast.zip file");
+		MSGError("Cannot create score webcast.zip file");
 	} else {
 	  echo file_get_contents($webcastdir . ".zip");
+	  exit;
 	}
 } else {
 	LOGError('Error creating the folder for the ZIP file: '. $webcastdir);

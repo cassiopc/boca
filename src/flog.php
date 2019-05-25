@@ -187,8 +187,14 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	  if($a["usertype"] == "team")
 	    @file_put_contents($dircode, $ccode);
 	}
-			  
+	
 	$gip=getIP();
+	if(!ValidCookie(true,$gip)) {
+	  if($msg) MSGError("Invalid computer (4).");
+	  unset($_SESSION["usertable"]);
+	  return false;
+	}
+
 	if ($a["userip"] != $gip && $a["userip"] != "" && $a["usertype"] != "score") {
 		LOGLevel("User $name is using two different IPs: " . $a["userip"] . 
 			 "(" . dateconv($a["userlastlogin"]) .") and " . $gip,1);

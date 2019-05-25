@@ -87,7 +87,7 @@ if [ "$?" == "0" ]; then
 	    #			else
 	    #				echo "$BOCASERVER : run $uniq dateerr $dateerr : error to upload the run, will NOT try again, check details at /tmp/boca-submit.err"
 	    cat ${temp}.out > /tmp/boca-submit.err
-	    chmod 400 /tmp/boca-submit.err
+	    chmod 444 /tmp/boca-submit.err
 	    #			fi
 	    rm -f ${temp}.out
 	    exit 4
