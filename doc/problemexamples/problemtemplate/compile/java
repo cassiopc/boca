@@ -65,7 +65,7 @@ if [ "$bocau" == "" -o "$bocag" == "" ]; then
 fi
 
 mkdir -p src
-if [ "${name##*.}" == "zip" -a "${name##*.}" == "ZIP" ]; then
+if [ "${name##*.}" == "zip" -o "${name##*.}" == "ZIP" ]; then
 	unzip "$name" -d src
     if [ "${name##*.}" == "zip" ]; then
 		name=`basename $name .zip`
