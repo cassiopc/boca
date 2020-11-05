@@ -22,7 +22,34 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 	ForceLoad("../index.php");
 
 ?>
-<br>
+<br><b>Information:</b>
+<?php
+/*
+<br>General information: <a href="https://global.naquadah.com.br/boca/info_sheet.pdf">info_sheet.pdf</a>
+
+<br>Timelimits:
+<a href="https://global.naquadah.com.br/boca/contest_times.pdf">contest_times.pdf</a> 
+ */
+
+if(is_readable('/var/www/boca/src/pdfwarm19/info_sheet.pdf')) {
+?>
+<a href="https://global.naquadah.com.br/boca/pdfwarm19/info_sheet.pdf">info_sheet.pdf</a>
+<?php
+}
+if(is_readable('/var/www/boca/src/pdfOLL123/contest_onesided.pdf')) {
+?>
+&nbsp; <a href="https://global.naquadah.com.br/boca/pdfOLL123/contest_onesided.pdf">contest.pdf</a>
+<?php
+}
+if(is_readable('/var/www/boca/src/pdfOLL123/contest_times.pdf')) {
+?>
+&nbsp; <a href="https://global.naquadah.com.br/boca/pdfOLL123/contest_times.pdf">contest_times.pdf</a>
+<?php
+}
+?>
+
+
+<br><br><br>
 <table width="100%" border=1>
  <tr>
   <td><b>Name</b></td>
@@ -31,7 +58,7 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
   <td><b>Descfile</b></td>
  </tr>
 <?php
-$prob = DBGetProblems($_SESSION["usertable"]["contestnumber"]);
+$prob = DBGetProblems($_SESSION["usertable"]["contestnumber"],false);
 for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
 //  echo "  <td nowrap>" . $prob[$i]["number"] . "</td>\n";
@@ -51,7 +78,7 @@ for ($i=0; $i<count($prob); $i++) {
   echo " </tr>\n";
 }
 echo "</table>";
-if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NO PROBLEMS AVAILABLE YET</font></b></center>";
+if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NO PROBLEMS AVAILABLE</font></b></center>";
 
 ?>
 </body>
