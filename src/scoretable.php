@@ -78,11 +78,11 @@ if(!ValidSession()) {
 $loc = $_SESSION["loc"];
 if(!isset($detail)) $detail=true;
 if(!isset($final)) $final=false;
-$scoredelay["admin"] = 10;
-$scoredelay["score"] = 60;
-$scoredelay["team"] = 30;
-$scoredelay["judge"] = 20;
-$scoredelay["staff"] = 30;
+$scoredelay["admin"] = 2;
+$scoredelay["score"] = 30;
+$scoredelay["team"] = 10;
+$scoredelay["judge"] = 3;
+$scoredelay["staff"] = 2;
 $actualdelay = 30;
 if(isset($scoredelay[$_SESSION["usertable"]["usertype"]])) $actualdelay = $scoredelay[$_SESSION["usertable"]["usertype"]];
 $ds = DIRECTORY_SEPARATOR;
@@ -227,7 +227,8 @@ if($redo) {
 		$strtmp .= "<center>As of $hor minutes. Next: ";
 		for($h=-30; $h<40; $h+=10) {
 			if($hor+$h>=0 && $h!=0) {
-				$strtmp .= "<a href=\"$loc/admin/report/score.php?p=0&hor=" . ($hor+$h) . "\">";
+				$strtmp .= "<a href=\"$loc/" . $_SESSION['usertable']['usertype'] . "/report/score.php?p=0&hor=" . ($hor+$h) . "\">";
+//				$strtmp .= "<a href=\"$loc/admin/report/score.php?p=0&hor=" . ($hor+$h) . "\">";
 				if($h>0) $strtmp .= "+";
 				$strtmp .= "$h</a>&nbsp;";
 			}
@@ -247,7 +248,7 @@ if($redo) {
 			}
 			$lin = trim($lin[0]);
 			if($lin=='') continue;
-		if($fta) { $fta=false; $strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup($rfi)\"> <b>Available scores:</b> \n"; }
+		//if($fta) { $fta=false; $strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup($rfi)\"> <b>Available scores:</b> \n"; }
             $grname=explode(' ',$lin);
 			$class=1;
 			reset($score);
@@ -270,8 +271,15 @@ if($redo) {
 
 				}
 			}
+
+			if($class>1) {
+			  if($fta) { $fta=false; $strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup($rfi)\"> <b>Available scores:</b> \n"; }
+				$strtmp .= "<a href=\"#\" onclick=\"javascript:toggleGroup($rfi)\">" . $grname[0] . "</a> ";
+			}
+/*
 			if($class>1)
 				$strtmp .= "<a href=\"#\" onclick=\"javascript:toggleGroup($rfi)\">" . $grname[0] . "</a> ";
+*/
 		}
 		$strtmp .= "<br>\n";
 	} else {
@@ -324,9 +332,9 @@ if($redo) {
 			else
 			  $strtmp .= "  <td nowrap>" . $score[$e]["username"]."/".$score[$e]["usersitename"] . " </td>";
 
-			if($score[$e]['usershortinstitution'] != '') 
-			  $strtmp .= "<td>[" . $score[$e]['usershortinstitution'] . '] ' . $score[$e]["userfullname"];
-			else
+	//		if($score[$e]['usershortinstitution'] != '') 
+	//		  $strtmp .= "<td>[" . $score[$e]['usershortinstitution'] . '] ' . $score[$e]["userfullname"];
+	//		else
 			  $strtmp .= "<td>" . $score[$e]["userfullname"];
 //		}
 		$_SESSION["scorepos"][$score[$e]["username"]."-".$score[$e]["site"]] = $cg2;
