@@ -37,7 +37,7 @@ $wcloweruser = array();
 $wcupperuser = array();
 for($i=0; $i<count($wcdata);$i++) {
   $wccode = explode(' ', $wcdata[$i]);
-  if($wccode[0] == $webcastcode) {
+  if($wccode[0] == $webcastcode && strpos('#',$wccode[0])===false) {
     for($j=1; $j < count($wccode); $j++) {
       $temp = explode('/', trim($wccode[$j]));
       if(is_numeric($temp[0])) {
@@ -92,7 +92,8 @@ $numProblems = DBnlines($r);
 
 $sql = 'SELECT username, userfullname, userdesc FROM usertable' .
   ' WHERE contestnumber = ' . $contest .
-  ' AND userenabled = \'t\' AND not (usericpcid = \'\') AND not (usericpcid = \'000000\') AND not (usericpcid = \'0\') AND usertype = \'team\' AND ((0 = 1)';
+  ' AND userenabled = \'t\' AND usertype = \'team\' AND ((0 = 1)';  
+//  ' AND userenabled = \'t\' AND not (usericpcid = \'\') AND not (usericpcid = \'000000\') AND not (usericpcid = \'0\') AND usertype = \'team\' AND ((0 = 1)';
 for($i=0; $i < count($wcloweruser); $i++)
   $sql .= ' OR (usersitenumber = ' . $wcsite[$i] . ' AND usernumber >= ' . $wcloweruser[$i] . ' AND usernumber <= ' . $wcupperuser[$i] . ')';
 $sql .= ')';
@@ -157,13 +158,14 @@ for ($i = 0; $i < $numRuns; $i++) {
 	if(in_array($runTeam, $teamIDs)) {
 	  $runProblem = $run[$i]['problem'];
 
+if($runTime < $freezeTime) {
 	  $runfile = $runfile .
 	    $runID . '' .
 	    $runTime . '' .
 	    $runTeam . '' .
 	    $runProblem . '';
 
-	  if ($runTime > $freezeTime) {
+	  if ($runTime >= $freezeTime) {
 	    $runfile = $runfile . '?' . "\n";
 	  } else if ($run[$i]['yes'] == 't') {
 	    $runfile = $runfile . 'Y' . "\n";
@@ -174,15 +176,54 @@ for ($i = 0; $i < $numRuns; $i++) {
 	  }
 	}
 }
+}
 
+if($st['currenttime'] >= $freezeTime)
+$timefile = $freezeTime;
+else
 $timefile = $st['currenttime'];
+
+
 $versionfile = '1.0' . "\n";
+
+$_SESSION["usertable"]=array();
+$_SESSION["usertable"]["contestnumber"]=1;
+$_SESSION["usertable"]["usersitenumber"]=1;
+
+
+$score = DBScore($contest, false, -1, $site);
+
+$icpcfile='';
+$class=1;
+$nid=1;
+while(list($e, $c) = each($score)) {
+	if(isset($score[$e]["site"]) && isset($score[$e]["user"])) {
+		$r = DBUserInfo($contest, 
+				$score[$e]["site"], $score[$e]["user"]);
+		if(in_array($r['username'], $teamIDs)) {
+		if(is_numeric($r["usericpcid"]) && $r["usericpcid"] > 0) {
+		  $icpcfile .= $r["usericpcid"] . ",";
+//} else {
+//$icpcfile .= $nid++ . ',';
+//}
+		  $icpcfile .= $class++ . ",";
+		  $icpcfile .= $score[$e]["totalcount"] . ",";
+		  $icpcfile .= $score[$e]["totaltime"] . ",";
+		
+		  if($score[$e]["first"])
+		    $icpcfile .= $score[$e]["first"] . "\n";
+		  else $icpcfile .= "0\n";
+		}
+		}
+	}
+}
 
 if(is_writable($webcastdir)) {
 	@file_put_contents($webcastdir . $ds . 'runs',$runfile);
 	@file_put_contents($webcastdir . $ds . 'contest',$contestfile);
 	@file_put_contents($webcastdir . $ds . 'version',$versionfile);
 	@file_put_contents($webcastdir . $ds . 'time',$timefile);
+	@file_put_contents($webcastdir . $ds . 'icpc',$icpcfile);
 	if(@create_zip($webcastdir,array('.'),$webcastdir . ".zip") != 1) {
 		LOGError("Cannot create score webcast.zip file");
 		MSGError("Cannot create score webcast.zip file");
