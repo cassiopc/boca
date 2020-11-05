@@ -53,6 +53,8 @@ if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"
         ForceLoad("../index.php");
 
 // forca aparecer as runs do proprio site
+//echo disabled;
+//	exit;
 if (trim($s["sitejudging"])!="") $s["sitejudging"].=",".$_SESSION["usertable"]["usersitenumber"];
 else $s["sitejudging"]=$_SESSION["usertable"]["usersitenumber"];
 
@@ -193,6 +195,12 @@ else {
 echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/stat.php', ".
                 "'Problem Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
                 "resizable=yes')\">Statistics</a><br />\n";
+//if($_SESSION['usertable']['username']=='staffnoco999') {
+echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/score.php?p=0&hor=0', ".
+                "'Complete Scoreboard','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
+                "resizable=yes')\">Interactive Scoreboard</a><br />\n";
+//}
+
 }
 ?>
 </body>
