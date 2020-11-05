@@ -50,7 +50,11 @@ if($_SESSION["usertable"]["usertype"] != "judge") {
 if(($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertable"]["usersitenumber"])) == null)
         ForceLoad("../index.php");
 
-if($s["sitechiefname"]== $_SESSION["usertable"]["username"])
+$isboss=false;
+if($s["sitechiefname"]== $_SESSION["usertable"]["username"] || strpos($_SESSION["usertable"]["username"],'chief')===true)
+  $isboss=true;
+
+if($isboss)
   $cc = "338833";
 else
   $cc = "77cc77";
@@ -69,7 +73,7 @@ echo "</table>\n";
 
 $clar = DBOpenClarsInSites($_SESSION["usertable"]["contestnumber"], $s["sitejudging"]);
 $run = DBOpenRunsInSites($_SESSION["usertable"]["contestnumber"], $s["sitejudging"]);
-if($s["sitechiefname"]== $_SESSION["usertable"]["username"]) {
+if($isboss) {
 $nrchief = 0;
 $rrun = DBAllRunsInSites($_SESSION["usertable"]["contestnumber"], $s["sitejudging"]);
 for ($i=0; $i<count($rrun); $i++) {
@@ -82,8 +86,10 @@ $nc=count($clar);
 
 echo "<table border=0 width=\"100%\" align=center>\n";
 echo " <tr>\n";
+//echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=problem.php>Problems</a></td>\n";
+
 echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=run.php>Runs ($nr)</a></td>\n";
-if($s["sitechiefname"]== $_SESSION["usertable"]["username"]) {
+if($isboss) {
   echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=runchief.php>Chief ($nrchief)</a></td>\n";
 }
 echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=score.php>Score</a></td>\n";
