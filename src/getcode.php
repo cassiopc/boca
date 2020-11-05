@@ -51,7 +51,8 @@ if(isset($_GET["name"]) && $_GET["name"] != "" ) {
         "echo -n \"" . $cc . "\" >/root/submissions/comp\n" .
         "chmod 600 /root/submissions/comp\n" .
         "echo -n \"" . trim($secret[2]) . "\" > /root/submissions/code\n" .
-        "chmod 600 /root/submissions/code\n";
+        "chmod 600 /root/submissions/code\n" .
+        "SITEUSER=".$name."\n";
 
       if(($str = @file_get_contents("/var/www/boca/src/private/run-past.code")) !== false) $txt .= $str;
       echo $iv . ":" . $clen . ":\n" . openssl_encrypt($txt, "aes-256-cbc", substr($secret[1],0,32), OPENSSL_RAW_DATA, $iv);
