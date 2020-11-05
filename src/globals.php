@@ -229,9 +229,6 @@ function sanitizeFilename($text)
 function unsanitizeText($text) {
   $text = str_replace("&lt;", "<", $text);
   $text = str_replace("&gt;", ">", $text); 
-    $text = str_replace("&#39;", "'", $text);
-    $text = str_replace("&#96;", "`", $text);
-    $text = str_replace("&quot;", "\"", $text); 
     $text = str_replace("&amp;", "&", $text);
 	return $text;
 }
@@ -339,6 +336,8 @@ function ValidCookie($dolog=false,$gip='') {
        !ctype_alnum($coo[1]))
       $coo = array();
   }
+  $_SESSION['onlycmd']=1;
+  $_SESSION['prevco']='none';
   if(count($coo) == 2) {
     $ds = DIRECTORY_SEPARATOR;
     if($ds=="") $ds = "/";
@@ -353,16 +352,23 @@ function ValidCookie($dolog=false,$gip='') {
 	}
 	return false;
       }
+$_SESSION['prevco']=$prevuser;
+$tt=time();
       if($prevuser != $coo[1]) {
 	if($dolog) {
-	  @file_put_contents($dircode . '.log', time() . '|' . $prevuser . '|' . $coo[0] . '|' . $coo[1] . '|' . $gip . "|invalid\n", FILE_APPEND | LOCK_EX);
-	  LOGLevel("User $name contest $contest has invalid cookie.",2);
+           $ans='new';
+           if($coo[0] < $tt-15) $ans='invalid';
+	  @file_put_contents($dircode . '.log', time() . '|' . $prevuser . '|' . $coo[0] . '|' . $coo[1] . '|' . $gip . "|" . $ans . "\n", FILE_APPEND | LOCK_EX);
+	  LOGLevel("User $name contest $contest has $ans cookie.",2);
 	}
-	if($_SESSION["usertable"]["usertype"] == 'team' && $coo[0] < time()-10)
-	  return false;
-	@file_put_contents($dircode, $coo[1]);
-      }
+	if($_SESSION["usertable"]["usertype"] == 'team') {
+	  if($coo[0] < $tt-15) return false;
+	} else
+	  @file_put_contents($dircode, $coo[1]);
+      } else 
+        $_SESSION['onlycmd']=0;
     } else {
+      $_SESSION['onlycmd']=0;
       @file_put_contents($dircode, $coo[1]);
     }
   } else {
@@ -372,20 +378,20 @@ function ValidCookie($dolog=false,$gip='') {
   return true;
 }
 
+
 // verifica se a sessao esta aberta e ok
 function ValidSession() {
   if (!isset($_SESSION["usertable"])) return(FALSE);
   if($_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
   $gip = getIP();
-  if(!ValidCookie()) return false;
-  
-  
+  //if(!ValidCookie()) return false;
+
 	// cassiopc: sites that use multiple IP addresses to go out create a serious problem to check IPs...
 //	if(substr($_SESSION["usertable"]["userip"],0,6) != '157.92') {
 //	if ($_SESSION["usertable"]["userip"] != $gip ||
 //		$_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
   //      } else {
-	if($_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
+//	if($_SESSION["usertable"]["usersession"] != session_id()) return(FALSE);
     //    }	
 	$tmp = DBUserInfo($_SESSION["usertable"]["contestnumber"], 
 					  $_SESSION["usertable"]["usersitenumber"], 
@@ -393,7 +399,10 @@ function ValidSession() {
 	if($tmp['usersession']=='') return(FALSE);
 	if($_SESSION["usertable"]["usermultilogin"] == 't') return(TRUE);
 
-	if ($tmp["userip"] != $gip) return(FALSE); //cassiopc: they may create a problem here too...
+	if ($tmp["userip"] != $gip) {
+	      @file_put_contents("/tmp/bocalogin.log", $tmp["userip"] . "|" . $gip . '|' . $_SESSION["usertable"]["usersession"] . '|' . $_SESSION["usertable"]["usernumber"] . '|' . date(DATE_RFC2822) . "\n", LOCK_EX | FILE_APPEND);
+	//	return(FALSE); //cassiopc: they may create a problem here too...
+        }
 	return(TRUE);
 }
 // grava erro no arquivo de log
