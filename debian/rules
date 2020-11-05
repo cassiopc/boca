@@ -10,7 +10,7 @@ override_dh_auto_install:
 	mkdir -p debian/boca-db
 	make -j1 install-bocadb DESTDIR=debian/boca-db
 	mkdir -p debian/boca-common
-	make -j1 install-bocacommon DESTDIR=debian/boca-common
+	make -j1 install-bocacommon install-scripts DESTDIR=debian/boca-common
 
 %:
 	dh $@
