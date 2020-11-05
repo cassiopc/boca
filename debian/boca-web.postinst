@@ -5,8 +5,6 @@
 chown -R www-data.www-data /var/www/boca
 chmod -R go-rwx /var/www/boca/src/private
 
-a2ensite default-ssl
-a2enmod ssl
 a2enmod socache_shmcb
 a2enmod proxy_fcgi
 
