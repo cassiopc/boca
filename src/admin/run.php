@@ -88,7 +88,16 @@ if(isset($_POST)) {
 }
 
 $us = DBAllUserNames($_SESSION["usertable"]["contestnumber"]);
+
+for($judged=0; $judged<2; $judged++) {
 for ($i=0; $i<count($run); $i++) {
+  if($run[$i]["status"] == 'gone') continue;
+  if(($run[$i]['status'] != 'judged' && $judged==0) ||
+     ($run[$i]['status'] == 'judged' && $judged==1)) {
+
+
+
+#for ($i=0; $i<count($run); $i++) {
   if($run[$i]["answer1"] != 0 && $run[$i]["answer2"] != 0 && ($run[$i]["status"] != "judged" && $run[$i]["status"] != 'deleted')) {
     if($runphp == "runchief.php")
       echo " <tr bgcolor=\"ff0000\">\n";
@@ -155,6 +164,8 @@ for ($i=0; $i<count($run); $i++) {
     echo "</td>\n";
   }
   echo " </tr>\n";
+}
+}
 }
 
 echo "</table>";
