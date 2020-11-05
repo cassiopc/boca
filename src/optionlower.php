@@ -29,6 +29,11 @@ $loc = $_SESSION['loc'];
 
 if (isset($_GET["username"]) && isset($_GET["userfullname"]) && isset($_GET["userdesc"]) && 
     isset($_GET["passwordo"]) && isset($_GET["passwordn"])) {
+  if($_SESSION["usertable"]["usertype"] == 'team') {
+    MSGError('Updates are not allowed');
+    ForceLoad("option.php");
+  }    
+
 	$username = myhtmlspecialchars($_GET["username"]);
 	$userfullname = myhtmlspecialchars($_GET["userfullname"]);
 	$userdesc = myhtmlspecialchars($_GET["userdesc"]);
