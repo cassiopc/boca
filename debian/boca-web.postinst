@@ -11,10 +11,10 @@ a2enmod socache_shmcb
 a2enmod proxy_fcgi
 
 # Make sure embedded apache php module is not loaded
-a2dismod php7.2 || true
+a2dismod php7.4 || true
 
 #enable php fpm instead
-a2enconf php7.2-fpm
+a2enconf php7.4-fpm
 
 service apache2 restart || true
 
