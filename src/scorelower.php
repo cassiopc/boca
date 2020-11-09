@@ -42,6 +42,8 @@ else $des=true;
 //if ($s["currenttime"] >= $s["sitelastmilescore"] && $ver)
 //	echo "<br><center>Scoreboard frozen</center>";
 
+echo "<link rel=stylesheet href=\"../ScoreCss.php\" type=\"text/css\">\n";
+
 require('scoretable.php');
 ?>
 
