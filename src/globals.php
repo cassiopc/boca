@@ -19,6 +19,8 @@
 require_once('db.php');
 define("dbcompat_1_4_1",true);
 
+$uglysalt="30a2224c82dcf42e497e2a1f6bd6516b";
+
 // sanitization 
 function sanitizeVariables(&$item, $key) 
 { 
@@ -42,8 +44,8 @@ function myrawurldecode($txt) {
 
 function filedownload($oid,$fname,$msg='') {
 	$cf = globalconf();
-	$if = myrawurlencode(encryptData($fname, session_id() . $cf['key'],false));
-	$p = myhash($oid . $fname . $msg . session_id() . $cf["key"]);
+	$if = myrawurlencode(encryptData($fname, $uglysalt . $cf['key'],false));
+	$p = myhash($oid . $fname . $msg . $uglysalt . $cf["key"]);
 	$str = "oid=". $oid . "&filename=". $if . "&check=" . $p;
 	if($msg != '') $str .= "&msg=" . myrawurlencode($msg);
 	return $str;
