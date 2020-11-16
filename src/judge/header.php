@@ -92,6 +92,9 @@ echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" 
 if($isboss) {
   echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=runchief.php>Chief ($nrchief)</a></td>\n";
 }
+{
+  echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=allrunlist.php>All runs </a></td>\n";
+}
 echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=score.php>Score</a></td>\n";
 echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=clar.php>Clarifications ($nc)</a></td>\n";
 
