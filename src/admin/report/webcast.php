@@ -16,6 +16,9 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
 
+//echo "DISABLED";
+//return;
+
 require('header.php');
 if(!isset($_GET['webcastcode']) || !ctype_alnum($_GET['webcastcode'])) exit;
 $webcastcode=$_GET['webcastcode'];
@@ -74,7 +77,24 @@ if(isset($_GET['full']) && $_GET['full'] > 0)
 else
   $freezeTime = $st['sitelastmilescore'];
 
+$freezeTime = $st['siteduration'];
 
+$sql = 'SELECT username, userfullname, userdesc FROM usertable' .
+  ' WHERE contestnumber = ' . $contest .
+  ' AND userenabled = \'t\' AND usertype = \'team\' AND ((0 = 1)';
+//  ' AND userenabled = \'t\' AND not (usericpcid = \'\') AND not (usericpcid = \'000000\') AND not (usericpcid = \'0\') AND usertype = \'team\' AND ((0 = 1)';
+$sqlusersruns='( (0 = 1 )';
+for($i=0; $i < count($wcloweruser); $i++)
+{
+  $sql .= ' OR (usersitenumber = ' . $wcsite[$i] . ' AND usernumber >= ' . $wcloweruser[$i] . ' AND usernumber <= ' . $wcupperuser[$i] . ')';
+  $sqlusersruns .= ' OR (u.usernumber >= ' . $wcloweruser[$i] . ' AND u.usernumber <= ' . $wcupperuser[$i] . ')';
+}
+$sql .= ')';
+$sqlusersruns .= ')';
+
+$contestfile='';
+if(!file_exists($webcastdir . $ds . 'contest') || filemtime($webcastdir . $ds . 'contest') < time() - 3600)
+{
 $contestfile = $ct['contestname'] . "\n";
 
 $contestfile = $contestfile .
@@ -90,13 +110,6 @@ $r = DBExec($c,
 	    ' AND problemnumber > 0 AND not (problemfullname ~ \'(DEL)\')');
 $numProblems = DBnlines($r);
 
-$sql = 'SELECT username, userfullname, userdesc FROM usertable' .
-  ' WHERE contestnumber = ' . $contest .
-  ' AND userenabled = \'t\' AND usertype = \'team\' AND ((0 = 1)';  
-//  ' AND userenabled = \'t\' AND not (usericpcid = \'\') AND not (usericpcid = \'000000\') AND not (usericpcid = \'0\') AND usertype = \'team\' AND ((0 = 1)';
-for($i=0; $i < count($wcloweruser); $i++)
-  $sql .= ' OR (usersitenumber = ' . $wcsite[$i] . ' AND usernumber >= ' . $wcloweruser[$i] . ' AND usernumber <= ' . $wcupperuser[$i] . ')';
-$sql .= ')';
 $r = DBExec($c,$sql);
 
 $numTeams = DBnlines($r);
@@ -108,7 +121,7 @@ $teamIDs = array();
 for ($i = 0; $i < $numTeams; $i++) {
 	$a = DBRow($r, $i);
 	$teamID = $a['username'];
-	$teamIDs[count($teamIDs)] = $teamID;
+	//$teamIDs[count($teamIDs)] = $teamID;
 	$pieces = explode('</b>', $a['userfullname']);
 	$teamName = $a['userfullname'];
 	$pieces = explode(']', $a['userdesc']);
@@ -145,34 +158,112 @@ $contestfile = $contestfile .
 	'1' . '' . '1' . "\n";
 $contestfile = $contestfile .
 	$numProblems . '' . 'Y' . "\n";
+}
 
-$run = DBAllRunsInSites($contest, $site, 'run');
+function LocalGetRuns($contest,$site,$st,$extraquery,$order='run') {
+	$c = DBConnect();
+	$sql = "select distinct r.runnumber as number, r.rundatediff as timestamp, " .
+		"p.problemname as problem, r.runstatus as status, " .
+		"a.yes as yes, u.username as username, " .
+		"a.runanswer as answer " .
+		"from runtable as r, problemtable as p, answertable as a, usertable as u " .
+		"where r.contestnumber=$contest and p.contestnumber=r.contestnumber and u.contestnumber=r.contestnumber and " .
+		"r.runproblem=p.problemnumber and r.usernumber=u.usernumber and r.runsitenumber=u.usersitenumber and " .
+		"a.answernumber=r.runanswer and " .
+		$extraquery . " AND " .
+		"a.contestnumber=r.contestnumber";
+	if (strpos($site,"x")===false) {
+		$str = explode(",", $site);
+		$sql .= " and (r.runsitenumber=-1";
+		for ($i=0;$i<count($str);$i++) {
+			if (is_numeric($str[$i])) $sql .= " or r.runsitenumber=".$str[$i];
+		}
+		$sql .= ")";
+	}
+
+	if ($st == 1) {
+		$sql .= " and (not (r.runjudge1=". $_SESSION["usertable"]["usernumber"] . " and " .
+			"r.runjudgesite1=". $_SESSION["usertable"]["usersitenumber"] . " and r.runanswer1!=0)) and ";
+		$sql .= " (not (r.runjudge2=". $_SESSION["usertable"]["usernumber"] . " and " .
+			"r.runjudgesite2=". $_SESSION["usertable"]["usersitenumber"] . " and r.runanswer2!=0)) and " .
+
+			"(not ((r.runjudge1!=". $_SESSION["usertable"]["usernumber"] . " or " .
+			"r.runjudgesite1!=". $_SESSION["usertable"]["usersitenumber"] . ") and " .
+			" (r.runjudge2!=". $_SESSION["usertable"]["usernumber"] . " or " .
+			"r.runjudgesite2!=". $_SESSION["usertable"]["usersitenumber"] . ") and " .
+			" (not (r.runjudge1 is null)) and (not (r.runjudge2 is null))))";
+		if ($order == 'report')
+			$sql .= " and (u.usertype != 'judge')";
+		$sql .= " and (not r.runstatus = 'judged') " .
+			" and not r.runstatus ~ 'deleted' order by ";
+	} else if($st == 2) {
+	  $sql .= " and (not r.runanswer1 = 0) and (not r.runanswer2 = 0) and (not r.runstatus = 'judged') order by ";
+	} else $sql .= " order by ";
+
+	if($order == "site")
+		$sql .= "r.runsitenumber,";
+	else if ($order == "status")
+		$sql .= "r.runstatus,";
+  	else if ($order == "judge")
+		$sql .= "r.runjudge,r.runjudgesite,";
+	else if ($order == "problem")
+		$sql .= "p.problemname,";
+	else if ($order == "language")
+		$sql .= "l.langname,";
+	else if ($order == "answer")
+		$sql .= "a.runanswer,";
+	else if ($order == "user")
+		$sql .= "r.usernumber,r.runsitenumber,";
+
+	if ($st == 1 || $order == "report")
+		$sql .= "r.runnumber";
+	else
+		$sql .= "r.rundatediff desc";
+
+	$r = DBExec($c, $sql, "DBOpenRunsSNS(get run/prob/lang/ans)");
+
+	$n = DBnlines($r);
+	$a = array();
+	for ($i=0;$i<$n;$i++)
+		$a[$i] = DBRow($r,$i);
+	return $a;
+}
+
+if(isset($_GET['runtimege']) && $_GET['runtimege'] >= 0)
+	$sqlusersruns.=' AND r.rundatediff >= ' . $_GET['runtimege']*60 .' ';
+
+//$run = DBAllRunsInSites($contest, $site, 'run');
+$run = LocalGetRuns($contest, $site,-1,$sqlusersruns, 'run');
 $numRuns = count($run);
+
 $runfile = '';
 for ($i = 0; $i < $numRuns; $i++) {
   if($run[$i]['status'] == 'deleted') continue;
-	$u = DBUserInfo($contest, $site, $run[$i]['user']);
+	//$u = DBUserInfo($contest, $site, $run[$i]['user']);
 	$runID = $run[$i]['number'];
 	$runTime = dateconvminutes($run[$i]['timestamp']);
-	$runTeam = $u['username'];
-	if(in_array($runTeam, $teamIDs)) {
+	//$runTeam = $u['username'];
+	$runTeam = $run[$i]['username'];
+	//if(in_array($runTeam, $teamIDs)) {
+	{
 	  $runProblem = $run[$i]['problem'];
 
-if($runTime < $freezeTime) {
-	  $runfile = $runfile .
-	    $runID . '' .
+//if($runTime < $freezeTime) {
+	{
+	  $runfile .= $runID . '' .
 	    $runTime . '' .
 	    $runTeam . '' .
 	    $runProblem . '';
 
-	  if ($runTime >= $freezeTime) {
-	    $runfile = $runfile . '?' . "\n";
-	  } else if ($run[$i]['yes'] == 't') {
-	    $runfile = $runfile . 'Y' . "\n";
+	  //if ($runTime >= $freezeTime) {
+	  //  $runfile .= '?' . "\n";
+	  //} else if ($run[$i]['yes'] == 't') {
+	  if ($run[$i]['yes'] == 't') {
+	    $runfile .= 'Y' . "\n";
 	  } else if ($run[$i]['answer'] == 'Not answered yet') {
-	    $runfile = $runfile . '?' . "\n";
+	    $runfile .= '?' . "\n";
 	  } else {
-	    $runfile = $runfile . 'N' . "\n";
+	    $runfile .= 'N' . "\n";
 	  }
 	}
 }
@@ -191,11 +282,14 @@ $_SESSION["usertable"]["contestnumber"]=1;
 $_SESSION["usertable"]["usersitenumber"]=1;
 
 
-$score = DBScore($contest, false, -1, $site);
 
+//$icpcfile=$sqlusersruns;
+//$icpcfile=print_r($run,true);
 $icpcfile='';
 $class=1;
 $nid=1;
+if(false){
+$score = DBScore($contest, false, -1, $site);
 while(list($e, $c) = each($score)) {
 	if(isset($score[$e]["site"]) && isset($score[$e]["user"])) {
 		$r = DBUserInfo($contest, 
@@ -217,10 +311,12 @@ while(list($e, $c) = each($score)) {
 		}
 	}
 }
+}
 
 if(is_writable($webcastdir)) {
 	@file_put_contents($webcastdir . $ds . 'runs',$runfile);
-	@file_put_contents($webcastdir . $ds . 'contest',$contestfile);
+	if($contestfile!='')
+		@file_put_contents($webcastdir . $ds . 'contest',$contestfile);
 	@file_put_contents($webcastdir . $ds . 'version',$versionfile);
 	@file_put_contents($webcastdir . $ds . 'time',$timefile);
 	@file_put_contents($webcastdir . $ds . 'icpc',$icpcfile);
