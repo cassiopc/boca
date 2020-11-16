@@ -20,7 +20,6 @@ require('header.php');
 
 if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 	ForceLoad("../index.php");
-
 ?>
 <br><b>Information:</b>
 <?php
@@ -31,19 +30,20 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 <a href="https://global.naquadah.com.br/boca/contest_times.pdf">contest_times.pdf</a> 
  */
 
-if(is_readable('/var/www/boca/src/pdfwarm19/info_sheet.pdf')) {
+if(is_readable('/var/www/boca/src/sample/secretcontest/maratona.pdf')) {
 ?>
-<a href="https://global.naquadah.com.br/boca/pdfwarm19/info_sheet.pdf">info_sheet.pdf</a>
-<?php
-}
-if(is_readable('/var/www/boca/src/pdfOLL123/contest_onesided.pdf')) {
-?>
-&nbsp; <a href="https://global.naquadah.com.br/boca/pdfOLL123/contest_onesided.pdf">contest.pdf</a>
-<?php
-}
-if(is_readable('/var/www/boca/src/pdfOLL123/contest_times.pdf')) {
-?>
-&nbsp; <a href="https://global.naquadah.com.br/boca/pdfOLL123/contest_times.pdf">contest_times.pdf</a>
+<b>PLAIN FILES:</b>  <b>CONTEST</b> (
+<a href='https://global.naquadah.com.br/boca/secretcontest/maratona.pdf'>PT</a> |
+<a href='https://global.naquadah.com.br/boca/secretcontest/maratona_es.pdf'>ES</a> |
+<a href='https://global.naquadah.com.br/boca/secretcontest/maratona_en.pdf'>EN</a>
+)
+&nbsp;&nbsp;&nbsp; 
+<b>Info Sheet</b> (
+<a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona.pdf'>PT</a> |
+<a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona_es.pdf'>ES</a> |
+<a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona_en.pdf'>EN</a>
+)
+
 <?php
 }
 ?>
@@ -58,7 +58,7 @@ if(is_readable('/var/www/boca/src/pdfOLL123/contest_times.pdf')) {
   <td><b>Descfile</b></td>
  </tr>
 <?php
-$prob = DBGetProblems($_SESSION["usertable"]["contestnumber"],false);
+$prob = DBGetProblems($_SESSION["usertable"]["contestnumber"]);
 for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
 //  echo "  <td nowrap>" . $prob[$i]["number"] . "</td>\n";
@@ -78,7 +78,7 @@ for ($i=0; $i<count($prob); $i++) {
   echo " </tr>\n";
 }
 echo "</table>";
-if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NO PROBLEMS AVAILABLE</font></b></center>";
+if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NO PROBLEMS AVAILABLE YET</font></b></center>";
 
 ?>
 </body>
