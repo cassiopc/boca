@@ -46,6 +46,7 @@ $order = myhtmlspecialchars($_GET["order"]);
   <td><b><a href="<?php echo $runphp; ?>?order=judge">Judge (Site)</a></b></td>
   <td><b>AJ</b></td>
   <td><b><a href="<?php echo $runphp; ?>?order=answer">Answer</a></b></td>
+  <td><b>Team</b></td>
  </tr>
 <?php
 if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
@@ -163,6 +164,8 @@ for ($i=0; $i<count($run); $i++) {
     }
     echo "</td>\n";
   }
+  $u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["site"], $run[$i]["user"]);
+  echo "<td>".$u["username"]."</td>";
   echo " </tr>\n";
 }
 }
