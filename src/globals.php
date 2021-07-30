@@ -24,10 +24,6 @@ function sanitizeVariables(&$item, $key)
 { 
     if (!is_array($item)) 
     { 
-        // undoing 'magic_quotes_gpc = On' directive 
-        if (get_magic_quotes_gpc()) 
-            $item = stripcslashes($item); 
-        
         $item = sanitizeText($item); 
     } 
 } 
