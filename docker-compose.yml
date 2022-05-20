@@ -1,0 +1,40 @@
+version: '3.6'
+services:
+  db:
+    container_name: postgres
+    image: postgres:9.4
+    restart: always
+    env_file:
+      - docker/production.env
+    ports:
+      - 5432:5432
+    networks:
+      - boca-net
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  boca:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: boca
+    restart: always
+    ports:
+      - '80:80'
+    env_file:
+      - docker/production.env  
+    volumes:
+      - ./src:/var/www/html
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      - boca-net
+
+volumes:
+  postgres-data: {}
+
+networks:
+  boca-net:
+    name: boca-net
