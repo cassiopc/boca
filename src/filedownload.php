@@ -34,6 +34,7 @@ if(!isset($_GET["oid"]) || !is_numeric($_GET["oid"]) || !isset($_GET["filename"]
 }
 
 $cf = globalconf();
+$uglysalt="30a2224c82dcf42e497e2a1f6bd6516b";
 $fname = decryptData(myrawurldecode($_GET["filename"]), $uglysalt . $cf["key"]);
 
 if(isset($_GET["msg"]))

@@ -177,23 +177,23 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	    unset($_SESSION["usertable"]);
 	    return false;
 	  }
-	  if($prevuser != $ccode && $a["usertype"] == "team") {
-	    LOGLevel("User $name tried to log in contest $contest but computer is invalid ($ccode).",2);
-	    if($msg) MSGError("Invalid computer (3).");
-	    unset($_SESSION["usertable"]);
-	    return false;
-	  }
+	  //if($prevuser != $ccode && $a["usertype"] == "team") {
+	  //  LOGLevel("User $name tried to log in contest $contest but computer is invalid ($ccode).",2);
+	  //  if($msg) MSGError("Invalid computer (3).");
+	  //  unset($_SESSION["usertable"]);
+	  //  return false;
+	  //}
 	} else {
 	  if($a["usertype"] == "team")
 	    @file_put_contents($dircode, $ccode);
 	}
 	
 	$gip=getIP();
-	if(!ValidCookie(true,$gip)) {
-	  if($msg) MSGError("Invalid computer (4).");
-	  unset($_SESSION["usertable"]);
-	  return false;
-	}
+	//if(!ValidCookie(true,$gip)) {
+	//  if($msg) MSGError("Invalid computer (4).");
+	//  unset($_SESSION["usertable"]);
+	//  return false;
+	//}
 
 	if ($a["userip"] != $gip && $a["userip"] != "" && $a["usertype"] != "score") {
 		LOGLevel("User $name is using two different IPs: " . $a["userip"] . 
