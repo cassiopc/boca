@@ -20,9 +20,36 @@ require('header.php');
 
 if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 	ForceLoad("../index.php");
-
 ?>
-<br>
+<br><b>Information:</b>
+<?php
+/*
+<br>General information: <a href="https://global.naquadah.com.br/boca/info_sheet.pdf">info_sheet.pdf</a>
+
+<br>Timelimits:
+<a href="https://global.naquadah.com.br/boca/contest_times.pdf">contest_times.pdf</a> 
+ */
+
+if(is_readable('/var/www/boca/src/sample/secretcontest/maratona.pdf')) {
+?>
+<b>PLAIN FILES:</b>  <b>CONTEST</b> (
+<a href='https://global.naquadah.com.br/boca/secretcontest/maratona.pdf'>PT</a> |
+<a href='https://global.naquadah.com.br/boca/secretcontest/maratona_es.pdf'>ES</a> |
+<a href='https://global.naquadah.com.br/boca/secretcontest/maratona_en.pdf'>EN</a>
+)
+&nbsp;&nbsp;&nbsp; 
+<b>Info Sheet</b> (
+<a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona.pdf'>PT</a> |
+<a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona_es.pdf'>ES</a> |
+<a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona_en.pdf'>EN</a>
+)
+
+<?php
+}
+?>
+
+
+<br><br><br>
 <table width="100%" border=1>
  <tr>
   <td><b>Name</b></td>

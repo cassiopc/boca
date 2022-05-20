@@ -34,12 +34,13 @@ if(!isset($_GET["oid"]) || !is_numeric($_GET["oid"]) || !isset($_GET["filename"]
 }
 
 $cf = globalconf();
-$fname = decryptData(myrawurldecode($_GET["filename"]), session_id() . $cf["key"]);
+$uglysalt="30a2224c82dcf42e497e2a1f6bd6516b";
+$fname = decryptData(myrawurldecode($_GET["filename"]), $uglysalt . $cf["key"]);
 
 if(isset($_GET["msg"]))
-	$p = myhash($_GET["oid"] . $fname . myrawurldecode($_GET["msg"]) . session_id() . $cf["key"]);
+	$p = myhash($_GET["oid"] . $fname . myrawurldecode($_GET["msg"]) . $uglysalt . $cf["key"]);
 else
-	$p = myhash($_GET["oid"] . $fname . session_id() . $cf["key"]);
+	$p = myhash($_GET["oid"] . $fname . $uglysalt . $cf["key"]);
 
 if($p != $_GET["check"]) {
         echo "<html><head><title>View Page</title>";

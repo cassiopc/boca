@@ -46,6 +46,7 @@ $order = myhtmlspecialchars($_GET["order"]);
   <td><b><a href="<?php echo $runphp; ?>?order=judge">Judge (Site)</a></b></td>
   <td><b>AJ</b></td>
   <td><b><a href="<?php echo $runphp; ?>?order=answer">Answer</a></b></td>
+  <td><b>Team</b></td>
  </tr>
 <?php
 if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
@@ -87,8 +88,13 @@ if(isset($_POST)) {
   }
 }
 
-
+for($judged=0; $judged<2; $judged++) {
 for ($i=0; $i<count($run); $i++) {
+  if($run[$i]["status"] == 'gone') continue;
+  if(($run[$i]['status'] != 'judged' && $judged==0) ||
+     ($run[$i]['status'] == 'judged' && $judged==1)) {
+
+#for ($i=0; $i<count($run); $i++) {
   if($run[$i]["answer1"] != 0 && $run[$i]["answer2"] != 0 && ($run[$i]["status"] != "judged" && $run[$i]["status"] != 'deleted')) {
     if($runphp == "runchief.php")
       echo " <tr bgcolor=\"ff0000\">\n";
@@ -158,7 +164,11 @@ for ($i=0; $i<count($run); $i++) {
     }
     echo "</td>\n";
   }
+  $u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["site"], $run[$i]["user"]);
+  echo "<td>".$u["username"]."</td>";
   echo " </tr>\n";
+}
+}
 }
 
 echo "</table>";

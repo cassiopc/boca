@@ -89,4 +89,7 @@ if(!isset($_POST['noflush'])) {
 	echo " </tr>\n"; 
 	echo "</table>\n";
 }
+
+//if(decryptData(encryptData("aaaaa","senha"),"senha")) MSGError("yay");
+
 ?>

@@ -22,7 +22,6 @@ require('header.php');
 $final = true;
 $s = $st;
 $des = true;
-$ver=false;
 $detail=true;
 if($_GET["p"] == "0") $ver = false;
 else if($_GET["p"] == "2") $detail=false;

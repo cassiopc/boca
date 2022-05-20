@@ -49,6 +49,19 @@ if(isset($_GET["getsessionid"])) {
 	echo session_id();
 	exit;
 }
+
+$coo = array();
+if(isset($_COOKIE['biscoitobocabombonera'])) {
+  $coo = explode('-',$_COOKIE['biscoitobocabombonera']);
+  if(count($coo) != 2 ||
+     strlen($coo[1])!=strlen(myhash('xxx')) ||
+     !is_numeric($coo[0]) ||
+     !ctype_alnum($coo[1]))
+    $coo = array();
+}
+if(count($coo) != 2)
+  setcookie('biscoitobocabombonera',time() . '-' . myhash(time() . rand() . time() . rand()),time() + 240*3600);
+
 ob_end_flush();
 
 require_once('version.php');

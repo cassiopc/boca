@@ -29,14 +29,20 @@ if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertabl
 if ($_SESSION["usertable"]["usertype"]!="judge" && 
     $_SESSION["usertable"]["usertype"]!="admin") $ver=true;
 else $ver=false;
+
+//if($_SESSION["usertable"]["usertype"]=='staff' && $_SESSION["usertable"]["usernumber"] >= 200000) $ver=false;
+if($_SESSION["usertable"]["usertype"]=='staff') $ver=false;
+
 if($_SESSION["usertable"]["usertype"]=="score") $des=false;
 else $des=true;
 
 // temp do carlinhos (placar de judge == placar de time)
 //if ($_SESSION["usertable"]["usertype"]=="judge") $ver = true;
 
-if ($s["currenttime"] >= $s["sitelastmilescore"] && $ver)
-	echo "<br><center>Scoreboard frozen</center>";
+//if ($s["currenttime"] >= $s["sitelastmilescore"] && $ver)
+//	echo "<br><center>Scoreboard frozen</center>";
+
+echo "<link rel=stylesheet href=\"../ScoreCss.php\" type=\"text/css\">\n";
 
 require('scoretable.php');
 ?>
