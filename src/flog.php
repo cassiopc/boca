@@ -177,7 +177,9 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	    unset($_SESSION["usertable"]);
 	    return false;
 	  }
-	  if($prevuser != $ccode && $a["usertype"] == "team") {
+	  // Do not allow a team to log in from another computer/user agent only
+	  // if the usermultilogin option is disabled
+	  if($prevuser != $ccode && $a["usertype"] == "team" && $a["usermultilogin"] != "t") {
 	    LOGLevel("User $name tried to log in contest $contest but computer is invalid ($ccode).",2);
 	    if($msg) MSGError("Invalid computer (3).");
 	    unset($_SESSION["usertable"]);
