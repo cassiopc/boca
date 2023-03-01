@@ -62,6 +62,10 @@ if($i>=count($wcdata)) {
   exit;
 }
 
+//$fplock = fopen($webcastdir . '.lock',"r+");
+//flock($fplock,LOCK_EX);
+//sleep(10);
+
 //cleardir($webcastdir);
 @mkdir($webcastdir);
 
@@ -314,17 +318,23 @@ while(list($e, $c) = each($score)) {
 }
 
 if(is_writable($webcastdir)) {
-	@file_put_contents($webcastdir . $ds . 'runs',$runfile);
+	$fplock = fopen($webcastdir . '.lock',"w");
+	flock($fplock,LOCK_EX);
+	fwrite($fplock,"teste\n");
+	@file_put_contents($webcastdir . $ds . 'runs',$runfile,LOCK_EX);
 	if($contestfile!='')
-		@file_put_contents($webcastdir . $ds . 'contest',$contestfile);
-	@file_put_contents($webcastdir . $ds . 'version',$versionfile);
-	@file_put_contents($webcastdir . $ds . 'time',$timefile);
-	@file_put_contents($webcastdir . $ds . 'icpc',$icpcfile);
+		@file_put_contents($webcastdir . $ds . 'contest',$contestfile,LOCK_EX);
+	@file_put_contents($webcastdir . $ds . 'version',$versionfile,LOCK_EX);
+	@file_put_contents($webcastdir . $ds . 'time',$timefile,LOCK_EX);
+	@file_put_contents($webcastdir . $ds . 'icpc',$icpcfile,LOCK_EX);
 	if(@create_zip($webcastdir,array('.'),$webcastdir . ".zip") != 1) {
 		LOGError("Cannot create score webcast.zip file");
 		MSGError("Cannot create score webcast.zip file");
 	} else {
 	  echo file_get_contents($webcastdir . ".zip");
+	  //sleep(30);
+	  flock($fplock,LOCK_UN);
+	  fclose($fplock);
 	  exit;
 	}
 } else {
