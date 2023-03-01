@@ -3,7 +3,7 @@ Section: misc
 Priority: optional
 Maintainer: BOCA Development Team <bocasystem@gmail.com>
 Uploaders: Cassio Polpo de Campos <cassiopc@gmail.com>, Bruno Cesar Ribas <bruno.ribas@unb.br>
-Build-Depends: debhelper, build-essential
+Build-Depends: debhelper-compat (= 13), build-essential
 
 Package: boca
 Architecture: all
