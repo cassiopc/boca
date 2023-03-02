@@ -48,6 +48,6 @@ case "$1" in
 esac
 
 chmod 600 /var/www/boca/src/private/conf.php
-chown www-data.www-data /var/www/boca/src/private/conf.php
+chown www-data:www-data /var/www/boca/src/private/conf.php
 
 exit 0
