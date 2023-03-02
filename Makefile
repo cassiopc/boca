@@ -16,9 +16,6 @@ install-bocawww:
 install-bocaapache:
 	mkdir -p $(DESTDIR)/etc/apache2/sites-enabled/
 	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-enabled/000-boca.conf
-	a2ensite default-ssl || echo a2ensite default-ssl FAILED
-	a2enmod ssl || echo a2enmod ssl FAILED
-	a2enmod socache_shmcb || echo a2enmod socache_shmcb FAILED
 
 install-scripts:
 	mkdir -p $(DESTDIR)/usr/sbin/
