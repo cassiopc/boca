@@ -1,6 +1,6 @@
 
 tools/safeexec: tools/safeexec.c
-	gcc -g tools/safeexec.c -o tools/safeexec
+	gcc -g $^ -o $@
 
 tools/boca-submit-run-root-wrapper: tools/boca-submit-run-root-wrapper.c
 	gcc -g $^ -o $@
