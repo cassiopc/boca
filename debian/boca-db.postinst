@@ -1,8 +1,7 @@
 #!/bin/bash
+set -e
 
 chmod 700 /usr/sbin/boca-createdb
-
-set -e
 
 . /usr/share/debconf/confmodule
 
