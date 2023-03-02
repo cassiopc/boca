@@ -41,7 +41,7 @@ Description: BOCA - WEB files
 
 Package: boca-common
 Architecture: all
-Pre-Depends: debconf, makepasswd, coreutils, sharutils
+Pre-Depends: debconf, makepasswd, sharutils
 Depends: ${misc:Depends}, ${shlibs:Depends}, php-zip, wget, php-cli, php-pgsql, php-gd, postgresql-client, php-xml, openssl, libany-uri-escape-perl
 Description: BOCA - Common files
  BOCA is a software created to control a contest with the ACM International
@@ -63,7 +63,7 @@ Description: BOCA - AutoJudge
 
 Package: boca-submission-tools
 Architecture: amd64
-Depends: ${misc:Depends}, ${shlibs:Depends}, sharutils, wget, coreutils, libany-uri-escape-perl, openssl, openssh-server, logkeys
+Depends: ${misc:Depends}, ${shlibs:Depends}, sharutils, wget, libany-uri-escape-perl, openssl, openssh-server, logkeys
 Description: BOCA submission tools.
  This package provides tools to submit codes to a running boca server
  without using the web interface.
