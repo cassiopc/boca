@@ -1,9 +1,9 @@
 
 tools/safeexec: tools/safeexec.c
-	gcc tools/safeexec.c -o tools/safeexec
+	gcc -g tools/safeexec.c -o tools/safeexec
 
 tools/boca-submit-run-root-wrapper: tools/boca-submit-run-root-wrapper.c
-	gcc $^ -o $@
+	gcc -g $^ -o $@
 
 install-bocawww:
 	mkdir -p $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d $(DESTDIR)/var/www/boca/
