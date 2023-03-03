@@ -14,8 +14,8 @@ install-bocawww:
 	chmod 700 $(DESTDIR)/usr/sbin/boca-fixssh
 
 install-bocaapache:
-	mkdir -p $(DESTDIR)/etc/apache2/sites-enabled/
-	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-enabled/000-boca.conf
+	mkdir -p $(DESTDIR)/etc/apache2/sites-available/
+	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-available/000-boca.conf
 
 install-scripts:
 	mkdir -p $(DESTDIR)/usr/sbin/
