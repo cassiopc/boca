@@ -49,6 +49,10 @@ install-bocaautojudge: tools/safeexec
 
 install: install-bocawww install-bocaapache install-bocadb install-bocacommon install-bocaautojudge install-scripts
 
+clean:
+	$(RM) tools/safeexec
+	$(RM) tools/boca-submit-run-root-wrapper
+
 install-submission-tools: tools/boca-submit-run-root-wrapper
 	mkdir -p $(DESTDIR)/usr/bin $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d
 	install tools/boca-auth-runs $(DESTDIR)/usr/sbin/
