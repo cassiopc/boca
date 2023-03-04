@@ -17,6 +17,9 @@ a2enmod ssl
 # Enable default SSL Virtual Host
 a2ensite default-ssl
 
+# Enable boca HTTP Virtual Host
+a2ensite 000-boca.conf
+
 # Enable apache's shared object cache provider that uses a high-performance
 # cyclic buffer inside a shared memory segment
 # See https://httpd.apache.org/docs/2.4/socache.html
