@@ -1,3 +1,9 @@
+boca (1.5.16-2) jammy; urgency=medium
+
+  * Enable boca's virtual host on HTTP (web interface)
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Sat, 04 Mar 2023 00:37:58 -0300
+
 boca (1.5.16-1) jammy; urgency=medium
 
   [ Bruno Ribas ]
