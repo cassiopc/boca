@@ -1,3 +1,10 @@
+boca (1.5.16-1) jammy; urgency=medium
+
+  [ Bruno Ribas ]
+  * webcast.php: Add lock to avoid sending corrupted files
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Fri, 03 Mar 2023 22:27:44 -0300
+
 boca (1.5.15-1) jammy; urgency=medium
 
   * Add vim .swp files to .gitignore
