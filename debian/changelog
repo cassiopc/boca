@@ -1,3 +1,42 @@
+boca (1.5.16-2) jammy; urgency=medium
+
+  * Enable boca's virtual host on HTTP (web interface)
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Sat, 04 Mar 2023 00:37:58 -0300
+
+boca (1.5.16-1) jammy; urgency=medium
+
+  [ Bruno Ribas ]
+  * webcast.php: Add lock to avoid sending corrupted files
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Fri, 03 Mar 2023 22:27:44 -0300
+
+boca (1.5.15-1) jammy; urgency=medium
+
+  * Add vim .swp files to .gitignore
+  * Move project to the new debhelper dependency
+  * Drop build dependency on build-essential
+  * Update and change package type to '3.0 (quilt)'
+  * Correct data and remove dh_make boilerplate
+  * Fix descriptions' syntax
+  * Use debhelper to find missing dependencies
+  * Add required field Standards-Version
+  * Drop unversioned dependencies on essential package
+  * Fix packages' short and long descriptions
+  * Populate dbgsym packages with debug symbols
+  * Fix chown usage in maintainer scripts
+  * Abort maintainer scripts on failure
+  * Enable debhelper automatic generation of shell code
+  * Migrate dependencies and maintainer scripts to PHP 8.1
+  * Remove Apache HTTPD commands from Makefile
+  * Use automatic variables to compile tools/safeexec
+  * Enable compiler optimisations
+  * Conflict with mod_php instead of disabling it
+  * Add clean rule to the Makefile
+  * Do not overwrite Apache's configuration directory
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Fri, 03 Mar 2023 20:51:38 -0300
+
 boca (1.5.14-8ubuntu4.2) focal; urgency=medium
 
   * unglysalt workaround.

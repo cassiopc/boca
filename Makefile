@@ -1,9 +1,9 @@
 
 tools/safeexec: tools/safeexec.c
-	gcc tools/safeexec.c -o tools/safeexec
+	gcc -g -O2 $^ -o $@
 
 tools/boca-submit-run-root-wrapper: tools/boca-submit-run-root-wrapper.c
-	gcc $^ -o $@
+	gcc -g -O2 $^ -o $@
 
 install-bocawww:
 	mkdir -p $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d $(DESTDIR)/var/www/boca/
@@ -14,11 +14,8 @@ install-bocawww:
 	chmod 700 $(DESTDIR)/usr/sbin/boca-fixssh
 
 install-bocaapache:
-	mkdir -p $(DESTDIR)/etc/apache2/sites-enabled/
-	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-enabled/000-boca.conf
-	a2ensite default-ssl || echo a2ensite default-ssl FAILED
-	a2enmod ssl || echo a2enmod ssl FAILED
-	a2enmod socache_shmcb || echo a2enmod socache_shmcb FAILED
+	mkdir -p $(DESTDIR)/etc/apache2/sites-available/
+	cp tools/000-boca.conf $(DESTDIR)/etc/apache2/sites-available/000-boca.conf
 
 install-scripts:
 	mkdir -p $(DESTDIR)/usr/sbin/
@@ -51,6 +48,10 @@ install-bocaautojudge: tools/safeexec
 	chmod 700 $(DESTDIR)/usr/sbin/boca-autojudge
 
 install: install-bocawww install-bocaapache install-bocadb install-bocacommon install-bocaautojudge install-scripts
+
+clean:
+	$(RM) tools/safeexec
+	$(RM) tools/boca-submit-run-root-wrapper
 
 install-submission-tools: tools/boca-submit-run-root-wrapper
 	mkdir -p $(DESTDIR)/usr/bin $(DESTDIR)/usr/sbin $(DESTDIR)/etc/cron.d
