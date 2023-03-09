@@ -89,11 +89,11 @@ function DB_lo_import_text($conn, $text) {
   return $oid;
 }
 
+//a função sofreu modificações importantes na versão 8.1 do php. A
+//partir deste commit vamos exigir o uso de php8.1
 function DB_lo_export($contest, $conn, $oid, $file) {
-	if (strcmp(phpversion(),'4.2.0')<0)
-		$stat= pg_loexport ($oid, $file, $conn);
-	else
-		$stat= pg_lo_export ($oid, $file, $conn);
+    $stat= pg_lo_export ($conn, $oid, $file);
+
 	if($stat===false) return false;
 	if(!is_readable($file)) return false;
 	if(($str=DB_unlock($contest,file_get_contents($file),$conn))!==false) {

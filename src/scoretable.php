@@ -252,7 +252,9 @@ if($redo) {
             $grname=explode(' ',$lin);
 			$class=1;
 			reset($score);
-			while(list($e,$c) = each($score)) {
+			while(1) {
+				$e=key($score);
+				$c=current($score);
 				if(!isset($score[$e]['classingroup'])) $score[$e]['classingroup']=array();
 				for($k=1;$k<count($grname);$k++) {
 					if($score[$e]['site']==$grname[$k]) {
@@ -270,6 +272,8 @@ if($redo) {
 					}
 
 				}
+				if (next($score) === false)
+					break;
 			}
 
 			if($class>1) {
@@ -285,9 +289,13 @@ if($redo) {
 	} else {
 		reset($score);
 		$class = 1;
-		while(list($e,$c) = each($score)) {
+		while(1) {
+			$e=key($score);
+			$c=current($score);
 			$score[$e]['classingroup'][1]=$class;
-		    $class++;
+			$class++;
+			if (next($score)=== false)
+				break;
 		}
 	}
 
@@ -303,10 +311,14 @@ if($redo) {
 	$strtmp .= "</tr>\n";
 	$n=0;
 	reset($score);
-	while(list($e, $c) = each($score)) {
+	while(1) {
+		$e=key($score);
+		$c=current($score);
 	if(!isset($score[$e]['classingroup'])) continue;  
 	  reset($score[$e]['classingroup']);
- 	  while(list($cg1,$cg2) = each($score[$e]['classingroup'])) {
+ 	  while(1) {
+		  $cg1=key($score[$e]['classingroup']);
+		  $cg2=current($score[$e]['classingroup']);
   	    $strtmp .= " <tr class=\"";
 		$strtmp .= "sitegroup" . $cg1 . "\">";
 		$strtmp .= "<td>" . $cg2 . "</td>\n";
@@ -392,7 +404,11 @@ if($redo) {
 			$score[$e]["totalcount"] . " (" . $score[$e]["totaltime"] . ")</td>\n";
 		$strtmp .= " </tr>\n";
 		$n++;
+		if(next($score[$e]['classingroup'])===false)
+			break;
 	  }
+	  if(next($score)===false)
+		  break;
 	}
 	$strtmp .= "</table>";
 	if ($n == 0) $strtmp .= "<br><center><b><font color=\"#ff0000\">SCOREBOARD IS EMPTY</font></b></center>";
