@@ -314,11 +314,15 @@ if($redo) {
 	while(1) {
 		$e=key($score);
 		$c=current($score);
+		if(!isset($score[$e]['username'])) break;
 	if(!isset($score[$e]['classingroup'])) continue;  
 	  reset($score[$e]['classingroup']);
  	  while(1) {
 		  $cg1=key($score[$e]['classingroup']);
 		  $cg2=current($score[$e]['classingroup']);
+		  if(empty($cg2))
+			  if(next($score[$e]['classingroup'])===false)
+				  break;
   	    $strtmp .= " <tr class=\"";
 		$strtmp .= "sitegroup" . $cg1 . "\">";
 		$strtmp .= "<td>" . $cg2 . "</td>\n";
