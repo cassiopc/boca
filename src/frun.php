@@ -180,7 +180,7 @@ function DBUpdateRunC($contest, $usersite, $usernumber, $runsite, $runnumber, $a
 			if (($b = DBSiteInfo($contest, $runsite, $c)) == null)
 				return true;
 			$ta = $b["currenttime"]; 
-			$tf = $b["sitelastmileanswer"];
+			$tf = $b["sitelastmilescore"];
 			if ($ta < $tf || $ta > $b['siteduration']) {
 				$u = DBUserInfo ($contest, $runsite, $team, $c);
 				if($u['usertype']=='team') {
