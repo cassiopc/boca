@@ -32,17 +32,23 @@ echo "</tr>\n";
 
 $str="All Runs by Problem";
 $str2="Accepted Runs by Problem";
-reset($d['problem']);
 $cor = "";
-while (list($keya, $val) = each($d['problem'])) {
+$color=array();
+$values_ac=array();
+// while (list($keya, $val) = each($d['problem'])) {
+foreach($d['problem'] as $keya => $val){
   $val = $d['problemyes'][$keya]; if($val=="") $val=0; 
   $str2 .= chr(1) . $keya . "(" . $val . ")" . chr(1) . $val;
   $cor .= "-" . $d['color'][$keya];
+  $color[] = "#".$d['color'][$keya];
+  $values_ac[]="$keya:$val";
 }
 $cor = substr($cor,1);
+$values = array();
 
-reset($d['problem']);
-while (list($keya, $val) = each($d['problem'])) {
+foreach($d['problem'] as $keya => $val){
+  // while (list($keya, $val) = each($d['problem'])) {
+  $values[] =  $keya . ":" . $val;
   $str .= chr(1) . $keya . "(" . $val . ")" . chr(1) . $val;
   echo "<tr><td>$keya ";
   echo "<img alt=\"balloon\" width=\"15\" ".
@@ -63,27 +69,52 @@ while (list($keya, $val) = each($d['problem'])) {
 }
 echo "</table></center>";
 
+$myfile = fopen("runs_by_problems.txt", "w") or die("Unable to open file runs_by_problems.txt!");
+for($i=0;$i<count($values);$i++){
+  fwrite($myfile, $values[$i]);
+  fwrite($myfile, " ");
+  fwrite($myfile, $color[$i]);
+  fwrite($myfile, "\n");
+}
+fclose($myfile);
+
+$myfile = fopen("accepted_runs_by_problems.txt", "w") or die("Unable to open file accepted_runs_by_problems.txt!");
+for($i=0;$i<count($values_ac);$i++){
+  fwrite($myfile, $values_ac[$i]);
+  fwrite($myfile, " ");
+  fwrite($myfile, $color[$i]);
+  fwrite($myfile, "\n");
+}
+fclose($myfile);
+
+shell_exec("python3 ../../admin/report/piechart.py runs_by_problems.txt 'Runs by Problems'");
+shell_exec("python3 ../../admin/report/piechart.py accepted_runs_by_problems.txt 'Accepted Runs by Problems'");
+
+
 echo "<center><table><tr>";
-echo "<td><img alt=\"\" src=\"piechart.php?dados=".rawurlencode($str)."&color=".rawurlencode($cor)."\" /></td>\n";
-echo "<td><img alt=\"\" src=\"piechart.php?dados=".rawurlencode($str2)."&color=".rawurlencode($cor)."\" /></td></tr></table></center>\n";
+echo "<td><img alt='runs by problems' src=runs_by_problems.png width=500></td></tr>\n";
+echo "<td><img alt='accepted runs by problems' src=accepted_runs_by_problems.png width=500></td>\n";
+echo "</table> </center>";
+
 
 //----------------------------------------------------------
 echo "<center><h3>Runs by Problem and Answer</h3></center>\n";
 echo "<center><table border=1>\n";
 echo "<tr><td><b><u>Problems x Answers</u></b></td>";
-reset($d['answer']);
-while (list($key, $val) = each($d['answer']))
+// while (list($key, $val) = each($d['answer']))
+foreach($d['answer'] as $key => $val){
   echo "<td>$key</td>";
+}
 echo "<td>Total</td></tr>\n";
 
-reset($d['problem']);
-while (list($keya, $vala) = each($d['problem'])) {
+foreach($d['problem'] as $keya => $vala){
+// while (list($keya, $vala) = each($d['problem'])) {
   echo "<tr><td>$keya ";
   echo "<img alt=\"balloon\" width=\"15\" ".
 	  "src=\"" . balloonurl($d['color'][$keya]) ."\" />\n";
   echo "</td>";
-  reset($d['answer']);
-  while (list($key, $val) = each($d['answer'])) {
+  // while (list($key, $val) = each($d['answer'])) {
+  foreach($d['answer'] as $key => $val){ 
     if(!isset($d['pa'][$keya][$key]))
 	echo "<td>0</td>";
     else {
@@ -101,18 +132,22 @@ echo "<center><h3>Runs by Problem and Language</h3></center>\n";
 echo "<center><table border=1>\n";
 echo "<tr><td><b><u>Problems x Languages</u></b></td>";
 reset($d['language']);
-while (list($key, $val) = each($d['language']))
+// while (list($key, $val) = each($d['language']))
+foreach($d['language'] as $key => $val){
   echo "<td>$key</td>";
+}
 echo "<td>Total</td></tr>\n";
 
 reset($d['problem']);
-while (list($keya, $vala) = each($d['problem'])) {
+// while (list($keya, $vala) = each($d['problem'])) {
+foreach($d['problem'] as $keya => $vala){
   echo "<tr><td>$keya ";
   echo "<img alt=\"balloon\" width=\"15\" ".
 	  "src=\"" . balloonurl($d['color'][$keya]) ."\" />\n";
   echo "</td>";
   reset($d['language']);
-  while (list($key, $val) = each($d['language'])) {
+  // while (list($key, $val) = each($d['language'])) {
+  foreach($d['language'] as $key => $val){
     if(!isset($d['pl'][$keya][$key]))
 	echo "<td>0</td>";
     else {
@@ -137,17 +172,23 @@ echo "</tr>\n";
 
 $str="All Runs by Language";
 $str2="Accepted Runs by Language";
-reset($d['language']);
-while (list($keya, $val) = each($d['language'])) {
+$values = array();
+$values_ac = array();
+
+// while (list($keya, $val) = each($d['language'])) {
+foreach($d['language'] as $keya => $val){
   $val=0;
   if(isset($d['languageyes'][$keya]))
     $val = $d['languageyes'][$keya];
   $str2 .= chr(1) . $keya . "(" . $val . ")" . chr(1) . $val;
+  $values_ac[] = $keya.":".$val;
 }
 
 reset($d['language']);
-while (list($keya, $val) = each($d['language'])) {
+// while (list($keya, $val) = each($d['language'])) {
+foreach($d['language'] as $keya => $val){
   $str .= chr(1) . $keya . "(" . $val . ")" . chr(1) . $val;
+  $values[] =$keya . ":" . $val;
   echo "<tr><td>$keya</td>";
   echo "<td>$val</td>";
   if(isset($d['languageyes'][$keya])) {
@@ -160,24 +201,62 @@ while (list($keya, $val) = each($d['language'])) {
 }
 echo "</table></center>";
 
+$color = array();
+$color[] = "#2cba00";
+$color[] = "#a3ff00";
+$color[] = "#fff400";
+$color[] = "#ffa700";	
+$color[] = "#ff0000";
+
+
+$myfile = fopen("all_runs_by_language.txt", "w") or die("Unable to open file all_runs_by_language.txt!");
+for($i=0;$i<count($values);$i++){
+  fwrite($myfile, $values[$i]);
+  fwrite($myfile, " ");
+  fwrite($myfile, $color[$i]);
+  fwrite($myfile, "\n");
+}
+fclose($myfile);
+
+$myfile = fopen("accepted_runs_by_language.txt", "w") or die("Unable to open file accepted_runs_by_language.txt!");
+for($i=0;$i<count($values);$i++){
+  fwrite($myfile, $values_ac[$i]);
+  fwrite($myfile, " ");
+  fwrite($myfile, $color[$i]);
+  fwrite($myfile, "\n");
+}
+
+fclose($myfile);
+
+
+shell_exec("python3 ../../admin/report/piechart.py all_runs_by_language.txt 'All Runs by Language' 'lower'");
+shell_exec("python3 ../../admin/report/piechart.py accepted_runs_by_language.txt 'Accepted Runs by Language' 'lower'");
+
+
 echo "<center><table><tr>";
-echo "<td><img alt=\"\" src=\"piechart.php?dados=".rawurlencode($str)."\" /></td>\n";
-echo "<td><img alt=\"\" src=\"piechart.php?dados=".rawurlencode($str2)."\" /></td></tr></table></center>\n";
+echo "<td><img alt='all runs by language' src=all_runs_by_language.png width=500></td></tr>\n";
+echo "<td><img alt='accepted runs by language' src=accepted_runs_by_language.png width=500></td>\n";
+echo "</table> </center>";
 
 //----------------------------------------------------------
 echo "<center><h3>Runs by Language and Answer</h3></center>\n";
 echo "<center><table border=1>\n";
 echo "<tr><td><b><u>Languages x Answers</u></b></td>";
 reset($d['answer']);
-while (list($key, $val) = each($d['answer']))
+// while (list($key, $val) = each($d['answer']))
+foreach($d['answer'] as $key => $val){
   echo "<td>$key</td>";
+}
 echo "<td>Total</td></tr>\n";
 
 reset($d['language']);
-while (list($keya, $vala) = each($d['language'])) {
+// while (list($keya, $vala) = each($d['language'])) {
+foreach($d['language'] as $keya => $vala){
+
   echo "<tr><td>$keya</td>";
   reset($d['answer']);
-  while (list($key, $val) = each($d['answer'])) {
+  // while (list($key, $val) = each($d['answer'])) {
+  foreach($d['answer'] as $key => $val){
     if(!isset($d['la'][$keya][$key]))
 	echo "<td>0</td>";
     else {
@@ -205,17 +284,36 @@ echo "<td>Answers</td>";
 echo "</tr>\n";
 
 $str="All Runs by Answer";
-reset($d['answer']);
-while (list($keya, $val) = each($d['answer'])) {
+$values = array();
+// while (list($keya, $val) = each($d['answer'])) {
+foreach($d['answer'] as $keya => $val){
+  $values[] = $keya . ":" . $val;
   $str .= chr(1) . $keya . "(" . $val . ")" . chr(1) . $val;
   echo "<tr><td>$keya</td>";
   echo "<td>$val</td>";
   echo "</tr>";
 }
+
+$color[] = "#af7f57";
+$myfile = fopen("all_runs_by_answer.txt", "w") or die("Unable to open file all_runs_by_answer.txt!");
+for($i=0;$i<count($values);$i++){
+  fwrite($myfile, $values[$i]);
+  fwrite($myfile, " ");
+  fwrite($myfile, $color[$i]);
+  fwrite($myfile, "\n");
+}
+
+fclose($myfile);
+
+shell_exec("python3 ../../admin/report/piechart.py all_runs_by_answer.txt 'All Runs by Answer' 'lower'");
+
+
 echo "</table></center>";
 
 echo "</td>";
-echo "<td><img alt=\"\" src=\"piechart.php?order=1&dados=".rawurlencode($str)."\" /></td></tr></table></center>\n";
+echo "<td><img alt='all runs by answer' src=all_runs_by_answer.png width=500></td></tr>\n";
+
+echo "</table></center>\n";
 
 //----------------------------------------------------------
 echo "<br />";
@@ -224,7 +322,8 @@ echo "<center><h3>Runs by User and Problem</h3></center>\n";
 echo "<center><table border=1>\n";
 echo "<tr><td><b><u>Users x Problems</u></b></td>";
 reset($d['problem']);
-while (list($key, $val) = each($d['problem'])) {
+// while (list($key, $val) = each($d['problem'])) {
+foreach($d['problem'] as $key => $val){
   echo "<td>$key ";
   echo "<img alt=\"balloon\" width=\"15\" ".
 	  "src=\"" . balloonurl($d['color'][$key]) ."\" />\n";
@@ -233,14 +332,16 @@ while (list($key, $val) = each($d['problem'])) {
 echo "<td>Total</td><td>Accepted</td></tr>\n";
 
 reset($d['username']);
-while (list($keya, $vala) = each($d['username'])) {
+// while (list($keya, $vala) = each($d['username'])) {
+foreach($d['username'] as $keya => $vala){
   $keya = $d['username'][$keya];
   if(isset($d['user'][$keya]))
 	  $vala = $d['user'][$keya];
   else $vala=0;
   echo "<tr><td>".$d['userfull'][$keya]."</td>";
   reset($d['problem']);
-  while (list($key, $val) = each($d['problem'])) {
+  // while (list($key, $val) = each($d['problem'])) {
+  foreach($d['problem'] as $key => $val){
     if(!isset($d['up'][$keya][$key]))
 	echo "<td bgcolor=\"ffff88\">0</td>";
     else {
@@ -288,7 +389,8 @@ $res = array();
 $m = 0;
 sort($d['timestamp']);
 reset($d['timestamp']);
-while (list($keya, $val) = each($d['timestamp'])) {
+// while (list($keya, $val) = each($d['timestamp'])) {
+foreach($d['timestamp'] as $keya => $val){
   while($atual+$passo < $val) {
     $atual += $passo;
     $pos++;
@@ -301,15 +403,27 @@ while (list($keya, $val) = each($d['timestamp'])) {
 
 $str="Runs by Time Period" . chr(1) . $m;
 $atual=0;
+$values = array();
 for($pos=0; $pos<$vezes; $pos++) {
   if(!isset($res[$pos]) || $res[$pos]=="") $res[$pos] = 0;
   $q = (int) ($atual/60);
   $atual += $passo;
   $qq = (int) ($atual/60);
   $str .= chr(1) . $q . "-" .$qq . chr(1) . $res[$pos];
+  $values[] = $res[$pos];
 }
 
-echo "<center><img alt=\"\" src=\"linechart.php?dados=".rawurlencode($str)."\" /></center>\n";
+$myfile = fopen("runs_by_time_period.txt", "w") or die("Unable to open file runs_by_time_period.txt!");
+for($i=0;$i<count($values);$i++){
+  fwrite($myfile, $values[$i]);
+  fwrite($myfile, "\n");
+}
+
+shell_exec("python3 ../../admin/report/barplot.py runs_by_time_period.txt 'Runs by Time Period'");
+
+
+echo "<center><img alt=runs_by_time_period src=runs_by_time_period.png width=500></center>\n";
+
 
 //------------------------------------------------
 $vezes = 30;
@@ -319,7 +433,8 @@ $pos = 0;
 $res = array();
 sort($d['timestampyes']);
 reset($d['timestampyes']);
-while (list($keya, $val) = each($d['timestampyes'])) {
+// while (list($keya, $val) = each($d['timestampyes'])) {
+foreach($d['timestampyes'] as $keya => $val){
   while($atual+$passo < $val) {
     $atual += $passo;
     $pos++;
@@ -329,6 +444,7 @@ while (list($keya, $val) = each($d['timestampyes'])) {
   else $res[$pos]=1;
 }
 
+$values_ac = array();
 $str="Accepted Runs by Time Period" . chr(1) . $m;
 $atual=0;
 for($pos=0; $pos<$vezes; $pos++) {
@@ -337,9 +453,20 @@ for($pos=0; $pos<$vezes; $pos++) {
   $atual += $passo;
   $qq = (int) ($atual/60);
   $str .= chr(1) . $q . "-" .$qq . chr(1) . $res[$pos];
+  $values_ac[] = $res[$pos];
 }
 
-echo "<center><img alt=\"\" src=\"linechart.php?dados=".rawurlencode($str)."\" /></center>\n";
+$myfile = fopen("accepted_runs_by_time_period.txt", "w") or die("Unable to open file accepted_runs_by_time_period.txt!");
+for($i=0;$i<count($values_ac);$i++){
+  fwrite($myfile, $values_ac[$i]);
+  fwrite($myfile, "\n");
+}
+
+shell_exec("python3 ../../admin/report/barplot.py accepted_runs_by_time_period.txt 'Accepted Runs by Time Period'");
+
+
+echo "<center><img alt=runs_by_time_period src=accepted_runs_by_time_period.png width=500></center>\n";
+
 
 include("$locr/footnote.php");
 ?>
