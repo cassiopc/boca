@@ -1,3 +1,15 @@
+boca (1.5.18-1) jammy; urgency=medium
+
+  [ Bruno Ribas ]
+  * private/score.sep: more sane default
+  * barplot.py: moved to the correct location
+  * d/control: add python3-matplotlib as depends for boca-web
+
+  [ Davi Antônio da Silva Santos ]
+  * Format code with black 23.1.0
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Wed, 29 Mar 2023 17:09:19 -0300
+
 boca (1.5.17-1) jammy; urgency=medium
 
   [ Bruno Ribas ]
