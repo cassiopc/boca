@@ -1,3 +1,30 @@
+boca (1.5.17-1) jammy; urgency=medium
+
+  [ Bruno Ribas ]
+  * webcast.php: Add lock to avoid sending corrupted files
+  * src/db.php: Begin migration to php8.1 requirement. Fix use of pg_lo_export
+  * src/scoretable.php: Remove all each() usage
+
+  [ Daniel Saad Nogueira Nunes ]
+  * Update stat.php
+  * Update stat.php (#23)
+  * Create barplot.py (#24)
+  * Create piechart.py (#25)
+
+  [ Bruno Ribas ]
+  * scoretable.php: fix scoreboard to show correct teams
+
+  [ Daniel Saad Nogueira Nunes ]
+  * Update frun.php (#26)
+
+  [ Rodrigo Laiola Guimarães ]
+  * Fix user multi-login problem when running BOCA with a reverse proxy (#19)
+
+  [ Davi Antônio da Silva Santos ]
+  * Update version info and year
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Mon, 27 Mar 2023 22:55:23 -0300
+
 boca (1.5.16-2) jammy; urgency=medium
 
   * Enable boca's virtual host on HTTP (web interface)
