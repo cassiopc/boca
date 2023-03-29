@@ -31,7 +31,7 @@ Description: BOCA - database
 
 Package: boca-web
 Architecture: all
-Depends: ${misc:Depends}, ${shlibs:Depends}, boca-common, apache2, php8.1-fpm, php8.1
+Depends: ${misc:Depends}, ${shlibs:Depends}, boca-common, apache2, php8.1-fpm, php8.1, python3-matplotlib
 Conflicts: libapache2-mod-php
 Description: BOCA - WEB files
  BOCA is a software created to control a contest with the ACM International
