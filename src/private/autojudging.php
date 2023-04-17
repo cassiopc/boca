@@ -79,10 +79,10 @@ $key=md5(mt_rand() . rand() . mt_rand());
 
 $cf = globalconf();
 $ip = $cf["ip"];
-$activecontest=DBGetActiveContest();
 $prevsleep=0;
 //$dodebug=1;
 while(42) {
+  $activecontest=DBGetActiveContest();
 
   if(($run = DBGetRunToAutojudging($activecontest["contestnumber"], $ip)) === false) {
     if($prevsleep==0)
