@@ -36,6 +36,9 @@ if($_SESSION["usertable"]["usertype"]=='staff') $ver=false;
 if($_SESSION["usertable"]["usertype"]=="score") $des=false;
 else $des=true;
 
+if($_SESSION["usertable"]["usertype"]=="score" && substr($_SESSION["usertable"]["username"],0,9) == "scoreboss" ) $ver=false;
+
+
 // temp do carlinhos (placar de judge == placar de time)
 //if ($_SESSION["usertable"]["usertype"]=="judge") $ver = true;
 
