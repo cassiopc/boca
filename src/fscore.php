@@ -365,10 +365,13 @@ function DBScoreSite($contest, $site, $verifylastmile, $hor=-1, $data=null) {
     $resp[$user . '-' . $site]["problem"][$problem]["count"] = 0;
 
     while ($i<$n && $a[$i]["anstime"] <= $ta && $a[$i]["user"]==$user && $a[$i]["problem"]==$problem && $a[$i]["yes"]!='t') {
-      $time += (int) (($ct["contestpenalty"])/60);
-      $k++;
-      $i++;
+	//  now CE, Name Mismatch and Contact Staff do not generate penalties
+        if($a[$i]["answer"] != '2' && $a[$i]["answer"] != '7' && $a[$i]["answer"] != '8')
+        	$time += (int) (($ct["contestpenalty"])/60);
+        $k++;
+        $i++;
     }
+
 		
     $resp[$user . '-' . $site]["problem"][$problem]["count"] = $k;
     if ($i>=$n) break; 
