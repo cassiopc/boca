@@ -1,3 +1,20 @@
+boca (1.5.19-1) jammy; urgency=medium
+
+  [ Rodrigo Laiola Guimarães ]
+  * Update autojudging.php (#30)
+
+  [ Daniel Saad Nogueira Nunes ]
+  * fscore.php: now CE, Name Mismatch and Contact staff do not generate penalties. (#31)
+  * scorelower.php: usernames starting with scoreboss* bypass the frozen scoreboard (#32)
+
+  [ Bruno Ribas ]
+  * mv postgresql/{10,14}
+
+  [ Davi Antônio da Silva Santos ]
+  * Fix src/version pointing to older version
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Mon, 28 Aug 2023 21:55:10 -0300
+
 boca (1.5.18-1) jammy; urgency=medium
 
   [ Bruno Ribas ]
