@@ -253,25 +253,30 @@ for ($i = 0; $i < $numRuns; $i++) {
 	  $runProblem = $run[$i]['problem'];
 
 //if($runTime < $freezeTime) {
-	{
-	  $runfile .= $runID . '' .
-	    $runTime . '' .
-	    $runTeam . '' .
-	    $runProblem . '';
+        {
+          $runfile .= $runID . '^\' .
+            $runTime . '^\' .
+            $runTeam . '^\' .
+            $runProblem . '^\';
 
-	  //if ($runTime >= $freezeTime) {
-	  //  $runfile .= '?' . "\n";
-	  //} else if ($run[$i]['yes'] == 't') {
-	  if ($run[$i]['yes'] == 't') {
-	    $runfile .= 'Y' . "\n";
-	  } else if ($run[$i]['answer'] == 'Not answered yet') {
-	    $runfile .= '?' . "\n";
-	  } else {
-	    $runfile .= 'N' . "\n";
-	  }
-	}
+          //if ($runTime >= $freezeTime) {
+          //  $runfile .= '?' . "\n";
+          //} else if ($run[$i]['yes'] == 't') {
+          if ($run[$i]['yes'] == 't') {
+            $runfile .= 'Y' . "\n";
+          } else if ($run[$i]['answer'] == 'Not answered yet') {
+            $runfile .= '?' . "\n";
+          }
+          else if($run[$i]['answer'] == 'NO - Compilation error' || $run[$i]['answer'] == 'NO - Contact staff'){
+                $runfile .= 'X' . "\n";
+          }
+           else {
+            $runfile .= 'N' . "\n";
+          }
+        }
 }
 }
+
 
 if($st['currenttime'] >= $freezeTime)
 $timefile = $freezeTime;
