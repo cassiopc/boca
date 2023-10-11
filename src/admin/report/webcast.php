@@ -253,15 +253,15 @@ for ($i = 0; $i < $numRuns; $i++) {
 	  $runProblem = $run[$i]['problem'];
 
 //if($runTime < $freezeTime) {
-        {
-          $runfile .= $runID . '^\' .
-            $runTime . '^\' .
-            $runTeam . '^\' .
-            $runProblem . '^\';
+	{
+	  $runfile .= $runID . '' .
+	    $runTime . '' .
+	    $runTeam . '' .
+	    $runProblem . '';
 
-          //if ($runTime >= $freezeTime) {
-          //  $runfile .= '?' . "\n";
-          //} else if ($run[$i]['yes'] == 't') {
+	  //if ($runTime >= $freezeTime) {
+	  //  $runfile .= '?' . "\n";
+	  //} else if ($run[$i]['yes'] == 't') {
           if ($run[$i]['yes'] == 't') {
             $runfile .= 'Y' . "\n";
           } else if ($run[$i]['answer'] == 'Not answered yet') {
@@ -276,7 +276,6 @@ for ($i = 0; $i < $numRuns; $i++) {
         }
 }
 }
-
 
 if($st['currenttime'] >= $freezeTime)
 $timefile = $freezeTime;
