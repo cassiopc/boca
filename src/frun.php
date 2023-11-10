@@ -484,34 +484,28 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 		   "DBUpdateRunAutojudging(update run)");
 
 	$b = DBSiteInfo($contest, $site, $c);
-
-	if($b["siteautojudge"]!="t") {
+	
+	/* If the global config for this site says "NO Autojudge" return the script now */
+	if($b["siteautojudge"]=="f") {
 	  DBExec($c, "commit work", "DBUpdateRunAutojudging(commit)");
 	  LOGLevel("Autojudging answered a run (run=$number, site=$site, contest=$contest, answer='$answer', retval=$retval)", 3);
 	  return true;
 	}
-	/* // tricks that can be used to make automatic answering for some problems and types of answers. However, this should be integrated into the system in a smart way soon
-	  if(true || //cassiopc remove the true here if you want this to take effect
-	     (($retval != 1 || // for some problems, 1:YES is not automatic
-	       $a["runproblem"] == 1 ||
-	       $a["runproblem"] == 2 ||
-	       $a["runproblem"] == 3 ||
-	       $a["runproblem"] == 4 ||
-	       $a["runproblem"] == 5 ||
-	       $a["runproblem"] == 6 ||
-	       $a["runproblem"] == 7 ||
-	       $a["runproblem"] == 8 ||
-	       $a["runproblem"] == 9 ||
-	       $a["runproblem"] == 10 ||
-	       $a["runproblem"] == 11 ||
-	       $a["runproblem"] == 12 ||
-	       $a["runproblem"] == 13)
-	      && $retval != 4 && $retval != 6)) { // but WA:6 and TLE:4 are automatic for all problems
-	    if($retval != 1 && $retval != 6 && $retval != 4) {
-	    }
-	  }
+	
+	/* Next, check the problem setting, let's read what the autojudge config says about this problem */
+	$problem_data = DBGetProblemData($contest, $a['runproblem']);
+	/* Compare the bit field from problem data to our answer,
+	 * if the bit on the problem data is set, it means that it should be auto-judged
+	 * if zero, do nothing
+	 */
+	$autojudge_setting = ((integer) $problem_data[0]['autojudge']);
+	$mask = pow (2, $retval);
+	if (($autojudge_setting & $mask) == 0) {
+		DBExec($c, "commit work", "DBUpdateRunAutojudging(commit)");
+		LOGLevel("Autojudging answered a run (run=$number, site=$site, contest=$contest, answer='$answer', retval=$retval)", 3);
+		return true;
 	}
-	*/
+	
 	//echo "DEBUG: $contest, $site, " .$a["usernumber"].", $site, $number, $retval\n";
 	if(DBUpdateRunO($contest, $site, $a["usernumber"], $site, $number, $retval, $c)==false) {
 		DBExec($c, "rollback work", "DBUpdateRunAutoJudging(rollback)");
