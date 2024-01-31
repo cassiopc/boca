@@ -37,6 +37,7 @@ if (isset($_POST["Submit3"]) && isset($_POST["answernumber"]) && is_numeric($_PO
 		$param["number"] = $_POST["answernumber"];
 		$param["name"] = $_POST["answername"];
 		$param["yes"] = $_POST["answeryes"];
+		$param["short"] = $_POST["answershort"];
 		DBNewAnswer ($_SESSION["usertable"]["contestnumber"],$param);
 	}
 	ForceLoad("answer.php");
@@ -65,6 +66,7 @@ if (isset($_POST["Submit3"]) && isset($_POST["answernumber"]) && is_numeric($_PO
  <tr>
   <td><b>Answer #</b></td>
   <td><b>Description</b></td>
+  <td><b>Shortname</b></td>
   <td><b>Yes/No</b></td>
  </tr>
 <?php
@@ -82,8 +84,13 @@ for ($i=0; $i<count($ans); $i++) {
       echo "  <td nowrap>".$ans[$i]["number"]." (fake)</td>\n";
     }
     echo " <td nowrap>" . $ans[$i]["desc"] . "</td>\n";
+    
+    if ($ans[$i]["short"]=="") echo "  <td nowrap>&lt;EMPTY&gt;</td>\n";
+    else echo "  <td nowrap>".$ans[$i]["short"]."</td>\n";
+    
     if($ans[$i]["yes"]=="t") echo "  <td nowrap>Yes</td>\n";
     else echo "  <td nowrap>No</td>\n";
+    
     echo " </tr>\n";
     $n++;
 }
@@ -111,6 +118,12 @@ if ($n == 0) echo "<br><center><b><font color=\"#ff0000\">NO ANSWERS DEFINED</fo
         <td width="35%" align=right>Description:</td>
         <td width="65%">
           <input type="text" name="answername" value="" size="50" maxlength="50" />
+        </td>
+      </tr>
+      <tr>
+        <td width="35%" align=right>Shortname (usually 2 or 3 letters):</td>
+        <td width="65%">
+          <input type="text" name="answershort" value="" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
