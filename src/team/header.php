@@ -51,7 +51,7 @@ echo "<tr><td nowrap bgcolor=\"#aaaaee\" align=center>";
 echo "<img src=\"../images/smallballoontransp.png\" alt=\"\">";
 echo "<font color=\"#000000\">BOCA</font>";
 echo "</td><td bgcolor=\"#aaaaee\" width=\"99%\">\n";
-echo "Username: " . $_SESSION["usertable"]["userfullname"] . " (site=".$_SESSION["usertable"]["usersitenumber"].")\n";
+echo "Username: " . $_SESSION["usertable"]["username"] . " (site=".$_SESSION["usertable"]["usersitenumber"].")\n";
 
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
