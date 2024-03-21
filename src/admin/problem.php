@@ -194,6 +194,21 @@ if (isset($_POST["Submit3"]) && isset($_POST["problemnumber"]) && is_numeric($_P
 		$param['fake'] = 'f';
 		$param['colorname'] = trim($_POST["colorname"]);
 		$param['color'] = trim($_POST["color"]);
+		$autojudge_value = 0;
+		if (isset ($_POST["autojudge_new_sel"]) && in_array ($_POST['autojudge_new_sel'], array ('all', 'custom', 'none'))) {
+			$all_answers = DBGetAnswers($_SESSION["usertable"]["contestnumber"]);
+			for ($g = 0; $g < count ($all_answers); $g++) {
+				if ($all_answers[$g]['fake'] == 't') continue;
+				$campo = 'autojudge_chc_new_'.$all_answers[$g]['number'];
+				
+				if ($_POST['autojudge_new_sel'] == 'all') {
+					$autojudge_value |= pow (2, $g);
+				} else if ($_POST['autojudge_new_sel'] == 'custom' && isset ($_POST[$campo]) && $_POST[$campo] == "1") {
+					$autojudge_value |= pow (2, $g);
+				}
+			}
+		}
+		$param['autojudge'] = $autojudge_value;
 		DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
 	}
 	}
@@ -221,6 +236,36 @@ for ($i=0; $i<count($prob); $i++) {
       ForceLoad("problem.php");
     }
   }
+}
+
+// Update AutoJudge Setting
+for ($i=0; $i<count($prob); $i++) {
+	if($prob[$i]["fake"]=='t') continue;
+	
+	$sel_name = "autojudge_" . $prob[$i]['number']. "_sel";
+	if (isset($_POST["SubmitProblemAJ" . $prob[$i]['number']]) && $_POST["SubmitProblemAJ" . $prob[$i]['number']] == 'Update' && isset ($_POST[$sel_name]) && in_array ($_POST[$sel_name], array ('all', 'custom', 'none'))) {
+		$all_answers = DBGetAnswers($_SESSION["usertable"]["contestnumber"]);
+		$value = 0;
+		for ($g = 0; $g < count ($all_answers); $g++) {
+			if ($all_answers[$g]['fake'] == 't') continue;
+			$campo = 'autojudge_chc_'.$prob[$i]['number'].'_'.$all_answers[$g]['number'];
+			
+			if ($_POST[$sel_name] == 'all') {
+				$value |= pow (2, $g);
+			} else if ($_POST[$sel_name] == 'custom' && isset ($_POST[$campo]) && $_POST[$campo] == "1") {
+				$value |= pow (2, $g);
+			}
+		}
+		$param = array();
+		$param['number'] = $prob[$i]['number'];
+		$param['name'] = trim($prob[$i]['name']);
+		$param['fake'] = 'f';
+		$param['colorname'] = trim($prob[$i]['colorname']);
+		$param['color'] = trim($prob[$i]['color']);
+		$param['autojudge'] = ((integer) $value);
+		DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
+		ForceLoad("problem.php");
+	}
 }
 ?>
 <br>
@@ -256,8 +301,10 @@ for ($i=0; $i<count($prob); $i++) {
 <!--  <td><b>Compare file</b></td>
   <td><b>Timelimit</b></td>-->
   <td><b>Color</b></td>
+  <td><b>AutoJudge Setting</b></td>
  </tr>
 <?php
+$all_answers = DBGetAnswers($_SESSION["usertable"]["contestnumber"]);
 for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
   if($prob[$i]["fake"]!='t') {
@@ -322,6 +369,105 @@ for ($i=0; $i<count($prob); $i++) {
     echo "<input type=\"submit\" name=\"SubmitProblem" . $prob[$i]["number"] . "\" value=\"Update\">";
   } else echo "&nbsp;";
   echo "</td>\n";
+  
+  // Print the autojudge setting with a INPUT SELECT BOX + small boxes
+  echo "  <td nowrap>";
+  if($prob[$i]["fake"]!='t') {
+	$autojudge_int_val = ((integer) $prob[$i]['autojudge']);
+	$sel_name = "autojudge_" . $prob[$i]['number']. "_sel";
+	printf ('<select id="%s" name="%s">', $sel_name, $sel_name);
+	
+	$all_mask = 0;
+	for ($g = 0; $g < count($all_answers); $g++) {
+		if ($all_answers[$g]['fake'] == 't') continue;
+		$all_mask |= pow (2, $g);
+	}
+	if ($autojudge_int_val == $all_mask) {
+		$dis = true;
+		$dis_value = true;
+		$sel_value = 'all';
+	} else if ($autojudge_int_val == 0) {
+		$dis = true;
+		$dis_value = false;
+		$sel_value = 'none';
+	} else {
+		$dis = false;
+		$sel_value = 'custom';
+	}
+	
+	$opts = array ('Everything' => 'all', 'Custom' => 'custom', 'None' => 'none');
+	foreach ($opts as $display_name => $opt) {
+		if ($opt == $sel_value) {
+			printf ('<option value="%s" selected="selected">%s</option>', $opt, $display_name);
+		} else {
+			printf ('<option value="%s">%s</option>', $opt, $display_name);
+		}
+	}
+	
+	echo "</select><br />\n";
+	
+	echo "<table><tr>\n";
+	
+	for ($g = 0; $g < count($all_answers); $g++) {
+		if ($all_answers[$g]['fake'] == 't') continue;
+		echo "<td>\n";
+		printf ('<input type="checkbox" id=autojudge_chc_%s_%s name="autojudge_chc_%s_%s" value="1" ', $i, $g, $i, $g);
+		if ($sel_value == 'all') {
+			printf ('disabled="disabled" checked="checked" />');
+		} else if ($sel_value == 'none') {
+			printf ('disabled="disabled" />');
+		} else {
+			$mask = pow (2, $all_answers[$g]['number']);
+			if (($autojudge_int_val & $mask) == $mask) {
+				printf ('checked="checked" />');
+			} else {
+				printf (' />');
+			}
+		}
+		echo "\n</td>\n";
+	}
+	echo "</tr><tr>\n";
+	for ($g = 0; $g < count($all_answers); $g++) {
+		if ($all_answers[$g]['fake'] == 't') continue;
+		printf ('<td><label for="autojudge_chc_%s_%s">', $i, $g);
+		printf ('<abbr title="%s">%s</abbr>', $all_answers[$g]['desc'], $all_answers[$g]['short']);
+		echo "</label></td>\n";
+	}
+	echo "</tr></table>\n";
+	?>
+	<script type="text/javascript">
+		function <?php echo "f_change_".$sel_name; ?> () {
+			var sel = document.getElementById("<?php echo $sel_name; ?>");
+			var v = sel.value;
+			var max_ans = <?php echo count($all_answers) ?>;
+			var dis = false;
+			if (v == "all") {
+				dis = true;
+				sel = true;
+			} else if (v == "none") {
+				dis = true;
+				sel = false;
+			}
+			
+			for (g = 1; g < max_ans; g++) {
+				var c = document.getElementById ("<?php echo 'autojudge_chc_'.$prob[$i]['number'].'_';?>" + g);
+				if (dis == true) {
+					c.checked = sel;
+					c.disabled = true;
+				} else {
+					c.disabled = false;
+				}
+			}
+		}
+		var sel = document.getElementById("<?php echo $sel_name; ?>");
+		sel.onchange = <?php echo "f_change_".$sel_name; ?>;
+		<?php echo "f_change_".$sel_name; ?> ();
+	</script>
+<?php
+    echo "<input type=\"submit\" name=\"SubmitProblemAJ" . $prob[$i]["number"] . "\" value=\"Update\">";
+  } else echo "&nbsp;";
+  echo "</td>\n";
+  
   echo " </tr>\n";
 }
 echo "</table></form>";
@@ -436,6 +582,60 @@ To replace the data of a problem, proceed as if it did not exist (data will be r
         <td width="35%" align=right>Color (RGB HTML format):</td>
         <td width="65%">
           <input type="text" name="color" value="" size="6" maxlength="6" />
+        </td>
+      </tr>
+      <tr>
+      	<td width="35%" align=right>Autojudge Setting:</td>
+        <td width="65%">
+          <select name="autojudge_new_sel" id="autojudge_new_sel">
+          	<option value="all" selected="selected">Everything</option>
+          	<option value="custom">Custom</option>
+          	<option value="none">None</option>
+          </select>
+          <table><tr>
+<?php
+	for ($g = 0; $g < count($all_answers); $g++) {
+		if ($all_answers[$g]['fake'] == 't') continue;
+		echo "<td>\n";
+		printf ('<input type="checkbox" id=autojudge_chc_new_%s name="autojudge_chc_new_%s" value="1" disabled="disabled" checked="checked" />', $g, $g);
+		echo "\n</td>\n";
+	}
+	echo "</tr><tr>\n";
+	for ($g = 0; $g < count($all_answers); $g++) {
+		if ($all_answers[$g]['fake'] == 't') continue;
+		printf ('<td><label for="autojudge_chc_new_%s">', $g);
+		printf ('<abbr title="%s">%s</abbr>', $all_answers[$g]['desc'], $all_answers[$g]['short']);
+		echo "</label></td>\n";
+	}
+	echo "</tr></table>\n";
+	?>
+	<script type="text/javascript">
+		function f_change_new () {
+			var sel = document.getElementById("autojudge_new_sel");
+			var v = sel.value;
+			var max_ans = <?php echo count($all_answers) ?>;
+			var dis = false;
+			if (v == "all") {
+				dis = true;
+				sel = true;
+			} else if (v == "none") {
+				dis = true;
+				sel = false;
+			}
+			
+			for (g = 1; g < max_ans; g++) {
+				var c = document.getElementById ("autojudge_chc_new_" + g);
+				if (dis == true) {
+					c.checked = sel;
+					c.disabled = true;
+				} else {
+					c.disabled = false;
+				}
+			}
+		}
+		var sel = document.getElementById("autojudge_new_sel");
+		sel.onchange = f_change_new;
+		</script>
         </td>
       </tr>
     </table>

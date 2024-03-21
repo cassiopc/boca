@@ -30,6 +30,7 @@ CREATE TABLE \"answertable\" (
 \"contestnumber\" int4 NOT NULL,		-- (id do concurso)
 \"answernumber\" int4 NOT NULL,			-- (id da reposta)
 \"runanswer\" varchar(50) NOT NULL,		-- (reposta dada no julgamento)
+\"shortname\" varchar(50) DEFAULT '' NOT NULL,  -- ()
 \"yes\" bool DEFAULT 'f' NOT NULL,		-- (flag para indicar se conta ponto)
 \"fake\" bool DEFAULT 'f' NOT NULL,		-- (flag para indicar se eh resposta valida)
 \"updatetime\" int4 DEFAULT EXTRACT(EPOCH FROM now()) NOT NULL, -- (indica a ultima atualizacao no registro)
@@ -49,12 +50,24 @@ CONSTRAINT \"contest_fk\" FOREIGN KEY (\"contestnumber\") REFERENCES \"contestta
 //devolve um array, onde cada linha tem os atributos number (numero da resposta) e desc (descricao da resposta)
 function DBGetAnswers($contest) {
         $c = DBConnect();
-        $r = DBExec($c, "select distinct a.answernumber as number, a.runanswer as desc, a.yes as yes, a.fake as fake ".
+        $r = DBExec($c, "select distinct a.answernumber as number, a.runanswer as desc, a.shortname as short, a.yes as yes, a.fake as fake ".
 	     "from answertable as a where a.contestnumber=$contest and a.runanswer !~ '(DEL)' order by a.answernumber", "DBGetAnswers(get answers)");
         $n = DBnlines($r);
         $a = array();
         for ($i=0;$i<$n;$i++)
                 $a[$i] = DBRow($r,$i);
+        return $a;
+}
+
+function DBGetAnswer($contest, $number) {
+        $c = DBConnect();
+        $r = DBExec($c, "select distinct a.answernumber as number, a.runanswer as desc, a.shortname as short, a.yes as yes, a.fake as fake ".
+	     "from answertable as a where a.contestnumber=$contest and a.runanswer !~ '(DEL)' order by a.answernumber", "DBGetAnswer(only 1 answer)");
+        $n = DBnlines($r);
+        if ($n != 1) {
+        	return null;
+        }
+        $a = DBRow($r,0);
         return $a;
 }
 
@@ -98,8 +111,9 @@ function DBNewAnswer($contest, $param, $c=null) {
 	}	
 	if(isset($param['answernumber']) && !isset($param['number'])) $param['number']=$param['answernumber'];
 	if(isset($param['runanswer']) && !isset($param['name'])) $param['name']=$param['runanswer'];
+	if(isset($param['shortname']) && !isset($param['short'])) $param['short']=$param['shortname'];
 	
-	$ac=array('number','name','yes');
+	$ac=array('number','name','yes', 'short');
 	$type['number']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key])) {
@@ -131,15 +145,15 @@ function DBNewAnswer($contest, $param, $c=null) {
 	$ret=1;
 	if ($n == 0) {
 		$ret=2;
-	      DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, updatetime) values " .
-			 "($contest, $number, '$name', '$y', $t)", "DBNewAnswer(insert answer)");
+	      DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, updatetime) values " .
+			 "($contest, $number, '$name', '$short', '$y', $t)", "DBNewAnswer(insert answer)");
 	      if($cw) DBExec($c, "commit work", "DBNewAnswer(commit)");
 	      LOGLevel("Answer $number inserted (contest=$contest,user=".$_SESSION["usertable"]["username"]."/".$_SESSION["usertable"]["usersitenumber"].")", 2);
 	} else {
 		$lr = DBRow($r,0);
 		if($updatetime > $lr['updatetime']) {
 			$ret=2;
-			DBExec($c, "update answertable set runanswer='$name', yes='$y', updatetime=". $updatetime . " where ".
+			DBExec($c, "update answertable set runanswer='$name', yes='$y', shortname='$short', updatetime=". $updatetime . " where ".
 				   "contestnumber=$contest and answernumber=$number and fake='f'", "DBNewAnswer(update answer)");
 			if($cw) DBExec($c, "commit work", "DBNewAnswer(commit)");
 			LOGLevel("Answer $number updated (contest=$contest,user=".$_SESSION["usertable"]["username"]."/".$_SESSION["usertable"]["usersitenumber"].")", 2);
