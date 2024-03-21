@@ -39,6 +39,7 @@ CREATE TABLE \"problemtable\" (
                                                 --  clarification em General, por exemplo)
 \"problemcolorname\" varchar(100) DEFAULT '',	  -- nome da cor do problema
 \"problemcolor\" varchar(6) DEFAULT '',		  -- cor do problema, formato html (RGB hexadecimal)
+\"problemautojudge\" int4 DEFAULT 0 NOT NULL,
 \"updatetime\" int4 DEFAULT EXTRACT(EPOCH FROM now()) NOT NULL, -- (indica a ultima atualizacao no registro)
 -- (tabela com os problemas. Se um problema tiver mais que par de arquivos
 -- entrada/solucao, entao colocamos mais que uma linha para ele aqui.)
@@ -70,6 +71,7 @@ function DBGetProblemData($contestnumber, $problemnumber, $c=null) {
   $r = DBExec($c, "select p.problemname as problemname, p.problemfullname as fullname, p.problembasefilename " . 
 	      "as basefilename, p.problemnumber as number, " .
 	      "p.problemcolor as color, p.problemcolorname as colorname, " .
+	      "p.problemautojudge as autojudge, " .
 	      "p.probleminputfilename as inputfilename, p.probleminputfile as inputoid, p.probleminputfilehash as inputhash " .
 	      " from problemtable as p where p.contestnumber=$contestnumber and p.problemnumber=$problemnumber and p.fake!='t'",
 	      "DBGetProblemData(get problem)");
@@ -111,6 +113,7 @@ function DBGetFullProblemData($contestnumber,$freeproblems=false) {
   $r = DBExec($c, "select p.problemnumber as number, p.problemname as name, p.problemfullname as fullname, " .
 	      "p.problembasefilename as basefilename, p.fake as fake, " .
 	      "p.problemcolor as color, p.problemcolorname as colorname, " .
+	      "p.problemautojudge as autojudge, " .
 	      "p.probleminputfilename as inputfilename, p.probleminputfile as inputoid, p.probleminputfilehash as inputhash " .
 	      " from problemtable as p " .
 	      "where p.contestnumber=$contestnumber order by p.problemnumber",
@@ -288,6 +291,7 @@ function DBNewProblem($contestnumber, $param, $c=null) {
   if(isset($param['problembasefilename']) && !isset($param['basename'])) $param['basename']=$param['problembasefilename'];
   if(isset($param['problemcolorname']) && !isset($param['colorname'])) $param['colorname']=$param['problemcolorname'];
   if(isset($param['problemcolor']) && !isset($param['color'])) $param['color']=$param['problemcolor'];
+  if(isset($param['problemautojudge']) && !isset($param['autojudge'])) $param['autojudge']=$param['problemautojudge'];
   if(isset($param['probleminputfile']) && !isset($param['inputfilepath'])) $param['inputfilepath']=$param['probleminputfile'];
   if(isset($param['probleminputfilename']) && !isset($param['inputfilename'])) $param['inputfilename']=$param['probleminputfilename'];
   if(isset($param['basename'])) $param['basename'] = sanitizeFilename($param['basename']);
@@ -296,9 +300,10 @@ function DBNewProblem($contestnumber, $param, $c=null) {
   $type['number']=1;
   $type['updatetime']=1;
   $ac1=array('colorname','fake','color','updatetime','fullname',
-	     'basename','inputfilename','inputfilepath');
+	     'basename','inputfilename','inputfilepath', 'autojudge');
   $colorname='';
   $color='';
+  $autojudge=0;
   $fake='f';
   foreach($ac as $key) {
     if(!isset($param[$key])) {
@@ -414,6 +419,9 @@ function DBNewProblem($contestnumber, $param, $c=null) {
     if ($color != "")
       DBExec ($c, "update problemtable set problemcolor='$color' where contestnumber=$contestnumber ".
 	      "and problemnumber=$number", "DBNewProblem(update color)");
+	if ($autojudge != "")
+	  DBExec ($c, "update problemtable set problemautojudge='$autojudge' where contestnumber=$contestnumber ".
+	      "and problemnumber=$number", "DBNewProblem(update autojudge)");
     if ($inputfilename != "") {
       $deservesupdatetime=true;
       DBExec ($c, "update problemtable set probleminputfilename='$inputfilename' where ".
@@ -463,7 +471,8 @@ function DBGetProblems($contest,$showanyway=false) {
   $c = DBConnect();
   $sql = "select distinct p.problemnumber as number, p.problemname as problem, " .
     "p.problemfullname as fullname, p.problembasefilename as basefilename, " .
-    "p.problemcolor as color, p.problemcolorname as colorname " .
+    "p.problemcolor as color, p.problemcolorname as colorname, " .
+    "p.problemautojudge as autojudge " .
     "from problemtable as p where p.fake!='t' and p.contestnumber=$contest and p.problembasefilename != '' and p.problemfullname !~ '(DEL)' order by p.problemnumber";
   $r = DBExec($c, $sql, "DBGetProblems(get problems)");
   $n = DBnlines($r);
@@ -492,7 +501,8 @@ function DBGetAllProblems($contest) {
 
   $c = DBConnect();
   $sql = "select distinct p.problemnumber as number, p.problemname as problem, " .
-    "p.problemcolor as color, p.problemcolorname as colorname " .
+    "p.problemcolor as color, p.problemcolorname as colorname, " .
+    "p.problemautojudge as autojudge " .
     "from problemtable as p " .
     "where p.contestnumber=$contest and (p.problembasefilename != '' or p.fake = 't') and p.problemfullname !~ '(DEL)' ";
   if ($b["currenttime"] < 0) $sql .= "and p.fake='t' ";
