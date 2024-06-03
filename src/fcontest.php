@@ -1083,24 +1083,24 @@ function insertlanguages($n,$c=null) {
 	DBNewLanguage($n, $param, $c);
 }
 function insertanswers($n,$c) {
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 0, 'Not answered yet', 'f', 't')", "DBNewContest(insert fake answer)");
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 1, 'YES', 't', 'f')", "DBNewContest(insert YES answer)");
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 2, 'NO - Compilation error', 'f', 'f')", "DBNewContest(insert CE answer)");
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 3, 'NO - Runtime error', 'f', 'f')", "DBNewContest(insert RE answer)");
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 4, 'NO - Time limit exceeded', 'f', 'f')", "DBNewContest(insert TLE answer)");
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 5, 'NO - Presentation error', 'f', 'f')", "DBNewContest(insert PE answer)");
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 6, 'NO - Wrong answer', 'f', 'f')", "DBNewContest(insert WA answer)");
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 7, 'NO - Contact staff', 'f', 'f')", "DBNewContest(insert CS answer)");
-	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, yes, fake) values ".
-			"($n, 8, 'NO - Name mismatch', 'f', 'f')", "DBNewContest(insert MI answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 0, 'Not answered yet', 'NYET', 'f', 't')", "DBNewContest(insert fake answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 1, 'YES', 'YES', 't', 'f')", "DBNewContest(insert YES answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 2, 'NO - Compilation error', 'CE', 'f', 'f')", "DBNewContest(insert CE answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 3, 'NO - Runtime error', 'RE', 'f', 'f')", "DBNewContest(insert RE answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 4, 'NO - Time limit exceeded', 'TLE','f', 'f')", "DBNewContest(insert TLE answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 5, 'NO - Presentation error', 'PE', 'f', 'f')", "DBNewContest(insert PE answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 6, 'NO - Wrong answer', 'WA', 'f', 'f')", "DBNewContest(insert WA answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 7, 'NO - Contact staff', 'CS', 'f', 'f')", "DBNewContest(insert CS answer)");
+	DBExec($c, "insert into answertable (contestnumber, answernumber, runanswer, shortname, yes, fake) values ".
+			"($n, 8, 'NO - Name mismatch', 'NMI', 'f', 'f')", "DBNewContest(insert MI answer)");
 }
 function DBNewSite ($contest, $c=null, $param=array()) {
 	$cw = false;

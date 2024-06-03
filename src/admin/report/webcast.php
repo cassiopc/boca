@@ -262,14 +262,18 @@ for ($i = 0; $i < $numRuns; $i++) {
 	  //if ($runTime >= $freezeTime) {
 	  //  $runfile .= '?' . "\n";
 	  //} else if ($run[$i]['yes'] == 't') {
-	  if ($run[$i]['yes'] == 't') {
-	    $runfile .= 'Y' . "\n";
-	  } else if ($run[$i]['answer'] == 'Not answered yet') {
-	    $runfile .= '?' . "\n";
-	  } else {
-	    $runfile .= 'N' . "\n";
-	  }
-	}
+          if ($run[$i]['yes'] == 't') {
+            $runfile .= 'Y' . "\n";
+          } else if ($run[$i]['answer'] == 'Not answered yet') {
+            $runfile .= '?' . "\n";
+          }
+          else if($run[$i]['answer'] == 'NO - Compilation error' || $run[$i]['answer'] == 'NO - Contact staff'){
+                $runfile .= 'X' . "\n";
+          }
+           else {
+            $runfile .= 'N' . "\n";
+          }
+        }
 }
 }
 
