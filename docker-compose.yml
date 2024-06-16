@@ -1,0 +1,16 @@
+services:
+  boca:
+    ports:
+      - 8000:80
+    depends_on:
+      - postgres
+    build:
+      context: .
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: bocadb
+      POSTGRES_USER: bocauser
+      POSTGRES_PASSWORD: dAm0HAiC
+      
+  
