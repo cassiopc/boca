@@ -1,4 +1,12 @@
 services:
+  boca-init-db:
+    depends_on:
+      - postgres
+    build:
+      context: .
+    command: php private/createdb.php
+    profiles:
+      - init-db
   boca:
     ports:
       - 8000:80
