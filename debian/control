@@ -64,7 +64,7 @@ Description: automatic judge system for BOCA
 
 Package: boca-submission-tools
 Architecture: amd64
-Depends: ${misc:Depends}, ${shlibs:Depends}, sharutils, wget, libany-uri-escape-perl, openssl, openssh-server, logkeys
+Depends: ${misc:Depends}, ${shlibs:Depends}, sharutils, wget, libany-uri-escape-perl, openssl, openssh-server
 Description: BOCA tools for headless code submission
  This package provides tools to submit codes to a running boca server
  without using the web interface.
