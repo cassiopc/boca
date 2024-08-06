@@ -1,3 +1,24 @@
+boca (1.5.20-1) noble; urgency=medium
+
+  [ Daniel Saad Nogueira Nunes ]
+  * Update webcast.php (#34)
+  * webcast.php: fixing FS separador character. (#40)
+
+  [ Gatuno ]
+  * New autojudge setting on interface per problem. (#41)
+
+  [ Davi Antônio da Silva Santos ]
+  * Drop dependency on logkeys
+  * Update internal version info to 1.5.20
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Mon, 05 Aug 2024 21:24:09 -0300
+
+boca (1.5.19-1+ubuntu22.04) noble; urgency=medium
+
+  * Migrate package to Ubuntu noble 24.04
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Thu, 30 May 2024 22:40:02 -0300
+
 boca (1.5.19-1) jammy; urgency=medium
 
   [ Rodrigo Laiola Guimarães ]
