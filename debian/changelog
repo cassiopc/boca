@@ -1,3 +1,9 @@
+boca (1.5.20-1+ubuntu22.04) jammy; urgency=medium
+
+  * Rebuild for Ubuntu 22.04 Jammy
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Mon, 23 Sep 2024 16:47:15 -0300
+
 boca (1.5.20-1) noble; urgency=medium
 
   [ Daniel Saad Nogueira Nunes ]
