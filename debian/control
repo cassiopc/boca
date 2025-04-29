@@ -4,7 +4,8 @@ Priority: optional
 Maintainer: BOCA Development Team <bocasystem@gmail.com>
 Uploaders: Cassio Polpo de Campos <cassiopc@gmail.com>, Bruno Cesar Ribas <bruno.ribas@unb.br>
 Build-Depends: debhelper-compat (= 13)
-Standards-Version: 4.6.0.1
+Rules-Requires-Root: no
+Standards-Version: 4.7.2.0
 
 Package: boca
 Architecture: all
