@@ -1,3 +1,9 @@
+boca (1.5.22-1+ubuntu24.04) noble; urgency=medium
+
+  * Fix multiple program versions being reported
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Wed, 30 Apr 2025 00:22:59 -0300
+
 boca (1.5.21-2+ubuntu24.04) noble; urgency=medium
 
   * Update copyright file
