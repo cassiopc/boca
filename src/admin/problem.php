@@ -231,6 +231,9 @@ for ($i=0; $i<count($prob); $i++) {
 	$param['fake'] = 'f';
 	$param['colorname'] = trim($_POST["colorname" . $prob[$i]['number']]);
 	$param['color'] = trim($_POST["color" . $prob[$i]['number']]);
+	if (isset ($prob[$i]['autojudge'])) {
+		$param['autojudge'] = ((integer) $prob[$i]['autojudge']);
+	}
 	DBNewProblem ($_SESSION["usertable"]["contestnumber"], $param);
       }
       ForceLoad("problem.php");
