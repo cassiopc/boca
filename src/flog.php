@@ -31,7 +31,7 @@ CREATE TABLE \"logtable\" (
         \"contestnumber\" int4 NOT NULL,          -- (id do concurso)
         \"sitenumber\" int4 NOT NULL,             -- (id do site local)
         \"loguser\" int4,                         -- (usuario envolvido com o log)
-        \"logip\" varchar(20) NOT NULL,           -- (numero do site do usuario envolvido)
+        \"logip\" varchar(160) NOT NULL,           -- (numero do site do usuario envolvido)
         \"logdate\" int4 NOT NULL,                -- (dia/hora da criacao deste registro)
         \"logtype\" varchar(20) NOT NULL,         -- (tipo de registro: error, warn, info, debug)
         \"logdata\" text NOT NULL,                -- (descricao do registro)
