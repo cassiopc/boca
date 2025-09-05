@@ -1,3 +1,18 @@
+boca (1.5.23-1+ubuntu24.04) noble; urgency=medium
+
+  * Update php dependencies to PHP 8.3
+  * Update the source code to inform version 1.5.23
+  * Update boca-web maintainer script for PHP 8.3
+  * Adds Ubuntu mirror to the standard jail
+  * Patch standard jail fixing debootstrap problems with Ubuntu noble
+  * Purge the unecessary packages in the jail
+  * Perform a dist-upgrade after updating the jail
+  * Quote shell variables o prevent suprise splitting
+  * Replace obsolete backticks with `$( )`
+  * Modernise test commands, replacing `[ ]` with `[[ ]]`
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Thu, 28 Aug 2025 23:35:45 -0300
+
 boca (1.5.22-1+ubuntu24.04) noble; urgency=medium
 
   * Fix multiple program versions being reported
