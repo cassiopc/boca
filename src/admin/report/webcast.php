@@ -267,7 +267,7 @@ for ($i = 0; $i < $numRuns; $i++) {
           } else if ($run[$i]['answer'] == 'Not answered yet') {
             $runfile .= '?' . "\n";
           }
-          else if($run[$i]['answer'] == 'NO - Compilation error' || $run[$i]['answer'] == 'NO - Contact staff'){
+          else if($run[$i]['answer'] == 'NO - Compilation error' || $run[$i]['answer'] == 'NO - Contact staff' || $run[$i]['answer'] == 'NO - Name mismatch'){
                 $runfile .= 'X' . "\n";
           }
            else {
