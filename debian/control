@@ -4,7 +4,8 @@ Priority: optional
 Maintainer: BOCA Development Team <bocasystem@gmail.com>
 Uploaders: Cassio Polpo de Campos <cassiopc@gmail.com>, Bruno Cesar Ribas <bruno.ribas@unb.br>
 Build-Depends: debhelper-compat (= 13)
-Standards-Version: 4.6.0.1
+Rules-Requires-Root: no
+Standards-Version: 4.7.2.0
 
 Package: boca
 Architecture: all
@@ -31,7 +32,7 @@ Description: BOCA - database
 
 Package: boca-web
 Architecture: all
-Depends: ${misc:Depends}, ${shlibs:Depends}, boca-common, apache2, php8.1-fpm, php8.1, python3-matplotlib
+Depends: ${misc:Depends}, ${shlibs:Depends}, boca-common, apache2, php8.3-fpm, php8.3, python3-matplotlib
 Conflicts: libapache2-mod-php
 Description: BOCA - WEB files
  BOCA is a software created to control a contest with the ACM International
@@ -43,7 +44,7 @@ Description: BOCA - WEB files
 Package: boca-common
 Architecture: all
 Pre-Depends: debconf, makepasswd, sharutils
-Depends: ${misc:Depends}, ${shlibs:Depends}, php8.1-zip, wget, php8.1-cli, php8.1-pgsql, php8.1-gd, postgresql-client, php8.1-xml, openssl, libany-uri-escape-perl
+Depends: ${misc:Depends}, ${shlibs:Depends}, php8.3-zip, wget, php8.3-cli, php8.3-pgsql, php8.3-gd, postgresql-client, php8.3-xml, openssl, libany-uri-escape-perl
 Description: BOCA - Common files
  BOCA is a software created to control a contest with the ACM International
  Collegiate Programming Contest rules. It has been developed in PHP and the
@@ -64,7 +65,7 @@ Description: automatic judge system for BOCA
 
 Package: boca-submission-tools
 Architecture: amd64
-Depends: ${misc:Depends}, ${shlibs:Depends}, sharutils, wget, libany-uri-escape-perl, openssl, openssh-server, logkeys
+Depends: ${misc:Depends}, ${shlibs:Depends}, sharutils, wget, libany-uri-escape-perl, openssl, openssh-server
 Description: BOCA tools for headless code submission
  This package provides tools to submit codes to a running boca server
  without using the web interface.

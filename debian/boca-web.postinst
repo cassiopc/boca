@@ -36,7 +36,8 @@ a2enmod socache_shmcb
 a2enmod proxy_fcgi setenvif
 
 # Enable php-fpm module for apache
-a2enconf php8.1-fpm
+# ALWAYS check for unexpected PHP 8 point releases!!!
+a2enconf php8.3-fpm
 
 # Check the syntax of apache2's configuration file
 # This DOES NOT CATCH ALL ERRORS
