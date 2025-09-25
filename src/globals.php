@@ -255,8 +255,20 @@ function getFunctionName($num=2) {
 }
 
 function getIP() {
-	if (getenv("REMOTE_ADDR"))
-		$ip = getenv("REMOTE_ADDR");
+  if (getenv("REMOTE_ADDR")) {
+    // Create an array of trusted reverse proxies set via env variable
+    if (getenv("BOCA_TRUSTED_PROXIES"))
+      $proxies = explode(",", getenv("BOCA_TRUSTED_PROXIES"));
+
+    // Check whether REMOTE_ADDR is actually the IP of a trusted proxy
+    if ($proxies && 
+        in_array(getenv("REMOTE_ADDR"), $proxies) &&
+        getenv("HTTP_X_FORWARDED_FOR"))
+      // If so, BOCA might be behind a proxy server (e.g., Traefik) in which
+      // case the proxy may have set the $_SERVER['HTTP_X_FORWARDED_FOR'].
+      $ip = getenv("HTTP_X_FORWARDED_FOR");
+    else $ip = getenv("REMOTE_ADDR");
+  }
 	else
 		return "UNKNOWN";
 	if(defined("dbcompat_1_4_1") && dbcompat_1_4_1==true) return $ip;
