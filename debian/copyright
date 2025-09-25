@@ -4,13 +4,21 @@ Upstream-Contact: BOCA Development Team <bocasystem@gmail.com>
 Source: <https://github.com/cassiopc/boca>
 
 Files: *
-Copyright: 2012-2023 BOCA Development Team <bocasystem@gmail.com>
+Copyright: 2012-2025 BOCA Development Team <bocasystem@gmail.com>
 License: GPL-2.0+
 
 Files: debian/*
-Copyright: 2016-2022 Bruno Ribas <brunoribas@utfpr.edu.br>
-           2016-2018 Cassio de Campos <cassiopc@gmail.com>
-           2023 Davi Antônio da Silva Santos <antoniossdavi@gmail.com>
+Copyright: 2015 Alejandro Santos <alejolp@gmail.com>
+           2019 Arthur Diniz <arthurbdiniz@gmail.com>
+           2016-2022 Bruno Ribas <brunoribas@utfpr.edu.br>
+           2017 Carlos Joa <cjoa@yahoo.com>
+           2012-2018 Cassio de Campos <cassiopc@gmail.com>
+           2023-2025 Davi Antônio da Silva Santos <antoniossdavi@gmail.com>
+           2023-2024 Daniel Saad Nogueira Nunes <danielsaad@users.noreply.github.com>
+           2024 Gatuno <gatuno@users.noreply.github.com>
+           2020-2021 Emilio Wuerges <wuerges@gmail.com>
+           2023 Rodrigo Laiola Guimarães <rlaiola@users.noreply.github.com>
+           2018 Ronistone Junior <ronistonejunior@gmail.com>
 License: GPL-2.0+
 
 License: GPL-2.0+

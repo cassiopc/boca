@@ -1,3 +1,75 @@
+boca (1.5.23-1+ubuntu24.04) noble; urgency=medium
+
+  * Update php dependencies to PHP 8.3
+  * Update the source code to inform version 1.5.23
+  * Update boca-web maintainer script for PHP 8.3
+  * Adds Ubuntu mirror to the standard jail
+  * Patch standard jail fixing debootstrap problems with Ubuntu noble
+  * Purge the unecessary packages in the jail
+  * Perform a dist-upgrade after updating the jail
+  * Quote shell variables o prevent suprise splitting
+  * Replace obsolete backticks with `$( )`
+  * Modernise test commands, replacing `[ ]` with `[[ ]]`
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Thu, 28 Aug 2025 23:35:45 -0300
+
+boca (1.5.22-1+ubuntu24.04) noble; urgency=medium
+
+  * Fix multiple program versions being reported
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Wed, 30 Apr 2025 00:22:59 -0300
+
+boca (1.5.21-2+ubuntu24.04) noble; urgency=medium
+
+  * Update copyright file
+  * Update the standards version to 4.7.2.0
+  * Specify that the build does not require root
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Mon, 28 Apr 2025 23:29:20 -0300
+
+boca (1.5.21-1+ubuntu22.04) jammy; urgency=medium
+
+  * Rebuild for Ubuntu 22.04 Jammy
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Thu, 26 Sep 2024 22:10:03 -0300
+
+boca (1.5.21-1+ubuntu24.04) noble; urgency=medium
+
+  [ Bruno Ribas ]
+  * tools/boca-createjail: use correct maratona-linux repo
+
+  [ Davi Antônio da Silva Santos ]
+  * Update internal version info to 1.5.21
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Thu, 26 Sep 2024 22:04:22 -0300
+
+boca (1.5.20-1+ubuntu22.04) jammy; urgency=medium
+
+  * Rebuild for Ubuntu 22.04 Jammy
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Mon, 23 Sep 2024 16:47:15 -0300
+
+boca (1.5.20-1) noble; urgency=medium
+
+  [ Daniel Saad Nogueira Nunes ]
+  * Update webcast.php (#34)
+  * webcast.php: fixing FS separador character. (#40)
+
+  [ Gatuno ]
+  * New autojudge setting on interface per problem. (#41)
+
+  [ Davi Antônio da Silva Santos ]
+  * Drop dependency on logkeys
+  * Update internal version info to 1.5.20
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Mon, 05 Aug 2024 21:24:09 -0300
+
+boca (1.5.19-1+ubuntu22.04) noble; urgency=medium
+
+  * Migrate package to Ubuntu noble 24.04
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Thu, 30 May 2024 22:40:02 -0300
+
 boca (1.5.19-1) jammy; urgency=medium
 
   [ Rodrigo Laiola Guimarães ]
