@@ -66,7 +66,11 @@ echo "<tr><td nowrap bgcolor=\"#$cc\" align=center>";
 echo "<img src=\"../images/smallballoontransp.png\" alt=\"\">";
 echo "<font color=\"#000000\">BOCA</font>";
 echo "</td><td bgcolor=\"#$cc\" width=\"99%\">\n";
+<<<<<<< HEAD
 echo "Username: " . $_SESSION["usertable"]["username"] . " (site=".$_SESSION["usertable"]["usersitenumber"].")<br>\n";
+=======
+echo "Username: " . $_SESSION["usertable"]["userfullname"] . " (site=".$_SESSION["usertable"]["usersitenumber"].")<br>\n";
+>>>>>>> 85c7233 (Alteracao problem.php)
 list($clockstr,$clocktype)=siteclock();
 echo "</td><td bgcolor=\"#$cc\" align=center nowrap>&nbsp;".$clockstr."&nbsp;</td></tr>\n";
 echo "</table>\n";

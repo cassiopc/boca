@@ -54,11 +54,41 @@ if(is_readable('/var/www/boca/src/sample/secretcontest/maratona.pdf')) {
  <tr>
   <td><b>Name</b></td>
   <td><b>Basename</b></td>
+<<<<<<< HEAD
+=======
+  <td><b>Submissions</b></td>
+>>>>>>> 85c7233 (Alteracao problem.php)
   <td><b>Fullname</b></td>
   <td><b>Descfile</b></td>
  </tr>
 <?php
 $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"]);
+<<<<<<< HEAD
+=======
+// gather submission counts per problem (only team users, exclude deleted runs)
+$subcounts = array();
+$accepteds = array();
+$c = DBConnect();
+$contest = $_SESSION["usertable"]["contestnumber"];
+$q = "SELECT r.runproblem AS problem,
+        count(*) AS cnt, -- Sua contagem original (total de envios)
+        COUNT(*) FILTER (WHERE a.yes = true) AS cnt_yes -- A nova contagem (apenas 'yes')
+     FROM runtable r
+     JOIN usertable u ON r.usernumber = u.usernumber
+     JOIN answertable a on r.runanswer = a.answernumber and a.contestnumber= $contest
+     WHERE u.usertype = 'team'
+     AND r.contestnumber = $contest
+     AND u.contestnumber = $contest
+     AND (NOT r.runstatus ~ 'deleted')
+     GROUP BY r.runproblem";
+$r = DBExec($c, $q, "problem(get submissions)");
+$nsub = DBnlines($r);
+for($si=0;$si<$nsub;$si++) {
+  $row = DBRow($r,$si);
+  $subcounts[$row['problem']] = $row['cnt'];
+  $accepteds[$row['problem']] = $row['cnt_yes'];
+}
+>>>>>>> 85c7233 (Alteracao problem.php)
 for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
 //  echo "  <td nowrap>" . $prob[$i]["number"] . "</td>\n";
@@ -68,6 +98,43 @@ for ($i=0; $i<count($prob); $i++) {
 			  "src=\"" . balloonurl($prob[$i]["color"]) ."\" />\n";
   echo "</td>\n";
   echo "  <td nowrap>" . $prob[$i]["basefilename"] . "&nbsp;</td>\n";
+<<<<<<< HEAD
+=======
+  $count = (isset($subcounts[$prob[$i]['number']]) ? $subcounts[$prob[$i]['number']] : 0);
+  $count_yes = (isset($accepteds[$prob[$i]['number']]) ? $accepteds[$prob[$i]['number']] : 0);
+  echo "  <td nowrap>" . $count_yes . "/" . $count . "&nbsp;</td>\n";
+
+
+
+  // $ct=DBGetActiveContest();
+	// $contest=$ct['contestnumber'];
+	// $duration=$ct['contestduration'];
+
+	// if(!isset($hor)) $hor = -1;
+	// if($hor>$duration) $hor=$duration;
+
+	// $level=$s["sitescorelevel"];
+	// if($level<=0) $level=-$level;
+	// else {
+	// 	$des=true;
+	// }
+
+
+
+  // if (($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
+	// 	ForceLoad("index.php");
+	// $score = DBScore($_SESSION["usertable"]["contestnumber"], $ver, $hor*60, $s["siteglobalscore"]);
+	
+	// if ($_SESSION["usertable"]["usertype"]!="score" && $_SESSION["usertable"]["usertype"]!="admin" && $level>3) $level=3;
+
+	// $minu = 3;
+	// $rn = DBRecentNews($_SESSION["usertable"]["contestnumber"],
+	// 				   $_SESSION["usertable"]["usersitenumber"], $ver, $minu);
+
+
+
+
+>>>>>>> 85c7233 (Alteracao problem.php)
   echo "  <td nowrap>" . $prob[$i]["fullname"] . "&nbsp;</td>\n";
   if (isset($prob[$i]["descoid"]) && $prob[$i]["descoid"] != null && isset($prob[$i]["descfilename"])) {
     echo "  <td nowrap><a href=\"../filedownload.php?" . filedownload($prob[$i]["descoid"], $prob[$i]["descfilename"]) .
@@ -82,4 +149,8 @@ if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NO PROBLEMS 
 
 ?>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> 85c7233 (Alteracao problem.php)

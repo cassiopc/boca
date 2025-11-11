@@ -267,7 +267,11 @@ for ($i = 0; $i < $numRuns; $i++) {
           } else if ($run[$i]['answer'] == 'Not answered yet') {
             $runfile .= '?' . "\n";
           }
+<<<<<<< HEAD
           else if($run[$i]['answer'] == 'NO - Compilation error' || $run[$i]['answer'] == 'NO - Contact staff' || $run[$i]['answer'] == 'NO - Name mismatch'){
+=======
+          else if($run[$i]['answer'] == 'NO - Compilation error' || $run[$i]['answer'] == 'NO - Contact staff'){
+>>>>>>> 85c7233 (Alteracao problem.php)
                 $runfile .= 'X' . "\n";
           }
            else {

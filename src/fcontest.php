@@ -1066,16 +1066,26 @@ function insertlanguages($n,$c=null) {
 	$param['extension']='c';
 	DBNewLanguage($n, $param, $c);
 	$param['number']=2;
+<<<<<<< HEAD
 	$param['name']='C++20';
 	$param['extension']='cpp';
+=======
+	$param['name']='C++11';
+	$param['extension']='cc';
+>>>>>>> 85c7233 (Alteracao problem.php)
 	DBNewLanguage($n, $param, $c);
 	$param['number']=3;
 	$param['name']='Java';
 	$param['extension']='java';
 	DBNewLanguage($n, $param, $c);
 	$param['number']=4;
+<<<<<<< HEAD
 	$param['name']='Kotlin';
 	$param['extension']='kt';
+=======
+	$param['name']='Python2';
+	$param['extension']='py2';
+>>>>>>> 85c7233 (Alteracao problem.php)
 	DBNewLanguage($n, $param, $c);
 	$param['number']=5;
 	$param['name']='Python3';

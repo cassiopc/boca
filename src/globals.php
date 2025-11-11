@@ -169,7 +169,11 @@ function cleardir($dir,$cddir=true,$secure=true,$removedir=true) {
 		if($removedir)
 		  @rmdir($dir);
 	} else {
+<<<<<<< HEAD
 	  if($secure && !is_link($dir) && is_file($dir))
+=======
+	  if($secure && !is_link($dir))
+>>>>>>> 85c7233 (Alteracao problem.php)
 	    file_put_contents($dir,str_repeat('XXXXXXXXXX',10000));
 	  @unlink($dir);
 	}
