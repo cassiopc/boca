@@ -65,24 +65,18 @@ $subcounts = array();
 $accepteds = array();
 $c = DBConnect();
 
-$contest_start = isset($ct['conteststart']) ? strtotime($ct['conteststart']) : null;
-$ta = $contest_start ? max(0, intval((time() - $contest_start) / 60)) : 0;
-
+$contest = $_SESSION["usertable"]["contestnumber"];
+$site = $_SESSION["usertable"]["usersitenumber"];
 if (($blocal = DBSiteInfo($contest, $_SESSION["usertable"]["usersitenumber"])) == null)
   exit;
 if (($b = DBSiteInfo($contest, $site, null, false)) == null)
-  $b=$blocal;
+  $b = $blocal;
 if (($ct = DBContestInfo($contest)) == null)
   exit;
 
+$ta = $blocal["currenttime"];
+$t_freeze = $b["sitelastmilescore"]; 
 
-if ($verifylastmile)
-  $tf = $b["sitelastmilescore"];
-else
-  $tf = $b["siteduration"];
-
-
-$contest = $_SESSION["usertable"]["contestnumber"];
 $q = "SELECT r.runproblem AS problem,
         count(*) AS cnt, -- Sua contagem original (total de envios)
         COUNT(*) FILTER (WHERE a.yes = true) AS cnt_yes -- A nova contagem (apenas 'yes')
@@ -92,10 +86,12 @@ $q = "SELECT r.runproblem AS problem,
      WHERE u.usertype = 'team'
      AND r.contestnumber = $contest
      AND u.contestnumber = $contest
+     AND r.runsitenumber = $site
+     AND u.usersitenumber = $site
      AND (NOT r.runstatus ~ 'deleted')
-     AND r.rundatediff>=0 and r.rundatediff<=$tf and r.rundatediffans<=$ta
-     GROUP BY r.runproblem";
-     
+     AND r.rundatediff >= 0 and r.rundatediff <= $t_freeze and r.rundatediffans <= $ta
+    GROUP BY r.runproblem";
+
 $r = DBExec($c, $q, "problem(get submissions)");
 $nsub = DBnlines($r);
 for($si=0;$si<$nsub;$si++) {
