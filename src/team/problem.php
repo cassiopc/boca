@@ -54,21 +54,34 @@ if(is_readable('/var/www/boca/src/sample/secretcontest/maratona.pdf')) {
  <tr>
   <td><b>Name</b></td>
   <td><b>Basename</b></td>
-<<<<<<< HEAD
-=======
   <td><b>Submissions</b></td>
->>>>>>> 85c7233 (Alteracao problem.php)
   <td><b>Fullname</b></td>
   <td><b>Descfile</b></td>
  </tr>
 <?php
 $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"]);
-<<<<<<< HEAD
-=======
 // gather submission counts per problem (only team users, exclude deleted runs)
 $subcounts = array();
 $accepteds = array();
 $c = DBConnect();
+
+$contest_start = isset($ct['conteststart']) ? strtotime($ct['conteststart']) : null;
+$ta = $contest_start ? max(0, intval((time() - $contest_start) / 60)) : 0;
+
+if (($blocal = DBSiteInfo($contest, $_SESSION["usertable"]["usersitenumber"])) == null)
+  exit;
+if (($b = DBSiteInfo($contest, $site, null, false)) == null)
+  $b=$blocal;
+if (($ct = DBContestInfo($contest)) == null)
+  exit;
+
+
+if ($verifylastmile)
+  $tf = $b["sitelastmilescore"];
+else
+  $tf = $b["siteduration"];
+
+
 $contest = $_SESSION["usertable"]["contestnumber"];
 $q = "SELECT r.runproblem AS problem,
         count(*) AS cnt, -- Sua contagem original (total de envios)
@@ -80,7 +93,9 @@ $q = "SELECT r.runproblem AS problem,
      AND r.contestnumber = $contest
      AND u.contestnumber = $contest
      AND (NOT r.runstatus ~ 'deleted')
+     AND r.rundatediff>=0 and r.rundatediff<=$tf and r.rundatediffans<=$ta
      GROUP BY r.runproblem";
+     
 $r = DBExec($c, $q, "problem(get submissions)");
 $nsub = DBnlines($r);
 for($si=0;$si<$nsub;$si++) {
@@ -88,7 +103,6 @@ for($si=0;$si<$nsub;$si++) {
   $subcounts[$row['problem']] = $row['cnt'];
   $accepteds[$row['problem']] = $row['cnt_yes'];
 }
->>>>>>> 85c7233 (Alteracao problem.php)
 for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
 //  echo "  <td nowrap>" . $prob[$i]["number"] . "</td>\n";
@@ -98,8 +112,6 @@ for ($i=0; $i<count($prob); $i++) {
 			  "src=\"" . balloonurl($prob[$i]["color"]) ."\" />\n";
   echo "</td>\n";
   echo "  <td nowrap>" . $prob[$i]["basefilename"] . "&nbsp;</td>\n";
-<<<<<<< HEAD
-=======
   $count = (isset($subcounts[$prob[$i]['number']]) ? $subcounts[$prob[$i]['number']] : 0);
   $count_yes = (isset($accepteds[$prob[$i]['number']]) ? $accepteds[$prob[$i]['number']] : 0);
   echo "  <td nowrap>" . $count_yes . "/" . $count . "&nbsp;</td>\n";
@@ -134,7 +146,6 @@ for ($i=0; $i<count($prob); $i++) {
 
 
 
->>>>>>> 85c7233 (Alteracao problem.php)
   echo "  <td nowrap>" . $prob[$i]["fullname"] . "&nbsp;</td>\n";
   if (isset($prob[$i]["descoid"]) && $prob[$i]["descoid"] != null && isset($prob[$i]["descfilename"])) {
     echo "  <td nowrap><a href=\"../filedownload.php?" . filedownload($prob[$i]["descoid"], $prob[$i]["descfilename"]) .
@@ -149,8 +160,4 @@ if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NO PROBLEMS 
 
 ?>
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> 85c7233 (Alteracao problem.php)
