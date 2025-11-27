@@ -492,6 +492,44 @@ function DBGetProblems($contest,$showanyway=false) {
   }
   return $a;
 }
+
+// Recebe o id do contest e da sede, e os tempo atual e de freeze, 
+// e devolve um array com o numero de submissões e de submissões aceitas para cada problema
+// até o momento atual ou até o momento do freeza
+function DBGetProblemSubmissionCounts($contest, $site, $t_freeze, $ta) {
+  $c = DBConnect();
+  
+  $q = "SELECT r.runproblem AS problem,
+          count(*) AS cnt,
+          COUNT(*) FILTER (WHERE a.yes = true) AS cnt_yes
+       FROM runtable r
+       JOIN usertable u ON r.usernumber = u.usernumber
+       JOIN answertable a on r.runanswer = a.answernumber and a.contestnumber= $contest
+       WHERE u.usertype = 'team'
+       AND r.contestnumber = $contest
+       AND u.contestnumber = $contest
+       AND r.runsitenumber = $site
+       AND u.usersitenumber = $site
+       AND (NOT r.runstatus ~ 'deleted')
+       AND r.rundatediff >= 0 and r.rundatediff <= $t_freeze and r.rundatediffans <= $ta
+      GROUP BY r.runproblem";
+  
+  $r = DBExec($c, $q, "DBGetProblemSubmissionCounts");
+  
+  $subcounts = array();
+  $accepteds = array();
+  $nsub = DBnlines($r);
+  
+  for($si=0; $si<$nsub; $si++) {
+    $row = DBRow($r,$si);
+    $subcounts[$row['problem']] = $row['cnt'];
+    $accepteds[$row['problem']] = $row['cnt_yes'];
+  }
+  
+  return array('subcounts' => $subcounts, 'accepteds' => $accepteds);
+}
+
+
 //recebe o numero do contest
 //devolve um array, onde cada linha tem os atributos number (numero do problema) e problem (nome do problema)
 //para todos os problemas, inclusive os fakes
