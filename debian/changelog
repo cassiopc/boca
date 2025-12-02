@@ -1,3 +1,23 @@
+boca (1.5.24-1+ubuntu24.04) noble; urgency=medium
+
+  [ Rodrigo Laiola Guimarães ]
+  * Bug fix
+
+  [ João Oliveira ]
+  * fix languages in fcontest.php
+
+  [ Félix Arreola Rodríguez ]
+  * Fixed issue when color problem is updated, autojudge setting per problem is set to none.
+
+  [ jonessouza ]
+  * Update webcast.php
+  * Fix campo logip flog.php
+
+  [ rsalescaldeira@gmail.com ]
+  * Ensure fifo files are not written to while cleaning dir in bocajail.
+
+ -- Davi Antônio da Silva Santos <antoniossdavi@gmail.com>  Mon, 22 Sep 2025 18:47:53 -0300
+
 boca (1.5.23-1+ubuntu24.04) noble; urgency=medium
 
   * Update php dependencies to PHP 8.3
