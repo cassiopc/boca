@@ -63,10 +63,10 @@ $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"]);
 // gather submission counts per problem (only team users, exclude deleted runs)
 $subcounts = array();
 $accepteds = array();
-$c = DBConnect();
 
 $contest = $_SESSION["usertable"]["contestnumber"];
 $site = $_SESSION["usertable"]["usersitenumber"];
+
 if (($blocal = DBSiteInfo($contest, $_SESSION["usertable"]["usersitenumber"])) == null)
   exit;
 if (($b = DBSiteInfo($contest, $site, null, false)) == null)
@@ -77,28 +77,11 @@ if (($ct = DBContestInfo($contest)) == null)
 $ta = $blocal["currenttime"];
 $t_freeze = $b["sitelastmilescore"]; 
 
-$q = "SELECT r.runproblem AS problem,
-        count(*) AS cnt, -- Sua contagem original (total de envios)
-        COUNT(*) FILTER (WHERE a.yes = true) AS cnt_yes -- A nova contagem (apenas 'yes')
-     FROM runtable r
-     JOIN usertable u ON r.usernumber = u.usernumber
-     JOIN answertable a on r.runanswer = a.answernumber and a.contestnumber= $contest
-     WHERE u.usertype = 'team'
-     AND r.contestnumber = $contest
-     AND u.contestnumber = $contest
-     AND r.runsitenumber = $site
-     AND u.usersitenumber = $site
-     AND (NOT r.runstatus ~ 'deleted')
-     AND r.rundatediff >= 0 and r.rundatediff <= $t_freeze and r.rundatediffans <= $ta
-    GROUP BY r.runproblem";
+$counts = DBGetProblemSubmissionCounts($contest, $site, $t_freeze, $ta);
+$subcounts = $counts['subcounts'];
+$accepteds = $counts['accepteds'];
 
-$r = DBExec($c, $q, "problem(get submissions)");
-$nsub = DBnlines($r);
-for($si=0;$si<$nsub;$si++) {
-  $row = DBRow($r,$si);
-  $subcounts[$row['problem']] = $row['cnt'];
-  $accepteds[$row['problem']] = $row['cnt_yes'];
-}
+
 for ($i=0; $i<count($prob); $i++) {
   echo " <tr>\n";
 //  echo "  <td nowrap>" . $prob[$i]["number"] . "</td>\n";
