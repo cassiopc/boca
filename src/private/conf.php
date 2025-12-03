@@ -29,10 +29,17 @@ $conf["dbport"]="5432";
   $conf["dbname"]="bocadb"; // name of the boca database
 
   $conf["dbuser"]="bocauser"; // unprivileged boca user
+<<<<<<< HEAD
 $conf["dbpass"]="dAm0HAiC";
 
   $conf["dbsuperuser"]="bocauser"; // privileged boca user
 $conf["dbsuperpass"]="dAm0HAiC";
+=======
+$conf["dbpass"]="lucasmartiniano";
+
+  $conf["dbsuperuser"]="bocauser"; // privileged boca user
+$conf["dbsuperpass"]="lucasmartiniano";
+>>>>>>> 85c7233 (Alteracao problem.php)
 
         // note that it is fine to use the same user
 
@@ -47,7 +54,11 @@ $conf["dbsuperpass"]="dAm0HAiC";
 
   // secret key to be used in HTTP headers
   // you MUST set it with any random large enough sequence
+<<<<<<< HEAD
 $conf["key"]="GG56KFJtNDBGjJprR6ex";
+=======
+$conf["key"]="A7uLonC7JxRG0RbvU9tr";
+>>>>>>> 85c7233 (Alteracao problem.php)
 
 
   // the following field is used by the autojudging script
