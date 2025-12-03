@@ -64,6 +64,24 @@ $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"]);
 $subcounts = array();
 $accepteds = array();
 $c = DBConnect();
+
+$contest_start = isset($ct['conteststart']) ? strtotime($ct['conteststart']) : null;
+$ta = $contest_start ? max(0, intval((time() - $contest_start) / 60)) : 0;
+
+if (($blocal = DBSiteInfo($contest, $_SESSION["usertable"]["usersitenumber"])) == null)
+  exit;
+if (($b = DBSiteInfo($contest, $site, null, false)) == null)
+  $b=$blocal;
+if (($ct = DBContestInfo($contest)) == null)
+  exit;
+
+
+if ($verifylastmile)
+  $tf = $b["sitelastmilescore"];
+else
+  $tf = $b["siteduration"];
+
+
 $contest = $_SESSION["usertable"]["contestnumber"];
 $q = "SELECT r.runproblem AS problem,
         count(*) AS cnt, -- Sua contagem original (total de envios)
@@ -75,7 +93,9 @@ $q = "SELECT r.runproblem AS problem,
      AND r.contestnumber = $contest
      AND u.contestnumber = $contest
      AND (NOT r.runstatus ~ 'deleted')
+     AND r.rundatediff>=0 and r.rundatediff<=$tf and r.rundatediffans<=$ta
      GROUP BY r.runproblem";
+     
 $r = DBExec($c, $q, "problem(get submissions)");
 $nsub = DBnlines($r);
 for($si=0;$si<$nsub;$si++) {
