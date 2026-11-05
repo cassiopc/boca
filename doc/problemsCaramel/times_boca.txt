@@ -1,0 +1,7 @@
+
+----------------------------
+      Time limits and number of executions for Boca
+----------------------------
+Problem  C/C++              Java/Kotlin              Python
+----------------------------
+

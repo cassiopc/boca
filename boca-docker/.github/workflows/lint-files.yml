@@ -1,0 +1,88 @@
+---
+name: Lint code base
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub Actions Documentation
+# https://docs.github.com/en/github-ae@latest/actions
+
+on:
+  # Run on all pushes (except on master/main branch)
+  push:
+    branches-ignore: [master, main]
+    # Remove the line above to run when pushing to master
+  # PRs on master/main branch
+  pull_request:
+    branches: [master, main]
+  # on button click
+  workflow_dispatch:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
+    inputs:
+      ref:
+        # The branch, tag or SHA to checkout for linting. If empty, check out
+        # the repository that triggered the workflow.
+        description: |
+          The branch, tag or SHA to checkout (empty for current branch)
+        required: false
+        type: string
+  # or on calling as reusable workflow
+  workflow_call:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+    inputs:
+      ref:
+        # The branch, tag or SHA to checkout for linting. If empty, check out
+        # the repository that triggered the workflow.
+        description: |
+          The branch, tag or SHA to checkout (empty for current branch)
+        required: false
+        type: string
+        
+jobs:
+  lint:
+    name: Lint code base
+    runs-on: ubuntu-latest
+    # Grant status permission for MULTI_STATUS
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+
+    steps:
+      # Checkout a repository, so the workflow can access it
+      # https://github.com/actions/checkout
+      - 
+        name: Checkout repository (no ref input)
+        uses: actions/checkout@v5
+        if: ${{ inputs.ref == '' }}
+        with:
+          # Full git history is needed to get a proper
+          # list of changed files within `super-linter`
+          fetch-depth: 0
+
+      - 
+        name: Checkout repository (with ref input)
+        uses: actions/checkout@v5
+        if: ${{ inputs.ref != '' }}
+        with:
+          ref: '${{ inputs.ref }}'
+          # Full git history is needed to get a proper
+          # list of changed files within `super-linter`
+          fetch-depth: 0
+
+      # Load environment variables before running the GitHub Actions job
+      # https://github.com/super-linter/super-linter/blob/main/docs/run-linter-locally.md
+      - 
+        run: cat .github/super-linter.env >> "$GITHUB_ENV"
+
+      # Run Linter against code base
+      # https://github.com/super-linter/super-linter
+      - 
+        name: Run Super-Linter on code base
+        #uses: github/super-linter@v5
+        uses: super-linter/super-linter/slim@v8
+        env:
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

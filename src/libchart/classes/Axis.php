@@ -35,7 +35,7 @@
     		* @param	integer		maximum value on the axis
 		*/
 		
-		function Axis($min, $max)
+		function __construct($min, $max)
 		{
 			$this->min = $min;
 			$this->max = $max;

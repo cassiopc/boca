@@ -1,0 +1,9 @@
+basename: soma
+fullname: Soma Simples
+statement: statement.md
+languages: [c, cpp, py3]
+test_languages: [py3]
+time_limit: 2
+repetitions: 1
+memory_limit: 512
+output_limit: 1024

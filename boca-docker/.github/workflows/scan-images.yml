@@ -1,0 +1,148 @@
+---
+name: Security scan of multi-platform Docker images on ghcr.io
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub Actions Documentation
+# https://docs.github.com/en/github-ae@latest/actions
+
+# Reusing workflows
+# https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+on:
+  # Run as reusable workflow
+  workflow_call:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+    inputs:
+      images:
+        description: 
+          Matrix of images to scan (i.e., boca-base, boca-web and boca-jail)
+        required: true
+        type: string
+      parents:
+        description: Matrix of parent/base images used in builds
+        required: true
+        type: string
+      platforms:
+        description: Matrix of target os/platforms (multi-arch)
+        required: true
+        type: string
+      tag:
+        description: Image tag
+        required: true
+        type: string
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY_HOST: ghcr.io
+  # Use github.repository (<account>/<repo>)
+  REPOSITORY_NAME: ${{ github.repository }}
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # for github/codeql-action/upload-sarif to upload SARIF results
+      security-events: write
+      # only required for a private repository by 
+      # github/codeql-action/upload-sarif to get the Action run status
+      actions: read
+    strategy:
+      # If is set to true (default), GitHub will cancel all in-progress and
+      # queued jobs in the matrix if any job in the matrix fails.
+      fail-fast: false
+      matrix:
+        image: ${{ fromJSON(inputs.images) }}
+        parent: ${{ fromJSON(inputs.parents) }}
+        platform: ${{ fromJSON(inputs.platforms) }}
+
+    steps:
+      # Setting output parameters between steps, jobs and/or workflows
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+      - 
+        name: Write variables to GITHUB_OUTPUT
+        id: setup
+        run: |
+
+          # Set OS release
+          PARENT="${{ matrix.parent }}"
+          # Replace 'ubuntu:' with ''
+          RELEASE=${PARENT//ubuntu:/}
+          echo "$RELEASE"
+          echo "release_name=$RELEASE" >> "$GITHUB_OUTPUT"
+
+          # Set tags
+          TAGS="${{ inputs.tag }}"
+          echo "$TAGS"
+          # Split string into an array
+          IFS=', ' read -r -a TAGS <<< "$TAGS"
+
+          IMG="${{ env.REGISTRY_HOST }}/${{ env.REPOSITORY_NAME }}/"
+          IMG+="${{ matrix.image }}:${TAGS[0]}-$RELEASE"
+          echo "$IMG"
+          echo "image_name=$IMG" >> "$GITHUB_OUTPUT"
+
+          # Set architecture
+          PLATFORM="${{ matrix.platform }}"
+          # Replace 'linux/' with '' and '/' with '-'
+          ARCH=${PLATFORM//linux\//}
+          ARCH=${ARCH//\//-}
+          echo "$ARCH"
+          echo "arch_name=$ARCH" >> "$GITHUB_OUTPUT"
+
+          REPORT="trivy-${{ matrix.image }}-$RELEASE-$ARCH-image-results"
+          echo "$REPORT"
+          echo "report_name=$REPORT" >> "$GITHUB_OUTPUT"
+
+      # Create and boot a builder that can be used in the following steps of
+      # the workflow
+      # https://github.com/docker/setup-buildx-action
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Login to a Docker registry (except on PR)
+      # https://github.com/docker/login-action
+      - 
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      -
+        name: Pull Docker image from ghcr.io
+        run: |
+
+          IMG="${{ steps.setup.outputs.image_name }}"
+          docker pull --platform ${{ matrix.platform }} ${IMG}
+          docker image ls -a
+
+      # Run Trivy vulnerability scanner on image
+      # https://github.com/aquasecurity/trivy-action
+      - 
+        name: Run Trivy vulnerability scanner on image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ steps.setup.outputs.image_name }}'
+          format: 'sarif'
+          output: '${{ steps.setup.outputs.report_name }}.sarif'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          timeout: 10m
+
+      # Upload results to GitHub so they can be displayed in the repository'
+      # security tab
+      # https://github.com/github/codeql-action
+      - 
+        name: Upload Trivy image scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: '${{ steps.setup.outputs.report_name }}.sarif'
+          category: 'image'

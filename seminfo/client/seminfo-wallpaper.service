@@ -1,0 +1,12 @@
+[Unit]
+Description=SEMINFO wallpaper assigned to the category
+After=local-fs.target
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/seminfo-wallpaper
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -43,7 +43,7 @@ if($_SESSION["usertable"]["usertype"] != "staff") {
 require_once($locr."/db.php");
 require_once($locr."/freport.php");
 
-echo "<html><head><title>Report Page</title>\n";
+echo "<html><head><title>Relatórios</title>\n";
 echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
 
 echo "<link rel=stylesheet href=\"$loc/Css.php\" type=\"text/css\">\n";

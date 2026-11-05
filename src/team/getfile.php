@@ -34,7 +34,7 @@ $name=$_POST['name'];
 		if ($size > $ct["contestmaxfilesize"] || strlen($name)>100 || strlen($name)<1) {
 	                LOGLevel("User {$_SESSION["usertable"]["username"]} tried to submit file " .
 			":${name}: with $size bytes.", 1);
-			MSGError("File size exceeds the limit allowed or invalid name.");
+			MSGError("O arquivo excede o limite permitido ou o nome é inválido.");
 		} else
 
 		DBNewBkp ($_SESSION["usertable"]["contestnumber"],

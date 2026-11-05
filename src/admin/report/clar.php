@@ -20,18 +20,18 @@
 require('header.php');
 ?>
 <br>
-<center><h2>Clarification List</h2></center>
+<center><h2>Lista de dúvidas</h2></center>
 <table width="100%" border=1>
  <tr>
   <td><b>#</b></td>
-  <td><b>Site</b></td>
-  <td><b>User</b></td>
-  <td><b>Time</b></td>
-  <td><b>Problem</b></td>
+  <td><b>Local</b></td>
+  <td><b>Usuário</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Questão</b></td>
   <td><b>Status</b></td>
-  <td><b>Judge (Site)</b></td>
-  <td><b>Question</b></td>
-  <td><b>Answer</b></td>
+  <td><b>Juiz (local)</b></td>
+  <td><b>Pergunta</b></td>
+  <td><b>Resposta</b></td>
  </tr>
 <?php
 $s = $st;
@@ -49,9 +49,9 @@ for ($i=0; $i<count($clar); $i++) {
   echo "  <td nowrap>" . $clar[$i]["site"] . "</td>\n";
   echo "  <td nowrap>" . $clar[$i]["user"] . "</td>\n";
   echo "  <td nowrap>" . dateconvminutes($clar[$i]["timestamp"]) . "</td>\n";
-  echo "  <td nowrap>" . $clar[$i]["problem"] . "</td>\n";
+  echo "  <td nowrap>" . displayClarProblem($clar[$i]["problem"], $clar[$i]["problemnumber"]) . "</td>\n";
   
-  echo "  <td nowrap>" . $clar[$i]["status"] . "</td>\n";
+  echo "  <td nowrap>" . displayClarStatus($clar[$i]["status"]) . "</td>\n";
   if ($clar[$i]["judge"] != "") {
     $u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $clar[$i]["judgesite"], $clar[$i]["judge"]);
     echo "  <td nowrap>" . $u["username"] . " (" . $clar[$i]["judgesite"] . ")</td>\n";
@@ -66,7 +66,7 @@ for ($i=0; $i<count($clar); $i++) {
 //  echo $clar[$i]["question"];
   echo "  <textarea name=\"m$i\" cols=\"60\" rows=\"8\" readonly>".$clar[$i]["question"]."</textarea>\n";
   echo "</td>\n";
-  if (trim($clar[$i]["answer"]) == "") $clar[$i]["answer"] = "Not answered yet";
+  if (trim($clar[$i]["answer"]) == "") $clar[$i]["answer"] = "Ainda sem resposta";
   echo "  <td>";
 //  echo "  <pre>" . $clar[$i]["answer"] . "</pre>";
 //  echo $clar[$i]["answer"];
@@ -77,7 +77,7 @@ for ($i=0; $i<count($clar); $i++) {
 }
 
 echo "</table>";
-if (count($clar) == 0) echo "<br><center><b><font color=\"#ff0000\">NO CLARIFICATIONS AVAILABLE</font></b></center>";
+if (count($clar) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA DÚVIDA DISPONÍVEL</font></b></center>";
 
 include("$locr/footnote.php");
 ?>

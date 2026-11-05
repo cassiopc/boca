@@ -40,7 +40,7 @@
 		* @access	public
 		*/
 		
-		function Text()
+		function __construct()
 		{
 			// Free low-res fonts based on Bitstream Vera <http://dejavu.sourceforge.net/wiki/>
 

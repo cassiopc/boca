@@ -31,7 +31,7 @@ if (isset($_GET["delete"]) && is_numeric($_GET["delete"])) {
 <br>
   <script language="javascript">
     function conf2(url) {
-      if (confirm("Confirm DELETION of file?")) {
+      if (confirm("Confirmar a exclusão do arquivo?")) {
         document.location=url;
       } else {
         document.location='files.php';
@@ -40,10 +40,10 @@ if (isset($_GET["delete"]) && is_numeric($_GET["delete"])) {
   </script>
 <table width="100%" border=1>
  <tr>
-  <td><b>Bkp #</b></td>
-  <td><b>Time</b></td>
-  <td><b>User(Site)</b></td>
-  <td><b>File</b></td>
+  <td><b>Backup nº</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Usuário (local)</b></td>
+  <td><b>Arquivo</b></td>
   <td><b>Status</b></td>
  </tr>
 <?php
@@ -65,12 +65,12 @@ for ($i=0; $i<count($run); $i++) {
   } else echo "<td>" . $run[$i]["filename"];
   echo " (" . $run[$i]["size"] . " bytes)";
   echo "</td>\n";
-  echo "<td>" . $run[$i]["status"] . "</td>\n";
+  echo "<td>" . displayBackupStatus($run[$i]["status"]) . "</td>\n";
   echo " </tr>\n";
 
 }
 echo "</table>";
-if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NO BACKUPS AVAILABLE</font></b></center>";
+if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUM BACKUP DISPONÍVEL</font></b></center>";
 
 ?>
 </body>

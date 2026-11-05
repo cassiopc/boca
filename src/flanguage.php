@@ -61,7 +61,7 @@ function DBDeleteLanguage($contestnumber, $param, $c=null) {
 	$ac=array('number');
 	foreach($ac as $key) {
 		if(!isset($param[$key])) {
-			MSGError("DBDeleteLanguage param error: $key not found");
+			MSGError("DBDeleteLanguage: o parâmetro $key não foi informado.");
 			return false;
 		}
 		$$key = sanitizeFilename($param[$key]);
@@ -109,11 +109,11 @@ function DBNewLanguage($contestnumber, $param, $c=null) {
 	$extension='';
 	foreach($ac as $key) {
 		if(!isset($param[$key]) || $param[$key]=="") {
-			MSGError("DBNewLanguage param error: $key not found");
+			MSGError("DBNewLanguage: o parâmetro $key não foi informado.");
 			return false;
 		}
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
-			MSGError("DBNewLanguage param error: $key is not numeric");
+			MSGError("DBNewLanguage: o parâmetro $key deve ser numérico.");
 			return false;
 		}
 		$$key = sanitizeFilename($param[$key]);
@@ -123,7 +123,7 @@ function DBNewLanguage($contestnumber, $param, $c=null) {
 		if(isset($param[$key])) {
 			$$key = sanitizeFilename($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
-				MSGError("DBNewLanguage param error: $key is not numeric");
+				MSGError("DBNewLanguage: o parâmetro $key deve ser numérico.");
 				return false;
 			}
 		}

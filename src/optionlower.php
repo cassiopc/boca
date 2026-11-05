@@ -30,7 +30,7 @@ $loc = $_SESSION['loc'];
 if (isset($_GET["username"]) && isset($_GET["userfullname"]) && isset($_GET["userdesc"]) && 
     isset($_GET["passwordo"]) && isset($_GET["passwordn"])) {
   if($_SESSION["usertable"]["usertype"] == 'team') {
-    MSGError('Updates are not allowed');
+    MSGError('Alterações não são permitidas');
     ForceLoad("option.php");
   }    
 
@@ -82,37 +82,37 @@ function computeHASH()
   <center>
     <table border="0">
       <tr> 
-        <td width="35%" align=right>Username:</td>
+        <td width="35%" align=right>Usuário:</td>
         <td width="65%">
 	  <input type="text" readonly name="username" value="<?php echo $a["username"]; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr> 
-        <td width="35%" align=right>User Full Name:</td>
+        <td width="35%" align=right>Nome completo:</td>
         <td width="65%">
 	  <input type="text" readonly name="userfull" value="<?php echo $a["userfullname"]; ?>" size="50" maxlength="50" />
         </td>
       </tr>
       <tr> 
-        <td width="35%" align=right>User Description:</td>
+        <td width="35%" align=right>Descrição:</td>
         <td width="65%">
 	  <input type="text" name="userdesc" value="<?php echo $a["userdesc"]; ?>" size="50" maxlength="250" />
         </td>
       </tr>
       <tr> 
-        <td width="35%" align=right>Old Password:</td>
+        <td width="35%" align=right>Senha atual:</td>
         <td width="65%">
 	  <input type="password" name="passwordo" size="20" maxlength="200" />
         </td>
       </tr>
       <tr> 
-        <td width="35%" align=right>New Password:</td>
+        <td width="35%" align=right>Nova senha:</td>
         <td width="65%">
 	  <input type="password" name="passwordn1" size="20" maxlength="200" />
         </td>
       </tr>
       <tr> 
-        <td width="35%" align=right>Retype New Password:</td>
+        <td width="35%" align=right>Repita a nova senha:</td>
         <td width="65%">
 	  <input type="password" name="passwordn2" size="20" maxlength="200" />
         </td>
@@ -120,7 +120,7 @@ function computeHASH()
     </table>
   </center>
   <center>
-      <input type="submit" name="Submit" value="Send">
+      <input type="submit" name="Submit" value="Salvar">
   </center>
 </form>
 

@@ -36,9 +36,9 @@
     		* @param	integer		height of the image
 		*/
 		
-		function BarChart($width, $height)
+		function __construct($width, $height)
 		{
-			parent::Chart($width, $height);
+			parent::__construct($width, $height);
 
 			$this->setMargin(5);
 			$this->setLowerBound(0);

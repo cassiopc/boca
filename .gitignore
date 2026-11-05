@@ -16,3 +16,17 @@ debian/debhelper-build-stamp
 debian/files
 
 *.swp
+boca-docker/.env
+inject_profiles.php
+.maestri/
+# Artefatos e credenciais locais da SEMINFO
+seminfo/local/
+seminfo/backups/
+seminfo/dist/
+seminfo/vendor/
+seminfo/reports/
+seminfo/documentacao/output/anteriores/
+**/__pycache__/
+*.pyc
+# Generated previews and local diagnostics are not source artifacts.
+/output/

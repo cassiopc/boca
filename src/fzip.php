@@ -20,8 +20,8 @@ require_once('hex.php');
 
 function create_zip($folder,$files,$destination,$msg=false,$zip=null) {
 	if(!function_exists('zip_open')) {
-		MSGError("Zip file error -- zip not installed (" . getFunctionName() .")");
-		LogError("Zip file error -- zip not installed (" . getFunctionName() .")");
+		MSGError("Erro no arquivo ZIP: o programa zip não está instalado (" . getFunctionName() .")");
+		LogError("Erro no arquivo ZIP: o programa zip não está instalado (" . getFunctionName() .")");
 	}
 	$ds = DIRECTORY_SEPARATOR;
 	if($ds=="") $ds = "/";
@@ -62,16 +62,16 @@ function unzipstr($str,$txt='') {
 	$test1 = myshorthash($str);
 	if($test1 != $test2) {
 		if($txt=='')
-			MSGError("Decompression error (" . getFunctionName() .")");
-		LogError("Decompression error (" . getFunctionName() .",$txt)");
+			MSGError("Erro de descompactação (" . getFunctionName() .")");
+		LogError("Erro de descompactação (" . getFunctionName() .",$txt)");
 		return "";
 	}
 	return $str;
 }
 function zipstr($str) {
 	if(!function_exists('gzcompress')) {
-		MSGError("Compression error -- zlib not installed (" . getFunctionName() .")");
-		LogError("Compression error -- zlib not installed (" . getFunctionName() .")");
+		MSGError("Erro de compactação: a biblioteca zlib não está instalada (" . getFunctionName() .")");
+		LogError("Erro de compactação: a biblioteca zlib não está instalada (" . getFunctionName() .")");
 	}
 	return gzcompress($str . '#' . myshorthash($str));
 }

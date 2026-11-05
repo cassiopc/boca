@@ -79,7 +79,7 @@ function DBUserClars($contest,$site,$user) {
 
 	$c = DBConnect();
 	$r = DBExec($c, "select distinct c.clarsitenumber as site, c.clarnumber as number, c.clardatediff as timestamp, " .
-                                        "p.problemname as problem, c.clarstatus as status, c.clardata as question, " .
+                                        "p.problemname as problem, p.problemnumber as problemnumber, c.clarstatus as status, c.clardata as question, " .
                                         "c.claranswer as answer, c.updatetime as updatetime, c.clardatediffans as anstime " .
                              "from clartable as c, problemtable as p " .
                              "where c.contestnumber=$contest and p.contestnumber=c.contestnumber and " .
@@ -105,7 +105,7 @@ function DBUserClars($contest,$site,$user) {
 function DBJudgedClars($contest,$site,$user) {
 	$c = DBConnect();
 	$r = DBExec($c, "select distinct c.clarsitenumber as site, c.clarnumber as number, c.clardatediff as timestamp, " .
-                                        "p.problemname as problem, c.clarstatus as status, c.clardata as question, " .
+                                        "p.problemname as problem, p.problemnumber as problemnumber, c.clarstatus as status, c.clardata as question, " .
                                         "c.claranswer as answer, c.updatetime " .
                              "from clartable as c, problemtable as p " .
                              "where c.contestnumber=$contest and p.contestnumber=c.contestnumber and " .
@@ -146,7 +146,7 @@ function DBUpdateClarC($contest, $usersite, $usernumber, $clarsite, $clarnumber,
 		DBExec($c, "rollback work", "DBUpdateClarC(rollback)");
 		LogLevel("Unable to answer a clar (maybe it was already answered or catched by a chief) " .
 			"(clar=$clarnumber, site=$clarsite, contest=$contest).",0);
-		MSGError("Unable to answer the clarification (maybe it was already answered or catched by a chief)");
+		MSGError("Não foi possível responder à dúvida; ela pode já ter sido respondida ou reservada pelo juiz chefe.");
 		return false;
 	}
 
@@ -175,13 +175,13 @@ function DBUpdateClarC($contest, $usersite, $usernumber, $clarsite, $clarnumber,
 	      } else {
 		DBExec($c, "rollback work", "DBUpdateClarC(rollback promoted)");
 		LOGError("CLAR number $clarnumber site $clarsite contest $contest should be promoted (delete)");
-		MSGError("Clarification not update (error promoting it for answer all)");
+		MSGError("Não foi possível atualizar a dúvida para responder a todos.");
 		return false;
 	      }
 	    } else {
 	      DBExec($c, "rollback work", "DBUpdateClarC(rollback promoted2)");
 	      LOGError("CLAR number $clarnumber site $clarsite contest $contest should be promoted (insert)");
-	      MSGError("Clarification not update (error2 promoting it for answer all)");
+	      MSGError("Não foi possível atualizar a dúvida para responder a todos (erro 2).");
 	      return false;
 	    }
 	} else 
@@ -280,11 +280,11 @@ function DBNewClar($param,$c=null,$allowupdate=true) {
 	$type['clarjudgesite']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key]) || $param[$key]=="") {
-			MSGError("DBNewClar param error: $key not found");
+			MSGError("DBNewClar: o parâmetro $key não foi informado.");
 			return false;
 		}
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
-			MSGError("DBNewClar param error: $key is not numeric");
+			MSGError("DBNewClar: o parâmetro $key deve ser numérico.");
 			return false;
 		}
 		$$key = myhtmlspecialchars($param[$key]);
@@ -303,7 +303,7 @@ function DBNewClar($param,$c=null,$allowupdate=true) {
 		if(isset($param[$key])) {
 			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
-				MSGError("DBNewClar param error: $key is not numeric");
+				MSGError("DBNewClar: o parâmetro $key deve ser numérico.");
 				return false;
 			}
 		}
@@ -324,7 +324,7 @@ function DBNewClar($param,$c=null,$allowupdate=true) {
 		if (DBnlines($r) != 1) {
 			DBExec($c, "rollback work", "DBNewClar(rollback-site)");
 			LOGError("Unable to find a unique site/contest in the database. SQL=(" . $sql . ")");
-			MSGError("Unable to find a unique site/contest in the database. Contact an admin now!");
+			MSGError("Não foi possível identificar o local e a competição no banco de dados. Contate a administração.");
 			exit;
 		}
 		$a = DBRow($r,0);
@@ -358,13 +358,13 @@ function DBNewClar($param,$c=null,$allowupdate=true) {
 		if ($dif < 0) {
 			DBExec($c, "rollback work", "DBNewClar(rollback-started)");
 			LOGError("Tried to submit a clarification but the contest is not started. SQL=(" . $sql . ")");
-			MSGError("The contest is not started yet!");
+			MSGError("A competição ainda não começou!");
 			return false;
 		}
 		if (!$b["siterunning"]) {
 			DBExec($c, "rollback work", "DBNewClar(rollback-over)");
 			LOGError("Tried to submit a clarification but the contest is over. SQL=(" . $sql . ")");
-			MSGError("The contest is over!");
+			MSGError("A competição terminou!");
 			return false;
 		}
 	} else {
@@ -508,7 +508,7 @@ function DBOpenClarsInSites($contest,$site) {
 function DBOpenClarsSNS($contest,$site,$st,$order='clar') {
 	$c = DBConnect();
 	$sql = "select distinct c.clarnumber as number, c.clardatediff as timestamp, c.claranswer as answer, " .
-                                "p.problemname as problem, c.clarstatus as status, c.clardata as question, " .
+                                "p.problemname as problem, p.problemnumber as problemnumber, c.clarstatus as status, c.clardata as question, " .
 				"c.clarsitenumber as site, c.clarjudge as judge, c.clarjudgesite as judgesite, " .
 				"c.usernumber as user " .
                              "from clartable as c, problemtable as p " .

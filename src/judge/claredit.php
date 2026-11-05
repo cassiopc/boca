@@ -27,7 +27,7 @@ if (isset($_POST["answer"]) && isset($_POST["giveup"]) && $_POST["giveup"]=="Can
 
 	DBClarGiveUp($number, $sitenumber, $_SESSION["usertable"]["contestnumber"], 
 			$_SESSION["usertable"]["usernumber"], $_SESSION["usertable"]["usersitenumber"]);
-	MSGError("Clarification returned.");
+	MSGError("Dúvida devolvida.");
 	ForceLoad("clar.php");
 }
 
@@ -45,7 +45,7 @@ if (isset($_POST["answer"]) && isset($_POST["Submit"]) && ($_POST["Submit"]=="An
 		if (trim($ans)=="") {
 			DBClarGiveUp($number, $sitenumber, $_SESSION["usertable"]["contestnumber"], 
 				$_SESSION["usertable"]["usernumber"], $_SESSION["usertable"]["usersitenumber"]);
-			MSGError("Clarification returned.");
+			MSGError("Dúvida devolvida.");
 		} else {
 			if (isset($_POST["answerall"])) $type='all';
 			else if (isset($_POST["answersite"])) $type='site';
@@ -71,63 +71,63 @@ $clarnumber = myhtmlspecialchars($_GET["clarnumber"]);
 
 if (($a = DBGetClarToAnswer($clarnumber, $clarsitenumber, 
 		$_SESSION["usertable"]["contestnumber"])) === false) {
-	MSGError("Another judge got it first.");
+	MSGError("Outro juiz já selecionou este item.");
 	ForceLoad("clar.php");
 }
 
 ?>
-<br><br><center><b>Use the following fields to answer the clarification:
+<br><br><center><b>Use os campos abaixo para responder à dúvida:
 </b></center>
 <form name="form1" method="post" action="claredit.php">
   <input type=hidden name="confirmation" value="noconfirm" />
   <center>
     <table border="0">
       <tr> 
-        <td width="20%" align=right><b>Clarification Site:</b></td>
+        <td width="20%" align=right><b>Local da dúvida:</b></td>
         <td width="80%"> 
 		<input type=hidden name="sitenumber" value="<?php echo $a["sitenumber"]; ?>" />
 		<?php echo $a["sitenumber"]; ?>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Clarification Number:</b></td>
+        <td width="20%" align=right><b>Número da dúvida:</b></td>
         <td width="80%"> 
 		<input type=hidden name="number" value="<?php echo $a["number"]; ?>" />
 		<?php echo $a["number"]; ?>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Clarification Time:</b></td>
+        <td width="20%" align=right><b>Tempo da dúvida:</b></td>
         <td width="80%"> 
 		<?php echo dateconvminutes($a["timestamp"]); ?>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Problem:</b></td>
+        <td width="20%" align=right><b>Questão:</b></td>
         <td width="80%"> 
-		<?php echo $a["problemname"]; ?>
+		<?php echo displayClarProblem($a["problemname"], $a["problemnumber"]); ?>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Clarification:</b></td>
+        <td width="20%" align=right><b>Dúvida:</b></td>
         <td width="80%">
           <textarea name="message" readonly cols="60" rows="8"><?php echo unsanitizeText($a["question"]); ?></textarea>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Answer:</b></td>
+        <td width="20%" align=right><b>Resposta:</b></td>
         <td width="80%">
           <textarea name="answer" cols="60" rows="8"><?php echo unsanitizeText($a["answer"]); ?></textarea>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Answer to all users in the site</b></td>
+        <td width="20%" align=right><b>Responder a todos os usuários deste local</b></td>
         <td width="80%">
           <input class=checkbox type=checkbox name="answersite" value="yes">
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Answer to all users in all sites</b></td>
+        <td width="20%" align=right><b>Responder a todos os usuários de todos os locais</b></td>
         <td width="80%">
           <input class=checkbox type=checkbox name="answerall" value="yes">
         </td>
@@ -136,16 +136,16 @@ if (($a = DBGetClarToAnswer($clarnumber, $clarsitenumber,
   </center>
   <script language="javascript">
     function conf() {
-//      if (confirm("Confirm clarification?")) {
+//      if (confirm("Confirmar envio da dúvida?")) {
         document.form1.confirmation.value='confirm';
 //      }
     }
   </script>
   <center>
-      <input type="submit" name="Submit" value="Answer" onclick="conf()">
-      <input type="submit" name="Submit" value="No response" onclick="conf()">
-      <input type="submit" name="giveup" value="Cancel">
-      <input type="reset" name="Submit2" value="Clear">
+      <button type="submit" name="Submit" value="Answer" onclick="conf()">Responder</button>
+      <button type="submit" name="Submit" value="No response" onclick="conf()">Sem resposta</button>
+      <button type="submit" name="giveup" value="Cancel">Cancelar</button>
+      <input type="reset" name="Submit2" value="Limpar">
   </center>
 </form>
 

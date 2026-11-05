@@ -1,0 +1,16 @@
+[Unit]
+Description=SEMINFO authenticated admission and firewall leases
+After=local-fs.target seminfo-network.service NetworkManager.service
+Wants=seminfo-network.service
+Before=display-manager.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/seminfo-admission-agent
+ExecStopPost=/usr/local/sbin/seminfo-network apply
+Restart=always
+RestartSec=2
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

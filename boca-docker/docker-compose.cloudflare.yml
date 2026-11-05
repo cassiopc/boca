@@ -1,0 +1,8 @@
+---
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    depends_on:
+      - boca-web
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: unless-stopped

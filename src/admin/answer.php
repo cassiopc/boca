@@ -25,8 +25,8 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 if (isset($_GET["delete"]) && is_numeric($_GET["delete"])) {
 	$param["number"] = $_GET["delete"];
 	if(!DBDeleteAnswer($_SESSION["usertable"]["contestnumber"], $param)) {
-		MSGError('Error deleting answer');
-		LogError('Error deleting answer');
+		MSGError('Erro ao excluir a resposta');
+		LogError('Erro ao excluir a resposta');
 	}
 	ForceLoad("answer.php");
 }
@@ -46,13 +46,13 @@ if (isset($_POST["Submit3"]) && isset($_POST["answernumber"]) && is_numeric($_PO
 <br>
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
     function conf2(url) {
-      if (confirm("Confirm the DELETION of the ANSWER and ALL data associated to it (including the SUBMISSIONS)?")) {
-		  if (confirm("Are you REALLY sure about what you are doing? DATA CANNOT BE RECOVERED!")) {
+      if (confirm("Confirmar a exclusão da resposta e de todos os dados associados, inclusive as submissões?")) {
+		  if (confirm("Tem certeza? OS DADOS NÃO PODERÃO SER RECUPERADOS!")) {
 			  document.location=url;
 		  } else {
 			  document.location='answer.php';
@@ -64,10 +64,10 @@ if (isset($_POST["Submit3"]) && isset($_POST["answernumber"]) && is_numeric($_PO
   </script>
 <table width="100%" border=1>
  <tr>
-  <td><b>Answer #</b></td>
-  <td><b>Description</b></td>
-  <td><b>Shortname</b></td>
-  <td><b>Yes/No</b></td>
+  <td><b>Resposta nº</b></td>
+  <td><b>Descrição</b></td>
+  <td><b>Nome curto</b></td>
+  <td><b>Sim/Não</b></td>
  </tr>
 <?php
 $ans = DBGetAnswers($_SESSION["usertable"]["contestnumber"]);
@@ -81,65 +81,65 @@ for ($i=0; $i<count($ans); $i++) {
 		} else 
 			echo "  <td nowrap>".$ans[$i]["number"]."</td>\n";
     } else {
-      echo "  <td nowrap>".$ans[$i]["number"]." (fake)</td>\n";
+      echo "  <td nowrap>".$ans[$i]["number"]." (simulada)</td>\n";
     }
-    echo " <td nowrap>" . $ans[$i]["desc"] . "</td>\n";
+    echo " <td nowrap>" . displayRunAnswer($ans[$i]["desc"]) . "</td>\n";
     
-    if ($ans[$i]["short"]=="") echo "  <td nowrap>&lt;EMPTY&gt;</td>\n";
+    if ($ans[$i]["short"]=="") echo "  <td nowrap>&lt;VAZIO&gt;</td>\n";
     else echo "  <td nowrap>".$ans[$i]["short"]."</td>\n";
     
-    if($ans[$i]["yes"]=="t") echo "  <td nowrap>Yes</td>\n";
-    else echo "  <td nowrap>No</td>\n";
+    if($ans[$i]["yes"]=="t") echo "  <td nowrap>Sim</td>\n";
+    else echo "  <td nowrap>Não</td>\n";
     
     echo " </tr>\n";
     $n++;
 }
 echo "</table>";
-if ($n == 0) echo "<br><center><b><font color=\"#ff0000\">NO ANSWERS DEFINED</font></b></center>";
+if ($n == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA RESPOSTA CADASTRADA</font></b></center>";
 ?>
 
-<br><br><center><b>When allowed, clicking on the answer number will delete it.<br>
-	Inputting with the same number of an existing one will update its description.<br>
-	TAKE CARE: deleting an answer will remove EVERYTHING related to it (ALSO IN OTHER TABLES!!).<br>
-		It is NOT recommended to change anything while the contest is running.<br>
-	 To insert a new answer, enter the data below.<br>
-	 Note that any changes will overwrite the already defined data.<br><br>
+<br><br><center><b>Quando permitido, clique no número da resposta para excluí-la.<br>
+	Informar o número de uma resposta existente atualizará sua descrição.<br>
+	ATENÇÃO: excluir uma resposta removerá todos os dados relacionados, inclusive em outras tabelas.<br>
+		Não é recomendado alterar esses dados enquanto a prova estiver em andamento.<br>
+	 Para cadastrar uma resposta, informe os dados abaixo.<br>
+	 As alterações substituirão os dados já cadastrados.<br><br>
 </b>
 <form name="form1" enctype="multipart/form-data" method="post" action="answer.php">
   <input type=hidden name="confirmation" value="noconfirm" />
     <table border="0">
       <tr>
-        <td width="35%" align=right>Number:</td>
+        <td width="35%" align=right>Número:</td>
         <td width="65%">
           <input type="text" name="answernumber" value="" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Description:</td>
+        <td width="35%" align=right>Descrição:</td>
         <td width="65%">
           <input type="text" name="answername" value="" size="50" maxlength="50" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Shortname (usually 2 or 3 letters):</td>
+        <td width="35%" align=right>Nome curto (geralmente 2 ou 3 letras):</td>
         <td width="65%">
           <input type="text" name="answershort" value="" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Type:</td>
+        <td width="35%" align=right>Tipo:</td>
         <td width="65%">
                 <select name="answeryes">
-                <option selected value="f">No</option>
-                <option value="t">Yes</option>
+                <option selected value="f">Não</option>
+                <option value="t">Sim</option>
                 </select>
         </td>
       </tr>
     </table>
   </center>
   <center>
-      <input type="submit" name="Submit3" value="Send" onClick="conf()">
-      <input type="reset" name="Submit4" value="Clear">
+      <button type="submit" name="Submit3" value="Send" onClick="conf()">Enviar</button>
+      <input type="reset" name="Submit4" value="Limpar">
   </center>
 </form>
 

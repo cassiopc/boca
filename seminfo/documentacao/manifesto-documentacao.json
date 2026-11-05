@@ -1,0 +1,156 @@
+{
+  "edition": "2026-10-18",
+  "event": "2026-10-29",
+  "interface": "Central SEMINFO completa e preparação; BOCA nativo",
+  "contains_real_credentials": false,
+  "screenshots": [
+    {
+      "file": "recursos/telas-2026-10-18/01-prova-questoes.jpg",
+      "sha256": "ee7017f1b05cdeb8e6ba30a71a1ee47532b0977436f9883d00fad17996295fed"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/02-preparacao-sala.jpg",
+      "sha256": "6bedbd4c40215ced9f2891bf2b5d9cec3408c90fb198f67a1d22899b3f9740d4"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/03-registrar-ensaio.jpg",
+      "sha256": "cb83971a24945c3b7ccda2568daa17351fe0099ec9786c256cecf35756a76462"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/04-criar-pacote.jpg",
+      "sha256": "cda8e226ce1dd05ddc6e85c577b399470d6f278d25ffabf94a02813aa3ebd618"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/05-importar-editar.jpg",
+      "sha256": "0c90a2db3041ae256ef24e6f162a19a216547c09a034230d892dee5e488a5897"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/06-operacao.jpg",
+      "sha256": "2167216d8e2554655468b0f462b521097996ac2a03b6545e0bbef73e24dbeef0"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/07-revisar-ativacao.jpg",
+      "sha256": "52d0b33fb1db18031fbe8cfc13a4ad55536de0cf591efb991cdd8c7c4eec85fa"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/08-backup-recuperacao.jpg",
+      "sha256": "0ed11d8cbf898200fd7523b8b74413f052c5c62ae414a5e66ccf3e22d33f25c4"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/09-confirmar-restauracao.jpg",
+      "sha256": "ce7338e51543f2a446eeca85a2212ec3fbfd0d87f5b77e0c591d376640389a0c"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/10-preparacao-completa.jpg",
+      "sha256": "e09a7416dcb05ef798023747f98d60ae973a76040f19afb251a721db971ff937"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/11-prova-questoes-completa.jpg",
+      "sha256": "e971ff671ff5a8e83b40f4386b7077f9cc9cb3d2199538fa9a54e85ee326cdeb"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/12-boca-submissoes.jpg",
+      "sha256": "38d7e502b6c61be3006384f66ee225827317e63bdf1d919c1f029e0da7ca9316"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/13-boca-placar.jpg",
+      "sha256": "a99dabb8b5d6e84e6ae4c991e4249e4db4ef32b4af70c1fe797adaec9e6ac96d"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/14-consultar-contas.jpg",
+      "sha256": "b6cc143702fdd9a288e02f1be37c6dc726702225926926eb1acd45594fb2c8a0"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/15-diagnostico.jpg",
+      "sha256": "0429b76d9cc7d0db488fccc7fe16e57807bc279a5cec987b6fab8109a74ef4eb"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/16-cliente-ensaio-virtual.png",
+      "sha256": "005a7c0a254d9ff94d2cf6358d23a6433dfce7b8cad5a69067f11c61e7545bff"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/17-animeitor-ensaio-sintetico.png",
+      "sha256": "68fc9e70a45cc1ca148a66ea6661993a8f5498ec5ee982b893bb6e8879c4bfa2"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/18-registrar-ensaio.jpg",
+      "sha256": "80091f93b0a202074ad79b0a6c0565a4fc94d897030567b105790293ed753387"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/01-mapa.png",
+      "sha256": "2f6510467d4ea5a22f73d456df6d131cd3a9f7e1b36d57280b9365fae84b78f2"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/02-rede.png",
+      "sha256": "3289636658195db331b1fe9598f3c64c192f13c5aa2d7a554e4422b62223036c"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/03-horarios.png",
+      "sha256": "d6b19e40f5d5d70e6361801bd2ce3480a6dcbf18032d650b03ec9c7dabbf5587"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/04-criador.png",
+      "sha256": "cbf54c760f93e96003b6bd3b2607f207457bd3d56130fed0a1008c9dc29bed6e"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/05-importacao.png",
+      "sha256": "c9e5aacaec9279814a60079059e091f16382cc80ad7c520227c4f447dfb2c826"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/06-referencias.png",
+      "sha256": "9ace36ba5637cee1deb82103f0d0926bdd9666e7bf64a76df0a22b32563d328d"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/07-homologacao.png",
+      "sha256": "ef804b27d4b78dbf17594ac7924d816a4d8e2aedfa1b77d538a63d2e13e423bc"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/08-operacao.png",
+      "sha256": "77888b67f849533b51367b536e935ba1f9ca28a99700b419112a29cc8ff26b73"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/09-ativacao.png",
+      "sha256": "31feb5fc93c49308ddbafa2b5ba580bc09e05ca06b65e60afcac3adc44649eef"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/10-pareamento.png",
+      "sha256": "56d6dac571bb9899a9b08a2151c6e1e976c4344c5be522893513901bbc6428d0"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/11-backup.png",
+      "sha256": "917bb1a8fd37418cf0b90cb791873b92a1e8c575ab7d618db5ad971991c3f474"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/12-restauracao.png",
+      "sha256": "73192fbd9b40850d9394712ec80d2131daa9fd5bae52fd0a5fd79e3d4f252454"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/13-boca-menu.png",
+      "sha256": "737a5f47b7dda027927ac4d0b13d5104b9163f9035722ad3b634039e31af1a09"
+    },
+    {
+      "file": "recursos/telas-2026-10-18/recortes/14-diagnostico.png",
+      "sha256": "aed34d250fbfc0e5d2e609e1f399c00e77fd5435a0fb81701e56bee01b43c813"
+    }
+  ],
+  "files": [
+    {
+      "file": "output/pdf/manual-if.pdf",
+      "source": "manual-if.md",
+      "source_sha256": "1de6efe2fc1d9058277212b5151739bf94db1d1571f92441e11b1c6828fce56a",
+      "pdf_sha256": "f0be974e0f70831787ed6d7a687e7a4e418e6eae05937ed1f2325d7a9d74d9c3"
+    },
+    {
+      "file": "output/pdf/roteiro-banca.pdf",
+      "source": "roteiro-banca.md",
+      "source_sha256": "413c6a20ecbd1b2625c8033c850513ac4b21999afff91d284ddd5de57c61720d",
+      "pdf_sha256": "36280dbec53f6351912c4f431fd4059c0332d335a4978caa2f862843ef0a8832"
+    },
+    {
+      "file": "output/pdf/ficha-homologacao.pdf",
+      "source": "ficha-homologacao.md",
+      "source_sha256": "cd5266fa782d46f144eae3380371a71f08d21f731f32bd1248dc8421e917b189",
+      "pdf_sha256": "1ffa70d9075e070a19373a74640cc6243132b9e44a71bbb8cf9784caf94347c0"
+    }
+  ]
+}

@@ -43,7 +43,7 @@
     		* @param	integer		height of the image
 		*/
 		
-		function chart($width, $height)
+		function __construct($width, $height)
 		{
 			$this->width = $width;
 			$this->height = $height;

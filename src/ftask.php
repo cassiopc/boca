@@ -79,9 +79,9 @@ function DBUpdateTaskC($contest, $usersite, $usernumber, $tasksite, $tasknumber,
 	$n = DBnlines($r);
 	if ($n != 1) {
 		DBExec($c, "rollback work", "DBUpdateTaskC(rollback)");
-		LogLevel("Unable to alter the task record (maybe it was already done by a chief) " .
+		LogLevel("Não foi possível alterar o pedido; ele pode já ter sido atendido. " .
 			"(task=$tasknumber, site=$tasksite, contest=$contest).",1);
-		MSGError("Unable to alter the task record (maybe it was already done by a chief)");
+		MSGError("Não foi possível alterar o pedido; ele pode já ter sido atendido.");
 		return false;
 	}
 	$temp = DBRow($r,0);
@@ -316,11 +316,11 @@ function DBNewTask($param, $c=null, $autotask=false) {
 	$type['taskstaffsite']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key]) || $param[$key]=="") {
-			MSGError("DBNewTask param error: $key not found");
+			MSGError("DBNewTask: o parâmetro $key não foi informado.");
 			return false;
 		}
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
-			MSGError("DBNewTask param error: $key is not numeric");
+			MSGError("DBNewTask: o parâmetro $key deve ser numérico.");
 			return false;
 		}
 		$$key = myhtmlspecialchars($param[$key]);
@@ -343,7 +343,7 @@ function DBNewTask($param, $c=null, $autotask=false) {
 		if(isset($param[$key])) {
 			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
-				MSGError("DBNewTask param error: $key is not numeric");
+				MSGError("DBNewTask: o parâmetro $key deve ser numérico.");
 				return false;
 			}
 		}
@@ -365,8 +365,8 @@ function DBNewTask($param, $c=null, $autotask=false) {
 		$r = DBExec($c, $sql, "DBNewTask(get site for update)");
 		if (DBnlines($r) != 1) {
 			DBExec($c, "rollback work", "DBNewTask(rollback-site)");
-			LOGError("Unable to find a unique site/contest in the database. SQL=(" . $sql . ")");
-			MSGError("Unable to find a unique site/contest in the database.");
+			LOGError("Não foi possível identificar a sede e a competição no banco de dados. SQL=(" . $sql . ")");
+			MSGError("Não foi possível identificar a sede e a competição no banco de dados.");
 			exit;
 		}
 		$a = DBRow($r,0);
@@ -377,19 +377,19 @@ function DBNewTask($param, $c=null, $autotask=false) {
 		if($sys!='t' && DBCountOpenTasks($contest, $site, $user) > $a["maxtask"]) {
 			DBExec($c, "rollback work", "DBNewTask(rollback-maxtask)");
 			LOGError("Too many open tasks for user=$user, site=$site, contest=$contest");
-			MSGError("Too many open tasks! Task not included.");
+			MSGError("Há muitos pedidos em aberto. O pedido não foi registrado.");
 			exit;
 		}
 		if ($sys != 't' && $dif < 0) {
 			DBExec($c, "rollback work", "DBNewTask(rollback-started)");
 			LOGError("Tried to submit a task but the contest is not started. SQL=(" . $sql . ")");
-			MSGError("The contest is not started yet!");
+			MSGError("A competição ainda não começou.");
 			exit;
 		}
 		if ($sys != 't' && !$b["siterunning"]) {
 			DBExec($c, "rollback work", "DBNewTask(rollback-over)");
 			LOGError("Tried to submit a task but the contest is over. SQL=(" . $sql . ")");
-			MSGError("The contest is over!");
+			MSGError("A competição terminou.");
 			exit;
 		}
 		$tasknumber = $a["nexttask"] + 1;
@@ -419,7 +419,7 @@ function DBNewTask($param, $c=null, $autotask=false) {
 				if (($oid = DB_lo_import($c, $filepath)) === false) {
 					DBExec($c, "rollback work", "DBNewTask(rollback-import)");
 					LOGError("DBNewTask: Unable to create a large object for file $filepath.");
-					MSGError("problem importing file to database. Contact an admin now!");
+					MSGError("Não foi possível importar o arquivo para o banco de dados. Contate a administração.");
 					exit;
 				}
 			} else {
@@ -427,7 +427,7 @@ function DBNewTask($param, $c=null, $autotask=false) {
 				if (($oid = DB_lo_import_text($c, $filepath)) == null) {
 					DBExec($c, "rollback work", "DBNewTask(rollback-import)");
 					LOGError("DBNewTask: Unable to create a large object for file.");
-					MSGError("problem importing file to database. Contact an admin now!");
+					MSGError("Não foi possível importar o arquivo para o banco de dados. Contate a administração.");
 					exit;
 				}
 			}

@@ -1,0 +1,56 @@
+---
+name: Close stale issues and PRs
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub Actions Documentation
+# https://docs.github.com/en/github-ae@latest/actions
+
+on:
+  schedule:
+    # Run daily at 6:30 PM UTC
+    - cron: '30 18 * * *'
+  # or on button click
+  workflow_dispatch:
+
+env:
+  ISSUE_WARN_MESSAGE: >
+    This issue is stale because it has been open 90 days with no activity.
+    Remove stale label or comment or this will be closed in 7 days.
+
+  PR_WARN_MESSAGE: >
+    This PR is stale because it has been open 45 days with no activity.
+
+  ISSUE_CLOSE_MESSAGE: >
+    This issue was closed because it has been stalled for 7 days with no
+    activity. Feel free to reopen if this issue is still relevant, or to ping
+    the collaborator who labelled it stalled if you have any questions.
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      # https://github.com/actions/stale#recommended-permissions
+      issues: write
+      pull-requests: write
+
+    steps:
+      # Close Stale Issues and PRs
+      # https://github.com/actions/stale
+      - 
+        uses: actions/stale@v10
+        with:
+          # Run the stale workflow as dry-run (no actions will be taken)
+          # debug-only: true
+          stale-issue-label: stale
+          stale-issue-message: ${{ env.ISSUE_WARN_MESSAGE }}
+          stale-pr-message: ${{ env.PR_WARN_MESSAGE }}
+          close-issue-message: ${{ env.ISSUE_CLOSE_MESSAGE }}
+          days-before-stale: 90
+          days-before-pr-stale: 45
+          days-before-close: 7
+          # Never close a PR
+          days-before-pr-close: -1

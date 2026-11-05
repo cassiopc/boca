@@ -175,15 +175,15 @@ if(is_writable($webcastdir)) {
    file_put_contents($webcastdir . $ds . 'results.json', json_encode($obj, JSON_PRETTY_PRINT));
 
    if(@create_zip($webcastdir,array('.'),$webcastdir . ".zip") != 1) {
-     LOGError("Cannot create file s4ris.zip file");
-     MSGError("Cannot create file s4ris.zip file");
+     LOGError("Não foi possível criar o arquivo s4ris.zip");
+     MSGError("Não foi possível criar o arquivo s4ris.zip");
    } else {
      echo file_get_contents($webcastdir . ".zip");
      exit;
    }
 } else {
-   LOGError('Error creating the folder for the ZIP file: '. $webcastdir);
-   MSGError('Error creating the folder for the ZIP file: '.$webcastdir);
+   LOGError('Erro ao criar a pasta do arquivo ZIP: '. $webcastdir);
+   MSGError('Erro ao criar a pasta do arquivo ZIP: '.$webcastdir);
    ForceLoad("../index.php");
 }
 ?>

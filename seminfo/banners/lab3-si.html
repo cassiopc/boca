@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Lab 3</title>
+<style>
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #140c08; }
+  .bg {
+    width: 1920px; height: 1080px;
+    background: #140c08 url("fundo.jpg") center/cover no-repeat;
+    position: relative;
+    font-family: "Segoe UI", sans-serif;
+    color: #f6efe4;
+  }
+  .scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(12,7,4,0.90) 0%, rgba(12,7,4,0.78) 42%, rgba(12,7,4,0.18) 70%, rgba(12,7,4,0.05) 100%);
+  }
+  .copy { position: absolute; left: 96px; top: 148px; width: 1000px; }
+  .eyebrow { letter-spacing: 0.22em; font-size: 22px; color: #e4b56a; font-weight: 650; }
+  .title { font-size: 88px; line-height: 0.96; font-weight: 700; margin-top: 28px; }
+  .nucleo { font-size: 34px; margin-top: 28px; color: #f3e6d4; }
+  .hist { font-size: 24px; margin-top: 12px; color: #d9c4a4; }
+  .course {
+    display: inline-block; margin-top: 48px;
+    border: 1px solid #e4b56a; padding: 14px 22px; font-size: 28px;
+  }
+  .apoio { position: absolute; left: 96px; bottom: 72px; font-size: 26px; color: #e7d3b4; }
+</style>
+</head>
+<body>
+  <div class="bg">
+    <div class="scrim"></div>
+    <div class="copy">
+      <div class="eyebrow">XIX SEMINFO 2026</div>
+      <div class="title">2ª Maratona<br>de Programação</div>
+      <div class="nucleo">do Núcleo de Informática</div>
+      <div class="hist">A primeira foi em 2012</div>
+      <div class="course">Sistemas de Informação · Laboratório 3</div>
+    </div>
+    <div class="apoio">Apoio do grupo Caramel Coders</div>
+  </div>
+</body>
+</html>

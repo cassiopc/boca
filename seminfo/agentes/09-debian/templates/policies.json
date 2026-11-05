@@ -1,0 +1,30 @@
+{
+  "policies": {
+    "Homepage": {
+      "URL": "http://IP_DA_MESA:8000/boca",
+      "Locked": true,
+      "StartPage": "homepage-locked"
+    },
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "DontCheckDefaultBrowser": true,
+    "DisableAppUpdate": true,
+    "DisablePrivateBrowsing": true,
+    "BlockAboutConfig": true,
+    "CaptivePortal": false,
+    "HttpsOnlyMode": "disallowed",
+    "DNSOverHTTPS": {
+      "Enabled": false,
+      "Locked": true
+    },
+    "ExtensionSettings": {
+      "*": {
+        "installation_mode": "blocked"
+      }
+    },
+    "WebsiteFilter": {
+      "Block": ["<all_urls>"],
+      "Exceptions": ["http://IP_DA_MESA:8000/*"]
+    }
+  }
+}

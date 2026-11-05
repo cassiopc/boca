@@ -1,0 +1,8 @@
+# Linux boot/build files must retain LF when checked out on Windows.
+boca_deploy.sh text eol=lf
+seminfo/client/* text eol=lf
+seminfo/server/*.sh text eol=lf
+seminfo/*.py text eol=lf
+seminfo/tests/*.sh text eol=lf
+# Preserve generated PDF bytes and their published checksums.
+*.pdf binary

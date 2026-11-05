@@ -34,9 +34,9 @@ else $hor = -1;
 
 if ($s["currenttime"] >= $s["sitelastmilescore"] && $ver) {
 	$togo = (int) (($s['siteduration'] - $s["sitelastmilescore"])/60);
-	echo"<br /><center><h2>Scoreboard (as of $togo minutes to go)</h2></center>\n";
+	echo"<br /><center><h2>Placar (faltam $togo minutos)</h2></center>\n";
 } else
-	echo"<br /><center><h2>Final Scoreboard</h2></center>\n";
+	echo"<br /><center><h2>Placar final</h2></center>\n";
 
 require("$locr/scoretable.php");
 include("$locr/footnote.php");

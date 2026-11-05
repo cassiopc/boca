@@ -1,0 +1,14 @@
+src/balloons
+src/private/agentcode
+src/private/comp
+src/private/problemtmp
+src/private/runslog
+src/private/runtmp
+src/private/scoretmp
+.DS_Store
+.env
+node_modules/
+**/test-results/
+**/playwright-report/
+**/playwright/.auth/
+**/playwright/.cache/

@@ -33,19 +33,19 @@ else
 <br>
 <table width="100%" border=1>
  <tr>
-  <td><b><a href="<?php echo $runphp; ?>?order=run">Run #</a></b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=site">Site</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=run">Submissão nº</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=site">Sede</a></b></td>
 <?php if($runphp == "run.php") { ?>
-  <td><b><a href="<?php echo $runphp; ?>?order=user">User</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=user">Usuário</a></b></td>
 <?php } ?>
-  <td><b>Time</b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=problem">Problem</a></b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=language">Language</a></b></td>
-<!--  <td><b>Filename</b></td> -->
+  <td><b>Tempo</b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=problem">Questão</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=language">Linguagem</a></b></td>
+<!--  <td><b>Nome do arquivo</b></td> -->
   <td><b><a href="<?php echo $runphp; ?>?order=status">Status</a></b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=judge">Judge (Site)</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=judge">Juiz (sede)</a></b></td>
   <td><b>AJ</b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=answer">Answer</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=answer">Resposta</a></b></td>
  </tr>
 <?php
 if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
@@ -78,11 +78,11 @@ if(isset($_POST)) {
 	  }
   }
   if($nrenew > 0) {
-    MSGError($nrenew . " runs renewed for autojudging.");
+    MSGError($nrenew . " submissão(ões) enviada(s) novamente ao julgamento automático.");
     ForceLoad($runphp);
   }
   if($nreopen > 0) {
-    MSGError($nreopen . " runs reopened.");
+    MSGError($nreopen . " submissões reabertas.");
     ForceLoad($runphp);
   }
 }
@@ -130,7 +130,7 @@ for ($i=0; $i<count($run); $i++) {
   else if ($run[$i]["status"] == "openrun") $color="ffff88";
   else $color="ffffff";
 
-  echo "  <td nowrap bgcolor=\"#$color\">" . $run[$i]["status"] . "</td>\n";
+  echo "  <td nowrap bgcolor=\"#$color\">" . displayRunStatus($run[$i]["status"]) . "</td>\n";
   if ($run[$i]["judge"] != "") {
 	echo "  <td nowrap>" . $us[$run[$i]["judgesite"] .'-'. $run[$i]["judge"]] . " (" . $run[$i]["judgesite"] . ")";
   } else
@@ -156,7 +156,7 @@ for ($i=0; $i<count($run); $i++) {
   if ($run[$i]["answer"] == "") {
     echo "  <td>&nbsp;</td>\n";
   } else {
-    echo "  <td>" . $run[$i]["answer"];
+    echo "  <td>" . displayRunAnswer($run[$i]["answer"]);
     if($run[$i]['yes']=='t') {
           echo " <img alt=\"".$run[$i]["colorname"]."\" width=\"10\" ".
 			  "src=\"" . balloonurl($run[$i]["color"]) ."\" />";
@@ -169,21 +169,21 @@ for ($i=0; $i<count($run); $i++) {
 }
 
 echo "</table>";
-if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NO RUNS AVAILABLE</font></b></center>";
+if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA SUBMISSÃO DISPONÍVEL</font></b></center>";
 else {
 ?>
   <br>
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
   </script>
   <center>
-<b>Click on the number of a run to edit it or select them with<br />the checkboxes and use the buttons to work on multiple runs:</b><br /><br />
-      <input type="submit" name="auto" value="Re-run autojudge for selected runs" onClick="conf()">
-      <input type="submit" name="open" value="Open selected runs for rejudging" onClick="conf()">
+<b>Clique no número de uma submissão para editá-la ou selecione várias<br />pelas caixas de seleção e use os botões para processá-las:</b><br /><br />
+      <button type="submit" name="auto" value="Re-run autojudge for selected runs" onClick="conf()">Reexecutar julgamento automático das submissões selecionadas</button>
+      <button type="submit" name="open" value="Open selected runs for rejudging" onClick="conf()">Abrir submissões selecionadas para novo julgamento</button>
 <br><br>
   </center>
   </form>

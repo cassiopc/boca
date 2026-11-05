@@ -54,7 +54,7 @@ ob_end_flush();
 require_once('version.php');
 
 ?>
-<title>BOCA Online Contest Administrator <?php echo $BOCAVERSION; ?> - Login</title>
+<title>BOCA Online Contest Administrator <?php echo $BOCAVERSION; ?> - Acesso</title>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel=stylesheet href="Css.php" type="text/css">
@@ -87,7 +87,7 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
 			echo "SCORETRANSFER OK";
 		} else {
 			if($main && $_SESSION["usertable"]["usertype"] == 'site') {
-				MSGError('Direct login of this user is not allowed');
+				MSGError('O acesso direto deste usuário não é permitido');
 				unset($_SESSION["usertable"]);
 				ForceLoad("index.php");
 				exit;
@@ -101,7 +101,7 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
   }
 } else {
   echo "<script language=\"JavaScript\">\n";
-  echo "alert('Unable to load config files. Possible file permission problem in the BOCA directory.');\n";
+  echo "alert('Não foi possível carregar os arquivos de configuração. Verifique as permissões do diretório do BOCA.');\n";
   echo "</script>\n";
 }
 ?>
@@ -116,7 +116,7 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
             <tr> 
               <td nowrap>
                 <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="+1">
-				BOCA Login</font></div>
+				Acesso ao BOCA</font></div>
               </td>
             </tr>
             <tr>
@@ -124,20 +124,20 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
                 <table border="0" align="left">
                   <tr> 
                     <td><font face="Verdana, Arial, Helvetica, sans-serif" > 
-                      Name
+                      Nome
                       </font></td>
                     <td> 
                       <input type="text" name="name" value="score">
                     </td>
                   </tr>
                   <tr> 
-                    <td><font face="Verdana, Arial, Helvetica, sans-serif" >Password</font></td>
+                    <td><font face="Verdana, Arial, Helvetica, sans-serif" >Senha</font></td>
                     <td> 
                       <input type="password" name="password" value="score">
                     </td>
                   </tr>
                 </table>
-                <input type="submit" name="Submit" value="Login">
+                <input type="submit" name="Submit" value="Entrar">
               </td>
             </tr>
           </table>

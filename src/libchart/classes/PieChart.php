@@ -35,9 +35,9 @@
     		* @param	integer		height of the image
 		*/
 		
-		function PieChart($width = 600, $height = 250)
+		function __construct($width = 600, $height = 250)
 		{
-			parent::Chart($width, $height);
+			parent::__construct($width, $height);
 
 			$this->setMargin(5);
 			$this->setLabelMarginLeft(30);
@@ -75,9 +75,7 @@
 		
 		function sortPie($v1, $v2)
 		{
-			return $v1[0] == $v2[0] ? 0 :
-				$v1[0] > $v2[0] ? -1 :
-				1;
+			return $v1[0] == $v2[0] ? 0 : ($v1[0] > $v2[0] ? -1 : 1);
 		}
 		
 		/**
@@ -101,7 +99,7 @@
 				array_push($this->percent, array($percent, $point));
 			}
 			if($this->order)
-				usort($this->percent, array("PieChart", "sortPie"));
+				usort($this->percent, array($this, "sortPie"));
 		}
 
 		/**

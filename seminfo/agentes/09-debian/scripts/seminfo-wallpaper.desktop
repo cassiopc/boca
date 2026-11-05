@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Wallpaper SEMINFO
+Exec=/usr/local/sbin/seminfo-wallpaper
+OnlyShowIn=XFCE;

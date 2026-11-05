@@ -28,8 +28,8 @@ function myhmac($k,$d) {
 
 function encryptData($text,$key,$compress=true) {
 	if(!function_exists('openssl_cipher_iv_length')) {
-		MSGError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
-		LogError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
+		MSGError("Erro de criptografia: a extensão OpenSSL do PHP não está instalada. Contate a administração (" . getFunctionName() .")");
+		LogError("Erro de criptografia: a extensão OpenSSL do PHP não está instalada. Contate a administração (" . getFunctionName() .")");
 		return "";
 	}
 	$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
@@ -45,8 +45,8 @@ function encryptData($text,$key,$compress=true) {
 
 function decryptData($crypttext,$key,$txt='') {
 	if(!function_exists('openssl_cipher_iv_length')) {
-		MSGError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
-		LogError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
+		MSGError("Erro de criptografia: a extensão OpenSSL do PHP não está instalada. Contate a administração (" . getFunctionName() .")");
+		LogError("Erro de criptografia: a extensão OpenSSL do PHP não está instalada. Contate a administração (" . getFunctionName() .")");
 		return "";
 	}
 	$crypttext = base64_decode($crypttext);
@@ -71,7 +71,7 @@ function decryptData($crypttext,$key,$txt='') {
 	}
 	if($test1 != $test2) {
 		if($txt=='')
-			MSGError("Decryption error -- contact an admin now (" . getFunctionName() .")");
+			MSGError("Erro de descriptografia. Contate a administração (" . getFunctionName() .")");
 		else
 		    LogError("Decryption error (" . getFunctionName() .",$txt)");
 		return "";

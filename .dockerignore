@@ -1,0 +1,11 @@
+.git
+.maestri
+**/.env
+seminfo/local
+seminfo/backups
+seminfo/dist
+seminfo/reports
+seminfo/vendor
+**/__pycache__
+screenshots
+doc/problemsCaramel

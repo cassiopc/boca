@@ -36,7 +36,7 @@
 		* @param	array		color R,G,B
 		*/
 		
-		function Point($x, $y, $c=null)
+		function __construct($x, $y, $c=null)
 		{
 			$this->x = $x;
 			$this->y = $y;

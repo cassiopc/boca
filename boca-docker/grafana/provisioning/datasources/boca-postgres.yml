@@ -1,0 +1,19 @@
+apiVersion: 1
+
+datasources:
+  - name: BOCA-PostgreSQL
+    type: postgres
+    url: boca-db:5432
+    database: bocadb
+    user: bocauser
+    secureJsonData:
+      password: $BOCA_DB_PASSWORD
+    jsonData:
+      sslmode: disable
+      maxOpenConns: 5
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+      postgresVersion: 1400
+      timescaledb: false
+    isDefault: true
+    editable: true

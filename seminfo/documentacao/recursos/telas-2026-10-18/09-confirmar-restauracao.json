@@ -1,0 +1,44 @@
+[
+  {
+    "height": 111.375,
+    "title": "Central SEMINFO",
+    "width": 408.015625,
+    "x": 28,
+    "y": 36.484375
+  },
+  {
+    "height": 71.140625,
+    "title": "Backup e recuperação",
+    "width": 464.875,
+    "x": 28,
+    "y": 413.828125
+  },
+  {
+    "height": 266.21875,
+    "title": "Criar e testar um backup",
+    "width": 1209,
+    "x": 28,
+    "y": 502.96875
+  },
+  {
+    "height": 484.484375,
+    "title": "Backups desta sala",
+    "width": 1209,
+    "x": 28,
+    "y": 789.1875
+  },
+  {
+    "height": 271.109375,
+    "title": "Se algo parar durante a prova",
+    "width": 1209,
+    "x": 28,
+    "y": 1293.671875
+  },
+  {
+    "height": 371.65625,
+    "title": "Restaurar backup",
+    "width": 588,
+    "x": 338.5,
+    "y": 174.171875
+  }
+]

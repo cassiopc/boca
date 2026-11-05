@@ -1,0 +1,141 @@
+---
+#========================================================================
+# Copyright Universidade Federal do Espirito Santo (Ufes)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# 
+# This program is released under license GNU GPL v3+ license.
+#
+#========================================================================
+
+version: '3.8'
+
+services:
+
+    # web app
+    boca-web:
+        image: ghcr.io/joaofazolo/boca-docker/boca-web:latest
+        environment:
+            # database configuration
+            # privileged user password
+            - BOCA_DB_SUPER_PASSWORD=superpass
+        ports: 
+            - 8000:80
+
+    # online judge
+    boca-jail:
+        image: ghcr.io/joaofazolo/boca-docker/boca-jail:latest
+        privileged: true
+
+    # database
+    boca-db:
+        image: postgres:14-alpine
+        environment:
+            # database configuration
+            # privileged user password
+            - POSTGRES_PASSWORD=superpass
+            # specifies the location of the target archive file 
+            # in which the data is saved
+            - BOCA_DB_DUMP_FILENAME=/in/boca-db.sql
+        volumes:
+            # run any *.sql, *.sql.gz, or *.sh scripts found in that directory
+            # to do further initialization before starting the service.
+            - ./init:/docker-entrypoint-initdb.d
+            - ./backups:/in
+
+    # backup service
+    boca-backup:
+        image: postgres:14-alpine
+        environment:
+            - BOCA_DB_HOST=boca-db
+            - BOCA_DB_SUPER_USER=postgres
+            - BOCA_DB_SUPER_PASSWORD=superpass
+            - BOCA_DB_NAME=bocadb
+            # specifies the format of the archive file. It can be:
+            # 1. plain text SQL backup (does not work with pg_restore)
+            # - BOCA_DB_DUMP_FORMAT=p
+            # 2. custom backup (compressed by default and most likely the best
+            # option to use for creating the backup)
+            # - BOCA_DB_DUMP_FORMAT=c
+            # 3. directory backup (compressed by default)
+            # - BOCA_DB_DUMP_FORMAT=d
+            # 4. tar backup (does not support compression)
+            - BOCA_DB_DUMP_FORMAT=t
+            # Specifies the location of the target archive file (or directory,
+            # for a directory-format archive) in which the data will be saved.
+            # - BOCA_DB_DUMP_FILENAME=/out/boca-db.sql
+            # - BOCA_DB_DUMP_FILENAME=/out/boca-db.dump
+            # - BOCA_DB_DUMP_FILENAME=/out/boca-db-dir
+            - BOCA_DB_DUMP_FILENAME=/out/boca-db.tar
+        volumes:
+            # folder in which the backups will be save
+            - ./backups:/out
+        command:
+            - bash
+            - -c
+            - |
+                export PGPASSWORD="$$BOCA_DB_SUPER_PASSWORD"
+                pg_dump \
+                    -h "$$BOCA_DB_HOST" \
+                    -U "$$BOCA_DB_SUPER_USER" \
+                    -F "$$BOCA_DB_DUMP_FORMAT" \
+                    --clean --create \
+                    -f "$$BOCA_DB_DUMP_FILENAME" \
+                    "$$BOCA_DB_NAME"
+        depends_on:
+            - boca-db
+        profiles:
+            - backup
+
+    # restore service
+    boca-restore:
+        image: postgres:14-alpine
+        environment:
+            - BOCA_DB_HOST=boca-db
+            - BOCA_DB_PORT=5432
+            - BOCA_DB_SUPER_USER=postgres
+            - BOCA_DB_SUPER_PASSWORD=superpass
+            - BOCA_DB_NAME=bocadb
+            # specifies the location of the archive file (or directory, for
+            # a directory-format archive) to be restored.
+            # 1. plain text SQL restore (does not work with pg_restore)
+            # 2. custom restore
+            - BOCA_DB_DUMP_FILENAME=/in/boca-db.dump
+            # 3. directory restore
+            # - BOCA_DB_DUMP_FILENAME=/in/boca-db-dir/
+            # 4. tar restore
+            # - BOCA_DB_DUMP_FILENAME=/in/boca-db.tar
+        volumes:
+            # folder containing the archive file (or directory) to be restored
+            - ./backups:/in
+        command:
+            - bash 
+            - -c
+            - |
+                export PGPASSWORD="$$BOCA_DB_SUPER_PASSWORD"
+
+                if [[ -f "$$BOCA_DB_DUMP_FILENAME" ]] || \
+                   [[ -d "$$BOCA_DB_DUMP_FILENAME" ]];
+                then
+                    pg_restore \
+                        -h "$$BOCA_DB_HOST" \
+                        -p "$$BOCA_DB_PORT" \
+                        -U "$$BOCA_DB_SUPER_USER" \
+                        -d "$$BOCA_DB_NAME" \
+                        -c "$$BOCA_DB_DUMP_FILENAME"
+                fi
+        depends_on:
+            - boca-db
+        profiles:
+            - restore

@@ -1,0 +1,181 @@
+---
+name: End-to-end test of multi-platform Docker images
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub Actions Documentation
+# https://docs.github.com/en/github-ae@latest/actions
+
+# Reusing workflows
+# https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+on:
+  # Run as reusable workflow
+  workflow_call:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+    inputs:
+      parents:
+        description: Matrix of parent/base images used in builds
+        required: true
+        type: string
+      platforms:
+        description: Matrix of target os/platforms (multi-arch)
+        required: true
+        type: string
+      tag:
+        description: Image tag
+        required: true
+        type: string
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY_HOST: ghcr.io
+  # Use github.repository (<account>/<repo>)
+  REPOSITORY_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      # If is set to true (default), GitHub will cancel all in-progress and
+      # queued jobs in the matrix if any job in the matrix fails.
+      fail-fast: false
+      matrix:
+        parent: ${{ fromJSON(inputs.parents) }}
+        platform: ${{ fromJSON(inputs.platforms) }}
+
+    steps:
+      - 
+        name: Write variables to GITHUB_OUTPUT
+        id: setup
+        run: |
+
+          # Set OS release
+          PARENT="${{ matrix.parent }}"
+          # Replace 'ubuntu:' with ''
+          RELEASE=${PARENT//ubuntu:/}
+          echo "$RELEASE"
+
+          # Prepare tag
+          TAGS="${{ inputs.tag }}"
+          echo "$TAGS"
+          # Split string into an array
+          IFS=', ' read -r -a TAGS <<< "$TAGS"
+
+          # Set package and tag
+          PACKAGE="${{ env.REGISTRY_HOST }}/${{ env.REPOSITORY_NAME }}"
+          TAG="${TAGS[0]}-$RELEASE"
+          echo "$PACKAGE"
+          echo "$TAG"
+          echo "image_package=$PACKAGE" >> "$GITHUB_OUTPUT"
+          echo "image_tag=$TAG" >> "$GITHUB_OUTPUT"
+
+          # Set architecture
+          PLATFORM="${{ matrix.platform }}"
+          # Replace 'linux/' with '' and '/' with '-'
+          ARCH=${PLATFORM//linux\//}
+          ARCH=${ARCH//\//-}
+          echo "$ARCH"
+
+          # Set report name
+          REPORT="playwright-$RELEASE-$ARCH-report"
+          echo "$REPORT"
+          echo "report_name=$REPORT" >> "$GITHUB_OUTPUT"
+
+      # Checkout a repository, so the workflow can access it
+      # https://github.com/actions/checkout
+      - 
+        uses: actions/checkout@v5
+
+      - 
+        name: Launch the application
+        run: |
+
+          # Create .env file with environment variables
+          # https://docs.docker.com/compose/environment-variables/set-environment-variables/
+          cat <<EOT >> .env
+          PACKAGE=${{ steps.setup.outputs.image_package }}
+          TAG=${{ steps.setup.outputs.image_tag }}
+          PLATFORM=${{ matrix.platform }}
+          EOT
+
+          cat .env
+
+          docker compose config
+
+          IMG_WEB="${{ steps.setup.outputs.image_package }}/"
+          IMG_WEB+="boca-web:${{ steps.setup.outputs.image_tag }}"
+          docker pull --platform ${{ matrix.platform }} ${IMG_WEB}
+
+          IMG_JAIL="${{ steps.setup.outputs.image_package }}/"
+          IMG_JAIL+="boca-jail:${{ steps.setup.outputs.image_tag }}"
+          docker pull --platform ${{ matrix.platform }} ${IMG_JAIL}
+
+          # List available images
+          docker images
+
+          # Launch application
+          docker compose up -d
+
+          # List running containers
+          docker container ls -a
+
+        working-directory: ./tests/e2e
+
+      # Set up GitHub Actions workflow with a specific version of node.js
+      # https://github.com/actions/setup-node
+      - 
+        uses: actions/setup-node@v6
+        with:
+          node-version: 18
+
+      # Performs a clean installation of all dependencies in the
+      # `package.json` file
+      # For more information, see https://docs.npmjs.com/cli/ci.html
+      - 
+        name: Install dependencies
+        run: npm ci
+        working-directory: ./tests/e2e
+
+      - 
+        name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: ./tests/e2e
+
+      - 
+        name: Prepare for running tests
+        run: |
+
+          mkdir -p ./playwright/.auth
+          echo "{}" > ./playwright/.auth/anonymous.json
+          echo "{}" > ./playwright/.auth/system.json
+        working-directory: ./tests/e2e
+
+      - 
+        name: Run Playwright tests
+        run: npx playwright test
+        working-directory: ./tests/e2e
+
+      - 
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ steps.setup.outputs.report_name }}
+          path: ./tests/e2e/playwright-report/
+          retention-days: 30
+
+      - 
+        name: Bring the application down
+        run: |
+
+          # Stop containers
+          docker compose down
+
+          # Remove old images/containers
+          docker system prune
+
+        working-directory: ./tests/e2e

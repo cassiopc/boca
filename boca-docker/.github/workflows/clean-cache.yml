@@ -1,0 +1,93 @@
+---  
+name: Delete GitHub Actions cache for repository
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub Actions Documentation
+# https://docs.github.com/en/github-ae@latest/actions
+
+on:
+  # Run on Sundays at 10:15 AM UTC
+  schedule:
+    - cron: '15 10 * * 0'
+  # or on button click
+  workflow_dispatch:
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY_HOST: ghcr.io
+  # Use github.repository (<account>/<repo>)
+  REPOSITORY_NAME: ${{ github.repository }}
+
+jobs:
+  cleanup:
+    permissions:
+      # `actions:write` permission is required to delete caches
+      # See also: 
+      # https://docs.github.com/en/rest/actions/cache?apiVersion=2022-11-28#delete-a-github-actions-cache-for-a-repository-using-a-cache-id
+      actions: write
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout a repository, so the workflow can access it
+      # https://github.com/actions/checkout
+      - 
+        name: Checkout repository
+        uses: actions/checkout@v5
+
+      # Necessary if testing locally with 'act'
+      # https://github.com/nektos/act
+
+      # Install GH CLI (self-hosted runners do not come with it out of the box)
+      # https://github.com/dev-hanz-ops/install-gh-cli-action
+      # - 
+      #   name: Install GH CLI
+      #   uses: dev-hanz-ops/install-gh-cli-action@v0.1.0
+      #   with:
+      #     gh-cli-version: 2.14.2 # optional
+
+      # Force deletion of caches overriding default cache eviction policy
+      # https://github.com/actions/cache
+      - 
+        name: Delete all cache entries
+        run: |
+
+          gh extension install actions/gh-actions-cache
+
+          while true
+          do
+            echo 'Fetching list of cache keys'
+            CACHE_KEYS=$(gh actions-cache list \
+              --limit 100 \
+              --sort size \
+              --order desc \
+              -R ${{ env.REPOSITORY_NAME }} |  cut -f 1)
+
+            # Remove newlines, tabs, carriage returns and double quotes
+            CACHE_KEYS=$(echo $CACHE_KEYS | tr -d "\n\t\r|\"")
+            # Split string into an array
+            IFS=', ' read -r -a CACHE_KEYS <<< "$CACHE_KEYS"
+            # Get length of $CACHE_KEYS array
+            LEN=${#CACHE_KEYS[@]}
+            echo "Number of cache entries ${LEN}"
+
+            if [[ $LEN -eq 0 ]];
+            then
+              echo 'Done'
+              break
+            fi
+
+            # Setting this to not fail the workflow while deleting cache keys.
+            set +e
+            echo 'Deleting caches...'
+            for cachekey in ${CACHE_KEYS[@]}
+            do
+              gh actions-cache delete ${cachekey} --confirm
+            done
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

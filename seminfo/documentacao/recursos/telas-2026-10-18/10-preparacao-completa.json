@@ -1,0 +1,51 @@
+[
+  {
+    "height": 111.375,
+    "title": "Central SEMINFO",
+    "width": 408.015625,
+    "x": 28,
+    "y": 36.484375
+  },
+  {
+    "height": 71.140625,
+    "title": "Preparação da sala",
+    "width": 479.984375,
+    "x": 28,
+    "y": 413.828125
+  },
+  {
+    "height": 187.53125,
+    "title": "1. Conferir o kit desta mesa",
+    "width": 1209,
+    "x": 28,
+    "y": 502.96875
+  },
+  {
+    "height": 504.59375,
+    "title": "2. Configurar a rede",
+    "width": 1209,
+    "x": 28,
+    "y": 710.5
+  },
+  {
+    "height": 283.671875,
+    "title": "3. Configurar a prova desta categoria",
+    "width": 1209,
+    "x": 28,
+    "y": 1235.09375
+  },
+  {
+    "height": 274.21875,
+    "title": "4. Preparar o placar desta banca",
+    "width": 1209,
+    "x": 28,
+    "y": 1538.765625
+  },
+  {
+    "height": 965.296875,
+    "title": "5. Homologar os testes presenciais",
+    "width": 1209,
+    "x": 28,
+    "y": 1832.984375
+  }
+]

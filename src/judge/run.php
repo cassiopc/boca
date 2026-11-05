@@ -22,15 +22,15 @@ require('header.php');
 <br>
 <table width="100%" border=1>
  <tr>
-  <td><b>Run #</b></td>
-  <td><b>Site</b></td>
-  <td><b>Time</b></td>
-  <td><b>Problem</b></td>
-  <td><b>Language</b></td>
-<!--  <td><b>Filename</b></td> -->
+  <td><b>Submissão nº</b></td>
+  <td><b>Local</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Questão</b></td>
+  <td><b>Linguagem</b></td>
+<!--  <td><b>Nome do arquivo</b></td> -->
   <td><b>Status</b></td>
   <td><b>AJ</b></td>
-  <td><b>Answer</b></td>
+  <td><b>Resposta</b></td>
  </tr>
 <?php
 if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
@@ -62,7 +62,7 @@ for ($i=0; $i<count($run); $i++) {
   else if ($run[$i]["status"] == "openrun") $color="ffff88";
   else $color="ffffff";
 
-  echo "  <td nowrap bgcolor=\"#$color\">" . $run[$i]["status"] . "</td>\n";
+  echo "  <td nowrap bgcolor=\"#$color\">" . displayRunStatus($run[$i]["status"]) . "</td>\n";
   if ($run[$i]["autoend"] != "") {
     $color="bbbbff";
     if ($run[$i]["autoanswer"]=="") $color="ff7777";
@@ -72,12 +72,12 @@ for ($i=0; $i<count($run); $i++) {
   echo "<td bgcolor=\"#$color\">&nbsp;&nbsp;</td>\n";
 
   if ($run[$i]["answer"] == "") $run[$i]["answer"] = "&nbsp;";
-  echo "  <td>" . $run[$i]["answer"] . "</td>\n";
+  echo "  <td>" . displayRunAnswer($run[$i]["answer"]) . "</td>\n";
   echo " </tr>\n";
 }
 
 echo "</table>";
-if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NO RUNS AVAILABLE</font></b></center>";
+if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA SUBMISSÃO DISPONÍVEL</font></b></center>";
 
 ?>
 </body>

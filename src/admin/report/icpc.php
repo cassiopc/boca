@@ -21,11 +21,11 @@ require('header.php');
 
 $score = DBScore($_SESSION["usertable"]["contestnumber"], false, -1, $st["siteglobalscore"]);
 
-echo "<h2>ICPC Output</h2>";
+echo "<h2>Saída ICPC</h2>";
 echo "<pre>";
 $n=0;
 $class=1;
-while(list($e, $c) = each($score)) {
+foreach ($score as $e => $c) {
 	if(isset($score[$e]["site"]) && isset($score[$e]["user"])) {
 		$r = DBUserInfo($_SESSION["usertable"]["contestnumber"], 
 						$score[$e]["site"], $score[$e]["user"]);

@@ -53,9 +53,9 @@ function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=a
     $u = posix_getpwuid(fileowner($dir));
     $un = $u['name'];
     $ug = $u['gid'];
-    if($un != $user) echo "user of $dir must be fixed!!\n";
-    if($ug != $group) echo "group of $dir must be fixed!!\n";
-    if(@chmod($dir, $dirPermissions) === false) echo "cannot chmod $dir\n";
+    if($un != $user) echo "É necessário corrigir o proprietário de $dir.\n";
+    if($ug != $group) echo "É necessário corrigir o grupo de $dir.\n";
+    if(@chmod($dir, $dirPermissions) === false) echo "Não foi possível alterar as permissões de $dir.\n";
     if(($dp = @opendir($dir)) === false) return;
     while($file = readdir($dp)) {
       if (($file == ".") || ($file == ".."))
@@ -79,9 +79,9 @@ function dirrec($dir, $user, $group, $dirPermissions, $filePermissions, $avoid=a
       $u = posix_getpwuid(fileowner($dir));
       $un = $u['name'];
       $ug = $u['gid'];
-      if($un != $user) echo "user of $dir must be fixed!!\n";
-      if($ug != $group) echo "group of $dir must be fixed!!\n";
-      if(@chmod($dir, $filePermissions)=== false) echo "cannot chmod $dir\n";
+      if($un != $user) echo "É necessário corrigir o proprietário de $dir.\n";
+      if($ug != $group) echo "É necessário corrigir o grupo de $dir.\n";
+      if(@chmod($dir, $filePermissions)=== false) echo "Não foi possível alterar as permissões de $dir.\n";
     }
   }
 }
@@ -309,7 +309,7 @@ function InvalidSession($where) {
 	$msg = "Session expired on $where";
 	LOGLevel($msg,3);
 	unset($_SESSION["usertable"]);
-	MSGError("Session expired. You must log in again.");
+	MSGError("A sessão expirou. Entre novamente.");
 }
 //trata o caso de tentativa de burlar as regras
 function IntrusionNotify($where) {
@@ -318,7 +318,7 @@ function IntrusionNotify($where) {
 		$msg .= " (" . $_SESSION["usertable"]["username"] . "/" . $_SESSION["usertable"]["usersitenumber"] .")";
 	unset($_SESSION["usertable"]);
 	LOGLevel($msg,1);
-	MSGError("Violation ($where). Admin warned.");
+	MSGError("Violação detectada ($where). A administração foi avisada.");
 }
 
 function ValidCookie($dolog=false,$gip='') {
@@ -536,6 +536,54 @@ function match_network ($nets, $ip) {
         }
     }
     return false;
+}
+// Traduz apenas as descrições padrão; respostas personalizadas permanecem intactas.
+function displayRunAnswer($answer) {
+    $labels = array(
+        'Not answered yet' => 'Ainda sem resposta',
+        'YES' => 'Sim (YES)',
+        'NO - Compilation error' => 'Não — erro de compilação (CE)',
+        'NO - Runtime error' => 'Não — erro de execução (RE)',
+        'NO - Time limit exceeded' => 'Não — limite de tempo excedido (TLE)',
+        'NO - Presentation error' => 'Não — erro de apresentação (PE)',
+        'NO - Wrong answer' => 'Não — resposta incorreta (WA)',
+        'NO - Contact staff' => 'Não — contate a organização (CS)',
+        'NO - Name mismatch' => 'Não — nome incorreto (NMI)');
+    return isset($labels[$answer]) ? $labels[$answer] : $answer;
+}
+function displayRunStatus($status) {
+    $labels = array('openrun' => 'Aguardando julgamento', 'judging' => 'Em julgamento',
+                    'judged' => 'Julgada', 'judged+' => 'Aguardando novo julgamento',
+                    'deleted' => 'Excluída', 'gone' => 'Removida');
+    return isset($labels[$status]) ? $labels[$status] : $status;
+}
+// The built-in problem zero represents general clarifications. Keep its stored
+// name and number unchanged; only localize its label on screen.
+function displayClarProblem($name, $number) {
+	return (string)$number === '0' && $name === 'General' ? 'Geral' : $name;
+}
+
+function displayClarStatus($status) {
+    $labels = array('openclar' => 'Aguardando resposta', 'answering' => 'Em atendimento',
+                    'answered' => 'Respondida', 'answeredsite' => 'Respondida à sede',
+                    'answeredall' => 'Respondida a todos', 'deleted' => 'Excluída');
+    return isset($labels[$status]) ? $labels[$status] : $status;
+}
+// Rótulos apresentados ao operador; os códigos e descrições armazenados permanecem iguais.
+function displayBackupStatus($status) {
+    if ($status == 'active') return 'Ativo';
+    if ($status == 'deleted') return 'Excluído';
+    if (strpos($status, 'deleted by ') === 0) return 'Excluído por ' . substr($status, 11);
+    return $status;
+}
+function displayTaskStatus($status) {
+    $labels = array('opentask' => 'Aguardando', 'processing' => 'Em atendimento',
+                    'done' => 'Concluído', 'deleted' => 'Excluído');
+    return isset($labels[$status]) ? $labels[$status] : $status;
+}
+function displayTaskDescription($description) {
+    $labels = array('Staff assistance' => 'Solicitação de ajuda', 'File to print' => 'Arquivo para impressão');
+    return isset($labels[$description]) ? $labels[$description] : $description;
 }
 // eof
 ?>

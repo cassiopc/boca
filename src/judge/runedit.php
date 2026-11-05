@@ -30,7 +30,7 @@ if (isset($_POST["answer"]) && isset($_POST["giveup"]) && $_POST["giveup"]=="Can
                     $_SESSION["usertable"]["contestnumber"],
 		    $_SESSION["usertable"]["usernumber"],
 		    $_SESSION["usertable"]["usersitenumber"]);
-	MSGError("Run returned.");
+	MSGError("Submissão devolvida.");
 	ForceLoad("run.php");
 }
 
@@ -64,40 +64,40 @@ $runnumber = myhtmlspecialchars($_GET["runnumber"]);
 
 if (($a = DBGetRunToAnswer($runnumber, $runsitenumber, 
 		$_SESSION["usertable"]["contestnumber"])) === false) {
-	MSGError("Another judge got it first.");
+	MSGError("Outro juiz já selecionou este item.");
 	ForceLoad("run.php");
 }
 
 $b = DBGetProblemData($_SESSION["usertable"]["contestnumber"], $a["problemnumber"]);
 ?>
-<br><br><center><b>Use the following fields to judge the run:
+<br><br><center><b>Use os campos abaixo para julgar a submissão:
 </b></center>
 <form name="form1" method="post" action="runedit.php">
   <input type=hidden name="confirmation" value="noconfirm" />
   <center>
     <table border="1">
       <tr> 
-        <td width="27%" align=right><b>Site:</b></td>
+        <td width="27%" align=right><b>Local:</b></td>
         <td width="83%"> 
 		<input type=hidden name="sitenumber" value="<?php echo $a["sitenumber"]; ?>" />
 		<?php echo $a["sitenumber"]; ?>
         </td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Number:</b></td>
+        <td width="27%" align=right><b>Número:</b></td>
         <td width="83%"> 
 		<input type=hidden name="number" value="<?php echo $a["number"]; ?>" />
 		<?php echo $a["number"]; ?>
         </td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Time:</b></td>
+        <td width="27%" align=right><b>Tempo:</b></td>
         <td width="83%"> 
 		<?php echo dateconvminutes($a["timestamp"]); ?>
         </td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Problem</b><i> <?php echo $a["problemname"]; ?></i>: </td>
+        <td width="27%" align=right><b>Questão</b><i> <?php echo $a["problemname"]; ?></i>: </td>
         <td width="83%"> 
 <?php
 for ($i=0;$i<count($b);$i++) {
@@ -108,39 +108,39 @@ for ($i=0;$i<count($b);$i++) {
 	&nbsp;</td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Language</b>:</td>
+        <td width="27%" align=right><b>Linguagem</b>:</td>
         <td width="83%">
         <i> <?php echo $a["language"]; ?></i></td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Source code:</b></td>
+        <td width="27%" align=right><b>Código-fonte:</b></td>
         <td width="83%"> 
 <?php
 echo "<a href=\"../filedownload.php?". filedownload($a["sourceoid"], $a["sourcename"]) . "\">" . $a["sourcename"] . "</a>\n";
         echo "<a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?" .
             filedownload($a["sourceoid"], $a["sourcename"])  . "', 'View - SOURCE CODE', ".
-             "'width=680,height=600,scrollbars=yes,resizable=yes')\">view</a>\n";
+             "'width=680,height=600,scrollbars=yes,resizable=yes')\">ver</a>\n";
 ?>
         </td>
       </tr>
       <tr>
-        <td width="27%" align=right><b>Answer:</b></td>
+        <td width="27%" align=right><b>Resposta:</b></td>
         <td width="83%">
           <select name="answer">
 <?php
 $ans = DBGetAnswers($_SESSION["usertable"]["contestnumber"]);
 for ($i=0;$i<count($ans);$i++)
         if ($a["answer"] == $ans[$i]["number"])
-                echo "<option selected value=\"" . $ans[$i]["number"] . "\">" . $ans[$i]["desc"] . "</option>\n";
+                echo "<option selected value=\"" . $ans[$i]["number"] . "\">" . displayRunAnswer($ans[$i]["desc"]) . "</option>\n";
         else
-                echo "<option value=\"" . $ans[$i]["number"] . "\">" . $ans[$i]["desc"] . "</option>\n";
+                echo "<option value=\"" . $ans[$i]["number"] . "\">" . displayRunAnswer($ans[$i]["desc"]) . "</option>\n";
 ?>
           </select>
         </td>
       </tr>
 <!--
       <tr> 
-        <td width="27%" align=right><b>Notify user:</b></td>
+        <td width="27%" align=right><b>Notificar usuário:</b></td>
         <td width="83%">
           <input class=checkbox type=checkbox name="notifyuser" value="yes"
 <?php 
@@ -148,15 +148,15 @@ if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"
         ForceLoad("../index.php");
 
 if ($a["timestamp"] < $s["sitelastmileanswer"]) echo "checked"; ?>>
-(do not change this unless you know exactly what you are doing)
+(Altere somente se souber exatamente o efeito desta opção)
         </td>
       </tr>
       <tr> 
-        <td width="27%" align=right><b>Update score board:</b></td>
+        <td width="27%" align=right><b>Atualizar placar:</b></td>
         <td width="83%">
           <input class=checkbox type=checkbox name="updatescore" value="yes"
 <?php if ($a["timestamp"] < $s["sitelastmilescore"]) echo "checked"; ?>>
-(do not change this unless you know exactly what you are doing)
+(Altere somente se souber exatamente o efeito desta opção)
         </td>
       </tr>
 -->
@@ -165,79 +165,79 @@ if ($a["timestamp"] < $s["sitelastmileanswer"]) echo "checked"; ?>>
   <br>
   <script language="javascript">
     function conf() {
-//      if (confirm("Confirm?")) {
+//      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
 //      }
     }
   </script>
   <center>
-      <input type="submit" name="Submit" value="Judge" onClick="conf()">
-      <input type="submit" name="giveup" value="Cancel editing">
-      <input type="reset" name="Submit2" value="Clear">
+      <button type="submit" name="Submit" value="Judge" onClick="conf()">Julgar</button>
+      <button type="submit" name="giveup" value="Cancel editing">Cancelar edição</button>
+      <input type="reset" name="Submit2" value="Limpar">
 
 <br><br>
 <!--
 <font color=#ff0000><b>
-Remember to not leave the correct output files in a readable directory.<br>
-A malicious source code could try to find the correct output file on the disk and copy it.
+Não deixe os arquivos de saída correta em um diretório acessível.<br>
+Um código malicioso poderia localizar e copiar a saída correta no disco.
 </b></font>
 -->
   </center>
 
   <center>
 <br>
-<b>Autojudging:</b>
+<b>Julgamento automático:</b>
 <br><br>
   <table border="1">
   <tr>
-        <td width="27%" align=right><b>Autojudging answer:</b></td>
+        <td width="27%" align=right><b>Resultado automático:</b></td>
         <td width="83%"> 
 <?php
 if($a["autobegin"]!="" && $a["autoend"]=="")
-      echo "in progress";
+      echo "em andamento";
 else if($a["autoend"]!="") {
-      if($a["autoanswer"]!="") echo $a["autoanswer"];
-      else echo "Autojudging error";
+      if($a["autoanswer"]!="") echo displayRunAnswer($a["autoanswer"]);
+      else echo "Erro no julgamento automático";
 } else
-      echo "unavailable";
+      echo "indisponível";
 ?>
         </td>
   </tr>
   <tr>
-        <td width="27%" align=right><b>Autojudged by:</b></td>
+        <td width="27%" align=right><b>Juiz automático:</b></td>
 <?php if($a["autobegin"]!="" && $a["autoend"]=="")
-      echo "<td width=\"83%\">". $a["autoip"] ." since ". dateconvsimple($a["autobegin"]) ."</td>";
+      echo "<td width=\"83%\">". $a["autoip"] ." desde ". dateconvsimple($a["autobegin"]) ."</td>";
 else if($a["autoend"]!="")
-      echo "<td width=\"83%\">". $a["autoip"] ." from ". dateconvsimple($a["autobegin"]) ." to ". dateconvsimple($a["autoend"]) ."</td>";
+      echo "<td width=\"83%\">". $a["autoip"] ." de ". dateconvsimple($a["autobegin"]) ." até ". dateconvsimple($a["autoend"]) ."</td>";
 else
-      echo "<td width=\"83%\">unavailable</td>";
+      echo "<td width=\"83%\">indisponível</td>";
 ?>
   </tr>
   <tr> 
-        <td width="27%" align=right><b>Standard output:</b></td>
+        <td width="27%" align=right><b>Saída padrão:</b></td>
         <td width="83%"> 
 <?php 
 if($a["autostdout"]!="") {
 	echo "<a href=\"../filedownload.php?". filedownload($a["autostdout"],"stdout") ."\">stdout</a>\n";
 	echo "<a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
 	filedownload($a["autostdout"],"stdout") ."', 'View - STDOUT','width=680,height=600,scrollbars=yes,".
-	"resizable=yes')\">view</a>\n";
+	"resizable=yes')\">ver</a>\n";
 } else
-	echo "unavailable";
+	echo "indisponível";
 ?>
 </td>
   </tr>
 <tr> 
-<td width="27%" align=right><b>Standard error:</b></td>
+<td width="27%" align=right><b>Erro padrão:</b></td>
 	<td width="83%"> 
 <?php 
 if($a["autostderr"]!="") {
 	echo "<a href=\"../filedownload.php?". filedownload($a["autostderr"], "stderr") ."\">stderr</a>\n";
         echo "<a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
 	    filedownload($a["autostderr"], "stderr") ."', 'View - STDERR','width=680,height=600,scrollbars=yes,".
-	     "resizable=yes')\">view</a>\n";
+	     "resizable=yes')\">ver</a>\n";
 } else
-      echo "unavailable";
+      echo "indisponível";
 ?>
         </td>
   </tr>

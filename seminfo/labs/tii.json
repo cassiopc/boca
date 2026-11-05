@@ -1,0 +1,20 @@
+{
+  "profile": "tii",
+  "lab": 4,
+  "contest_id": 1,
+  "site_id": 1,
+  "name": "XIX SEMINFO 2026 — Informática para a Internet",
+  "server_ip": null,
+  "subnet": null,
+  "team_ips": [],
+  "shared_subnet": true,
+  "start": "2026-10-29T13:00:00-03:00",
+  "timing_confirmed": false,
+  "duration_minutes": null,
+  "freeze_minutes_before_end": null,
+  "stop_answering_minutes_before_end": 0,
+  "penalty_minutes": 20,
+  "teams": 10,
+  "languages": ["C", "C++20", "Java", "Python3"],
+  "wallpaper": "lab4-tii.png"
+}

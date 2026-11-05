@@ -65,7 +65,7 @@ if [ "$bocau" == "" -o "$bocag" == "" ]; then
 fi
 
 mkdir -p src
-if [ "${name##*.}" == "zip" -a "${name##*.}" == "ZIP" ]; then
+if [ "${name##*.}" == "zip" -o "${name##*.}" == "ZIP" ]; then
 	unzip "$name" -d src
     if [ "${name##*.}" == "zip" ]; then
 		name=`basename $name .zip`
@@ -129,16 +129,29 @@ if [ ! -x \$jar ]; then
 fi
 export CLASSPATH=.:\$CLASSPATH
 cd src
-if [ -r "$name" ]; then
-  \$javac "$name"
-  echo \$? > ../compileit.retcode
+# Compile the source set once. Recompiling every source separately charges
+# duplicate JVM startup/compilation time to the same safeexec CPU budget.
+mapfile -d '' sources < <(find . -type f -name '*.java' -print0)
+if [ "\${#sources[@]}" == "0" ]; then
+  echo 1 > ../compileit.retcode
+  exit 0
 fi
-find . -name "*.java" | while read lin; do
-  \$javac "\$lin"
-  echo \$? > ../compileit.retcode
-done
-rm -f ../$jarfile
-\$jar cvfe ../$jarfile $mainname *
+"\$javac" --release 17 "\${sources[@]}"
+ret=\$?
+echo \$ret > ../compileit.retcode
+if [ "\$ret" != "0" ]; then
+  exit 0
+fi
+# jar uses its destination as a temporary-file prefix (minimum 3 chars).
+# BOCA problem basenames such as A are valid output names, so stage first.
+rm -f "../$jarfile" ../.boca-java.jar
+"\$jar" cvfe ../.boca-java.jar $mainname *
+ret=\$?
+if [ "\$ret" == "0" ]; then
+  mv -f ../.boca-java.jar "../$jarfile"
+  ret=\$?
+fi
+echo \$ret > ../compileit.retcode
 exit 0
 EOF
 chmod 755 compileit.sh

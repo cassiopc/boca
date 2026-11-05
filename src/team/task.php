@@ -43,7 +43,7 @@ if (isset($_FILES["filename"]) && isset($_POST["Submit"]) && $_FILES["filename"]
 		if ($size > $ct["contestmaxfilesize"]) {
 	                LOGLevel("User {$_SESSION["usertable"]["username"]} tried to print file " .
 			"$name with $size bytes ({$ct["contestmaxfilesize"]} max allowed).", 1);
-			MSGError("File size exceeds the limit allowed.");
+			MSGError("O arquivo excede o limite de tamanho permitido.");
 			ForceLoad("task.php");
 		}
 		if (!is_uploaded_file($temp)) {
@@ -64,10 +64,10 @@ if (isset($_FILES["filename"]) && isset($_POST["Submit"]) && $_FILES["filename"]
 <br>
 <table width="100%" border=1>
  <tr>
-  <td><b>Task #</b></td>
-  <td><b>Time</b></td>
-  <td><b>Description</b></td>
-  <td><b>File</b></td>
+  <td><b>Pedido nº</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Descrição</b></td>
+  <td><b>Arquivo</b></td>
   <td><b>Status</b></td>
  </tr>
 <?php
@@ -78,22 +78,22 @@ for ($i=0; $i<count($task); $i++) {
   echo " <tr>\n";
   echo "  <td nowrap>" . $task[$i]["number"] . "</td>\n";
   echo "  <td nowrap>" . dateconvminutes($task[$i]["timestamp"]) . "</td>\n";
-  echo "  <td nowrap>" . $task[$i]["description"] . "</td>\n";
+  echo "  <td nowrap>" . displayTaskDescription($task[$i]["description"]) . "</td>\n";
   echo "  <td nowrap>" . $task[$i]["filename"] . "&nbsp;</td>\n";
-  echo "  <td nowrap>" . $task[$i]["status"] . "</td>\n";
+  echo "  <td nowrap>" . displayTaskStatus($task[$i]["status"]) . "</td>\n";
 }
 echo "</table>";
-if (count($task) == 0) echo "<br><center><b><font color=\"#ff0000\">NO TASKS FOUND</font></b></center>";
+if (count($task) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUM PEDIDO ENCONTRADO</font></b></center>";
 ?>
 
-<br><br><center><b>To submit a file for printing, just fill in the following field:</b></center>
+<br><br><center><b>Para enviar um arquivo para impressão, selecione-o abaixo:</b></center>
 <form name="form1" enctype="multipart/form-data" method="post" action="task.php">
 <!--<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $ct["contestmaxfilesize"] ?>">-->
   <input type=hidden name="confirmation" value="noconfirm" />
   <center>
     <table border="0">
       <tr> 
-        <td width="25%" align=right>File name:</td>
+        <td width="25%" align=right>Arquivo:</td>
         <td width="75%">
 	  <input type="file" name="filename" size="40" onclick="Arquivo()">
         </td>
@@ -102,17 +102,16 @@ if (count($task) == 0) echo "<br><center><b><font color=\"#ff0000\">NO TASKS FOU
   </center>
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
   </script>
   <center>
-      <input type="submit" name="Submit" value="Send" onClick="conf()">
-      <input type="reset" name="Submit2" value="Clear">
+      <input type="submit" name="Submit" value="Enviar" onClick="conf()">
+      <input type="reset" name="Submit2" value="Limpar">
   </center>
-<br><br><center><b>If you needed staff assistance, please click
-on the button above and wait.</b><br>
+<br><br><center><b>Se precisar de ajuda da organização, clique no botão abaixo e aguarde.</b><br>
       <input type="submit" name="Submit" value="S.O.S." onClick="conf()">
   </center>
 </form>

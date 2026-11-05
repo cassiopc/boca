@@ -27,14 +27,14 @@ if ($main) {
     $param = array();
     $param['number'] = $_GET["Number"];
     if(($n = DBNewSite($_SESSION["usertable"]["contestnumber"],null,$param)) === false) {
-      MSGError("Error creating site");
+      MSGError("Erro ao criar o local");
       $n = 1;
     }
     ForceLoad("site.php?site=$n");
   }
   if(isset($_GET["new"]) && $_GET["new"]=="1") {
     if(($n = DBNewSite($_SESSION["usertable"]["contestnumber"])) === false) {
-      MSGError("Error creating site");
+      MSGError("Erro ao criar o local");
       $n = 1;
     }      
     ForceLoad("site.php?site=$n");
@@ -72,7 +72,7 @@ if (isset($_POST["Logins"]) && $_POST["Logins"] == "Disable logins") {
 if (isset($_POST["Submit2"]) && $_POST["Submit2"] == "Start Now") {
 	if ($_POST["confirmation"] == "confirm") {
 		if(!DBSiteStartNow ($_SESSION["usertable"]["contestnumber"], $site))
-			MSGError("Site is already running");
+			MSGError("O local já está em funcionamento");
 	}
 	ForceLoad("site.php?site=$site");
 }
@@ -109,7 +109,7 @@ if (isset($_POST["SubmitDB"]) && $_POST["SubmitDB"] == "Delete ALL bkps") {
 if (isset($_POST["Submit3"]) && $_POST["Submit3"] == "Stop Now") {
 	if ($_POST["confirmation"] == "confirm") {
 		if(DBSiteEndNow ($_SESSION["usertable"]["contestnumber"], $site))
-			MSGError("Site has been finished");
+			MSGError("O local foi encerrado");
 	}
 	ForceLoad("site.php?site=$site");
 }
@@ -121,10 +121,10 @@ if (isset($_POST["endat"]) && $_POST["endat"] == "Stop At") {
 	    checkdate($_POST["enddatem"], $_POST["enddated"], $_POST["enddatey"])) {
 		$te = mktime ($_POST["enddateh"], $_POST["enddatemin"], 0, $_POST["enddatem"], $_POST["enddated"], $_POST["enddatey"]);
 		if($te > time())
-			MSGError("Impossible to stop at a future time. Still running");
+			MSGError("Não é possível encerrar em um horário futuro. O local continua ativo");
 		else {
 			if(DBSiteEndNow ($_SESSION["usertable"]["contestnumber"], $site, $te))
-				MSGError("Site has been finished");
+				MSGError("O local foi encerrado");
 		}
 	}
 	ForceLoad("site.php?site=$site");
@@ -193,7 +193,11 @@ if ($main && isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_POST["
 				$userlist=array();
 				if(strtolower(substr($name,-4))==".tsv") {
 					for ($i=0; $i<count($ar) && strpos($ar[$i], "File_Version\t1") === false; $i++) ;
-					if($i >= $count($ar)) MSGError('File format not recognized');
+					if($i >= count($ar)) {
+						MSGError('Formato de arquivo não reconhecido');
+						ForceLoad('site.php');
+						exit;
+					}
 					$oklines=0;
 					for ($i++; $i<count($ar); $i++) {
                         $x = explode("\t",trim($ar[$i]));
@@ -222,7 +226,7 @@ if ($main && isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_POST["
 								}
 						}
 					}
-					MSGError($oklines . ' sites included/updated successfully');
+						MSGError($oklines . ' sede(s) incluída(s) ou atualizada(s) com sucesso.');
 				} else if(strtolower(substr($name,-4))==".tab") {
 					$oklines=0;
 					for ($i=0; $i<count($ar); $i++) {
@@ -252,27 +256,27 @@ if ($main && isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_POST["
 								}
 						}
 					}
-					MSGError($oklines . ' sites included/updated successfully');
-					if(count($userlist) > 0) {
+						MSGError($oklines . ' sede(s) incluída(s) ou atualizada(s) com sucesso.');
+                } else {
+					MSGError('Formato de arquivo não reconhecido');
+				}
+				if(count($userlist) > 0) {
 ?>
 <center>
-<br><u><b>TAKE NOTE OF THE USERS AND PASSWORDS AND KEEP THEM SECRET</b></u><br><br>
+<br><u><b>ANOTE OS USUÁRIOS E AS SENHAS E MANTENHA-OS EM SIGILO</b></u><br><br>
 <table border=1>
  <tr>
-  <td><b>Username</b></td>
-  <td><b>Password</b></td>
+  <td><b>Usuário</b></td>
+  <td><b>Senha</b></td>
  </tr>
 <?php
 							foreach($userlist as $user => $pass) {
 							echo "<tr><td>$user</td><td>$pass</td></tr>\n";
 						}
 ?>
-</table><br><br><u><b>TAKE NOTE OF THE USERS AND PASSWORDS AND KEEP THEM SECRET</b></u></center></body></html>
+</table><br><br><u><b>ANOTE OS USUÁRIOS E AS SENHAS E MANTENHA-OS EM SIGILO</b></u></center></body></html>
 <?php
 	  exit;
-					}
-				} else {
-					MSGError('File format not recognized');
 				}
         }
         ForceLoad("site.php");
@@ -284,13 +288,13 @@ if ($main && isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_POST["
   <input type=hidden name="confirmation" value="noconfirm" />
   <script language="javascript" type="text/javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
     function conf2() {
-      if (confirm("Confirm DELETING EVERYTHING?")) {
-		  if (confirm("This operation has no come back. DATA WILL BE LOST. Confirm?")) {
+      if (confirm("Confirmar a exclusão de todos os dados?")) {
+		  if (confirm("Esta operação não pode ser desfeita. OS DADOS SERÃO PERDIDOS. Confirmar?")) {
 			  document.form1.confirmation.value='confirm';
 		  }
       }
@@ -311,7 +315,7 @@ if ($main && isset($_FILES["importfile"]) && isset($_POST["Submit"]) && $_POST["
   <center>
     <table border="0">
       <tr>
-        <td width="35%" align=right>Site number:</td>
+        <td width="35%" align=right>Número do local:</td>
         <td width="65%">
 <?php
 echo "<select onChange=\"sitech()\" name=\"site\">\n";
@@ -323,19 +327,19 @@ for ($i=0; $i<count($cs); $i++) {
     echo ">" . $cs[$i]["sitenumber"] . "</option>\n";
 }
 if($main) {
-	echo "<option value=\"new\">new</option>\n";
+	echo "<option value=\"new\">nova</option>\n";
 }  
 echo "</select>\n";
 
 //else
 //  echo "<input type=\"text\" readonly name=\"site\" value=\"$site\" size=\"2\" maxlength=\"2\" />\n";
 
-if($ct["contestlocalsite"]==$site) echo "(local site)"; 
+if($ct["contestlocalsite"]==$site) echo "(sede local)"; 
 ?>
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Name:</td>
+        <td width="35%" align=right>Nome:</td>
         <td width="65%">
           <input type="text" name="name" value="<?php echo $st["sitename"]; ?>" size="50" maxlength="50" />
         </td>
@@ -345,7 +349,7 @@ if($ct["contestlocalsite"]==$site) echo "(local site)";
 	if($main) {
 ?>
       <tr>
-<td width="35%" align=right>IP (plus boca path):</td>
+<td width="35%" align=right>IP e caminho do BOCA:</td>
         <td width="65%">
           <input type="text" name="ip" value="<?php echo $st["siteip"]; ?>" size="50" maxlength="200" />
         </td>
@@ -354,7 +358,7 @@ if($ct["contestlocalsite"]==$site) echo "(local site)";
 	} else {
 ?>
       <tr>
-<td width="35%" align=right>IP (plus boca path):</td>
+<td width="35%" align=right>IP e caminho do BOCA:</td>
         <td width="65%">
           <?php echo $st["siteip"]; ?>
         </td>
@@ -365,7 +369,7 @@ if($ct["contestlocalsite"]==$site) echo "(local site)";
 ?>
       <tr>
 <?php
-echo "        <td nowrap width=\"35%\" align=right>Start date (contest=" . dateconv($ct["conteststartdate"]) . "):</td>";
+echo "        <td nowrap width=\"35%\" align=right>Data de início (competição=" . dateconv($ct["conteststartdate"]) . "):</td>";
 ?>
         <td width="65%"> hh:mm
           <input type="text" name="startdateh" value="<?php echo date("H", $st["sitestartdate"]); ?>" size="2" maxlength="2" />
@@ -383,7 +387,7 @@ echo "        <td nowrap width=\"35%\" align=right>Start date (contest=" . datec
 <?php
 if (!$st["siterunning"]) {
 	echo "      <tr>\n";
-	echo "        <td nowrap width=\"35%\" align=right><b>Site finished at:</b></td>\n";
+	echo "        <td nowrap width=\"35%\" align=right><b>Local encerrado em:</b></td>\n";
 	echo "        <td width=\"65%\"><b>" . dateconv($st["siteendeddate"]) . "</b></td>\n";
 	echo "      </tr>\n";
 	if($st["siteautoended"])
@@ -391,14 +395,14 @@ if (!$st["siterunning"]) {
 	else
 		$w = (int) ($st["currenttime"]/60);
 	echo "      <tr>\n";
-	echo "        <td nowrap width=\"35%\" align=right><b>Real duration:</b></td>\n";
-	echo "        <td width=\"65%\"><b>" . $w . " minutes</b></td>\n";
+	echo "        <td nowrap width=\"35%\" align=right><b>Duração real:</b></td>\n";
+	echo "        <td width=\"65%\"><b>" . $w . " minutos</b></td>\n";
 	echo "      </tr>\n";
 }
 ?>
       <tr>
 <?php
-echo "        <td width=\"35%\" align=right>Duration (contest=";
+echo "        <td width=\"35%\" align=right>Duração (competição=";
 echo $ct["contestduration"]/60;
 echo "):</td>";
 ?>
@@ -408,7 +412,7 @@ echo "):</td>";
       </tr>
       <tr>
 <?php
-echo "        <td width=\"35%\" align=right>Stop answering (contest=";
+echo "        <td width=\"35%\" align=right>Fim das respostas (competição=";
 echo $ct["contestlastmileanswer"]/60;
 echo "):</td>";
 ?>
@@ -418,7 +422,7 @@ echo "):</td>";
       </tr>
       <tr>
 <?php
-echo "        <td width=\"35%\" align=right>Stop scoreboard (contest=";
+echo "        <td width=\"35%\" align=right>Congelamento do placar (competição=";
 echo $ct["contestlastmilescore"]/60;
 echo "):</td>";
 ?>
@@ -427,25 +431,25 @@ echo "):</td>";
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Runs/clars that will be judged here (comma sep):</td>
+        <td width="35%" align=right>Submissões e dúvidas julgadas aqui (separadas por vírgula):</td>
         <td width="65%">
           <input type="text" name="judging" value="<?php echo $st["sitejudging"]; ?>" size="20" maxlength="200" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Tasks that will be treated here (comma sep):</td>
+        <td width="35%" align=right>Pedidos atendidos aqui (separados por vírgula):</td>
         <td width="65%">
           <input type="text" name="tasking" value="<?php echo $st["sitetasking"]; ?>" size="20" maxlength="200" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Username of the chief judge (if any):</td>
+        <td width="35%" align=right>Usuário do juiz chefe (se houver):</td>
         <td width="65%">
           <input type="text" name="chiefname" value="<?php echo $st["sitechiefname"]; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Active:</td>
+        <td width="35%" align=right>Ativo:</td>
         <td width="65%">
 <?php
           if ($st["siteactive"] == "t")
@@ -456,7 +460,7 @@ echo "):</td>";
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Autoend:</td>
+        <td width="35%" align=right>Encerramento automático:</td>
         <td width="65%">
 <?php
           if ($st["siteautoend"] == "t")
@@ -467,13 +471,13 @@ echo "):</td>";
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Global score:</td>
+        <td width="35%" align=right>Placar global:</td>
         <td width="65%">
           <input type="text" name="globalscore" value="<?php echo $st["siteglobalscore"]; ?>" size="20" maxlength="50" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Autojudge (without human interaction):</td>
+        <td width="35%" align=right>Julgamento automático (sem intervenção humana):</td>
         <td width="65%">
 <?php
           if ($st["siteautojudge"] == "t")
@@ -485,34 +489,34 @@ echo "):</td>";
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Logins are:</td>
+        <td width="35%" align=right>Acessos:</td>
         <td width="65%">
 <?php
           if ($st["sitepermitlogins"] == "t")
-            echo "enabled";
+            echo "habilitados";
           else
-            echo "disabled";
+            echo "desabilitados";
 ?>
         </td>
       </tr>
       <tr>
-        <td width=\"35%\" align=right>Score level:</td>
+        <td width=\"35%\" align=right>Nível do placar:</td>
         <td width="65%">
           <input type="text" name="scorelevel" value="<?php echo $st["sitescorelevel"]; ?>" size="2" maxlength="2" />
         </td>
       </tr>
       <tr>
-        <td width=\"35%\" align=right>Number of Clars:</td>
+        <td width=\"35%\" align=right>Número de dúvidas:</td>
         <td width="65%"><?php echo $st["sitenextclar"]; ?>
         </td>
       </tr>
       <tr>
-        <td width=\"35%\" align=right>Number of Runs:</td>
+        <td width=\"35%\" align=right>Número de submissões:</td>
         <td width="65%"><?php echo $st["sitenextrun"]; ?>
         </td>
       </tr>
       <tr>
-        <td width=\"35%\" align=right>Number of Tasks:</td>
+        <td width=\"35%\" align=right>Número de pedidos:</td>
         <td width="65%"><?php echo $st["sitenexttask"]; ?>
         </td>
       </tr>
@@ -522,20 +526,20 @@ echo "):</td>";
 <?php
 		if($main || $site == $ct["contestlocalsite"]) {
 ?>
-      <input type="submit" name="Submit1" value="Send" onClick="conf()">
-      <input type="submit" name="Submit2" value="Start Now" onClick="conf()">
-      <input type="submit" name="Submit3" value="Stop Now" onClick="conf()">
-      <input type="reset" name="Submit4" value="Restore fields">
+      <button type="submit" name="Submit1" value="Send" onClick="conf()">Enviar</button>
+      <button type="submit" name="Submit2" value="Start Now" onClick="conf()">Iniciar agora</button>
+      <button type="submit" name="Submit3" value="Stop Now" onClick="conf()">Encerrar agora</button>
+      <input type="reset" name="Submit4" value="Restaurar campos">
 <br>
-      <input type="submit" name="Logoff" value="Logoff all users" onClick="conf()">
-      <input type="submit" name="Logins" value="Disable logins" onClick="conf()">
-      <input type="submit" name="Logins" value="Enable logins" onClick="conf()">
+      <button type="submit" name="Logoff" value="Logoff all users" onClick="conf()">Encerrar sessões de todos os usuários</button>
+      <button type="submit" name="Logins" value="Disable logins" onClick="conf()">Desabilitar acessos</button>
+      <button type="submit" name="Logins" value="Enable logins" onClick="conf()">Habilitar acessos</button>
 <br><br><br>
 
-      <input type="submit" name="SubmitDC" value="Delete ALL clars" onClick="conf2()">
-      <input type="submit" name="SubmitDR" value="Delete ALL runs" onClick="conf2()">
-      <input type="submit" name="SubmitDT" value="Delete ALL tasks" onClick="conf2()">
-      <input type="submit" name="SubmitDB" value="Delete ALL bkps" onClick="conf2()">
+      <button type="submit" name="SubmitDC" value="Delete ALL clars" onClick="conf2()">Excluir TODAS as dúvidas</button>
+      <button type="submit" name="SubmitDR" value="Delete ALL runs" onClick="conf2()">Excluir TODAS as submissões</button>
+      <button type="submit" name="SubmitDT" value="Delete ALL tasks" onClick="conf2()">Excluir TODOS os pedidos</button>
+      <button type="submit" name="SubmitDB" value="Delete ALL bkps" onClick="conf2()">Excluir TODOS os backups</button>
 <?php
 				}
 ?>
@@ -544,7 +548,7 @@ echo "):</td>";
 <br />
 <table border=1>
 <tr>
-<td nowrap width=\"50%\" align=right>Starting at</td><td nowrap width=\"50%\" align=left>Ending at</td>
+<td nowrap width=\"50%\" align=right>Início</td><td nowrap width=\"50%\" align=left>Término</td>
 </tr>
 <?php
 $n = count($sitetime);
@@ -556,8 +560,8 @@ for ($i=0; $i< $n; $i++) {
   echo "<td nowrap align=left>";
   if($sitetime[$i]["siteenddate"] == 0) {
     if($st["siterunning"])
-      echo "still open";
-    else echo "auto-ended";
+      echo "em andamento";
+    else echo "encerrado automaticamente";
   }
   else
     echo dateconv($sitetime[$i]["siteenddate"]);
@@ -575,8 +579,8 @@ for ($i=0; $i< $n; $i++) {
     <table border="0">
       <tr>
 <td nowrap width="50%" align=right>
-(Do not use this button unless really necessary)
-  <input type="submit" name="endat" value="Stop At" onClick="conf()">:
+(Use este botão apenas quando necessário)
+  <button type="submit" name="endat" value="Stop At" onClick="conf()">Encerrar em</button>:
 </td>
 <?php
 $w = $st["siteendeddate"];
@@ -603,22 +607,22 @@ if($main) {
   <center>
     <table border="0">
       <tr>
-        <td width="25%" align=right>Import file:</td>
+        <td width="25%" align=right>Arquivo para importação:</td>
         <td width="75%">
           <input type="file" name="importfile" size="40">
         </td>
       </tr>
     </table>
-      <input type="submit" name="Submit" value="Import" onClick="conf()">
+      <button type="submit" name="Submit" value="Import" onClick="conf()">Importar</button>
   </center>
 		<?php } ?>
 </form>
 <div id="normal">
 <div id="popupnew">
 <form action="site.php" id="formnew" method="get" name="formnew">
-<h2>Choose site number</h2>
+<h2>Selecione o número do local</h2>
 <input id="new" name="Number" placeholder="new" type="text">
-<input type="submit" name="Go" value="Go">
+<button type="submit" name="Go" value="Go">Ir</button>
 </form>
 </div>
 </div>

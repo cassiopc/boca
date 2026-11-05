@@ -69,9 +69,9 @@ if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["p
 		if ($ac == 1 && $_POST["contest"] != $_SESSION["usertable"]["contestnumber"]) {
 			$cf = globalconf();
 			if($cf["basepass"] == "")
-				MSGError("You must log in the new contest. The standard admin password is empty (if not changed yet).");
+				MSGError("Entre na nova competição. A senha padrão do administrador está vazia, caso ainda não tenha sido alterada.");
 			else
-				MSGError("You must log in the new contest. The standard admin password is " . $cf["basepass"] . " (if not changed yet).");
+				MSGError("Entre na nova competição. A senha padrão do administrador é " . $cf["basepass"] . " (caso ainda não tenha sido alterada).");
 
 			ForceLoad("../index.php");
 		}
@@ -85,7 +85,7 @@ if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["p
   <input type=hidden name="confirmation" value="noconfirm" />
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
@@ -106,7 +106,7 @@ if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["p
   <center>
     <table border="0">
       <tr>
-        <td width="35%" align=right>Contest number:</td>
+        <td width="35%" align=right>Número da competição:</td>
         <td width="65%">
 <select onChange="contestch()" name="contest">
 <?php 
@@ -121,19 +121,19 @@ for ($i=0; $i<count($cs); $i++) {
   echo ">" . $cs[$i]["contestnumber"] . ($cs[$i]["contestactive"]=="t"?"*":"") ."</option>\n";
 }
 ?>
-<option value="new">new</option>
+<option value="new">nova</option>
 </select>
         </td>
       </tr>
 	<?php if(!$isfake) { ?>
       <tr>
-        <td width="35%" align=right>Name:</td>
+        <td width="35%" align=right>Nome:</td>
         <td width="65%">
           <input type="text" <?php if(!$main) echo "readonly"; ?> name="name" value="<?php echo $ct["contestname"]; ?>" size="50" maxlength="50" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Start date:</td>
+        <td width="35%" align=right>Data de início:</td>
         <td width="65%"> hh:mm
           <input type="text" <?php if(!$main) echo "readonly"; ?> name="startdateh" value="<?php echo date("H", $ct["conteststartdate"]); ?>" size="2" maxlength="2" />
           :
@@ -147,55 +147,55 @@ for ($i=0; $i<count($cs); $i++) {
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Duration (in minutes):</td>
+        <td width="35%" align=right>Duração (em minutos):</td>
         <td width="65%">
           <input type="text" name="duration" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestduration"]/60; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Stop answering (in minutes):</td>
+        <td width="35%" align=right>Fim das respostas (em minutos):</td>
         <td width="65%">
           <input type="text" name="lastmileanswer" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestlastmileanswer"]/60; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Stop scoreboard (in minutes):</td>
+        <td width="35%" align=right>Congelamento do placar (em minutos):</td>
         <td width="65%">
           <input type="text" name="lastmilescore" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestlastmilescore"]/60; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Penalty (in minutes):</td>
+        <td width="35%" align=right>Penalidade (em minutos):</td>
         <td width="65%">
           <input type="text" name="penalty" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestpenalty"]/60; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Max file size allowed for teams (in KB):</td>
+        <td width="35%" align=right>Tamanho máximo de arquivo das equipes (em KB):</td>
         <td width="65%">
           <input type="text" name="maxfilesize" <?php if(!$main) echo "readonly"; ?> 
                value="<?php echo $ct["contestmaxfilesize"]/1000; ?>" size="20" maxlength="20" />
         </td>
       </tr>
   <tr><td width="35%" align=right>
-    Your PHP config. allows at most:</td>
+    A configuração do PHP permite no máximo:</td>
   <td width="65%">
-    <?php echo ini_get('post_max_size').'B(max. post) and '.ini_get('upload_max_filesize').'B(max. filesize)'; ?>
+    <?php echo ini_get('post_max_size').' (requisição) e '.ini_get('upload_max_filesize').' (arquivo)'; ?>
   </td></tr>
       <tr>
-							<td width="35%" align=right>Contest main site URL (IP/bocafolder):</td>
+							<td width="35%" align=right>URL do local principal da competição (IP/pasta do BOCA):</td>
         <td width="65%">
           <input type="text" name="mainsiteurl" value="<?php echo $ct["contestmainsiteurl"]; ?>" size="40" maxlength="200" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Contest main site number:</td>
+        <td width="35%" align=right>Número do local principal:</td>
         <td width="65%">
           <input type="text" name="mainsite" value="<?php echo $ct["contestmainsite"]; ?>" size="4" maxlength="4" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Contest local site number:</td>
+        <td width="35%" align=right>Número do local:</td>
         <td width="65%">
           <input type="text" name="localsite" value="<?php echo $ct["contestlocalsite"]; ?>" size="4" maxlength="4" />
         </td>
@@ -203,11 +203,11 @@ for ($i=0; $i<count($cs); $i++) {
     </table>
   </center>
   <center>
-      <input type="submit" name="Submit3" value="Send" onClick="conf()">
-      <input type="submit" name="Submit3" value="Activate" onClick="conf()">
-      <input type="reset" name="Submit4" value="Clear">
+      <button type="submit" name="Submit3" value="Send" onClick="conf()">Enviar</button>
+      <button type="submit" name="Submit3" value="Activate" onClick="conf()">Ativar</button>
+      <input type="reset" name="Submit4" value="Limpar">
   </center>
-							<?php } else { echo "<br><br><center>Select a contest or create a new one.</center><br><br>"; } ?>
+							<?php } else { echo "<br><br><center>Selecione uma competição ou crie uma nova.</center><br><br>"; } ?>
 </form>
 
 </body>

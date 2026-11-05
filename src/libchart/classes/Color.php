@@ -37,7 +37,7 @@
 		* @param	integer		alpha [0,255]
 		*/
 		
-		function Color($red, $green, $blue, $alpha = 0)
+		function __construct($red, $green, $blue, $alpha = 0)
 		{
 			$this->red = (int)$red;
 			$this->green = (int)$green;

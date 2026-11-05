@@ -47,7 +47,7 @@ if(isset($_GET['webcastcode']) && ctype_alnum($_GET['webcastcode'])) {
   }
   ob_end_flush();
 
-  echo "<html><head><title>Report Page</title>\n";
+  echo "<html><head><title>Relatórios</title>\n";
   echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
 
   echo "<link rel=stylesheet href=\"$loc/Css.php\" type=\"text/css\">\n";

@@ -1,0 +1,70 @@
+services:
+  boca-db:
+    image: ${SEMINFO_DB_IMAGE:?execute build-server}
+    pull_policy: never
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?execute init}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+  boca-web:
+    image: ${SEMINFO_WEB_IMAGE:?execute build-server}
+    pull_policy: never
+    depends_on:
+      boca-db:
+        condition: service_healthy
+    environment: &boca-env
+      BOCA_DB_HOST: boca-db
+      BOCA_DB_USER: bocauser
+      BOCA_DB_NAME: bocadb
+      BOCA_DB_SUPER_USER: postgres
+      BOCA_DB_SUPER_PASSWORD: ${POSTGRES_PASSWORD}
+      BOCA_DB_PASSWORD: ${BOCA_DB_PASSWORD}
+      BOCA_PASSWORD: ${BOCA_PASSWORD}
+      BOCA_KEY: ${BOCA_KEY}
+      BOCA_JAIL_HOST: boca-jail
+      SEMINFO_PROFILE: ${SEMINFO_PROFILE}
+    ports:
+      # Only the native admission gate publishes 0.0.0.0:8000. The Docker
+      # backend must never bypass approvals on the institutional network.
+      - 127.0.0.1:18000:80
+    volumes:
+      - private-data:/var/www/boca/src/private
+    restart: unless-stopped
+  boca-jail:
+    image: ${SEMINFO_JAIL_IMAGE:?execute build-server}
+    pull_policy: never
+    privileged: true
+    depends_on:
+      boca-web:
+        condition: service_healthy
+    environment: *boca-env
+    restart: unless-stopped
+  grafana:
+    image: ${SEMINFO_GRAFANA_IMAGE:?execute build-server}
+    pull_policy: never
+    depends_on:
+      boca-db:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:3001:3000
+    environment:
+      BOCA_DB_PASSWORD: ${BOCA_DB_PASSWORD}
+      GF_SECURITY_ADMIN_USER: seminfo
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/boca-analytics.json
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ../boca-docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../boca-docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    restart: unless-stopped
+volumes:
+  db-data:
+  private-data:
+  grafana-data:

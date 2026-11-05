@@ -42,15 +42,15 @@ if(isset($_GET["order"]) && $_GET["order"] != "") {
 <br>
 <table width="100%" border=1>
  <tr>
-  <td><b><a href="clar.php?order=clar">Clar #</a></b></td>
-  <td><b><a href="clar.php?order=site">Site</a></b></td>
-  <td><b><a href="clar.php?order=user">User</a></b></td>
-  <td><b>Time</b></td>
-  <td><b><a href="clar.php?order=problem">Problem</a></b></td>
+  <td><b><a href="clar.php?order=clar">Dúvida nº</a></b></td>
+  <td><b><a href="clar.php?order=site">Sede</a></b></td>
+  <td><b><a href="clar.php?order=user">Usuário</a></b></td>
+  <td><b>Tempo</b></td>
+  <td><b><a href="clar.php?order=problem">Questão</a></b></td>
   <td><b><a href="clar.php?order=status">Status</a></b></td>
-  <td><b><a href="clar.php?order=judge">Judge (Site)</a></b></td>
-  <td><b>Question</b></td>
-  <td><b>Answer</b></td>
+  <td><b><a href="clar.php?order=judge">Juiz (sede)</a></b></td>
+  <td><b>Pergunta</b></td>
+  <td><b>Resposta</b></td>
  </tr>
 <?php
 
@@ -70,7 +70,7 @@ for ($i=0; $i<count($clar); $i++) {
   echo "  <td nowrap>" . $clar[$i]["site"] . "</td>\n";
   echo "  <td nowrap>" . $clar[$i]["user"] . "</td>\n";
   echo "  <td nowrap>" . dateconvminutes($clar[$i]["timestamp"]) . "</td>\n";
-  echo "  <td nowrap>" . $clar[$i]["problem"] . "</td>\n";
+  echo "  <td nowrap>" . displayClarProblem($clar[$i]["problem"], $clar[$i]["problemnumber"]) . "</td>\n";
   if ($clar[$i]["judge"] == $_SESSION["usertable"]["usernumber"] &&
       $clar[$i]["judgesite"] == $_SESSION["usertable"]["usersitenumber"] && $clar[$i]["status"] == "answering")
     $color="ff7777";
@@ -79,7 +79,7 @@ for ($i=0; $i<count($clar); $i++) {
   else if ($clar[$i]["status"] == "openclar") $color="ffff88";
   else $color="ffffff";
 
-  echo "  <td nowrap bgcolor=\"#$color\">" . $clar[$i]["status"] . "</td>\n";
+  echo "  <td nowrap bgcolor=\"#$color\">" . displayClarStatus($clar[$i]["status"]) . "</td>\n";
   if ($clar[$i]["judge"] != "") {
     $u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $clar[$i]["judgesite"], $clar[$i]["judge"]);
     echo "  <td nowrap>" . $u["username"] . " (" . $clar[$i]["judgesite"] . ")</td>\n";
@@ -94,7 +94,7 @@ for ($i=0; $i<count($clar); $i++) {
 //  echo $clar[$i]["question"];
   echo "  <textarea name=\"m$i\" cols=\"60\" rows=\"8\" readonly>". unsanitizeText($clar[$i]["question"]) ."</textarea>\n";
   echo "</td>\n";
-  if (trim($clar[$i]["answer"]) == "") $clar[$i]["answer"] = "Not answered yet";
+  if (trim($clar[$i]["answer"]) == "") $clar[$i]["answer"] = "Ainda sem resposta";
   echo "  <td>";
 //  echo "  <pre>" . $clar[$i]["answer"] . "</pre>";
 //  echo $clar[$i]["answer"];
@@ -105,7 +105,7 @@ for ($i=0; $i<count($clar); $i++) {
 }
 
 echo "</table>";
-if (count($clar) == 0) echo "<br><center><b><font color=\"#ff0000\">NO CLARIFICATIONS AVAILABLE</font></b></center>";
+if (count($clar) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA DÚVIDA DISPONÍVEL</font></b></center>";
 
 ?>
 </body>

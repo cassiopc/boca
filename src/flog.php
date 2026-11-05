@@ -105,7 +105,7 @@ function DBLogIn($name,$pass, $msg=true) {
 		if ($r !== false) return $r;
 	} else {
 		LOGLevel("There is no active or template contest.",0);
-		MSGError("There is no active or template contest.");
+		MSGError("Não há competição ativa ou modelo disponível.");
 	}
 	return false;
 }
@@ -113,12 +113,12 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	$b = DBGetRow("select * from contesttable where contestnumber=$contest", 0, null, "DBLogIn(get active contest)");
 	if ($b == null) {
 		LOGLevel("There is no contest $contest.",0);
-		if($msg) MSGError("There is no contest $contest, contact an admin.");
+		if($msg) MSGError("A competição $contest não existe. Contate a administração.");
 		return false;
 	}
 	$d = DBSiteInfo($b["contestnumber"], $b["contestlocalsite"],null,false);
 	if ($d == null) {
-		if($msg) MSGError("There is no active site, contact an admin.");
+		if($msg) MSGError("Não há local ativo. Contate a administração.");
 		return false;
 	}
 	$a = DBGetRow("select * from usertable where username='$name' and contestnumber=".
@@ -127,7 +127,7 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	if ($a == null) {
 		if($msg) {
 			LOGLevel("User $name tried to log in contest $contest but it does not exist.",2);
-			MSGError("User does not exist or incorrect password.");
+			MSGError("Usuário inexistente ou senha incorreta.");
 		}
 		return false;
 	}
@@ -140,26 +140,26 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	$_SESSION['usertable']['userpassword'] = $p;
 	if ($d["sitepermitlogins"]=="f" && $a["usertype"] != "admin" && $a["usertype"] != "judge" && $a["usertype"] != "site" && $a["usertype"] != "staff") {
 		LOGLevel("User $name tried to login contest $contest but logins are denied.",2);
-		if($msg) MSGError("Logins are not allowed.");
+		if($msg) MSGError("Os acessos não estão permitidos.");
 		unset($_SESSION["usertable"]);
 		return false;
 	}
 	if ($a["userenabled"] != "t") {
 		LOGLevel("User $name tried to log in contest $contest but it is disabled.",2);
-		if($msg) MSGError("User disabled.");
+		if($msg) MSGError("Usuário desativado.");
 		unset($_SESSION["usertable"]);
 		return false;
 	}
 	if ($a["userpassword"] != "" && $p != $pass) {
 		LOGLevel("User $name tried to log in contest $contest but password was incorrect.",2);
-		if($msg) MSGError("Incorrect password.");
+		if($msg) MSGError("Senha incorreta.");
 		unset($_SESSION["usertable"]);
 		return false;
 	}
 
 	if(!ctype_alnum($name)) {
 	  LOGLevel("User $name tried to log in contest $contest but username is not alphanum.",2);
-	  if($msg) MSGError("Username must be alpha numeric.");
+	  if($msg) MSGError("O nome de usuário deve conter apenas letras e números.");
 	  unset($_SESSION["usertable"]);
 	  return false;
 	}
@@ -173,7 +173,7 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	if(@file_exists($dircode)) {
 	  if(($prevuser = @file_get_contents($dircode)) === false) {
 	    LOGLevel("User $name tried to log in contest $contest but computer file cannot be read.",2);
-	    if($msg) MSGError("Invalid computer (2).");
+	    if($msg) MSGError("Computador inválido (2).");
 	    unset($_SESSION["usertable"]);
 	    return false;
 	  }
@@ -198,7 +198,7 @@ function DBLogInContest($name,$pass,$contest,$msg=true) {
 	if ($a["userip"] != $gip && $a["userip"] != "" && $a["usertype"] != "score") {
 		LOGLevel("User $name is using two different IPs: " . $a["userip"] . 
 			 "(" . dateconv($a["userlastlogin"]) .") and " . $gip,1);
-		if($msg && $a["usertype"] != "admin" && $a["usermultilogin"] != "t") MSGError("You are using two distinct IPs. Admin notified.");
+		if($msg && $a["usertype"] != "admin" && $a["usermultilogin"] != "t") MSGError("Foram detectados dois endereços IP. A administração foi avisada.");
 	}
 	if ($a["userpermitip"] != "") {
 		$ips=explode(';',$a["userpermitip"]);

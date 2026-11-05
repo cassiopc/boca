@@ -29,7 +29,7 @@ require_once('../version.php');
 require_once("../globals.php");
 require_once("../db.php");
 
-echo "<html><head><title>Staff's Page</title>\n";
+echo "<html><head><title>Área de apoio</title>\n";
 echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
 echo "<link rel=stylesheet href=\"../Css.php\" type=\"text/css\">\n";
 
@@ -51,7 +51,7 @@ echo "<tr><td nowrap bgcolor=\"#ffa020\" align=center>";
 echo "<img src=\"../images/smallballoontransp.png\" alt=\"\">";
 echo "<font color=\"#000000\">BOCA</font>";
 echo "</td><td bgcolor=\"#ffa020\" width=\"99%\">\n";
-echo "Username: " . $_SESSION["usertable"]["username"] . " (site=".$_SESSION["usertable"]["usersitenumber"].")<br>\n";
+echo "Usuário: " . $_SESSION["usertable"]["username"] . " (sede=".$_SESSION["usertable"]["usersitenumber"].")<br>\n";
 list($clockstr,$clocktype)=siteclock();
 echo "</td><td bgcolor=\"#ffa020\" align=center nowrap>&nbsp;".$clockstr."&nbsp;</td></tr>\n";
 echo "</table>\n";
@@ -64,17 +64,17 @@ if(($s = DBSiteInfo($_SESSION["usertable"]["contestnumber"], $_SESSION["usertabl
 
 echo "<table border=0 width=\"100%\" align=center>\n";
 echo " <tr>\n";
-echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=task.php>Tasks</a></td>\n";
+echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=task.php>Ajuda e impressão</a></td>\n";
 //echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=task.php>Tasks ($nr)</a></td>\n";
-echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=score.php>Score</a></td>\n";
-echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=run.php>Runs</a></td>\n";
+echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=score.php>Placar</a></td>\n";
+echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=run.php>Submissões</a></td>\n";
 
 //echo " <td align=center width=\"20%\"><a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/stat.php', ".
 //                "'Problem Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-//                "resizable=yes')\">Statistics</a></td>\n";
+//                "resizable=yes')\">Estatísticas</a></td>\n";
 
-//echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=option.php>Options</a></td>\n";
-echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=../index.php>Logout</a></td>\n";
+//echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=option.php>Opções</a></td>\n";
+echo "  <td align=center width=\"20%\"><a class=menu style=\"font-weight:bold\" href=../index.php>Sair</a></td>\n";
 echo " </tr>\n"; 
 echo "</table>\n";
 ?>

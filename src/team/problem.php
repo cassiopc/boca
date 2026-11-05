@@ -21,7 +21,7 @@ require('header.php');
 if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 	ForceLoad("../index.php");
 ?>
-<br><b>Information:</b>
+<br><b>Informações:</b>
 <?php
 /*
 <br>General information: <a href="https://global.naquadah.com.br/boca/info_sheet.pdf">info_sheet.pdf</a>
@@ -32,13 +32,13 @@ if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
 
 if(is_readable('/var/www/boca/src/sample/secretcontest/maratona.pdf')) {
 ?>
-<b>PLAIN FILES:</b>  <b>CONTEST</b> (
+<b>ARQUIVOS:</b>  <b>COMPETIÇÃO</b> (
 <a href='https://global.naquadah.com.br/boca/secretcontest/maratona.pdf'>PT</a> |
 <a href='https://global.naquadah.com.br/boca/secretcontest/maratona_es.pdf'>ES</a> |
 <a href='https://global.naquadah.com.br/boca/secretcontest/maratona_en.pdf'>EN</a>
 )
 &nbsp;&nbsp;&nbsp; 
-<b>Info Sheet</b> (
+<b>Informações</b> (
 <a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona.pdf'>PT</a> |
 <a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona_es.pdf'>ES</a> |
 <a href='https://global.naquadah.com.br/boca/secretcontest/info_maratona_en.pdf'>EN</a>
@@ -52,10 +52,10 @@ if(is_readable('/var/www/boca/src/sample/secretcontest/maratona.pdf')) {
 <br><br><br>
 <table width="100%" border=1>
  <tr>
-  <td><b>Name</b></td>
-  <td><b>Basename</b></td>
-  <td><b>Fullname</b></td>
-  <td><b>Descfile</b></td>
+  <td><b>Nome</b></td>
+  <td><b>Nome-base</b></td>
+  <td><b>Nome completo</b></td>
+  <td><b>Enunciado</b></td>
  </tr>
 <?php
 $prob = DBGetProblems($_SESSION["usertable"]["contestnumber"]);
@@ -74,11 +74,11 @@ for ($i=0; $i<count($prob); $i++) {
 		"\">" . basename($prob[$i]["descfilename"]) . "</a></td>\n";
   }
   else
-    echo "  <td nowrap>no description file available</td>\n";
+    echo "  <td nowrap>Enunciado indisponível</td>\n";
   echo " </tr>\n";
 }
 echo "</table>";
-if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NO PROBLEMS AVAILABLE YET</font></b></center>";
+if (count($prob) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA QUESTÃO DISPONÍVEL</font></b></center>";
 
 ?>
 </body>

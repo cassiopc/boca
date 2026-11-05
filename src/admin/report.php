@@ -28,66 +28,66 @@ if (isset($_GET)) {
 //      echo "<b>Logs</b><br /><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/score.php?p=2', ".
 		"'Complete Scoreboard','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Scoreboard</a><br />\n";
+		"resizable=yes')\">Placar</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/score.php?p=0', ".
 		"'Complete Scoreboard','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Detailed Scoreboard</a><br />\n";
+		"resizable=yes')\">Placar detalhado</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/score.php?p=0&hor=0', ".
 		"'Complete Scoreboard','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Interactive Scoreboard</a><br />\n";
+		"resizable=yes')\">Placar interativo</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/score.php?p=1', ".
 		"'Public Scoreboard','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Delayed Scoreboard</a><br />\n";
+		"resizable=yes')\">Placar com atraso</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/run.php', ".
 		"'Run List','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Run List</a><br />\n";
+		"resizable=yes')\">Lista de submissões</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/clar.php', ".
 		"'Clarification List','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Clarification List</a><br />\n";
+		"resizable=yes')\">Lista de dúvidas</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/task.php', ".
 		"'Task List','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Task List</a><br />\n";
+		"resizable=yes')\">Lista de pedidos</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/site.php', ".
 		"'Start/Stop Logs','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Site Start/Stop Logs</a><br />\n";
+		"resizable=yes')\">Registros de início e parada do local</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/icpc.php', ".
 		"'ICPC File','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">ICPC File</a><br />\n";
+		"resizable=yes')\">Arquivo ICPC</a><br />\n";
 
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/webcast.php', ".
 		"'Webcast File','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Webcast File</a><br />\n";
+		"resizable=yes')\">Arquivo de transmissão</a><br />\n";
 
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/s4ris.php', ".
 		"'S4ris File','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">S4RiS File</a><br />\n";
+		"resizable=yes')\">Arquivo S4RiS</a><br />\n";
 
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/stat.php', ".
 		"'Problem Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Statistics</a><br />\n";
+		"resizable=yes')\">Estatísticas</a><br />\n";
 
 /*
       echo "<br /><br />\n";
-      echo "<b>Statistics</b><br /><br />\n";
+      echo "<b>Estatísticas</b><br /><br />\n";
 
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/statproblem.php', ".
 		"'Problem Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Problems</a><br />\n";
+		"resizable=yes')\">Questões</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/statanswer.php', ".
 		"'Answer Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Answers</a><br />\n";
+		"resizable=yes')\">Respostas</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/statuser.php', ".
 		"'User Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Users</a><br />\n";
+		"resizable=yes')\">Usuários</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/statlanguage.php', ".
 		"'Language Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Languages</a><br />\n";
+		"resizable=yes')\">Linguagens</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/statrun.php', ".
 		"'Run Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Runs</a><br />\n";
+		"resizable=yes')\">Submissões</a><br />\n";
       echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/statclar.php', ".
 		"'Clarification Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-		"resizable=yes')\">Clarifications</a><br />\n";
+		"resizable=yes')\">Dúvidas</a><br />\n";
 */
 ?>
   </center>

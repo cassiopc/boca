@@ -1,0 +1,89 @@
+{ 
+    "docker.commands.composeUp": [
+        {
+            "label": "dev-match",
+            "template": "docker compose -f docker-compose.yml ${configurationFile} up --build",
+            "match": "dev"
+        },
+        {
+            "label": "prod-match",
+            "template": "docker compose -f docker-compose.yml ${configurationFile} up",
+            "match": "prod"
+        },
+        {
+            "label": "env-match",
+            "template": "docker compose --env-file=tests/env/.env ${configurationFile} up",
+            "match": "env"
+        },
+        {
+            "label": "secrets-match",
+            "template": "docker compose ${configurationFile} up",
+            "match": "secrets"
+        },
+        {
+            "label": "networks-match",
+            "template": "docker compose ${configurationFile} up",
+            "match": "networks"
+        },
+        {
+            "label": "volumes-match",
+            "template": "docker compose ${configurationFile} up",
+            "match": "volumes"
+        },
+        {
+            "label": "migrations-match",
+            "template": "docker compose ${configurationFile} up",
+            "match": "migrations"
+        },
+        {
+            "label": "healthcheck-match",
+            "template": "docker compose ${configurationFile} up",
+            "match": "healthcheck"
+        },
+        {
+            "label": "platforms-match",
+            "template": "docker compose ${configurationFile} up",
+            "match": "platforms"
+        }
+    ],
+    "docker.commands.composeDown": [
+        {
+            "label": "env-match",
+            "template": "docker compose ${configurationFile} down",
+            "match": "env"
+        },
+        {
+            "label": "secrets-match",
+            "template": "docker compose ${configurationFile} down",
+            "match": "secrets"
+        },
+        {
+            "label": "networks-match",
+            "template": "docker compose ${configurationFile} down",
+            "match": "networks"
+        },
+        {
+            "label": "volumes-match",
+            "template": "docker compose ${configurationFile} down",
+            "match": "volumes"
+        },
+        {
+            "label": "migrations-match",
+            "template": "docker compose --profile backup --profile restore ${configurationFile} down",
+            "match": "migrations"
+        },
+        {
+            "label": "healthcheck-match",
+            "template": "docker compose ${configurationFile} down",
+            "match": "healthcheck"
+        },
+        {
+            "label": "platforms-match",
+            "template": "docker compose ${configurationFile} down",
+            "match": "platforms"
+        },
+        {
+            "template": "docker compose -f docker-compose.yml ${configurationFile} down"
+        }
+    ]
+}

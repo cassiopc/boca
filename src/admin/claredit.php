@@ -30,7 +30,7 @@ if (isset($_POST["delete"]) && $_POST["delete"]=="Delete" &&
 
 		if (DBClarDelete($number, $sitenumber, $_SESSION["usertable"]["contestnumber"],
 	                     $_SESSION["usertable"]["usernumber"], $_SESSION["usertable"]["usersitenumber"]))
-			MSGError("Clarification deleted.");
+			MSGError("Dúvida excluída.");
 	}
 	ForceLoad("clar.php");
 }
@@ -43,7 +43,7 @@ if (isset($_POST["answer"]) && isset($_POST["open"]) && $_POST["open"]=="Open th
 	        $number = myhtmlspecialchars($_POST["number"]);
 
 		if (DBChiefClarGiveUp($number, $sitenumber, $_SESSION["usertable"]["contestnumber"]))
-			MSGError("Clarification returned.");
+			MSGError("Dúvida devolvida.");
 		ForceLoad("clar.php");
 	}
 }
@@ -63,7 +63,7 @@ if (isset($_POST["answer"]) && isset($_POST["Submit"]) && $_POST["Submit"]=="Ans
                 if (trim($ans)=="") {
                         DBClarGiveUp($number, $sitenumber, $_SESSION["usertable"]["contestnumber"],
                                 $_SESSION["usertable"]["usernumber"], $_SESSION["usertable"]["usersitenumber"]);
-                        MSGError("Clarification returned.");
+                        MSGError("Dúvida devolvida.");
                 } else {
 		        DBChiefUpdateClar($_SESSION["usertable"]["contestnumber"],
 	                     $_SESSION["usertable"]["usersitenumber"],
@@ -85,64 +85,64 @@ $clarnumber = myhtmlspecialchars($_GET["clarnumber"]);
 
 if (($a = DBChiefGetClarToAnswer($clarnumber, $clarsitenumber, 
 		$_SESSION["usertable"]["contestnumber"])) === false) {
-	MSGError("Another judge got it first.");
+	MSGError("Outro juiz já selecionou este item.");
 	ForceLoad("clar.php");
 }
 
 ?>
-<br><br><center><b>Use the following fields to answer the clarification:
+<br><br><center><b>Use os campos abaixo para responder à dúvida:
 </b></center>
 <form name="form1" method="post" action="claredit.php">
   <input type=hidden name="confirmation" value="noconfirm" />
   <center>
     <table border="0">
       <tr> 
-        <td width="20%" align=right><b>Clarification Site:</b></td>
+        <td width="20%" align=right><b>Local da dúvida:</b></td>
         <td width="80%"> 
 		<input type=hidden name="sitenumber" value="<?php echo $a["sitenumber"]; ?>" />
 		<?php echo $a["sitenumber"]; ?>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Clarification Number:</b></td>
+        <td width="20%" align=right><b>Número da dúvida:</b></td>
         <td width="80%"> 
 		<input type=hidden name="number" value="<?php echo $a["number"]; ?>" />
 		<?php echo $a["number"]; ?>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Clarification Time:</b></td>
+        <td width="20%" align=right><b>Tempo da dúvida:</b></td>
         <td width="80%"> 
 		<?php echo dateconvminutes($a["timestamp"]); ?>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Problem:</b></td>
+        <td width="20%" align=right><b>Questão:</b></td>
         <td width="80%"> 
-		<?php echo $a["problemname"]; ?>
+		<?php echo displayClarProblem($a["problemname"], $a["problemnumber"]); ?>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Clarification:</b></td>
+        <td width="20%" align=right><b>Dúvida:</b></td>
         <td width="80%">
           <textarea name="message" readonly cols="60" rows="8"><?php echo unsanitizeText($a["question"]); ?>
 	  </textarea>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Answer:</b></td>
+        <td width="20%" align=right><b>Resposta:</b></td>
         <td width="80%">
           <textarea name="answer" cols="60" rows="8"><?php echo unsanitizeText($a["answer"]); ?></textarea>
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Answer to all users in the site</b></td>
+        <td width="20%" align=right><b>Responder a todos os usuários deste local</b></td>
         <td width="80%">
           <input class=checkbox type=checkbox <?php if ($a["status"] == "answeredsite") echo "checked"; ?> name="answersite" value="yes">
         </td>
       </tr>
       <tr> 
-        <td width="20%" align=right><b>Answer to all users in all sites</b></td>
+        <td width="20%" align=right><b>Responder a todos os usuários de todos os locais</b></td>
         <td width="80%">
           <input class=checkbox type=checkbox <?php if ($a["status"] == "answeredall") echo "checked"; ?> name="answerall" value="yes">
         </td>
@@ -151,17 +151,17 @@ if (($a = DBChiefGetClarToAnswer($clarnumber, $clarsitenumber,
   </center>
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
   </script>
   <center>
-      <input type="submit" name="Submit" value="Answer" onClick="conf()">
-      <input type="submit" name="open" value="Open the Clar" onClick="conf()">
-      <input type="submit" name="cancel" value="Cancel">
-      <input type="submit" name="delete" value="Delete" onClick="conf()">
-      <input type="reset" name="Submit2" value="Clear">
+      <button type="submit" name="Submit" value="Answer" onClick="conf()">Responder</button>
+      <button type="submit" name="open" value="Open the Clar" onClick="conf()">Abrir a dúvida</button>
+      <button type="submit" name="cancel" value="Cancel">Cancelar</button>
+      <button type="submit" name="delete" value="Delete" onClick="conf()">Excluir</button>
+      <input type="reset" name="Submit2" value="Limpar">
   </center>
 </form>
 

@@ -27,8 +27,8 @@ srand(make_seed());
 //	return hash('sha256',$k);
 //}
 if(!function_exists('openssl_cipher_iv_length')) {
-  MSGError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
-  LogError("Encryption error -- php openssl not installed -- contact an admin (" . getFunctionName() .")");
+  MSGError("Erro de criptografia: a extensão OpenSSL do PHP não está instalada. Contate a administração (" . getFunctionName() .")");
+  LogError("Erro de criptografia: a extensão OpenSSL do PHP não está instalada. Contate a administração (" . getFunctionName() .")");
   return "";
 }
 $clen = openssl_cipher_iv_length('aes-256-cbc');

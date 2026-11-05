@@ -137,21 +137,21 @@ if(isset($_POST["Submit"])) {
 						   'permitip'=>-1);
 
 		if(strtoupper(substr($ar,0,5)) != '<XML>' && isset($_POST['password']) && strlen($_POST['password'])>20) {
-			echo "<br>Starting to create the contest<br>";
+			echo "<br>Iniciando a criação da competição<br>";
 			$str = strtok($ar," \n\t");
 			$str = strtok(" \n\t");
 			$ar = decryptData($str,$_POST['password'],'importxml');
 			if(strtoupper(substr($ar,0,5)) != '<XML>') {
-				echo "<br>Error decrypting file. Import aborted.<br>";
+				echo "<br>Erro ao descriptografar o arquivo. Importação cancelada.<br>";
 				echo "</body></html>";
 				exit;
 			}
 		}
 		if(strtoupper(substr($ar,0,5)) == '<XML>') {
-			echo "<br>File has been loaded.<br>";
+			echo "<br>Arquivo carregado.<br>";
 //			echo "<pre>\n$ar</pre>\n";
 			if(!importFromXML($ar,$acr,0,$localsite))
-				echo "<br>Error during updating of the local database.<br>";
+				echo "<br>Erro ao atualizar o banco de dados local.<br>";
 			echo "</body></html>";
 			exit;
 		}
@@ -167,7 +167,7 @@ if(isset($_POST["Submit"])) {
 <br>
 <br>
 <center><b>
-To import a pre-defined contest, just fill in the import file field.</b></center>
+Para importar uma competição existente, selecione o arquivo de importação.</b></center>
 <br>
 <body onload="document.form1.name.focus()">
 <script language="JavaScript" src="../sha256.js"></script>
@@ -188,7 +188,7 @@ function computeHASH()
   <center>
     <table border="0">
       <tr>
-        <td width="50%" align=right>Local site number:</td>
+        <td width="50%" align=right>Número do local:</td>
         <td width="50%">
 <?php
 	if(isset($_POST["localsite"])) {
@@ -201,11 +201,11 @@ function computeHASH()
       </tr>
 <?php
 		if(isset($_SESSION['importfile'])) {
-			echo "<tr><td width=\"50%\" align=right>Challenge string:</td><td width=\"50%\">" . $id . "</td></tr>\n";
+			echo "<tr><td width=\"50%\" align=right>Texto de desafio:</td><td width=\"50%\">" . $id . "</td></tr>\n";
 		} else {
 ?>
       <tr>
-        <td width="50%" align=right>Import file:</td>
+        <td width="50%" align=right>Arquivo para importação:</td>
         <td width="50%">
 				<input type="file" name="importfile" size="40">
         </td>
@@ -217,7 +217,7 @@ function computeHASH()
 	} else {
 ?>
 	<tr> 
-	 <td width="50%" align=right>Encryption key:</td>
+	 <td width="50%" align=right>Chave de criptografia:</td>
 	<td width="50%">
 	<input type="password" name="password">
 	</td>
@@ -229,15 +229,15 @@ function computeHASH()
   </center>
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
   	    computeHASH();
         document.form1.confirmation.value='confirm';
       }
     }
   </script>
   <center>
-      <input type="submit" name="Submit" value="Import" onClick="conf()">
-      <input type="reset" name="Submit2" value="Clear">
+      <button type="submit" name="Submit" value="Import" onClick="conf()">Importar</button>
+      <input type="reset" name="Submit2" value="Limpar">
   </center>
 </form>
 

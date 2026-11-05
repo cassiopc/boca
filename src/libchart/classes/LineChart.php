@@ -35,9 +35,9 @@
     		* @param	integer		height of the image
 		*/
 		
-		function LineChart($width = 600, $height = 250)
+		function __construct($width = 600, $height = 250)
 		{
-			parent::BarChart($width, $height);
+			parent::__construct($width, $height);
 
 			$this->setLabelMarginLeft(50);
 			$this->setLabelMarginRight(50);

@@ -1,0 +1,14 @@
+[Unit]
+Description=SEMINFO lab configuration and fail-closed network
+DefaultDependencies=no
+After=local-fs.target nftables.service
+Before=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/seminfo-network apply
+
+[Install]
+WantedBy=multi-user.target

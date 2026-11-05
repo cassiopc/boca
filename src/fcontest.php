@@ -213,7 +213,7 @@ function DBAllUserNames($contest,$site=-1) {
 	$n = DBnlines($r);
 	if ($n == 0) {
 		LOGError("Unable to find users in the database. SQL=(" . $sql . ")");
-		MSGError("Unable to find users in the database!");
+		MSGError("Não foi possível localizar usuários no banco de dados!");
 	}
 
 	$a = array();
@@ -232,7 +232,7 @@ function DBAllUserInfo($contest,$site=-1) {
 	$n = DBnlines($r);
 	if ($n == 0) {
 		LOGError("Unable to find users in the database. SQL=(" . $sql . ")");
-		MSGError("Unable to find users in the database!");
+		MSGError("Não foi possível localizar usuários no banco de dados!");
 	}
 
 	$a = array();
@@ -254,7 +254,7 @@ function DBAllSiteTime($contest, $site) {
 	$n = DBnlines($r);
 	if ($n == 0) {
 		LOGError("Unable to find Site times in the database. SQL=(" . $sql . ")");
-		MSGError("Unable to find site times in the database!");
+		MSGError("Não foi possível localizar os horários do local no banco de dados!");
 	}
 
 	$a = array();
@@ -270,7 +270,7 @@ function DBUserInfo($contest, $site, $user, $c=null,$hashpass=true) {
 	$a = DBGetRow ($sql, 0, $c);
 	if ($a == null) {
 		LOGError("Unable to find the user in the database. SQL=(" . $sql . ")");
-		MSGError("Unable to find the user in the database. Contact an admin now!");
+		MSGError("Não foi possível localizar o usuário no banco de dados. Contate a administração.");
 	}
 	$a['changepassword']=true;
 	if(substr($a['userpassword'],0,1)=='!') {
@@ -353,7 +353,7 @@ function DBSiteInfo($contest, $site, $c=null, $msg=true) {
 	if(DBnLines($r) < 1) {
 	  if($msg) {
 		LOGError("Unable to find the site in the database (site=$site, contest=$contest). SQL=(" . $sql . ")");
-		MSGError("Unable to find the site in the database. Contact an admin now!");
+		MSGError("Não foi possível localizar o local no banco de dados. Contate a administração.");
           } else return null;
 	}
 	$a = DBRow($r, 0);
@@ -404,7 +404,7 @@ function DBAllSiteInfo($contest, $c=null) {
 	$n = DBnlines($r);
 	if ($n == 0) {
 		LOGError("Unable to find sites in the database. SQL=(" . $sql . ")");
-		MSGError("Unable to find sites in the database!");
+		MSGError("Não foi possível localizar locais no banco de dados!");
 	}
 	$a = array();
 	for ($i=0;$i<$n;$i++) {
@@ -419,7 +419,7 @@ function DBAllContestInfo() {
 	$n = DBnlines($r);
 	if ($n == 0) {
 		LOGError("Unable to find contests in the database. SQL=(" . $sql . ")");
-		MSGError("Unable to find contests in the database!");
+		MSGError("Não foi possível localizar competições no banco de dados!");
 	}
 	$a = array();
 	for ($i=0;$i<$n;$i++) {
@@ -432,7 +432,7 @@ function DBContestInfo($contest, $c=null) {
 	$a = DBGetRow ($sql, 0, $c);
 	if ($a == null) {
 		LOGError("Unable to find the contest $contest in the database. SQL=(" . $sql . ")");
-		MSGError("Unable to find the contest $contest in the database. Contact an admin now!");
+		MSGError("Não foi possível encontrar a competição $contest no banco de dados. Contate a administração.");
 		return null;
 	}
 	return $a;
@@ -442,7 +442,7 @@ function DBGetActiveContest() {
        $a = DBGetRow ($sql, 0);
        if ($a == null) {
                LOGError("Unable to find active contests in the database. SQL=(" . $sql . ")");
-               MSGError("Unable to find active contests in the database.");
+               MSGError("Não foi possível localizar competições ativas no banco de dados.");
        }
        return $a;
 }
@@ -474,7 +474,7 @@ function DBSiteEndNow ($contest, $site, $w=0) {
 			"runsitenumber=$site and not runstatus ~ 'deleted'", 0);
 	if($a["t"] >= $t) {
 		LOGLevel("Unable to stop a contest before an existing run",2);
-		MSGError("Impossible to stop a contest before an existing run");
+		MSGError("Não é possível encerrar a competição antes de uma submissão existente");
 		DBExec($c, "commit work");
 		return false;
 	}
@@ -632,12 +632,12 @@ function DBUpdateSite ($param,$c=null) {
 	$type['sitescorelevel']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key])) {
-			MSGError("DBUpdateSite param error: $key is not set");
+			MSGError("DBUpdateSite: o parâmetro $key não foi informado.");
 			return false;
 		}
 		$$key = myhtmlspecialchars($param[$key]);
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
-			MSGError("DBUpdateSite param error: $key is not numeric");
+			MSGError("DBUpdateSite: o parâmetro $key deve ser numérico.");
 			return false;
 		}
 	}
@@ -662,7 +662,7 @@ function DBUpdateSite ($param,$c=null) {
 		if(isset($param[$key])) {
 			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
-				MSGError("DBUpdateSite param error: $key is not numeric");
+				MSGError("DBUpdateSite: o parâmetro $key deve ser numérico.");
 				return false;
 			}
 		}
@@ -690,14 +690,15 @@ function DBUpdateSite ($param,$c=null) {
 		$a = DBGetRow ("select * from sitetable where contestnumber=$contestnumber and sitenumber=$sitenumber", 0, $c);
 		if ($a == null) {
 			DBExec($c, "rollback work", "DBUpdateSite(rollback-errorsite)");
-			MSGError("DBUpdateSite update error: impossible to create a site in the DB");
-			LOGLevel("DBUpdateSite update error: impossible to create a site in the DB",0);
+			MSGError("Não foi possível criar a sede no banco de dados.");
+			LOGLevel("Não foi possível criar a sede no banco de dados.",0);
 			return false;
 		}
 	}
 	$t = time();
 	if($updatetime <= 0)
-		$updatetime=$t;
+		// Alterações locais consecutivas precisam de versões distintas para sincronização.
+		$updatetime=max($t, (int)$a['updatetime'] + 1);
 	$ret=1;
 	if($updatetime > $a['updatetime']) {
 		$ret=2;
@@ -788,12 +789,12 @@ function DBUpdateContest ($param, $c=null) {
 	$type['localsite']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key])) {
-			MSGError("DBUpdateContest param error: $key is not set");
+			MSGError("DBUpdateContest: o parâmetro $key não foi informado.");
 			return false;
 		}
 		$$key = myhtmlspecialchars($param[$key]);
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
-			MSGError("DBUpdateContest param error: $key is not numeric");
+			MSGError("DBUpdateContest: o parâmetro $key deve ser numérico.");
 			return false;
 		}
 	}
@@ -816,7 +817,7 @@ function DBUpdateContest ($param, $c=null) {
 		if(isset($param[$key])) {
 			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
-				MSGError("DBUpdateContest param error: $key is not numeric");
+				MSGError("DBUpdateContest: o parâmetro $key deve ser numérico.");
 				return false;
 			}
 		}
@@ -833,12 +834,17 @@ function DBUpdateContest ($param, $c=null) {
 	}
 	$a = DBGetRow("select * from contesttable where contestnumber=$number for update", 0, $c, "DBUpdateContest(get for update)");
 	if($a == null) {
-		MSGError("Error updating contest $number -- not found");
+		MSGError("Não foi possível atualizar a competição $number: ela não foi encontrada.");
 		LOGError("DBUpdateContest contest $number not found");
 		return false;
 	}
 	$ret=1;
 	if ($active == 1) {
+		if (getenv('SEMINFO_PROFILE') && PHP_SAPI !== 'cli') {
+			if ($cw) DBExec($c, "rollback work");
+			MSGError('SEMINFO: use manage.py activate; a configuração e os ensaios precisam ser confirmados.');
+			return false;
+		}
 		$ret=2;
 		DBExec($c, "update contesttable set contestactive='f'", "DBUpdateContest(deactivate)");
 		DBExec($c, "update contesttable set contestactive='t' where contestnumber=$number",
@@ -949,18 +955,18 @@ function DBRenewSiteTime($param, $c=null) {
 		if(isset($param[$i]['sitenumber']) && !isset($param[$i]['site'])) $param[$i]['site']=$param[$i]['sitenumber'];
 		foreach($ac as $key) {
 			if(!isset($param[$i][$key])) {
-				MSGError("DBRenewSiteTime param error: $key is not set");
+				MSGError("DBRenewSiteTime: o parâmetro $key não foi informado.");
 				return false;
 			}
 			if(isset($type[$key]) && !is_numeric($param[$i][$key])) {
-				MSGError("DBRenewSiteTime param error: $key is not numeric");
+				MSGError("DBRenewSiteTime: o parâmetro $key deve ser numérico.");
 				return false;
 			}
 		}
 		foreach($ac1 as $key) {
 			if(isset($param[$i][$key])) {
 				if(isset($type[$key]) && !is_numeric($param[$i][$key])) {
-					MSGError("DBRenewSiteTime param error: $key is not numeric");
+					MSGError("DBRenewSiteTime: o parâmetro $key deve ser numérico.");
 					return false;
 				}
 			}
@@ -970,7 +976,7 @@ function DBRenewSiteTime($param, $c=null) {
 		if(!isset($param[$i]['enddate'])) $param[$i]['enddate']=0;
 
 		if($param[$i]['contest'] != $param[0]['contest'] || $param[$i]['site'] != $param[0]['site']) {
-			MSGError("DBRenewSiteTime param error: contest and site have to match over all instances");
+			MSGError("As identificações da competição e da sede devem coincidir em todas as instâncias.");
 			return false;
 		}
 	}
@@ -1185,11 +1191,11 @@ function DBUserUpdate($contest, $site, $user, $username, $userfull, $userdesc, $
 	if ($a["userpassword"] != "" && $p != $passo) {
 		LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . " (contest=$contest, site=$site) " .
 				 "tried to change settings, but password was incorrect.",2);
-		MSGError ("Incorrect password.");
+		MSGError ("Senha incorreta.");
 	}
 	else { 
 		if(!$a['changepassword']) {
-			MSGError('Password change is DISABLED'); return;
+			MSGError('A alteração de senha está desativada'); return;
 		}
 		if ($a["userpassword"] == "") $temp = myhash("");
 		else $temp = $a["userpassword"];
@@ -1215,13 +1221,13 @@ function DBUserUpdate($contest, $site, $user, $username, $userfull, $userdesc, $
 			DBExec ($c, "commit work");
 			LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . " changed his settings (newname=$username) ".
 				"(user=$user,site=$site,contest=$contest)",2);
-			MSGError("Data updated.");
+			MSGError("Dados atualizados.");
 			ForceLoad("index.php");
 		} else {
 			DBExec ($c, "rollback work");
 			LOGLevel("User " . $_SESSION["usertable"]["username"]."/". $_SESSION["usertable"]["usersitenumber"] . " couldn't change his settings " .
 				"(user=$user,site=$site,contest=$contest)",2);
-			MSGError ("Update problem (maybe username already in use). No data was changed.");
+			MSGError ("Não foi possível atualizar os dados. O nome de usuário pode já estar em uso. Nenhum dado foi alterado.");
 		}
 	}
 }
@@ -1252,11 +1258,11 @@ function DBNewUser($param, $c=null) {
 	$typei['user']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key]) || $param[$key]=="") {
-			MSGError("DBNewUser param error: $key not found");
+			MSGError("DBNewUser: o parâmetro $key não foi informado.");
 			return false;
 		}
 		if(isset($typei[$key]) && !is_numeric($param[$key])) {
-			MSGError("DBNewUser param error: $key is not numeric");
+			MSGError("DBNewUser: o parâmetro $key deve ser numérico.");
 			return false;
 		}
 		$$key = myhtmlspecialchars($param[$key]);
@@ -1281,7 +1287,7 @@ function DBNewUser($param, $c=null) {
 		if(isset($param[$key])) {
 			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($typei[$key]) && !is_numeric($param[$key])) {
-				MSGError("DBNewUser param error: $key is not numeric");
+				MSGError("DBNewUser: o parâmetro $key deve ser numérico.");
 				return false;
 			}
 		}
@@ -1310,7 +1316,7 @@ function DBNewUser($param, $c=null) {
 	if($n == 0) {
 	  if($cw)
 	    DBExec ($c, "rollback work","DBNewUser(no-site)");
-	  MSGError("DBNewUser param error: site $site does not exist");
+	  MSGError("Não foi possível criar o usuário: a sede $site não existe.");
 	  return false;
 	}
 	if($pass != myhash("") && $type != "admin" && $changepass != "t" && substr($pass,0,1) != "!") $pass='!'.$pass;
@@ -1329,7 +1335,7 @@ function DBNewUser($param, $c=null) {
 		   if($aa==null) {
 		     if($cw)
 		   	DBExec ($c, "rollback work");
-		     MSGError("Site $site does not exist");
+		     MSGError("A sede $site não existe.");
 		     return false;
 		   }
 			$sql = "insert into usertable (contestnumber, usersitenumber, usernumber, username, usericpcid, userfullname, " .
@@ -1365,7 +1371,7 @@ function DBNewUser($param, $c=null) {
 	  if($cw)
 	    DBExec ($c, "rollback work");
 	  LOGLevel ("Update problem for user $user (site=$site,contest=$contest) (maybe username already in use).",1);
-	  MSGError ("Update problem for user $user, site $site (maybe username already in use).");
+	  MSGError ("Não foi possível atualizar o usuário $user da sede $site. O nome de usuário pode já estar em uso.");
 	  return false;
 	}
 	if($cw) DBExec($c, "commit work");
@@ -1382,24 +1388,24 @@ function siteclock() {
 	}
 	
 	if ($s["siteactive"]!="t") 
-		return array("site is not active",-1000000000);
+		return array("local não está ativo",-1000000000);
 	if (!$s["siterunning"])
-		return array("contest not running",-1000000000);
+		return array("competição não está em andamento",-1000000000);
 	if ($s["currenttime"]<0) {
 		$t = - $s["currenttime"];
                 if($t>3600*24) {
                         $t = ((int) ($t/(360*24)))/10;
-                        return array("&gt; ". $t . " day(s) to start",$s["currenttime"]);
+                        return array("&gt; ". $t . " dia(s) para começar",$s["currenttime"]);
                 }
 		if($t>3600) {
 			$t = ((int) ($t/360))/10;
-			return array("&gt; ". $t . " hour(s) to start",$s["currenttime"]);
+			return array("&gt; ". $t . " hora(s) para começar",$s["currenttime"]);
 		}
 		if ($t>60) {
 			$t = (int) ($t/60);
-			return array("&gt; ". $t . " min(s) to start",$s["currenttime"]);
+			return array("&gt; ". $t . " minuto(s) para começar",$s["currenttime"]);
 		} else {
-			return array($t . " second(s) to start",$s["currenttime"]);
+			return array($t . " segundo(s) para começar",$s["currenttime"]);
 		}
 	}
 	if ($s["currenttime"]>=0) {
@@ -1415,17 +1421,17 @@ function siteclock() {
 		}
 		if ($t>60) {
 			$t = (int) ($t/60);
-			return array($str . $t . " min(s) left",$s["currenttime"]);
+			return array($str . $t . " minuto(s) restantes",$s["currenttime"]);
 		} else if($str=='') {
 			if ($t>0) {
-				return array($t . " second(s) left",$s["currenttime"]);
+				return array($t . " segundo(s) restantes",$s["currenttime"]);
 			} else {
 				$t = (int) (- $t/60);
-				return array($t . "min. of extra time",$s["currenttime"]);
+				return array($t . " min de tempo extra",$s["currenttime"]);
 			}
-		} else return array($str . " left",$s["currenttime"]);
+		} else return array($str . " restantes",$s["currenttime"]);
 	}
-	else return array("not started",-1000000000);
+	else return array("não iniciada",-1000000000);
 }
 // eof
 ?>

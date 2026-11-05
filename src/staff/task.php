@@ -44,7 +44,7 @@ if (isset($_GET["done"]) && is_numeric($_GET["done"]) && isset($_GET["site"]) &&
 <br>
   <script language="javascript">
     function conf2(url) {
-//      if (confirm("Confirm?")) {
+//      if (confirm("Confirmar?")) {
         document.location=url;
 //      } else {
 //        document.location='task.php';
@@ -53,13 +53,13 @@ if (isset($_GET["done"]) && is_numeric($_GET["done"]) && isset($_GET["site"]) &&
   </script>
 <table width="100%" border=1>
  <tr>
-  <td><b>Task #</b></td>
-  <td><b>Time</b></td>
-  <td><b>User / Site</b></td>
-  <td><b>Description</b></td>
-  <td><b>File</b></td>
+  <td><b>Pedido nº</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Usuário / local</b></td>
+  <td><b>Descrição</b></td>
+  <td><b>Arquivo</b></td>
   <td><b>Status</b></td>
-  <td><b>Actions</b></td>
+  <td><b>Ações</b></td>
  </tr>
 <?php
 if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
@@ -121,7 +121,7 @@ for ($i=0; $i<count($task); $i++) {
   echo "  <td nowrap>" . dateconvminutes($task[$i]["timestamp"]) . "</td>\n";
   echo "  <td nowrap>".$task[$i]["username"]."(" . $task[$i]["user"] . ") / ".$task[$i]["site"]."</td>\n";
 
-  echo "  <td>" . $task[$i]["description"];
+  echo "  <td>" . displayTaskDescription($task[$i]["description"]);
   if($task[$i]["color"] != "") {
 	  echo " <img alt=\"".$task[$i]["colorname"]."\" width=\"25\" ".
 		  "src=\"" . balloonurl($task[$i]["color"]) ."\" />";
@@ -134,7 +134,7 @@ for ($i=0; $i<count($task); $i++) {
     echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('../filewindow.php?".
 		filedownload($task[$i]["oid"],$task[$i]["filename"],$msg) .
 		"', 'Viewx$i','width=680,height=600,scrollbars=yes,toolbar=yes,".
-		"resizable=yes')\">view</a>";
+		"resizable=yes')\">ver</a>";
 	echo "</td>\n";
   }
 
@@ -148,21 +148,21 @@ for ($i=0; $i<count($task); $i++) {
   else if ($st == "opentask") $color="ffff88";
   else $color="ffffff";
 
-  echo "  <td nowrap bgcolor=\"#$color\">$st</td>\n  <td nowrap>";
+  echo "  <td nowrap bgcolor=\"#$color\">" . displayTaskStatus($st) . "</td>\n  <td nowrap>";
 
   if($st == "opentask")
     echo "  <a href=\"javascript: conf2('task.php?get=" . $task[$i]["number"] . "&site=" . 
-       $task[$i]["site"] . "')\">get</a>\n";
+       $task[$i]["site"] . "')\">assumir</a>\n";
   if($st == "processing" && $mine==1) {
     echo "  <a href=\"javascript: conf2('task.php?return=" . $task[$i]["number"] . "&site=" . 
-       $task[$i]["site"] . "')\">return</a>\n";
+       $task[$i]["site"] . "')\">devolver</a>\n";
     echo "  <a href=\"javascript: conf2('task.php?done=" . $task[$i]["number"] . "&site=" . 
-       $task[$i]["site"] . "')\">done</a>\n";
+       $task[$i]["site"] . "')\">concluir</a>\n";
   }
   echo "&nbsp;</td>\n";
 }
 echo "</table>";
-if (!$anyprinted) echo "<br><center><b><font color=\"#ff0000\">NO TASKS FOUND</font></b></center>";
+if (!$anyprinted) echo "<br><center><b><font color=\"#ff0000\">NENHUM PEDIDO ENCONTRADO</font></b></center>";
 
 ?>
 

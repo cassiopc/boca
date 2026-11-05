@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/maratona-linux/maratona-animeitor",
+  "commit": "1896b9df125392bb2daba64f71624aa7ae5f9d62",
+  "pygame": "2.6.1",
+  "license": "GPL; upstream LICENSE is preserved in the local clone"
+}

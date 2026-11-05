@@ -1,0 +1,64 @@
+---
+#========================================================================
+# Copyright Universidade Federal do Espirito Santo (Ufes)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# 
+# This program is released under license GNU GPL v3+ license.
+#
+#========================================================================
+
+version: '3.8'
+
+# example 1: using extension fields to reduce duplication
+x-env: &db-common
+    # database configuration
+    BOCA_DB_HOST: boca-postgres
+    # unprivileged boca user
+    BOCA_DB_USER: myuser
+    BOCA_DB_PASSWORD: mypass
+    BOCA_DB_NAME: mydb
+
+services:
+
+    # web app
+    boca-app:
+        image: ghcr.io/joaofazolo/boca-docker/boca-web:latest
+        environment:
+            # example 1: continuation...
+            <<: *db-common
+            # example 2: passing env vars directly in docker-compose
+            BOCA_DB_SUPER_USER: superuser
+            BOCA_DB_SUPER_PASSWORD: superpass
+            # example 3: passing specific env vars from file
+            BOCA_PASSWORD: ${BOCA_PASSWORD}
+            BOCA_KEY: ${BOCA_KEY}
+        ports: 
+            - 8000:80
+
+    # online judge
+    boca-jail:
+        image: ghcr.io/joaofazolo/boca-docker/boca-jail:latest
+        privileged: true
+        environment:
+            <<: *db-common
+            # web app
+            BOCA_WEB_HOST: boca-app
+
+    # database
+    boca-postgres:
+        image: postgres:14-alpine
+        # example 4: passing all env vars from file
+        env_file:
+            - .env2

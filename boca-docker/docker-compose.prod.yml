@@ -1,0 +1,55 @@
+---
+services:
+  boca-web:
+    image: ghcr.io/joaofazolo/boca-docker/boca-web:latest
+    depends_on:
+      - boca-db
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==manager
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+
+  boca-jail:
+    image: ghcr.io/joaofazolo/boca-docker/boca-jail:latest
+    depends_on:
+      - boca-db
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        max_replicas_per_node: 8
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+
+  boca-db:
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==manager
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 2048M
+        reservations:
+          cpus: '0.25'
+          memory: 1024M
+      restart_policy:
+        condition: on-failure

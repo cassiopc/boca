@@ -32,7 +32,7 @@ $runteam='team.php';
 $runphp = "runchief.php";
 $runeditphp = "runeditchief.php";
 
-echo "<html><head><title>Judge's Page</title>\n";
+echo "<html><head><title>Área do juiz</title>\n";
 echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
 echo "<link rel=stylesheet href=\"../Css.php\" type=\"text/css\">\n";
 
@@ -66,7 +66,7 @@ echo "<tr><td nowrap bgcolor=\"#$cc\" align=center>";
 echo "<img src=\"../images/smallballoontransp.png\" alt=\"\">";
 echo "<font color=\"#000000\">BOCA</font>";
 echo "</td><td bgcolor=\"#$cc\" width=\"99%\">\n";
-echo "Username: " . $_SESSION["usertable"]["username"] . " (site=".$_SESSION["usertable"]["usersitenumber"].")<br>\n";
+echo "Usuário: " . $_SESSION["usertable"]["username"] . " (sede=".$_SESSION["usertable"]["usersitenumber"].")<br>\n";
 list($clockstr,$clocktype)=siteclock();
 echo "</td><td bgcolor=\"#$cc\" align=center nowrap>&nbsp;".$clockstr."&nbsp;</td></tr>\n";
 echo "</table>\n";
@@ -86,22 +86,22 @@ $nc=count($clar);
 
 echo "<table border=0 width=\"100%\" align=center>\n";
 echo " <tr>\n";
-//echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=problem.php>Problems</a></td>\n";
+//echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=problem.php>Questões</a></td>\n";
 
-echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=run.php>Runs ($nr)</a></td>\n";
+echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=run.php>Submissões ($nr)</a></td>\n";
 if($isboss) {
-  echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=runchief.php>Chief ($nrchief)</a></td>\n";
+  echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=runchief.php>Juiz chefe ($nrchief)</a></td>\n";
 }
 {
-  echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=allrunlist.php>All runs </a></td>\n";
+  echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=allrunlist.php>Todas as submissões </a></td>\n";
 }
-echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=score.php>Score</a></td>\n";
-echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=clar.php>Clarifications ($nc)</a></td>\n";
+echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=score.php>Placar</a></td>\n";
+echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=clar.php>Dúvidas ($nc)</a></td>\n";
 
-echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=history.php>History</a></td>\n";
-echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=team.php>As Team</a></td>\n";
-echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=option.php>Options</a></td>\n";
-echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=../index.php>Logout</a></td>\n";
+echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=history.php>Histórico</a></td>\n";
+echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=team.php>Como equipe</a></td>\n";
+echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=option.php>Opções</a></td>\n";
+echo "  <td align=center width=\"10%\"><a class=menu style=\"font-weight:bold\" href=../index.php>Sair</a></td>\n";
 echo " </tr>\n"; 
 echo "</table>\n";
 ?>

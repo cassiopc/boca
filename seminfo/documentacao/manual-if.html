@@ -1,0 +1,610 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Guia visual de configuração e operação</title><style>body{font:17px/1.7 system-ui,sans-serif;color:#202b25;background:#f4f6f1;margin:0}main{max-width:1050px;margin:24px auto;background:white;padding:44px 56px;border:1px solid #dbe4d7}header{border-bottom:2px solid #397449;padding-bottom:22px;margin-bottom:30px}header img{width:290px;max-width:100%}h1{font-size:36px;line-height:1.25}h2{color:#2f663e;border-top:1px solid #d9e3d5;padding-top:26px;margin-top:38px;line-height:1.4}h3{font-size:21px;margin-top:30px}a{color:#225e35;text-underline-offset:3px}table{width:100%;border-collapse:collapse;font-size:15px;margin:20px 0}th,td{padding:12px;border:1px solid #d7e1d3;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eff5eb}tr:nth-child(even){background:#fafcf8}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3ed;padding:18px;border-left:3px solid #537a4d;font-size:14px}code{font-family:Consolas,monospace;font-size:.9em;overflow-wrap:anywhere}li{margin:9px 0}nav{padding:18px;background:#eef4e9}nav ul{padding-left:22px}footer{border-top:1px solid #d9e3d5;margin-top:35px;padding-top:20px;font-size:14px;color:#506156}@media(max-width:650px){main{padding:22px;margin:0;border:0}h1{font-size:29px}table{font-size:12px}td,th{padding:8px}}@media print{body{background:white}main{margin:0;border:0;padding:0;max-width:none}nav{display:none}h2{break-before:page}pre,table{font-size:10px}tr{break-inside:avoid}a{color:inherit}}main img{max-width:100%;height:auto}.page-break{break-before:page}</style><main><header><img src="recursos/if-goiano-urutai.png" alt="Instituto Federal Goiano - Campus Urutaí"><p>XIX SEMINFO 2026 | Documentação da organização</p></header><nav aria-label="Índice"><strong>Neste documento</strong><ul><li><a href="#capitulo-1">1. Comece aqui: atalhos, categoria e abas</a></li><li><a href="#capitulo-2">2. Preparação da sala: kit e rede</a></li><li><a href="#capitulo-3">3. Prova e questões: decidir os horários</a></li><li><a href="#capitulo-4">4. Criar um pacote de questão</a></li><li><a href="#capitulo-5">5. Importar ou editar as questões</a></li><li><a href="#capitulo-6">6. Testar as soluções de referência</a></li><li><a href="#capitulo-7">7. Registrar as seis homologações</a></li><li><a href="#capitulo-8">8. Abrir a sala e ativar a prova</a></li><li><a href="#capitulo-9">9. Receber e autorizar cada equipe</a></li><li><a href="#capitulo-10">10. Parear, projetar e publicar o placar</a></li><li><a href="#capitulo-11">11. Criar backup e recuperar</a></li><li><a href="#capitulo-12">12. BOCA: para que serve cada seção</a></li><li><a href="#capitulo-13">13. TI: instalar uma mesa a partir do kit</a></li><li><a href="#capitulo-14">14. TI: gravar, testar e distribuir USBs</a></li><li><a href="#capitulo-15">15. Resolver falhas e encerrar com segurança</a></li></ul></nav><h1>Guia visual SEMINFO 2026</h1>
+<p>Caramel Contest | IF Goiano - Campus Urutaí | Evento: 29/10/2026 | Texto revisado em 28/10/2026.</p>
+<h2 id="capitulo-1">1. Comece aqui: atalhos, categoria e abas</h2>
+<p><img alt="Tela 01 - mapa da central" src="recursos/telas-2026-10-18/recortes/01-mapa.png"/></p>
+<p><strong>1.</strong> Abra Docker Desktop. <strong>2.</strong> Abra o atalho adequado. <strong>3.</strong> Confira a categoria no topo antes de qualquer ação.</p>
+<table>
+<thead>
+<tr>
+<th>Controle</th>
+<th>Para que serve / o que fazer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configurar Provas SEMINFO</td>
+<td>Preparar horários e questões localmente. Não pede elevação do Windows.</td>
+</tr>
+<tr>
+<td>Central SEMINFO</td>
+<td>Operação completa, firewall, aprovação, ativação e backup. Aceite a permissão do Windows na conta da organização.</td>
+</tr>
+<tr>
+<td>Esta banca gerencia</td>
+<td>SI / Lab 3 ou TII / Lab 4. Cada mesa administra sua categoria. Trocar a seleção não inicia nem para serviços.</td>
+</tr>
+<tr>
+<td>Preparação da sala</td>
+<td>Rede, verificação, pareamento e seis homologações. Veja páginas 2 e 7.</td>
+</tr>
+<tr>
+<td>Prova e questões</td>
+<td>Horários, criação/importação e referências. Veja páginas 3 a 6.</td>
+</tr>
+<tr>
+<td>Operação da maratona</td>
+<td>Abrir a sala, receber equipes e acompanhar. Veja páginas 8 a 10.</td>
+</tr>
+<tr>
+<td>Backup e recuperação</td>
+<td>Copiar e verificar a recuperação. Veja página 11.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Mapa:</strong> BOCA: p. 12. Instalação pela TI: p. 13. Pendrives: p. 14. Falhas: p. 15.</p>
+<p><em>Capturas de 18/10; textos revisados em 28/10. A tela do cliente é de ensaio virtual. As imagens não contêm senhas.</em></p>
+<h2 id="capitulo-2">2. Preparação da sala: kit e rede</h2>
+<p><img alt="Tela 02 - dados de rede" src="recursos/telas-2026-10-18/recortes/02-rede.png"/></p>
+<p><strong>Caminho:</strong> Preparação da sala. Use somente os endereços confirmados pela TI.</p>
+<table>
+<thead>
+<tr>
+<th>Campo ou botão</th>
+<th>Preencher / executar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conferir pasta privada</td>
+<td>Confere o kit e preserva as chaves/senhas que os pendrives reconhecem.</td>
+</tr>
+<tr>
+<td>IP da mesa da banca</td>
+<td>IPv4 reservado do computador do professor. Não preencher com 0.0.0.0.</td>
+</tr>
+<tr>
+<td>Sub-rede da sala</td>
+<td>Rede com prefixo CIDR fornecida pela TI. Não copiar um exemplo como endereço real.</td>
+</tr>
+<tr>
+<td>IPs de outras mesas centrais ou projetores</td>
+<td>Somente acessos que venham de outra sub-rede; separar por vírgulas. Se não houver, deixar vazio.</td>
+</tr>
+<tr>
+<td>Salvar rede</td>
+<td>Salva os campos desta categoria. Exige banca parada e prova inativa/sem submissões.</td>
+</tr>
+<tr>
+<td>Executar verificação automática</td>
+<td>Confere contas, linguagens e executáveis do juiz. Aguarde a mensagem de aprovação.</td>
+</tr>
+<tr>
+<td>Instalar início automático e firewall nesta mesa…</td>
+<td>A TI instala após confirmar a rede; depois testa o logon e o firewall reais.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Se algo ficar pendente:</strong> salve apenas dados conhecidos. Você ainda pode preparar horários e questões; receber equipes e ativar continuam bloqueados.</p>
+<h2 id="capitulo-3">3. Prova e questões: decidir os horários</h2>
+<p><img alt="Tela 03 - formulário dos horários" src="recursos/telas-2026-10-18/recortes/03-horarios.png"/></p>
+<table>
+<thead>
+<tr>
+<th>Campo ou botão</th>
+<th>O que informar / resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Início em 29/10/2026</td>
+<td>Data e hora escolhidas para esta categoria, no horário de Brasília.</td>
+</tr>
+<tr>
+<td>Duração em minutos</td>
+<td>Duração total da prova; inteiro maior que zero. Não há duração presumida.</td>
+</tr>
+<tr>
+<td>Congelar quantos minutos antes do fim?</td>
+<td>Quantos minutos finais terão placar congelado. Zero = sem congelamento. Deve ser menor que a duração.</td>
+</tr>
+<tr>
+<td>Prévia</td>
+<td>Confira o horário calculado de término e de congelamento antes de salvar.</td>
+</tr>
+<tr>
+<td>Estes são os horários definitivos…</td>
+<td>Marque apenas quando a organização confirmar os valores. Desmarcado permite rascunho.</td>
+</tr>
+<tr>
+<td>Salvar horários</td>
+<td>Guarda os tempos desta categoria sem alterar a rede nem a outra categoria.</td>
+</tr>
+<tr>
+<td>Preparar prova…</td>
+<td>Aplica tempos e contas no BOCA; mantém a prova inativa. Leia e digite a confirmação solicitada.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Exemplo de cálculo, não configuração do evento:</strong> início 13h, duração 180 e congelamento 30 = término 16h e placar congelado a partir de 15h30.</p>
+<h2 id="capitulo-4">4. Criar um pacote de questão</h2>
+<p><strong>Caminho:</strong> Prova e questões → Abrir BOCA de preparação → aguardar “BOCA pronto” → Criar pacote de questão. Se aparecer login, entre como admin; o editor será aberto.</p>
+<table>
+<thead>
+<tr>
+<th>Campo ou botão</th>
+<th>O que informar / fazer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nome completo</td>
+<td>Título da questão.</td>
+</tr>
+<tr>
+<td>Basename / arquivo esperado</td>
+<td>Nome da classe Java; por exemplo, A para A.java.</td>
+</tr>
+<tr>
+<td>Tempo / Repetições</td>
+<td>Limite em segundos e número de execuções. Confira os limites com a banca.</td>
+</tr>
+<tr>
+<td>Memória e saída / Linguagens</td>
+<td>Informe os limites e selecione as linguagens permitidas.</td>
+</tr>
+<tr>
+<td>Enunciado</td>
+<td>Escolha o template LaTeX, um arquivo pronto ou texto manual. No template, preencha título, descrição, entrada, saída e observações.</td>
+</tr>
+<tr>
+<td>Casos de teste</td>
+<td>Informe entrada e saída esperada para cada caso. Os públicos aparecem no PDF; os opacos ficam apenas no pacote de julgamento. Use Adicionar caso para incluir outros.</td>
+</tr>
+<tr>
+<td>Pré-visualizar PDF / Gerar ZIP</td>
+<td>Confira o enunciado e gere o pacote. Limpar restaura o formulário.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Depois:</strong> guarde o ZIP e importe-o conforme a próxima página. Gerar o ZIP não cadastra a questão automaticamente na prova.</p>
+<h2 id="capitulo-5">5. Importar ou editar as questões</h2>
+<p><strong>Caminho:</strong> Prova e questões → Importar ZIP ou editar questões. Use os pacotes SI no SI e os pacotes TII no TII.</p>
+<table>
+<thead>
+<tr>
+<th>Campo ou botão</th>
+<th>O que informar / fazer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Número</td>
+<td>Número da questão: 1, 2, 3… Mantenha a sequência. O registro 0 é interno e não é uma questão da prova.</td>
+</tr>
+<tr>
+<td>Nome curto</td>
+<td>Letra sem espaços: A, B, C…</td>
+</tr>
+<tr>
+<td>Pacote da questão (ZIP)</td>
+<td>ZIP recebido da organização ou gerado no Builder.</td>
+</tr>
+<tr>
+<td>Nome da cor / Cor</td>
+<td>Nome e código RGB hexadecimal.</td>
+</tr>
+<tr>
+<td>Julgamento automático</td>
+<td>Selecione Todas as respostas, Personalizado ou Nenhuma, tanto ao cadastrar quanto ao editar uma questão.</td>
+</tr>
+<tr>
+<td>Enviar / Limpar</td>
+<td>Enviar importa o pacote; Limpar restaura os campos.</td>
+</tr>
+<tr>
+<td>Linha da questão</td>
+<td>Confira título, nome do arquivo, enunciado, pacote e cor. Para trocar enunciado, casos ou limites, reimporte o ZIP usando o mesmo número.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Atenção ao clique no número da questão:</strong> ele inicia a exclusão; não serve para abrir o editor. Não altere uma prova em andamento. Depois de importar, volte à central e atualize o diagnóstico.</p>
+<h2 id="capitulo-6">6. Testar as soluções de referência</h2>
+<p><img alt="Tela 06 - referências por questão" src="recursos/telas-2026-10-18/recortes/06-referencias.png"/></p>
+<p><strong>1.</strong> Importe a questão. <strong>2.</strong> Atualize o diagnóstico. <strong>3.</strong> Selecione a questão. <strong>4.</strong> Escolha as quatro referências e clique em <strong>Testar soluções no juiz</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Campo / resultado</th>
+<th>Como usar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Questão desta categoria</td>
+<td>Selecione o pacote que acabou de revisar. Sem questões importadas, os controles ficam desabilitados.</td>
+</tr>
+<tr>
+<td>Soluções em C, C++20, Java e Python 3</td>
+<td>Uma por linguagem: .c, .cpp, .java e .py/.py3. UTF-8, até 128 KiB por arquivo.</td>
+</tr>
+<tr>
+<td>Arquivo Java</td>
+<td>O nome da classe/arquivo deve corresponder ao Basename do pacote.</td>
+</tr>
+<tr>
+<td>Testar soluções no juiz</td>
+<td>Aguarde: o kit usa o pacote real num BOCA descartável. Não cria submissões nem pontuação na prova oficial.</td>
+</tr>
+<tr>
+<td>Aprovado / parcial / reprovado</td>
+<td>Quatro linguagens aceitas concluem a validação. Menos linguagens = parcial. Em falha, abra os detalhes, corrija e envie novamente.</td>
+</tr>
+<tr>
+<td>Validação desatualizada</td>
+<td>Revalide se trocar o pacote ou a versão do kit. As referências e relatórios entram no backup privado.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Antes de registrar Questões revisadas:</strong> todas as questões precisam das quatro referências aceitas. Confira também enunciado, cobertura dos casos e limites; um AC sozinho não garante a qualidade da questão.</p>
+<h2 id="capitulo-7">7. Registrar as seis homologações</h2>
+<p><strong>Caminho:</strong> Preparação da sala → Homologar os testes presenciais → Registrar ensaio executado…</p>
+<p><img alt="Tela 07 - registro do ensaio" src="recursos/telas-2026-10-18/recortes/07-homologacao.png"/></p>
+<table>
+<thead>
+<tr>
+<th>Ensaio</th>
+<th>O que comprovar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pendrive e linguagens</td>
+<td>USB no PC real, fundo estável, sessão sem sudo; C, C++20, Java 17 e Python 3.</td>
+</tr>
+<tr>
+<td>Trabalhos preservados</td>
+<td>Arquivo em ~/trabalhos continua após desligar e iniciar pelo mesmo USB.</td>
+</tr>
+<tr>
+<td>Rede e autorização</td>
+<td>Pedido, código, aprovação/revogação, expiração, bloqueio de internet/outro BOCA/vizinhos; IPv4/IPv6, firewall e logon reais.</td>
+</tr>
+<tr>
+<td>Projetores e placares</td>
+<td>Categoria correta, área estendida, congelamento/revelação, empates e igualdade com BOCA; independência da outra sala.</td>
+</tr>
+<tr>
+<td>Juiz e dez equipes</td>
+<td>AC/WA/CE/TLE, quatro linguagens e fila de dez equipes num ensaio separado da prova oficial.</td>
+</tr>
+<tr>
+<td>Questões revisadas</td>
+<td>Pacotes reais da categoria, referências aprovadas e revisão de enunciados, casos e limites.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>No formulário:</strong> informe responsável, computador e resultado observado. Marque “Executei…” somente após aprovação real e salve. A ficha impressa complementa o registro. Mudanças de configuração/versão exigem nova conferência.</p>
+<h2 id="capitulo-8">8. Abrir a sala e ativar a prova</h2>
+<p><img alt="Tela 08 - ações da operação" src="recursos/telas-2026-10-18/recortes/08-operacao.png"/></p>
+<table>
+<thead>
+<tr>
+<th>Controle</th>
+<th>Como usar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Atualizar diagnóstico</td>
+<td>Reconsulta Docker, serviços, horários e prova. “Equipes sem acesso” com IP pendente ainda não é sala pronta.</td>
+</tr>
+<tr>
+<td>Iniciar mesa</td>
+<td>Inicia BOCA, juiz e autorização. Aguarde “Banca funcionando”. Iniciar serviços não ativa a prova.</td>
+</tr>
+<tr>
+<td>Parar mesa…</td>
+<td>Interrompe o acesso; pede confirmação do laboratório. Use somente quando a parada estiver autorizada.</td>
+</tr>
+<tr>
+<td>Abrir solicitações da sala</td>
+<td>Abre a aprovação dos computadores desta categoria; veja página 9.</td>
+</tr>
+<tr>
+<td>Consultar contas e senhas…</td>
+<td>Com projeção desligada, confirme MOSTRAR SENHAS. A janela se oculta em um minuto; entregue só a conta daquela equipe.</td>
+</tr>
+<tr>
+<td>Revisar e ativar prova…</td>
+<td>Confira sala, rede, horários definitivos, questões, verificação e seis ensaios. Digite ATIVAR LAB 3 ou ATIVAR LAB 4 conforme a tela.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Se bloquear:</strong> corrija a pendência exibida. Não ative diretamente pelo BOCA para contornar a revisão. A abertura segue os horários configurados. Mantenha a sessão da organização e o Docker ligados.</p>
+<p><strong>Contas:</strong> equipe 1 = si01 ou tii01; o número interno de usuário no BOCA é outro. A conta admin é da banca e a conta placar é de consulta.</p>
+<h2 id="capitulo-9">9. Receber e autorizar cada equipe</h2>
+<p><img alt="Tela 09 - cliente Linux em ensaio virtual" src="recursos/telas-2026-10-18/16-cliente-ensaio-virtual.png"/></p>
+<p><em>Tela do cliente em ensaio virtual anterior. O IP 10.0.2.15 mostrado é do ensaio; use o IP real da sala. Não comprova homologação física.</em></p>
+<table>
+<thead>
+<tr>
+<th>Na máquina da equipe</th>
+<th>Na mesa da banca</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inicie pelo USB correto: SI ou TII.</td>
+<td>Confira sala, equipe, mídia e computador.</td>
+</tr>
+<tr>
+<td>Confira Meu IP; informe o IP da mesa e Número da equipe.</td>
+<td>Abra Abrir solicitações da sala → Atualizar solicitações.</td>
+</tr>
+<tr>
+<td>Clique em Solicitar acesso à mesa da banca.</td>
+<td>Compare equipe, IP observado e dispositivo com o computador presencial.</td>
+</tr>
+<tr>
+<td>Mostre à banca o código de oito caracteres.</td>
+<td>Digite o código no pedido correspondente → Conferir código e liberar.</td>
+</tr>
+<tr>
+<td>Aguarde Acesso liberado → Abrir BOCA.</td>
+<td>Entregue a conta si01…si10 ou tii01…tii10 da equipe.</td>
+</tr>
+<tr>
+<td>Salve os trabalhos em ~/trabalhos.</td>
+<td>Em troca de PC/IP ou reinício, Revogar acesso… antigo e confira o novo pedido/código.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Estados:</strong> pendente aguarda conferência; liberado permite só o BOCA da sala; revogado/expirado exige novo pedido. Não retire o USB com o Linux ligado. A outra banca aprova suas próprias equipes.</p>
+<h2 id="capitulo-10">10. Parear, projetar e publicar o placar</h2>
+<p><img alt="Tela 10 - pareamento das salas" src="recursos/telas-2026-10-18/recortes/10-pareamento.png"/></p>
+<table>
+<thead>
+<tr>
+<th>Controle</th>
+<th>O que fazer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adicionar esta sala à central</td>
+<td>Em Preparação da sala, adiciona a banca da categoria escolhida.</td>
+</tr>
+<tr>
+<td>Exportar pareamento desta sala…</td>
+<td>Gera o arquivo privado de consulta do placar. Entregue apenas à organização.</td>
+</tr>
+<tr>
+<td>Adicionar arquivo de outra sala</td>
+<td>Importa o descritor da outra banca; concede consulta do placar, não aprovação de equipes.</td>
+</tr>
+<tr>
+<td>Preparar central de salas / Abrir central de salas</td>
+<td>Em Operação, prepare o serviço e depois abra o painel.</td>
+</tr>
+<tr>
+<td>Graduação / SI · Lab 3 ou Médio/Técnico / TII · Lab 4</td>
+<td>Abra o placar correto, mova para o projetor em área estendida e use F11. Mantenha administração no monitor.</td>
+</tr>
+<tr>
+<td>Publicar resultado final…</td>
+<td>Após término e fila concluída, confira o resultado e digite PUBLICAR LAB 3 ou PUBLICAR LAB 4. Cada categoria publica independentemente.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Congelamento:</strong> oculta o progresso final no placar público; a banca acompanha pelo BOCA. Não existe classificação única entre os níveis. O placar oficial do BOCA resolve divergências.</p>
+<p><strong>Animeitor - TI:</strong> preparar uma vez com <code>python seminfo/manage.py animeitor</code>. Após o final conferido, <code>python seminfo/manage.py reveal si</code> (ou <code>tii</code>). Espaço avança; q sai. Ensaie antes de projetar.</p>
+<h2 id="capitulo-11">11. Criar backup e recuperar</h2>
+<p><img alt="Tela 11 - backups da categoria" src="recursos/telas-2026-10-18/recortes/11-backup.png"/></p>
+<table>
+<thead>
+<tr>
+<th>Campo ou botão</th>
+<th>O que fazer / conferir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Criar backup e verificar restauração</td>
+<td>Combine a breve pausa de web/juiz. Aguarde a cópia e o teste de restauração num banco separado.</td>
+</tr>
+<tr>
+<td>Backups desta sala</td>
+<td>Confira a categoria e a data. “Restauração isolada já conferida” indica que o teste foi aprovado.</td>
+</tr>
+<tr>
+<td>Verificar novamente</td>
+<td>Repete a conferência da cópia em banco isolado; não substitui a prova.</td>
+</tr>
+<tr>
+<td>Restaurar em destino vazio…</td>
+<td>Com apoio da TI, use instalação sem prova. Confirme RESTAURAR LAB 3 ou LAB 4 apenas no destino correto. A central recusa sobrescrever uma prova existente.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Guardar:</strong> copie a pasta inteira de <code>seminfo/backups</code>, incluindo manifesto, referências, credenciais e identidade, para outra mídia protegida. Não copie somente database.dump. Preserve também o kit e a pasta privada correspondente à ISO.</p>
+<p><strong>Após recuperar:</strong> confira IP, relógio, BOCA, juiz, aprovação e placar antes de retomar. Avise a coordenação e registre a ocorrência. A outra categoria segue independente.</p>
+<h2 id="capitulo-12">12. BOCA: para que serve cada seção</h2>
+<table>
+<thead>
+<tr>
+<th>Seção</th>
+<th>Uso na rotina</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Submissões</td>
+<td>Confira número, equipe, tempo, questão, linguagem, estado, juiz e resposta. Clique no cabeçalho para ordenar.</td>
+</tr>
+<tr>
+<td>Placar / Dúvidas</td>
+<td>Consulte a classificação e responda às dúvidas conforme as regras da coordenação.</td>
+</tr>
+<tr>
+<td>Usuários</td>
+<td>Gerencie contas e dados das equipes. Entregue senhas pela central reservada.</td>
+</tr>
+<tr>
+<td>Questões / Criar questão / Linguagens</td>
+<td>Importe ou crie pacotes e confira as linguagens antes da prova.</td>
+</tr>
+<tr>
+<td>Respostas</td>
+<td>Tipos de resultado usados pelo juiz; não altere durante a prova.</td>
+</tr>
+<tr>
+<td>Ajuda e impressão / Local</td>
+<td>Pedidos de ajuda e impressão e configuração da sede, para a banca e TI.</td>
+</tr>
+<tr>
+<td>Competição / Diversos</td>
+<td>Parâmetros e ações administrativas. Defina tempos e ative pela Central SEMINFO.</td>
+</tr>
+<tr>
+<td>Registros / Relatórios / Backups</td>
+<td>Auditoria e arquivos do BOCA. Para recuperação completa, use Backup e recuperação da central.</td>
+</tr>
+<tr>
+<td>Opções / Sair</td>
+<td>Preferências e saída da conta. Não feche a sessão Windows da organização durante a prova.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultados:</strong> YES/AC = aceito; WA = resposta errada; CE = erro de compilação; RE = erro de execução; TLE = tempo excedido; PE = apresentação; NMI = nome/classe divergente; CS = contatar a banca. A opção de julgamento automático na tela de questões determina quais resultados são tratados automaticamente.</p>
+<h2 id="capitulo-13">13. TI: instalar uma mesa a partir do kit</h2>
+<p><strong>Uma mesa Windows por categoria.</strong> Use Python 3.12, Docker Desktop com containers Linux e a conta da organização. No Lab 4, troque <code>si</code> por <code>tii</code>. Execute os comandos na raiz do projeto.</p>
+<table>
+<thead>
+<tr>
+<th>Passo</th>
+<th>Fazer / resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Copiar</td>
+<td>Kit completo para pasta estável; preservar <code>seminfo/local/si</code> ou <code>tii</code>, com identidade correspondente aos USBs.</td>
+</tr>
+<tr>
+<td>2. Conferir</td>
+<td>Compare SHA256 do TAR com <code>seminfo/dist/server-bundle.json</code>. Não carregue pacote divergente.</td>
+</tr>
+<tr>
+<td>3. Carregar e conferir</td>
+<td>Execute o bloco abaixo. init deve preservar a identidade recebida; pare se a pasta privada estiver incompleta.</td>
+</tr>
+<tr>
+<td>4. Abrir os atalhos</td>
+<td>Configure rede (p. 2), tempos (p. 3), questões/referências (p. 4-6) e homologue (p. 7).</td>
+</tr>
+<tr>
+<td>5. Preparar banco</td>
+<td>Em instalação nova, use stage abaixo. Deploy antigo exige migrate com backup/restauração conferidos.</td>
+</tr>
+<tr>
+<td>6. Firewall/logon</td>
+<td>Na central completa, Instalar início automático e firewall nesta mesa…; teste na mesa real. Inicia no logon do organizador e aguarda Docker.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-powershell">python --version
+docker version
+docker compose version
+Get-FileHash seminfo/dist/seminfo-server-images.tar -Algorithm SHA256
+docker load -i seminfo/dist/seminfo-server-images.tar
+python seminfo/manage.py init si
+powershell -NoProfile -ExecutionPolicy Bypass -File seminfo/install-organizer-shortcut.ps1
+python seminfo/manage.py stage si
+</code></pre>
+<p><strong>Portas:</strong> equipes <code>http://IP-DA-MESA:8000/boca/</code>; autorização TLS 8443; BOCA local 18000; aprovações locais 17860; placares locais 17861; central completa 17862; preparação local 17864. Acessos administrativos são somente na mesa.</p>
+<p><strong>Não reconstruir na instalação:</strong> <code>build-server</code> é para uma nova versão. Nunca gere outra identidade e continue usando USBs que reconhecem a anterior.</p>
+<h2 id="capitulo-14">14. TI: gravar, testar e distribuir USBs</h2>
+<p><strong>Necessário:</strong> PC amd64, 8 GB de RAM ou mais, boot USB e modo Secure Boot homologado pela TI; pendrive de 32 GB ou mais. Separe dez mídias de equipe e uma reserva por sala.</p>
+<table>
+<thead>
+<tr>
+<th>Sala</th>
+<th>ISO atualizada em seminfo/dist/clients-refresh-20261028</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SI / Lab 3</td>
+<td>si/ml-seminfo-lab3-si-atualizada.iso</td>
+</tr>
+<tr>
+<td>TII / Lab 4</td>
+<td>tii/ml-seminfo-lab4-tii-atualizada.iso</td>
+</tr>
+</tbody>
+</table>
+<p>Confira o .iso.sha256 correspondente. As imagens estão no kit local, não no Git; o link antigo é de outra versão. O teste de boot físico ainda está pendente.</p>
+<p><strong>Em Linux, pela TI:</strong> identifique modelo, série e dispositivo físico antes de gravar. A gravação apaga o USB escolhido; <code>/dev/sdX</code> é apenas um marcador a substituir pelo dispositivo conferido.</p>
+<pre><code class="language-bash">lsblk -d -o NAME,MODEL,SERIAL,SIZE,TRAN
+lsblk -o NAME,SIZE,FSTYPE,LABEL,MOUNTPOINTS
+sudo bash seminfo/client/write-usb.sh --device /dev/sdX /caminho/ISO-DA-SALA.iso
+</code></pre>
+<ol>
+<li>Desmonte as partições do USB. Confira modelo/série e digite o caminho exato solicitado pelo script.</li>
+<li>Aguarde SHA256, gravação, comparação e criação de <code>home-rw</code>. Uma gravação comum de ISO pode não criar a persistência.</li>
+<li>Teste um piloto por variante no PC real. Execute <code>seminfo-verify --offline</code>; depois da aprovação de rede, execute <code>seminfo-verify</code> completo.</li>
+<li>Crie um arquivo em <code>~/trabalhos</code>, desligue e inicie pelo mesmo USB. Confira arquivo, compiladores, aprovação e bloqueios.</li>
+<li>Só então grave as demais mídias a partir da ISO limpa. Não clone a /home de um USB já usado: cada dispositivo precisa de identidade própria.</li>
+<li>Etiquete SI-01…SI-10, SI-RESERVA, TII-01…TII-10 e TII-RESERVA; preencha <code>inventario-pendrives.csv</code>.</li>
+</ol>
+<p><strong>Fundo:</strong> a ISO atualizada usa Espresso para SI e Claro para TII, de forma fixa. Os trabalhos persistem em /home; não há persistência geral do sistema.</p>
+<h2 id="capitulo-15">15. Resolver falhas e encerrar com segurança</h2>
+<p><img alt="Tela 13 - diagnóstico dos serviços" src="recursos/telas-2026-10-18/recortes/14-diagnostico.png"/></p>
+<table>
+<thead>
+<tr>
+<th>Situação</th>
+<th>Próxima ação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Central não abre / sessão encerrada</td>
+<td>Abra novamente o atalho correto. Aguarde Docker. Leia a mensagem e não abra tarefas repetidas.</td>
+</tr>
+<tr>
+<td>Criador/importação desabilitado</td>
+<td>Prova e questões → Abrir BOCA de preparação; aguarde BOCA pronto. Na mesma máquina, feche uma categoria antes de abrir a outra.</td>
+</tr>
+<tr>
+<td>Iniciar mesa desabilitado</td>
+<td>Confirme a rede com a TI. Horários/questões ainda podem ser preparados localmente.</td>
+</tr>
+<tr>
+<td>Juiz não instalado/parado</td>
+<td>No modo de preparação pode estar parado. Para receber equipes, a TI deve verificar a instalação e o início completo da mesa.</td>
+</tr>
+<tr>
+<td>Código recusado ou equipe sem acesso</td>
+<td>Confira sala, IP, dispositivo e código atual. Reabra o pedido após reinício/troca. Não libere internet para contornar.</td>
+</tr>
+<tr>
+<td>Referência reprovada</td>
+<td>Abra detalhes; revise código, classe Java, saídas, limites e pacote; reenvie o conjunto completo.</td>
+</tr>
+<tr>
+<td>USB não preserva arquivo</td>
+<td>Não distribua. Refazer gravação/persistência e repetir o desligamento no hardware real.</td>
+</tr>
+<tr>
+<td>Placar divergente/indisponível</td>
+<td>Use o Placar do BOCA da categoria. A outra sala não deve depender desta falha.</td>
+</tr>
+<tr>
+<td>Falha durante cópia/restauração</td>
+<td>Chame a TI com a mensagem e a categoria. Não trate operação interrompida como concluída nem restaure sobre prova ocupada.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>No fim:</strong> concluir julgamentos/rejulgamentos → conferir o Placar → publicar por categoria → revelar, se planejado → criar backup conferido → copiar para outra mídia → registrar ocorrências.</p>
+<p><strong>Arquivos de apoio:</strong> <code>dados-evento.csv</code>, <code>ocorrencias.csv</code>, <code>inventario-pendrives.csv</code> e a ficha de homologação. IPs, tempos, questões e ensaios presenciais ainda pendentes devem ser concluídos pela organização. Este manual não concede aprovação.</p><footer>Texto revisado em 28/10/2026. Capturas históricas de 18/10; valores pendentes continuam para decisão da organização.</footer></main></html>

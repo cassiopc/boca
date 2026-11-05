@@ -1,0 +1,48 @@
+---
+services:
+  boca-web:
+    environment:
+      - BOCA_DB_SUPER_PASSWORD=${BOCA_DB_SUPER_PASSWORD:?defina BOCA_DB_SUPER_PASSWORD em boca-docker/.env}
+      - BOCA_DB_PASSWORD=${BOCA_DB_PASSWORD:?defina BOCA_DB_PASSWORD em boca-docker/.env}
+      - BOCA_PASSWORD=${BOCA_PASSWORD:?defina BOCA_PASSWORD em boca-docker/.env}
+      - BOCA_KEY=${BOCA_KEY:?defina BOCA_KEY em boca-docker/.env}
+      - BOCA_JAIL_HOST=${BOCA_JAIL_HOST:-localhost}
+    ports:
+      - 8000:80
+    volumes:
+      - ./php/uploads.ini:/etc/php/8.1/apache2/conf.d/99-boca-uploads.ini:ro
+
+  boca-jail:
+    privileged: true
+    environment:
+      - BOCA_DB_SUPER_PASSWORD=${BOCA_DB_SUPER_PASSWORD:?defina BOCA_DB_SUPER_PASSWORD em boca-docker/.env}
+      - BOCA_DB_PASSWORD=${BOCA_DB_PASSWORD:?defina BOCA_DB_PASSWORD em boca-docker/.env}
+      - BOCA_PASSWORD=${BOCA_PASSWORD:?defina BOCA_PASSWORD em boca-docker/.env}
+      - BOCA_KEY=${BOCA_KEY:?defina BOCA_KEY em boca-docker/.env}
+      - BOCA_JAIL_HOST=${BOCA_JAIL_HOST:-localhost}
+
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - boca-db
+    ports:
+      - 127.0.0.1:3001:3000
+    environment:
+      - BOCA_DB_PASSWORD=${BOCA_DB_PASSWORD:?defina BOCA_DB_PASSWORD em boca-docker/.env}
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER:?defina GF_SECURITY_ADMIN_USER em boca-docker/.env}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:?defina GF_SECURITY_ADMIN_PASSWORD em boca-docker/.env}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/boca-analytics.json
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    restart: unless-stopped
+
+  boca-db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD em boca-docker/.env}
+
+volumes:
+  grafana-data:

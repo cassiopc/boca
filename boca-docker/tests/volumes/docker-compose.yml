@@ -1,0 +1,77 @@
+---
+#========================================================================
+# Copyright Universidade Federal do Espirito Santo (Ufes)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# 
+# This program is released under license GNU GPL v3+ license.
+#
+#========================================================================
+
+version: '3.8'
+
+services:
+
+    # web app
+    boca-web:
+        image: ghcr.io/joaofazolo/boca-docker/boca-web:latest
+        environment:
+            # database configuration
+            # privileged user password
+            - BOCA_DB_SUPER_PASSWORD=superpass
+        ports: 
+            - 8000:80
+
+    # online judge
+    boca-jail:
+        image: ghcr.io/joaofazolo/boca-docker/boca-jail:latest
+        privileged: true
+
+    # database
+    boca-db:
+        image: postgres:14-alpine
+        environment:
+            # database configuration
+            # privileged user password
+            - POSTGRES_PASSWORD=superpass
+            # this optional variable can be used to define another location -
+            # like a subdirectory - for the database files. The default is
+            # /var/lib/postgresql/data. If the data volume you're using is a
+            # filesystem mountpoint (like with GCE persistent disks) or remote
+            # folder that cannot be chowned to the postgres user (like some 
+            # NFS mounts), Postgres initdb recommends a subdirectory be created
+            # to contain the data.
+            - PGDATA=/var/lib/postgresql/data/pgdata
+        volumes:
+            # volume mount to container's fs
+            - boca-data:/var/lib/postgresql/data
+
+volumes:
+
+    # example 1: when launching boca-docker for the first time Docker will 
+    # create a named volume (boca-data). Onwards every time one brings the
+    # application down and then rerun it `docker compose` will try to create
+    # a volume named `boca-data` but it would notice that a volume with that
+    # name already exists for this compose file. Then it will helpfully mount
+    # the same volume again.
+    boca-data:
+
+    # example 2: conversely, one can create and manage a volume outside of the
+    # docker-compose file. For that, it's necessary to create it first using 
+    # the`docker volume create boca-data` command, declare it in the compose
+    # file under volumes and set the property `external: true`. Then, when 
+    # launching the application Docker will find out if the volume exists; but
+    # if it doesn’t, an error will be reported.
+    # boca-data:
+    #     external: true

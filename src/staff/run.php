@@ -36,17 +36,17 @@ $runphp="run.php";
 <br>
 <table width="100%" border=1>
  <tr>
-  <td><b><a href="<?php echo $runphp; ?>?order=run">Run #</a></b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=site">Site</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=run">Submissão nº</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=site">Sede</a></b></td>
 <?php if($runphp == "run.php") { ?>
-  <td><b><a href="<?php echo $runphp; ?>?order=user">User</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=user">Usuário</a></b></td>
 <?php } ?>
-  <td><b>Time</b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=problem">Problem</a></b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=language">Language</a></b></td>
-<!--  <td><b>Filename</b></td> -->
+  <td><b>Tempo</b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=problem">Questão</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=language">Linguagem</a></b></td>
+<!--  <td><b>Nome do arquivo</b></td> -->
   <td><b><a href="<?php echo $runphp; ?>?order=status">Status</a></b></td>
-  <td><b><a href="<?php echo $runphp; ?>?order=answer">Answer</a></b></td>
+  <td><b><a href="<?php echo $runphp; ?>?order=answer">Resposta</a></b></td>
  </tr>
 <?php
 if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"])) == null)
@@ -57,11 +57,11 @@ if (($s=DBSiteInfo($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"
 //exit;
 echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/stat.php', ".
                 "'Problem Statistics','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-                "resizable=yes')\">Statistics</a><br />\n";
+                "resizable=yes')\">Estatísticas</a><br />\n";
 //if($_SESSION['usertable']['username']=='staffnoco999') {
 echo " <a href=\"#\" class=menu style=\"font-weight:bold\" onClick=\"window.open('report/score.php?p=0&hor=0', ".
                 "'Complete Scoreboard','width=800,height=600,scrollbars=yes,toolbar=yes,menubar=yes,".
-                "resizable=yes')\">Interactive Scoreboard</a><br />\n";
+                "resizable=yes')\">Placar interativo</a><br />\n";
 //}
 
 if (trim($s["sitejudging"])!="") $s["sitejudging"].=",".$_SESSION["usertable"]["usersitenumber"];
@@ -147,7 +147,7 @@ echo $run[$i]["number"] . "</td>";
   else if ($run[$i]["status"] == "openrun") $color="ffff88";
   else $color="ffffff";
 
-  echo "  <td nowrap bgcolor=\"#$color\">" . $run[$i]["status"] . "</td>\n";
+  echo "  <td nowrap bgcolor=\"#$color\">" . displayRunStatus($run[$i]["status"]) . "</td>\n";
 /*  
 if ($run[$i]["judge"] != "") {
 	$u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["judgesite"], $run[$i]["judge"]);
@@ -177,7 +177,7 @@ if ($run[$i]["judge"] != "") {
   if ($run[$i]["answer"] == "") {
     echo "  <td>&nbsp;</td>\n";
   } else {
-    echo "  <td>" . $run[$i]["answer"];
+    echo "  <td>" . displayRunAnswer($run[$i]["answer"]);
     if($run[$i]['yes']=='t') {
           echo " <img alt=\"".$run[$i]["colorname"]."\" width=\"10\" ".
 			  "src=\"" . balloonurl($run[$i]["color"]) ."\" />";
@@ -188,13 +188,13 @@ if ($run[$i]["judge"] != "") {
 }
 
 echo "</table>";
-//if (!$anyprinted) echo "<br><center><b><font color=\"#ff0000\">NO RUNS AVAILABLE</font></b></center>";
+//if (!$anyprinted) echo "<br><center><b><font color=\"#ff0000\">NENHUMA SUBMISSÃO DISPONÍVEL</font></b></center>";
 //else {
 ?>
   <br>
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }

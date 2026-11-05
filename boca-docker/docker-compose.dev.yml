@@ -1,0 +1,59 @@
+---
+#========================================================================
+# Copyright Universidade Federal do Espirito Santo (Ufes)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# 
+# This program is released under license GNU GPL v3+ license.
+#
+#========================================================================
+
+services:
+
+    boca-base:
+        image: boca-base:latest
+        build: 
+            context: .
+            dockerfile: docker/dev/base/Dockerfile
+
+    boca-web:
+        image: boca-web:latest
+        build: 
+            context: .
+            dockerfile: docker/dev/web/Dockerfile
+        # CAUTION: this bind mount will overwrite BOCA website.
+        # For future development...
+        # volumes:
+        #     - ./src:/var/www/boca/src
+
+    boca-jail:
+        image: boca-jail:latest
+        build: 
+            context: .
+            dockerfile: docker/dev/jail/Dockerfile
+
+    # boca-db:
+    #     volumes: 
+    #         - db-data:/var/lib/postgresql/data
+
+    boca-adminer:
+        image: adminer:latest
+        environment:
+            - ADMINER_DEFAULT_SERVER=boca-db
+        ports:
+            - 8080:8080
+
+# volumes:
+#
+#     db-data:

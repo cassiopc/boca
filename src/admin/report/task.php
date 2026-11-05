@@ -20,15 +20,15 @@ require('header.php');
 
 ?>
 <br>
-<center><h2>Task List</h2></center>
+<center><h2>Lista de pedidos</h2></center>
 <table width="100%" border=1>
  <tr>
   <td><b>#</b></td>
-  <td><b>Time</b></td>
-  <td><b>User / Site</b></td>
-  <td><b>Description</b></td>
-  <td><b>File</b></td>
-  <td><b>Staff / Site</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Usuário / local</b></td>
+  <td><b>Descrição</b></td>
+  <td><b>Arquivo</b></td>
+  <td><b>Equipe de apoio / sede</b></td>
   <td><b>Status</b></td>
  </tr>
 <?php
@@ -46,7 +46,7 @@ for ($i=0; $i<count($task); $i++) {
   echo "  <td nowrap>" . $task[$i]["number"] . "</td>\n";
   echo "  <td nowrap>" . dateconvminutes($task[$i]["timestamp"]) . "</td>\n";
   echo "  <td nowrap>".$task[$i]["username"]." / ".$task[$i]["site"]."</td>\n";
-  echo "  <td>" . $task[$i]["description"] . "</td>\n";
+  echo "  <td>" . displayTaskDescription($task[$i]["description"]) . "</td>\n";
   if ($task[$i]["oid"] != null) {
     echo "  <td nowrap>" . $task[$i]["filename"];
              echo "</td>\n";
@@ -59,10 +59,10 @@ for ($i=0; $i<count($task); $i++) {
   else
     echo "  <td nowrap>&nbsp;</td>\n";
 
-  echo "  <td nowrap>$st</td>\n";
+  echo "  <td nowrap>" . displayTaskStatus($st) . "</td>\n";
 }
 echo "</table>";
-if (count($task) == 0) echo "<br><center><b><font color=\"#ff0000\">NO TASKS FOUND</font></b></center>";
+if (count($task) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUM PEDIDO ENCONTRADO</font></b></center>";
 
 include("$locr/footnote.php");
 ?>

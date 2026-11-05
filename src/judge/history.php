@@ -23,12 +23,12 @@ require('header.php');
 <br>
 <table width="100%" border=1>
  <tr>
-  <td><b>Clar # (site)</b></td>
-  <td><b>Time</b></td>
-  <td><b>Problem</b></td>
+  <td><b>Dúvida nº (sede)</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Questão</b></td>
   <td><b>Status</b></td>
-  <td><b>Question</b></td>
-  <td><b>Answer</b></td>
+  <td><b>Pergunta</b></td>
+  <td><b>Resposta</b></td>
  </tr>
 <?php
 $clar = DBAllClarsInSites($_SESSION["usertable"]["contestnumber"],  $s["sitejudging"], "clar");
@@ -46,8 +46,8 @@ for ($i=0; $i<count($clar); $i++) {
   else
     echo "  <td nowrap>" . $clar[$i]["number"] . "(" . $clar[$i]["site"] . ")</td>\n";
   echo "  <td nowrap>" . dateconvminutes($clar[$i]["timestamp"]) . "</td>\n";
-  echo "  <td nowrap>" . $clar[$i]["problem"] . "</td>\n";
-  echo "  <td nowrap>" . $clar[$i]["status"] . "</td>\n";
+  echo "  <td nowrap>" . displayClarProblem($clar[$i]["problem"], $clar[$i]["problemnumber"]) . "</td>\n";
+  echo "  <td nowrap>" . displayClarStatus($clar[$i]["status"]) . "</td>\n";
   if ($clar[$i]["question"] == "") $clar[$i]["question"] = "&nbsp;";
   if ($clar[$i]["answer"] == "") $clar[$i]["answer"] = "&nbsp;";
 
@@ -56,7 +56,7 @@ for ($i=0; $i<count($clar); $i++) {
 //  echo $clar[$i]["question"];
   echo "  <textarea name=\"m$i\" cols=\"60\" rows=\"8\" readonly>". unsanitizeText($clar[$i]["question"]) ."</textarea>\n";
   echo "</td>\n";
-  if (trim($clar[$i]["answer"]) == "") $clar[$i]["answer"] = "Not answered yet";
+  if (trim($clar[$i]["answer"]) == "") $clar[$i]["answer"] = "Ainda sem resposta";
   echo "  <td>";
 //  echo "  <pre>" . $clar[$i]["answer"] . "</pre>";
 //  echo $clar[$i]["answer"];
@@ -66,19 +66,19 @@ for ($i=0; $i<count($clar); $i++) {
   echo " </tr>\n";
 }
 echo "</table>";
-if (count($clar) == 0) echo "<br><center><b><font color=\"#ff0000\">NO CLARIFICATIONS AVAILABLE</font></b></center>";
-else echo "<br><b><font color=\"#b0b0a0\">* Shadowed clars and runs were judged by this judge</font></b>";
+if (count($clar) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA DÚVIDA DISPONÍVEL</font></b></center>";
+else echo "<br><b><font color=\"#b0b0a0\">* Dúvidas e submissões destacadas foram julgadas por este juiz</font></b>";
 
 ?>
 <br><br>
 <table width="100%" border=1>
  <tr>
-  <td><b>Run #</b></td>
-  <td><b>Time</b></td>
-  <td><b>Problem</b></td>
-  <td><b>Language</b></td>
+  <td><b>Submissão nº</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Questão</b></td>
+  <td><b>Linguagem</b></td>
   <td><b>Status</b></td>
-  <td><b>Answer</b></td>
+  <td><b>Resposta</b></td>
  </tr>
 <?php
 $run = DBAllRunsInSites($_SESSION["usertable"]["contestnumber"],
@@ -106,22 +106,22 @@ for ($i=0; $i<count($run); $i++) {
   echo "  <td nowrap>" . dateconvminutes($run[$i]["timestamp"]) . "</td>\n";
   echo "  <td nowrap>" . $run[$i]["problem"] . "</td>\n";
   echo "  <td nowrap>" . $run[$i]["language"] . "</td>\n";
-  echo "  <td nowrap>" . $run[$i]["status"] . "</td>\n";
+  echo "  <td nowrap>" . displayRunStatus($run[$i]["status"]) . "</td>\n";
   if ($run[$i]["answer"] == "") $run[$i]["answer"] = "&nbsp;";
-  echo "  <td>" . $run[$i]["answer"] . "</td>\n";
+  echo "  <td>" . displayRunAnswer($run[$i]["answer"]) . "</td>\n";
   echo " </tr>\n";
 }
 echo "</table>";
-if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NO RUNS AVAILABLE</font></b></center>";
+if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA SUBMISSÃO DISPONÍVEL</font></b></center>";
 
 echo "<br><br>\n";
-echo "My answered clars: " . $myclars . "/" . count($clar) . " (";
+echo "Dúvidas respondidas por mim: " . $myclars . "/" . count($clar) . " (";
 if(count($clar)>0) echo ((int) ($myclars*1000/count($clar)))/10 . "%)<br>\n";
 else echo "0%)<br>\n";
-echo "My judged runs: " . $myruns . "/" . count($run) ." (";
+echo "Submissões julgadas por mim: " . $myruns . "/" . count($run) ." (";
 if(count($run)>0) echo ((int) ($myruns*1000/count($run)))/10 . "%)<br>\n";
 else echo "0%)<br>\n";
-echo "Accepted runs that I've judged: " . $myyes . "/" . $yes . " (";
+echo "Submissões aceitas que julguei: " . $myyes . "/" . $yes . " (";
 if($yes>0) echo ((int) ($myyes*1000/$yes))/10 ."%)<br>\n";
 else echo "0%)<br>\n";
 ?>

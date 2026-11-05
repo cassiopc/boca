@@ -1,0 +1,365 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": true, "text": "X1 dos cria do Caramel", "value": "1" },
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+        "definition": "SELECT c.contestnumber AS __value, COALESCE(NULLIF(c.contestname, ''), 'Contest ' || c.contestnumber::text) AS __text FROM contesttable c WHERE c.contestnumber > 0 ORDER BY CASE WHEN c.contestactive = true THEN 0 WHEN EXISTS (SELECT 1 FROM runtable r WHERE r.contestnumber = c.contestnumber AND r.runstatus != 'deleted') THEN 1 ELSE 2 END, c.contestnumber DESC;",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Contest",
+        "multi": false,
+        "name": "contest_numero",
+        "options": [],
+        "query": "SELECT c.contestnumber AS __value, COALESCE(NULLIF(c.contestname, ''), 'Contest ' || c.contestnumber::text) AS __text FROM contesttable c WHERE c.contestnumber > 0 ORDER BY CASE WHEN c.contestactive = true THEN 0 WHEN EXISTS (SELECT 1 FROM runtable r WHERE r.contestnumber = c.contestnumber AND r.runstatus != 'deleted') THEN 1 ELSE 2 END, c.contestnumber DESC;",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": { "selected": true, "text": "All", "value": "$__all" },
+        "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+        "definition": "SELECT username FROM usertable WHERE contestnumber = ${contest_numero} AND usertype = 'team' AND userenabled = true ORDER BY username;",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Time",
+        "multi": true,
+        "name": "times_equipe",
+        "options": [],
+        "query": "SELECT username FROM usertable WHERE contestnumber = ${contest_numero} AND usertype = 'team' AND userenabled = true ORDER BY username;",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "green", "value": null}] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "title": "Total de Submissoes",
+      "type": "stat",
+      "targets": [{
+        "rawSql": "SELECT COUNT(*) AS total FROM runtable r JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote});",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "green", "value": null}] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "id": 2,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "title": "Aceitas (YES)",
+      "type": "stat",
+      "targets": [{
+        "rawSql": "SELECT COUNT(*) AS aceitas FROM runtable r JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND a.yes = true AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote});",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "red", "value": null}] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "id": 3,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "title": "Rejeitadas (NO)",
+      "type": "stat",
+      "targets": [{
+        "rawSql": "SELECT COUNT(*) AS rejeitadas FROM runtable r JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND a.yes = false AND a.fake = false AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote});",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "blue", "value": null}] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "id": 4,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "title": "Times Ativos",
+      "type": "stat",
+      "targets": [{
+        "rawSql": "SELECT COUNT(*) AS times FROM usertable WHERE contestnumber = ${contest_numero} AND usertype = 'team' AND userenabled = true;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "purple", "value": null}] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "id": 5,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "title": "Problemas",
+      "type": "stat",
+      "targets": [{
+        "rawSql": "SELECT COUNT(*) AS problemas FROM problemtable WHERE contestnumber = ${contest_numero} AND fake = false;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "orange", "value": null}] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "id": 6,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "title": "Taxa de Acerto (%)",
+      "type": "stat",
+      "targets": [{
+        "rawSql": "SELECT CASE WHEN COUNT(*) = 0 THEN 0 ELSE ROUND(100.0 * SUM(CASE WHEN a.yes = true THEN 1 ELSE 0 END) / COUNT(*), 1) END AS taxa FROM runtable r JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND a.fake = false AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote});",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "fillOpacity": 80, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineWidth": 1, "scaleDistribution": { "type": "linear" }, "thresholdsStyle": { "mode": "off" } }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 4 },
+      "id": 10,
+      "options": { "barRadius": 0.1, "barWidth": 0.7, "fullHighlight": false, "groupWidth": 0.7, "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "orientation": "horizontal", "showValue": "always", "stacking": "none", "tooltip": { "mode": "single", "sort": "none" }, "xTickLabelRotation": 0 },
+      "title": "Distribuicao de Erros por Tipo",
+      "type": "barchart",
+      "targets": [{
+        "rawSql": "SELECT a.shortname AS tipo, COUNT(*) AS quantidade FROM runtable r JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND a.fake = false AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote}) GROUP BY a.shortname, a.answernumber ORDER BY a.answernumber;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 6, "x": 12, "y": 4 },
+      "id": 11,
+      "options": { "legend": { "displayMode": "list", "placement": "right" }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": true }, "tooltip": { "mode": "single", "sort": "none" } },
+      "title": "Acertos vs Erros",
+      "type": "piechart",
+      "targets": [{
+        "rawSql": "SELECT CASE WHEN a.yes = true THEN 'Aceito' ELSE 'Rejeitado' END AS resultado, COUNT(*) AS quantidade FROM runtable r JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND a.fake = false AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote}) GROUP BY a.yes;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 6, "x": 18, "y": 4 },
+      "id": 12,
+      "options": { "legend": { "displayMode": "list", "placement": "right" }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": true }, "tooltip": { "mode": "single", "sort": "none" } },
+      "title": "Submissoes por Linguagem",
+      "type": "piechart",
+      "targets": [{
+        "rawSql": "SELECT l.langname AS linguagem, COUNT(*) AS quantidade FROM runtable r JOIN langtable l ON r.contestnumber = l.contestnumber AND r.runlangnumber = l.langnumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote}) GROUP BY l.langname ORDER BY quantidade DESC;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "fillOpacity": 80, "gradientMode": "scheme", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineWidth": 1, "scaleDistribution": { "type": "linear" }, "thresholdsStyle": { "mode": "off" } }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 13 },
+      "id": 20,
+      "options": { "barRadius": 0.1, "barWidth": 0.6, "fullHighlight": false, "groupWidth": 0.7, "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "orientation": "vertical", "showValue": "always", "stacking": "normal", "tooltip": { "mode": "multi", "sort": "desc" }, "xTickLabelRotation": 0 },
+      "title": "Erros por Problema — Mapa de Dificuldade",
+      "description": "Cada barra mostra quantos erros de cada tipo cada problema recebeu. Problemas com barras maiores sao os mais dificeis.",
+      "type": "barchart",
+      "targets": [{
+        "rawSql": "SELECT p.problemname AS problema, a.shortname AS tipo_erro, COUNT(*) AS quantidade FROM runtable r JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber JOIN problemtable p ON r.contestnumber = p.contestnumber AND r.runproblem = p.problemnumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND a.fake = false AND p.fake = false AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote}) GROUP BY p.problemname, a.shortname, p.problemnumber ORDER BY p.problemnumber;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 3}, {"color": "orange", "value": 5}, {"color": "red", "value": 10}] },
+          "custom": { "align": "auto", "cellOptions": { "type": "color-background" }, "inspect": false }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "problema" }, "properties": [{ "id": "custom.width", "value": 100 }] },
+          { "matcher": { "id": "byName", "options": "time" }, "properties": [{ "id": "custom.width", "value": 150 }] }
+        ]
+      },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 23 },
+      "id": 30,
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } },
+      "title": "Performance por Time — Tentativas ate Acertar",
+      "description": "Quantidade de tentativas de cada time por problema. Verde: 1-2 tentativas. Amarelo: 3-4. Laranja: 5-9. Vermelho: 10 ou mais.",
+      "type": "table",
+      "targets": [{
+        "rawSql": "SELECT u.username AS time, u.userfullname AS nome, p.problemname AS problema, COUNT(*) AS tentativas, MAX(CASE WHEN a.yes = true THEN 'SIM' ELSE 'NAO' END) AS resolveu FROM runtable r JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber JOIN problemtable p ON r.contestnumber = p.contestnumber AND r.runproblem = p.problemnumber JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber WHERE r.contestnumber = ${contest_numero} AND u.usertype = 'team' AND p.fake = false AND r.runstatus != 'deleted' AND u.username IN (${times_equipe:singlequote}) GROUP BY u.username, u.userfullname, p.problemname, p.problemnumber ORDER BY u.username, p.problemnumber;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "orange", "value": 25}, {"color": "yellow", "value": 50}, {"color": "green", "value": 75}] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 35 },
+      "id": 40,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/taxa_acerto/", "values": true }, "orientation": "horizontal" },
+      "title": "Taxa de Acerto por Problema (%)",
+      "description": "Porcentagem de submissoes aceitas por problema. Vermelho: dificil. Verde: facil.",
+      "type": "stat",
+      "targets": [{
+        "rawSql": "SELECT p.problemname AS problema, ROUND(100.0 * SUM(CASE WHEN a.yes = true THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0), 1) AS taxa_acerto FROM runtable r JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber JOIN problemtable p ON r.contestnumber = p.contestnumber AND r.runproblem = p.problemnumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND a.fake = false AND p.fake = false AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote}) GROUP BY p.problemname, p.problemnumber ORDER BY p.problemnumber;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisLabel": "Problemas", "axisPlacement": "auto", "fillOpacity": 60, "gradientMode": "scheme", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineWidth": 1, "scaleDistribution": { "type": "linear" }, "thresholdsStyle": { "mode": "off" } }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 35 },
+      "id": 41,
+      "options": { "barRadius": 0.1, "barWidth": 0.7, "fullHighlight": false, "groupWidth": 0.7, "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "orientation": "vertical", "showValue": "always", "stacking": "none", "tooltip": { "mode": "single", "sort": "none" }, "xTickLabelRotation": 0 },
+      "title": "Ranking — Problemas Resolvidos por Time",
+      "type": "barchart",
+      "targets": [{
+        "rawSql": "SELECT u.username AS time, COUNT(DISTINCT r.runproblem) AS problemas_resolvidos FROM runtable r JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber WHERE r.contestnumber = ${contest_numero} AND u.usertype = 'team' AND a.yes = true AND r.runstatus != 'deleted' AND u.username IN (${times_equipe:singlequote}) GROUP BY u.username ORDER BY problemas_resolvidos DESC;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisLabel": "", "axisPlacement": "auto", "fillOpacity": 80, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineWidth": 1, "scaleDistribution": { "type": "linear" }, "thresholdsStyle": { "mode": "off" } }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 45 },
+      "id": 50,
+      "options": { "barRadius": 0.1, "barWidth": 0.6, "fullHighlight": false, "groupWidth": 0.7, "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "orientation": "vertical", "showValue": "always", "stacking": "normal", "tooltip": { "mode": "multi", "sort": "none" }, "xTickLabelRotation": 0 },
+      "title": "Erros por Linguagem",
+      "description": "Tipos de erro mais comuns em cada linguagem.",
+      "type": "barchart",
+      "targets": [{
+        "rawSql": "SELECT l.langname AS linguagem, a.shortname AS tipo_erro, COUNT(*) AS quantidade FROM runtable r JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber JOIN langtable l ON r.contestnumber = l.contestnumber AND r.runlangnumber = l.langnumber JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber WHERE r.contestnumber = ${contest_numero} AND a.fake = false AND a.yes = false AND r.runstatus != 'deleted' AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote}) GROUP BY l.langname, a.shortname ORDER BY l.langname, quantidade DESC;",
+        "format": "table",
+        "refId": "A"
+      }]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "PA0770ACE09A41672" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "green", "value": null}] },
+          "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "inspect": false }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 45 },
+      "id": 51,
+      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false } },
+      "title": "Ultimas 100 Submissoes",
+      "type": "table",
+      "targets": [{
+        "rawSql": "SELECT r.runnumber AS run, u.username AS time, p.problemname AS problema, l.langname AS linguagem, r.rundatediff AS tempo_seg, a.shortname AS resultado, CASE WHEN a.yes = true THEN 'Sim' ELSE 'Nao' END AS aceito FROM runtable r JOIN usertable u ON r.contestnumber = u.contestnumber AND r.runsitenumber = u.usersitenumber AND r.usernumber = u.usernumber JOIN problemtable p ON r.contestnumber = p.contestnumber AND r.runproblem = p.problemnumber JOIN langtable l ON r.contestnumber = l.contestnumber AND r.runlangnumber = l.langnumber JOIN answertable a ON r.contestnumber = a.contestnumber AND r.runanswer = a.answernumber WHERE r.contestnumber = ${contest_numero} AND r.runstatus != 'deleted' AND p.fake = false AND u.usertype = 'team' AND u.username IN (${times_equipe:singlequote}) ORDER BY r.runnumber DESC LIMIT 100;",
+        "format": "table",
+        "refId": "A"
+      }]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["boca", "contest"],
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "BOCA Contest Analytics — CCAIFGoianoUrutai",
+  "uid": "boca-analytics-main",
+  "version": 2
+}

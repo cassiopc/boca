@@ -99,7 +99,7 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
   $n = DBnlines($r);
   if ($n == 0) {
     LOGError("Unable to get site information. No active sites available (contest=$contest)");
-    MSGError("Unable to get site information. No active sites available. Contact an admin now!");
+    MSGError("Não foi possível obter informações da sede. Não há sedes ativas; contate a administração.");
     exit;
   }
   $a = array();
@@ -134,19 +134,19 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 	  if(!in_array($site, $whichsites) && !in_array(0,$whichsites)) continue;
 	  $fine=1;
 	  reset($resp);
-	  while(list($e, $c) = each($resp)) {
+	  foreach($resp as $e => $c) {
 	    if($resp[$e]['site']==$site) { $fine=0; break; }					
 	  }
 	  if($fine) {
 	    list($arr,$data0) = DBScoreSite($contest, $site, $verifylastmile, $hor, $arr);
 	    reset($arr);
-	    while(list($ee,$cc) = each($arr)) {
+	    foreach($arr as $ee => $cc) {
 	      if($site != $arr[$ee]['site']) {
 		$arr[$ee]=null;
 		unset($arr[$ee]);
 	      } else {
 		// just to make the color of the other site changed to the color of the problem in this site
-		while(list($e2,$c2) = each($arr[$ee]["problem"])) {
+		foreach($arr[$ee]["problem"] as $e2 => $c2) {
 		  for($prob=0; $prob<$nprobs; $prob++) {
 		    if($probs[$prob]['number']==$e2) {
 		      $arr[$ee]['problem'][$e2]['color'] = $probs[$prob]['color'];
@@ -162,10 +162,10 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 	      $arrori = $arr;
 	      reset($arrori);  //cassio cassiopc
 	      $pname = array('A','B','C','D','E','F','G','H','I','J','K');
-	      while(list($ee,$cc) = each($arrori)) {
+	      foreach($arrori as $ee => $cc) {
 		for($pi=0; $pi < 11; $pi++) unset($arr[$ee]['problem'][$pi+1]);
 		reset($arrori[$ee]["problem"]);
-		while(list($e2,$c2) = each($arrori[$ee]["problem"])) {
+		foreach($arrori[$ee]["problem"] as $e2 => $c2) {
 		  for($pi=0; $pi < 11; $pi++)
 		    if(isset($arrori[$ee]['problem'][$e2]['name']) && trim($arrori[$ee]['problem'][$e2]['name']) == $pname[$pi]) break;
 		  if($pi < 11) {
@@ -179,16 +179,16 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
 	  }
 	} else {
 	  // old version -- just for compatibility ---
-	  while(list($ee,$cc) = each($arr)) {
+	  foreach($arr as $ee => $cc) {
 	    $fine=1;
 	    reset($resp);
-	    while(list($e, $c) = each($resp)) {
+	    foreach($resp as $e => $c) {
 	      if($resp[$e]['site']==$arr[$ee]['site']) { $fine=0; break; }
 	    }
-	    if($fine==0) $arr[$ee]=null;
+	    if($fine==0) unset($arr[$ee]);
 	    else {
 	      // just to make the color of the other site changed to the color of the problem in this site
-	      while(list($e2,$c2) = each($arr[$ee]["problem"])) {
+	      foreach($arr[$ee]["problem"] as $e2 => $c2) {
 		for($prob=0; $prob<$nprobs; $prob++) {
 		  if($probs[$prob]['number']==$e2) {
 		    $arr[$ee]['problem'][$e2]['color'] = $probs[$prob]['color'];
@@ -208,7 +208,7 @@ function DBScore($contest, $verifylastmile, $hor=-1, $globalsite='0') {
   }
   if (($result = ordena ($resp)) === false) {
     LOGError("Error while sorting scores (contest=$contest).");
-    MSGError("Error while sorting scores. Contact an admin now!");
+    MSGError("Não foi possível ordenar o placar. Contate a administração.");
   }
   return $result;
 }
@@ -405,7 +405,7 @@ function DBScoreSite($contest, $site, $verifylastmile, $hor=-1, $data=null) {
 
   if (($result = ordena ($resp)) === false) {
     LOGError("Error while sorting scores (contest=$contest, site=$site).");
-    MSGError("Error while sorting scores. Contact an admin now!");
+    MSGError("Não foi possível ordenar o placar. Contate a administração.");
   }
   return array($result,$data0);
 }

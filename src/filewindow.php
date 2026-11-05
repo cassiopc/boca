@@ -21,7 +21,7 @@ session_start();
 require_once("globals.php");
 
 if(!ValidSession()) {
-	echo "<html><head><title>View Page</title>";
+	echo "<html><head><title>Visualização de arquivo</title>";
         InvalidSession("filewindow.php");
 	echo "<script>window.close();</script></html>";
 	exit;
@@ -29,7 +29,7 @@ if(!ValidSession()) {
 
 if(!isset($_GET["oid"]) || !is_numeric($_GET["oid"]) || !isset($_GET["filename"]) ||
    !isset($_GET["check"]) || $_GET["check"]=="") {
-	echo "<html><head><title>View Page</title>";
+	echo "<html><head><title>Visualização de arquivo</title>";
         IntrusionNotify("Bad parameters in filewindow.php");
 	echo "<script>window.close();</script></html>";
 	exit;
@@ -45,7 +45,7 @@ if(isset($_GET["msg"]))
 $p = myhash($_GET["oid"] . $fname . $msg . $uglysalt . $cf["key"]);
 
 if($p != $_GET["check"]) {
-	echo "<html><head><title>View Page</title>";
+	echo "<html><head><title>Visualização de arquivo</title>";
         IntrusionNotify("Parameters modified in filewindow.php");
 	echo "<script>window.close();</script></html>";
 	exit;
@@ -58,10 +58,10 @@ if ($_GET["oid"]>=0) {
   DBExec($c, "begin work");
 
   if (($lo = DB_lo_open ($c, $_GET["oid"], "r")) === false) {
-	echo "<html><head><title>View Page</title>";
+	echo "<html><head><title>Visualização de arquivo</title>";
 	DBExec($c, "rollback work");
 	LOGError ("Unable to download file (" . basename($fname) . ")");
-	MSGError ("Unable to download file (" . basename($fname) . ")");
+	MSGError ("Não foi possível baixar o arquivo (" . basename($fname) . ")");
 	echo "<script>window.close();</script></html>";
 	exit;
   }
@@ -82,10 +82,10 @@ if ($_GET["oid"]>=0) {
 //  echo "<pre>\n";
   if (DB_lo_read_tobrowser ($_SESSION["usertable"]["contestnumber"],$lo,$c) === false) {
         header ("Content-type: text/html");
-	echo "<html><head><title>View Page</title>";
+	echo "<html><head><title>Visualização de arquivo</title>";
 	DBExec($c, "rollback work");
 	LOGError ("Unable to open file (" . basename($fname) . ")");
-	MSGError ("Unable to open file (" . basename($fname) . ")");
+	MSGError ("Não foi possível abrir o arquivo (" . basename($fname) . ")");
 	echo "<script>window.close();</script></html>";
 	exit;
   }
@@ -108,8 +108,8 @@ if ($_GET["oid"]>=0) {
   header ("Pragma: no-cache");
   if (($str = file_get_contents($fname))===false) {
 	  header ("Content-type: text/html");
-	  echo "<html><head><title>View Page</title>";
-	  MSGError ("Unable to open file (" . basename($fname) . ")");
+	  echo "<html><head><title>Visualização de arquivo</title>";
+	  MSGError ("Não foi possível abrir o arquivo (" . basename($fname) . ")");
 	  LOGError ("Unable to open file (" . basename($fname) . ")");
 	  echo "<script>window.close();</script></html>";
 	  exit;

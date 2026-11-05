@@ -1,0 +1,36 @@
+#!/bin/sh
+PREREQ="25adduser 44pk_allow_ubuntu 52gnome_initial_setup 59disable_mozc_autosetup"
+prereqs() { echo "$PREREQ"; }
+case "$1" in prereqs) prereqs; exit 0 ;; esac
+. /scripts/casper-functions
+# Runs after Casper 25adduser; do not leave its passwordless sudo rule active.
+chroot /root gpasswd -d icpc sudo 2>/dev/null || true
+chroot /root gpasswd -d icpc admin 2>/dev/null || true
+rm -f /root/etc/sudoers.d/casper /root/etc/sudoers.d/99-casper
+printf 'icpc ALL=(ALL:ALL) !ALL\n' > /root/etc/sudoers.d/99-seminfo
+chmod 440 /root/etc/sudoers.d/99-seminfo
+chroot /root passwd -l root
+rm -f /root/var/lib/polkit-1/localauthority/10-vendor.d/10-live-cd.pkla
+mkdir -p /root/etc/polkit-1/localauthority/90-mandatory.d
+cat > /root/etc/polkit-1/localauthority/90-mandatory.d/seminfo-no-admin.pkla <<'POLICY'
+[SEMINFO participant cannot execute as administrator]
+Identity=unix-user:icpc
+Action=org.freedesktop.policykit.exec
+ResultAny=no
+ResultInactive=no
+ResultActive=no
+POLICY
+# A newly formatted persistent /home is empty on its first boot.
+for account in icpc seminfo-admin; do
+    if [ ! -d "/root/home/$account" ]; then
+        chroot /root cp -a /etc/skel "/home/$account"
+        if [ "$account" = icpc ]; then
+            chroot /root cp -a /usr/share/maratona-usuario-icpc/editores-config/. /home/icpc/
+        fi
+    fi
+    # Casper creates /home/icpc as root before this hook. Repair ownership even
+    # when it already exists, without following participant-created symlinks.
+    chroot /root chown -hR "$account:$(chroot /root id -gn "$account")" "/home/$account"
+done
+rm -f /root/home/icpc/.clean-home
+chroot /root systemctl mask icpc-clean-homed.service maratona-usuario-icpc.service

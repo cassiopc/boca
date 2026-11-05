@@ -32,6 +32,25 @@ if($_SESSION["locr"]=="/") $_SESSION["locr"] = "";
 require_once("globals.php");
 require_once("db.php");
 
+// Allow event administrators to import problems before contest activation.
+// Explicit contest selection is intentionally unavailable to teams/score.
+$seminfoContest = null;
+$seminfoDestination = null;
+if (getenv('SEMINFO_PROFILE') && isset($_GET['contest']) &&
+    ctype_digit((string)$_GET['contest']) && (int)$_GET['contest'] > 0) {
+    $seminfoContest = (int)$_GET['contest'];
+    $destinations=['builder'=>'admin/buildproblem.php','problems'=>'admin/problem.php'];
+    if (isset($_GET['destination']) && is_string($_GET['destination']) && isset($destinations[$_GET['destination']])) {
+        $seminfoDestination=$destinations[$_GET['destination']];
+    }
+}
+
+if (!isset($_GET['name']) && $seminfoDestination !== null && ValidSession() &&
+    ($_SESSION['usertable']['usertype'] ?? '') === 'admin' &&
+    (int)$_SESSION['usertable']['contestnumber'] === $seminfoContest) {
+    header('Location: '.$seminfoDestination); exit;
+}
+
 if (!isset($_GET["name"])) {
 	if (ValidSession())
 	  DBLogOut($_SESSION["usertable"]["contestnumber"], 
@@ -67,7 +86,7 @@ ob_end_flush();
 require_once('version.php');
 
 ?>
-<title>BOCA Online Contest Administrator <?php echo $BOCAVERSION; ?> - Login</title>
+<title>BOCA Online Contest Administrator <?php echo $BOCAVERSION; ?> - Acesso</title>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel=stylesheet href="Css.php" type="text/css">
@@ -80,7 +99,7 @@ function computeHASH()
 	passHASH = js_myhash(js_myhash(document.form1.password.value)+'<?php echo session_id(); ?>');
 	document.form1.name.value = '';
 	document.form1.password.value = '                                                                                 ';
-	document.location = 'index.php?name='+userHASH+'&password='+passHASH;
+	document.location = 'index.php?name='+encodeURIComponent(userHASH)+'&password='+passHASH<?php if ($seminfoContest !== null) echo "+'&contest=" . $seminfoContest . "'"; if ($seminfoDestination !== null) echo "+'&destination=" . array_search($seminfoDestination,$destinations,true) . "'"; ?>;
 }
 </script>
 <?php
@@ -88,9 +107,14 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
   if(isset($_GET["name"]) && $_GET["name"] != "" ) {
 	$name = $_GET["name"];
 	$password = $_GET["password"];
-	$usertable = DBLogIn($name, $password);
+	if ($seminfoContest !== null) {
+		$candidate = ctype_alnum($name) ? DBGetRow("select usernumber from usertable where contestnumber=$seminfoContest and username='$name' and usertype='admin'", 0) : null;
+		$usertable = $candidate !== null ? DBLogInContest($name, $password, $seminfoContest) : false;
+	} else {
+		$usertable = DBLogIn($name, $password);
+	}
 	if(!$usertable) {
-		ForceLoad("index.php");
+		ForceLoad($seminfoDestination !== null ? 'index.php?contest='.$seminfoContest.'&destination='.array_search($seminfoDestination,$destinations,true) : 'index.php');
 	}
 	else {
 		if(($ct = DBContestInfo($_SESSION["usertable"]["contestnumber"])) == null)
@@ -100,13 +124,14 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
 			echo "TRANSFER OK";
 		} else {
 			if($main && $_SESSION["usertable"]["usertype"] == 'site') {
-				MSGError('Direct login of this user is not allowed');
+				MSGError('O acesso direto deste usuário não é permitido');
 				unset($_SESSION["usertable"]);
 				ForceLoad("index.php");
 				exit;
 			}
 			echo "<script language=\"JavaScript\">\n";
-			echo "document.location='" . $_SESSION["usertable"]["usertype"] . "/index.php';\n";
+			$next=($_SESSION['usertable']['usertype']==='admin' && $seminfoDestination!==null) ? $seminfoDestination : $_SESSION['usertable']['usertype'].'/index.php';
+			echo "document.location='" . $next . "';\n";
 			echo "</script>\n";
 		}
 		exit;
@@ -114,7 +139,7 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
   }
 } else {
   echo "<script language=\"JavaScript\">\n";
-  echo "alert('Unable to load config files. Possible file permission problem in the BOCA directory.');\n";
+  echo "alert('Não foi possível carregar a configuração. Verifique as permissões da pasta do BOCA.');\n";
   echo "</script>\n";
 }
 ?>
@@ -129,7 +154,7 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
             <tr> 
               <td nowrap>
                 <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="+1">
-				BOCA Login</font></div>
+				Acesso ao BOCA</font></div>
               </td>
             </tr>
             <tr>
@@ -137,20 +162,20 @@ if(function_exists("globalconf") && function_exists("sanitizeVariables")) {
                 <table border="0" align="left">
                   <tr> 
                     <td><font face="Verdana, Arial, Helvetica, sans-serif" > 
-                      Name
+                      Usuário
                       </font></td>
                     <td> 
                       <input type="text" name="name">
                     </td>
                   </tr>
                   <tr> 
-                    <td><font face="Verdana, Arial, Helvetica, sans-serif" >Password</font></td>
+                    <td><font face="Verdana, Arial, Helvetica, sans-serif" >Senha</font></td>
                     <td> 
                       <input type="password" name="password">
                     </td>
                   </tr>
                 </table>
-                <input type="submit" name="Submit" value="Login">
+                <input type="submit" name="Submit" value="Entrar">
               </td>
             </tr>
           </table>

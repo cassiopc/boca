@@ -78,7 +78,7 @@ function DBGetProblemData($contestnumber, $problemnumber, $c=null) {
   $n = DBnlines($r);
   if ($n == 0) {
     LOGError("Unable to find problem data in the database ($contestnumber, $problemnumber)");
-    MSGError("Unable to find problem data in the database. Contact an admin now!");
+    MSGError("Não foi possível encontrar os dados da questão. Contate a administração.");
     exit;
   }
   $a = array();
@@ -307,11 +307,11 @@ function DBNewProblem($contestnumber, $param, $c=null) {
   $fake='f';
   foreach($ac as $key) {
     if(!isset($param[$key])) {
-      MSGError("DBNewProblem param error: $key is not set");
+      MSGError("DBNewProblem: o parâmetro $key não foi informado.");
       return false;
     }
     if(isset($type[$key]) && !is_numeric($param[$key])) {
-      MSGError("DBNewProblem param error: $key is not numeric");
+      MSGError("DBNewProblem: o parâmetro $key deve ser numérico.");
       return false;
     }
     $$key = myhtmlspecialchars($param[$key]);
@@ -324,14 +324,15 @@ function DBNewProblem($contestnumber, $param, $c=null) {
   foreach($ac1 as $key) {
     if(isset($param[$key])) {
       if(isset($type[$key]) && !is_numeric($param[$key])) {
-	MSGError("DBNewProblem param error: $key is not numeric");
+	MSGError("DBNewProblem: o parâmetro $key deve ser numérico.");
 	return false;
       }
       $$key = myhtmlspecialchars($param[$key]);
     }
   }
+  $localUpdate = ($updatetime <= 0);
   $t = time();
-  if($updatetime <= 0)
+  if($localUpdate)
     $updatetime=$t;
   $inputhash = '';
 
@@ -359,6 +360,8 @@ function DBNewProblem($contestnumber, $param, $c=null) {
   else {
     $lr = DBRow($r,0);
     $t = $lr['updatetime'];
+    // Alterações locais consecutivas exigem versões distintas para sincronização.
+    if ($localUpdate) $updatetime = max((int)$updatetime, (int)$t + 1);
     $oldfullname=$lr['problemfullname'];
     $s = "updated";
     $inputhash = $lr['probleminputfilehash'];
@@ -374,7 +377,7 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 	  if (($oid1 = DB_lo_import($c, $inputfilepath)) === false) {
 	    DBExec($c, "rollback work", "DBNewProblem(rollback-input)");
 	    LOGError("Unable to create a large object for file $inputfilename.");
-	    MSGError("problem importing file to database. See log for details!");
+	    MSGError("Não foi possível importar o arquivo para o banco de dados. Consulte os registros.");
 	    exit;
 	  }
 	  if($oldoid != '') DB_lo_unlink($c,$oldoid);
@@ -392,7 +395,7 @@ function DBNewProblem($contestnumber, $param, $c=null) {
 	if (($oid1 = DB_lo_import_text($c, $inputfilepath)) == null) {
 	  DBExec($c, "rollback work", "DBNewProblem(rollback-i-import)");
 	  LOGError("Unable to import the large object for file $inputfilename.");
-	  MSGError("problem importing file to database. See log for details!");
+	  MSGError("Não foi possível importar o arquivo para o banco de dados. Consulte os registros.");
 	  exit;
 	}
 	if($oldoid != '') DB_lo_unlink($c,$oldoid);

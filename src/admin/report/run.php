@@ -20,19 +20,19 @@
 require('header.php');
 ?>
 <br>
-<center><h2>Run List</h2></center>
+<center><h2>Lista de submissões</h2></center>
 <table width="100%" border=1>
  <tr>
   <td><b>#</b></td>
-  <td><b>Site</b></td>
-  <td><b>User</b></td>
-  <td><b>Time</b></td>
-  <td><b>Problem</b></td>
-  <td><b>Language</b></td>
-  <td><b>Filename</b></td>
+  <td><b>Local</b></td>
+  <td><b>Usuário</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Questão</b></td>
+  <td><b>Linguagem</b></td>
+  <td><b>Nome do arquivo</b></td>
   <td><b>Status</b></td>
-  <td><b>Judge (Site)</b></td>
-  <td><b>Answer</b></td>
+  <td><b>Juiz (local)</b></td>
+  <td><b>Resposta</b></td>
  </tr>
 <?php
 $s = $st;
@@ -56,7 +56,7 @@ for ($i=0; $i<count($run); $i++) {
     echo "<td>&nbsp;</td>\n";
     echo "<td>&nbsp;</td>\n";
     echo "<td>&nbsp;</td>\n";
-    echo "  <td nowrap>" . $run[$i]["status"] . "</td>\n";
+    echo "  <td nowrap>" . displayRunStatus($run[$i]["status"]) . "</td>\n";
     if ($run[$i]["judge"] != "") {
 	$u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["judgesite"], $run[$i]["judge"]);
 	echo "  <td nowrap>" . $u["username"] . " (" . $run[$i]["judgesite"] . ")</td>\n";
@@ -74,7 +74,7 @@ for ($i=0; $i<count($run); $i++) {
   echo "  <td nowrap>" . $run[$i]["language"] . "</td>\n";
   echo "  <td nowrap>" . $run[$i]["filename"] . "</td>\n";
 
-  echo "  <td nowrap>" . $run[$i]["status"] . "</td>\n";
+  echo "  <td nowrap>" . displayRunStatus($run[$i]["status"]) . "</td>\n";
   if ($run[$i]["judge"] != "") {
 	$u = DBUserInfo ($_SESSION["usertable"]["contestnumber"], $run[$i]["judgesite"], $run[$i]["judge"]);
 	echo "  <td nowrap>" . $u["username"] . " (" . $run[$i]["judgesite"] . ")</td>\n";
@@ -82,12 +82,12 @@ for ($i=0; $i<count($run); $i++) {
 	echo "  <td>&nbsp;</td>\n";
 
   if ($run[$i]["answer"] == "") $run[$i]["answer"] = "&nbsp;";
-  echo "  <td>" . $run[$i]["answer"] . "</td>\n";
+  echo "  <td>" . displayRunAnswer($run[$i]["answer"]) . "</td>\n";
   echo " </tr>\n";
 }
 
 echo "</table>";
-if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NO RUNS AVAILABLE</font></b></center>";
+if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUMA SUBMISSÃO DISPONÍVEL</font></b></center>";
 
 include("$locr/footnote.php");
 ?>

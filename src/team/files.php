@@ -38,7 +38,7 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["Submit"]) && $_FILES["sourcefi
 		if ($size > $ct["contestmaxfilesize"]) {
 	                LOGLevel("User {$_SESSION["usertable"]["username"]} tried to submit file " .
 			"$name with $size bytes ({$ct["contestmaxfilesize"]} max allowed).", 1);
-			MSGError("File size exceeds the limit allowed.");
+			MSGError("O arquivo excede o limite de tamanho permitido.");
 			ForceLoad("run.php");
 		}
 		if (!is_uploaded_file($temp) || strlen($name)>100) {
@@ -58,9 +58,9 @@ if (isset($_FILES["sourcefile"]) && isset($_POST["Submit"]) && $_FILES["sourcefi
 <br>
 <table width="100%" border=1>
  <tr>
-  <td><b>Bkp #</b></td>
-  <td><b>Time</b></td>
-  <td><b>File</b></td>
+  <td><b>Backup nº</b></td>
+  <td><b>Tempo</b></td>
+  <td><b>Arquivo</b></td>
  </tr>
 <?php
 $run = DBUserBkps($_SESSION["usertable"]["contestnumber"],
@@ -81,19 +81,19 @@ for ($i=0; $i<count($run); $i++) {
 
 }
 echo "</table>";
-if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NO BACKUPS AVAILABLE</font></b></center>";
+if (count($run) == 0) echo "<br><center><b><font color=\"#ff0000\">NENHUM BACKUP DISPONÍVEL</font></b></center>";
 
 ?>
 
-<br><br><center><b>To erase a file, click on its number. To download a file, click on its name.
-To submit a new backup file, just fill in the following fields:</b></center>
+<br><br><center><b>Para excluir um arquivo, clique no número. Para baixá-lo, clique no nome.
+Para enviar um novo backup, preencha os campos abaixo:</b></center>
 <form name="form1" enctype="multipart/form-data" method="post" action="files.php">
 <!--<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $ct["contestmaxfilesize"] ?>">-->
   <input type=hidden name="confirmation" value="noconfirm" />
   <center>
     <table border="0">
       <tr> 
-        <td width="35%" align=right>File (size restrictions apply):</td>
+        <td width="35%" align=right>Arquivo (sujeito a limite de tamanho):</td>
         <td width="65%">
 	  <input type="file" name="sourcefile" size="40">
         </td>
@@ -102,12 +102,12 @@ To submit a new backup file, just fill in the following fields:</b></center>
   </center>
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm submission?")) {
+      if (confirm("Confirmar envio?")) {
         document.form1.confirmation.value='confirm';
       }
     }
     function conf2(url) {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.location=url;
       } else {
         document.location='files.php';
@@ -115,7 +115,7 @@ To submit a new backup file, just fill in the following fields:</b></center>
     }
   </script>
   <center>
-      <input type="submit" name="Submit" value="Send" onClick="conf()">
+      <input type="submit" name="Submit" value="Enviar" onClick="conf()">
   </center>
 </form>
 

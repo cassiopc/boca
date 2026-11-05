@@ -110,14 +110,14 @@ if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["p
 						continue;
 					}
 					if(substr($key,10,5) != '#####') {
-						MSGError('Invalid key in the file -- not importing any keys');
+						MSGError('Chave inválida no arquivo. Nenhuma chave foi importada');
 						$dd=0;
 						break;
 					}
 					if(isset($param['unlockkey']) && $param['unlockkey'] != '') {
 						$pass=decryptData(substr($key,15),$param['unlockkey'],'includekeys');
 						if(substr($pass,0,5) != '#####') {
-							MSGError('Invalid key in the file -- not importing any keys');
+							MSGError('Chave inválida no arquivo. Nenhuma chave foi importada');
 							$dd=0;
 							break;
 						}
@@ -127,7 +127,7 @@ if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["p
 				}
 				if($dd > 0) {
 					$param['keys']=implode(',',$ar);
-					MSGError(count($ar) . ' keys are being imported from the file');
+					MSGError(count($ar) . ' chaves estão sendo importadas do arquivo');
 					DBClearProblemTmp($_SESSION["usertable"]["contestnumber"]);
 				}
 			}
@@ -152,20 +152,19 @@ if (isset($_POST["Submit3"]) && isset($_POST["penalty"]) && is_numeric($_POST["p
   <input type=hidden name="confirmation" value="noconfirm" />
   <script language="javascript">
     function conf() {
-      if (confirm("Confirm?")) {
+      if (confirm("Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
     function conf2() {
-      if (confirm("This will restart all start/stop related information in all the sites.\n\
-If you have a contest running, the result is unpredictable. Are you really sure?")) {
+      if (confirm("Esta operação reiniciará as informações de início e término em todas as sedes.\n\
+Se houver uma prova em andamento, o resultado será imprevisível. Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
     function conf3() {
-      if (confirm("This will make your site become the main site, that is, this site will\n\
-play an active position in the contest regarding the information\n\
-flow. ARE YOU SURE?")) {
+      if (confirm("Esta sede se tornará a sede principal e coordenará o fluxo de informações da competição.\n\
+Confirmar?")) {
         document.form1.confirmation.value='confirm';
       }
     }
@@ -174,7 +173,7 @@ flow. ARE YOU SURE?")) {
   <center>
     <table border="0">
       <tr>
-        <td width="35%" align=right>Contest number:</td>
+        <td width="35%" align=right>Número da competição:</td>
         <td width="65%">
 <?php 
 echo $contest;
@@ -182,13 +181,13 @@ echo $contest;
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Name:</td>
+        <td width="35%" align=right>Nome:</td>
         <td width="65%">
           <input type="text" <?php if(!$main) echo "readonly"; ?> name="name" value="<?php echo $ct["contestname"]; ?>" size="50" maxlength="50" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Start date:</td>
+        <td width="35%" align=right>Data de início:</td>
         <td width="65%"> hh:mm
           <input type="text" <?php if(!$main) echo "readonly"; ?> name="startdateh" value="<?php echo date("H", $ct["conteststartdate"]); ?>" size="2" maxlength="2" />
           :
@@ -202,47 +201,47 @@ echo $contest;
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Duration (in minutes):</td>
+        <td width="35%" align=right>Duração (em minutos):</td>
         <td width="65%">
           <input type="text" name="duration" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestduration"]/60; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Stop answering (in minutes):</td>
+        <td width="35%" align=right>Fim das respostas (em minutos):</td>
         <td width="65%">
           <input type="text" name="lastmileanswer" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestlastmileanswer"]/60; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Stop scoreboard (in minutes):</td>
+        <td width="35%" align=right>Congelamento do placar (em minutos):</td>
         <td width="65%">
           <input type="text" name="lastmilescore" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestlastmilescore"]/60; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Penalty (in minutes):</td>
+        <td width="35%" align=right>Penalidade (em minutos):</td>
         <td width="65%">
           <input type="text" name="penalty" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestpenalty"]/60; ?>" size="20" maxlength="20" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Max file size allowed for teams (in KB):</td>
+        <td width="35%" align=right>Tamanho máximo de arquivo das equipes (em KB):</td>
         <td width="65%">
           <input type="text" name="maxfilesize" <?php if(!$main) echo "readonly"; ?> 
 		value="<?php echo $ct["contestmaxfilesize"]/1000; ?>" size="20" maxlength="20" />
         </td>
       </tr>
   <tr><td width="35%" align=right>
-    Your PHP config. allows at most:</td>
+    A configuração do PHP permite no máximo:</td>
   <td width="65%">
-    <?php echo ini_get('post_max_size').'B(max. post) and '.ini_get('upload_max_filesize').'B(max. filesize)'; ?>
+    <?php echo ini_get('post_max_size').' (requisição) e '.ini_get('upload_max_filesize').' (arquivo)'; ?>
   </td></tr>
   <tr><td width="35%" align=right></td>
   <td width="65%">
-<?php echo ini_get('session.gc_maxlifetime').'s of session expiration and ' . ini_get('session.cookie_lifetime') . ' as cookie lifetime (0 means unlimited)'; ?>
+<?php echo 'Expiração da sessão: '.ini_get('session.gc_maxlifetime').' segundos; duração do cookie: '.ini_get('session.cookie_lifetime').' segundos (0 significa sem limite).'; ?>
   </td></tr>
       <tr>
-							<td width="35%" align=right>Main site URL (IP/bocafolder):</td>
+							<td width="35%" align=right>URL do local principal (IP/pasta do BOCA):</td>
         <td width="65%">
           <input type="text" name="mainsiteurl" value="<?php echo $ct["contestmainsiteurl"]; ?>" size="40" maxlength="200" />
         </td>
@@ -250,30 +249,30 @@ echo $contest;
 <?php
   $exd = explode(' ',$ct["contestmainsiteurl"]);
   if(count($exd) >= 4 && is_numeric($exd[3]) && $exd[3] > 0)
-    echo "<tr><td width=\"35%\" align=right>Last update from mainsite:</td><td width=\"65%\">" . dateconv($exd[3]) . "</td></tr>\n";
+    echo "<tr><td width=\"35%\" align=right>Última atualização do local principal:</td><td width=\"65%\">" . dateconv($exd[3]) . "</td></tr>\n";
 ?>
       <tr>
-							<td width="35%" align=right>Unlock password (only use it within a <b>secure network</b>):</td>
+							<td width="35%" align=right>Senha de desbloqueio (use somente em uma <b>rede segura</b>):</td>
         <td width="65%">
           <input type="password" name="unlockkey" value="" size="40" maxlength="200" />
 		   <?php if(strlen($ct["contestunlockkey"]) > 1) echo "<b><= has been set</b>"; ?>
         </td>
       </tr>
       <tr>
-							<td width="35%" align=right>Keys (only use it within a <b>secure network</b>):</td>
+							<td width="35%" align=right>Chaves (use somente em uma <b>rede segura</b>):</td>
         <td width="65%">
           <input type="file" name="keyfile" size="40">
 		   <?php if(strlen($ct["contestkeys"]) > 32) echo "<b><= has been set</b>"; ?>
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Contest main site number:</td>
+        <td width="35%" align=right>Número do local principal:</td>
         <td width="65%">
           <input type="text" name="mainsite" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestmainsite"]; ?>" size="4" maxlength="4" />
         </td>
       </tr>
       <tr>
-        <td width="35%" align=right>Contest local site number:</td>
+        <td width="35%" align=right>Número do local:</td>
         <td width="65%">
           <input type="text" name="localsite" <?php if(!$main) echo "readonly"; ?> value="<?php echo $ct["contestlocalsite"]; ?>" size="4" maxlength="4" />
         </td>
@@ -282,17 +281,17 @@ echo $contest;
   </center>
   <center>
 <?php if($main) { ?>
-	  <input type="submit" name="Submit3" value="Update" onClick="conf()">
-	   <input type="submit" name="Submit3" value="Update Contest and All Sites" onClick="conf2()">
-	   <input type="reset" name="Submit4" value="Clear">
+	  <button type="submit" name="Submit3" value="Update" onClick="conf()">Atualizar</button>
+	   <button type="submit" name="Submit3" value="Update Contest and All Sites" onClick="conf2()">Atualizar prova e todas as sedes</button>
+	   <input type="reset" name="Submit4" value="Limpar">
 <br><br>
-      <input type="submit" name="SubmitDC" value="Delete ALL clars" onClick="conf2()">
-      <input type="submit" name="SubmitDR" value="Delete ALL runs" onClick="conf2()">
-      <input type="submit" name="SubmitDT" value="Delete ALL tasks" onClick="conf2()">
-      <input type="submit" name="SubmitDB" value="Delete ALL bkps" onClick="conf2()">
+      <button type="submit" name="SubmitDC" value="Delete ALL clars" onClick="conf2()">Excluir TODAS as dúvidas</button>
+      <button type="submit" name="SubmitDR" value="Delete ALL runs" onClick="conf2()">Excluir TODAS as submissões</button>
+      <button type="submit" name="SubmitDT" value="Delete ALL tasks" onClick="conf2()">Excluir TODOS os pedidos</button>
+      <button type="submit" name="SubmitDB" value="Delete ALL bkps" onClick="conf2()">Excluir TODOS os backups</button>
 <?php } else { ?>
-      <input type="submit" name="Submit3" value="Update" onClick="conf()">
-	   <input type="submit" name="Submit3" value="Become Main Site" onClick="conf3()">
+      <button type="submit" name="Submit3" value="Update" onClick="conf()">Atualizar</button>
+	   <button type="submit" name="Submit3" value="Become Main Site" onClick="conf3()">Definir como sede principal</button>
 <?php } ?>
 	   </center>
 </form>

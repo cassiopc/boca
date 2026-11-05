@@ -117,12 +117,12 @@ function DBNewAnswer($contest, $param, $c=null) {
 	$type['number']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key])) {
-			MSGError("DBNewAnswer param error: $key is not set");
+			MSGError("DBNewAnswer: o parâmetro $key não foi informado.");
 			return false;
 		}
 		$$key = myhtmlspecialchars($param[$key]);
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
-			MSGError("DBNewAnswer param error: $key is not numeric");
+			MSGError("DBNewAnswer: o parâmetro $key deve ser numérico.");
 			return false;
 		}
 	}

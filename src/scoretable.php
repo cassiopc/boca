@@ -90,7 +90,9 @@ if($ds=="") $ds = "/";
 
 $scoretmp = $_SESSION["locr"] . $ds . "private" . $ds . "scoretmp" . $ds . $_SESSION["usertable"]["usertype"] . '-' . $_SESSION["usertable"]["username"] . ".php";
 $redo = TRUE;
-if(file_exists($scoretmp)) {
+// Relatórios históricos e finais dependem dos parâmetros da consulta e não
+// devem compartilhar o cache do placar ao vivo do mesmo usuário.
+if(!$final && file_exists($scoretmp)) {
 	if(($strtmp = file_get_contents($scoretmp,FALSE,NULL,0,5000000)) !== FALSE) {
 		list($d) = sscanf($strtmp,"%*s %d");
 		if($d > time() - $actualdelay) {
@@ -208,7 +210,7 @@ if($redo) {
 					   $_SESSION["usertable"]["usersitenumber"], $ver, $minu);
 	if(count($rn)>0 && $level>3) {
 		$strtmp .= "<table border=0><tr>";
-		$strtmp .= "<td>News (last ${minu}'): &nbsp;</td>\n";
+		$strtmp .= "<td>Novidades (últimos ${minu} minutos): &nbsp;</td>\n";
 		for($i=0; $i<count($rn); $i++) {
 			$strtmp .= "<td width=200>";
 			if($rn[$i]["yes"]=='t') {
@@ -224,7 +226,8 @@ if($redo) {
 		$strtmp .= "</tr></table>";
 	}
 	if($hor>=0) {
-		$strtmp .= "<center>As of $hor minutes. Next: ";
+		$unidade = ($hor == 1) ? 'minuto' : 'minutos';
+		$strtmp .= "<center>Placar aos $hor $unidade. Outros horários: ";
 		for($h=-30; $h<40; $h+=10) {
 			if($hor+$h>=0 && $h!=0) {
 				$strtmp .= "<a href=\"$loc/" . $_SESSION['usertable']['usertype'] . "/report/score.php?p=0&hor=" . ($hor+$h) . "\">";
@@ -248,7 +251,7 @@ if($redo) {
 			}
 			$lin = trim($lin[0]);
 			if($lin=='') continue;
-		//if($fta) { $fta=false; $strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup($rfi)\"> <b>Available scores:</b> \n"; }
+		//if($fta) { $fta=false; $strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup($rfi)\"> <b>Classificações disponíveis:</b> \n"; }
             $grname=explode(' ',$lin);
 			$class=1;
 			reset($score);
@@ -277,7 +280,7 @@ if($redo) {
 			}
 
 			if($class>1) {
-			  if($fta) { $fta=false; $strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup($rfi)\"> <b>Available scores:</b> \n"; }
+			  if($fta) { $fta=false; $strtmp .= "<br><img src=\"$loc/images/smallballoontransp.png\" alt=\"\" onload=\"javascript:toggleGroup($rfi)\"> <b>Classificações disponíveis:</b> \n"; }
 				$strtmp .= "<a href=\"#\" onclick=\"javascript:toggleGroup($rfi)\">" . $grname[0] . "</a> ";
 			}
 /*
@@ -299,10 +302,10 @@ if($redo) {
 		}
 	}
 
-	$strtmp .= "<br>\n<table id=\"myscoretable\" width=\"100%\" border=1>\n <tr>\n  <td><b>#</b></td>\n  <td><b>User/Site</b></td>\n  <td><b>Name</b></td>\n";
+	$strtmp .= "<br>\n<table id=\"myscoretable\" width=\"100%\" border=1>\n <tr>\n  <td><b>#</b></td>\n  <td><b>Usuário/Sede</b></td>\n  <td><b>Nome</b></td>\n";
 	if(!$des) {
 		if($level>0)
-			$strtmp .= "<td><b>Problems</b></td>";
+			$strtmp .= "<td><b>Questões</b></td>";
 	} else if($detail) {
 		for($i=0;$i<count($pr);$i++)
 			$strtmp .= "<td nowrap><b>" . $pr[$i]["problem"] . " &nbsp;</b></td>";
@@ -415,13 +418,14 @@ if($redo) {
 		  break;
 	}
 	$strtmp .= "</table>";
-	if ($n == 0) $strtmp .= "<br><center><b><font color=\"#ff0000\">SCOREBOARD IS EMPTY</font></b></center>";
+	if ($n == 0) $strtmp .= "<br><center><b><font color=\"#ff0000\">A CLASSIFICAÇÃO ESTÁ VAZIA</font></b></center>";
 	else {
 		if(!$des) 
-			if($level>0) $strtmp .= "<br><font color=\"#ff0000\">P.S. Problem names are hidden.</font>";
-			else  $strtmp .= "<br><font color=\"#ff0000\">P.S. Problem data are hidden.</font>";
+			if($level>0) $strtmp .= "<br><font color=\"#ff0000\">Observação: os nomes das questões estão ocultos.</font>";
+			else  $strtmp .= "<br><font color=\"#ff0000\">Observação: os dados das questões estão ocultos.</font>";
 	}
 
+	if (!$final) {
 	$conf=globalconf();
 	if(isset($conf['doenc']) && $conf['doenc'])
 	  $strtmp = "<!-- " . time() . " --> <?php exit; ?>\n" . encryptData($strtmp,$conf["key"],false);
@@ -429,7 +433,7 @@ if($redo) {
 	$randnum = session_id() . "_" . rand();
 	if(file_put_contents($scoretmp . "_" . $randnum, $strtmp,LOCK_EX)===FALSE) {
 		if($_SESSION["usertable"]["usertype"] == 'admin') {
-			MSGError("Cannot write to the score cache file -- performance might be compromised");
+			MSGError("Não foi possível gravar o cache do placar; o desempenho pode ser afetado.");
 		}
 		LOGError("Cannot write to the ".$_SESSION["usertable"]["usertype"]."-score cache file -- performance might be compromised");
 	} else {
@@ -439,6 +443,7 @@ if($redo) {
 	if(isset($conf['doenc']) && $conf['doenc'])
 	  $strtmp = decryptData(substr($strtmp,strpos($strtmp,"\n")),$conf["key"]);
 	else $strtmp = substr($strtmp,strpos($strtmp,"\n"));
+	}
 }
 echo $strtmp;
 ?>

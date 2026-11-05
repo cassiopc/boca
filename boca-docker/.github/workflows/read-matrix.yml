@@ -1,0 +1,141 @@
+---
+name: Read build matrix from file
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub Actions Documentation
+# https://docs.github.com/en/github-ae@latest/actions
+
+# Reusing workflows
+# https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+on:
+  # Run as reusable workflow
+  workflow_call:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+    inputs:
+      matrix-path:
+        required: true
+        type: string
+    # Map the workflow outputs to job outputs
+    outputs:
+      release:
+        description: Matrix of supported image tags/releases (e.g., 1.0.0)
+        value: ${{ jobs.get-matrix.outputs.release }}
+      default_release:
+        description: Default image tag/release
+        value: ${{ jobs.get-matrix.outputs.default_release }}
+      parent:
+        description: Matrix of parent/base images used in builds
+        value: ${{ jobs.get-matrix.outputs.parent }}
+      default_parent:
+        description: Default parent/base image
+        value: ${{ jobs.get-matrix.outputs.default_parent }}
+      platform:
+        description: Matrix of os/platform-specific target builds (multi-arch)
+        value: ${{ jobs.get-matrix.outputs.platform }}
+      repository:
+        description: Git URL of the BOCA repository to clone from
+        value: ${{ jobs.get-matrix.outputs.repository }}
+      ref:
+        description:
+          The branch, tag or SHA to point to in the cloned BOCA repository
+        value: ${{ jobs.get-matrix.outputs.ref }}
+
+jobs:
+  get-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.parse-matrix.outputs.release }}
+      default_release: ${{ steps.parse-matrix.outputs.default_release }}
+      parent: ${{ steps.parse-matrix.outputs.parent }}
+      default_parent: ${{ steps.parse-matrix.outputs.default_parent }}
+      platform: ${{ steps.parse-matrix.outputs.platform }}
+      repository: ${{ steps.parse-matrix.outputs.repository }}
+      ref: ${{ steps.parse-matrix.outputs.ref }}
+
+    steps:
+      # Checkout a repository, so the workflow can access it
+      # https://github.com/actions/checkout
+      - 
+        name: Checkout repository
+        uses: actions/checkout@v5
+
+      # Setting output parameters between steps, jobs and/or workflows
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
+      - 
+        id: set-json
+        name: Get build matrix from file
+        run: |
+
+          # Specify path of matrix file
+          JSON=${{ inputs.matrix-path }}
+          echo "${JSON}"
+
+          # Passing filename between jobs and/or workflows
+          echo "json=${JSON}" >> "$GITHUB_OUTPUT"
+
+      - 
+        id: parse-matrix
+        name: Set build matrix of releases, parent images and os/architectures
+        run: |
+
+          # Read matrix from file and set variables
+          CONTENT=`cat ${{ steps.set-json.outputs.json }}`
+          echo "$CONTENT"
+          RELEASES=$(echo $CONTENT | jq ".release")
+          echo "$RELEASES"
+          PARENTS=$(echo $CONTENT | jq ".parent")
+          echo "$PARENTS"
+          PLATFORMS=$(echo $CONTENT | jq ".platform")
+          echo "$PLATFORMS"
+          REPOSITORY=$(echo $CONTENT | jq ".repository")
+          echo "$REPOSITORY"
+          REF=$(echo $CONTENT | jq ".ref")
+          echo "$REF"
+
+          # Remove square brackets and double quotes
+          DEFAULT_RELEASE=$(echo $RELEASES | tr -d "[]|\"")
+          DEFAULT_PARENT=$(echo $PARENTS | tr -d "[]|\"")
+          # Split string into an array
+          IFS=', ' read -r -a DEFAULT_RELEASE <<< "$DEFAULT_RELEASE"
+          IFS=', ' read -r -a DEFAULT_PARENT <<< "$DEFAULT_PARENT"
+          # Set default release and base image (parent) as the first value of
+          # the array
+          DEFAULT_RELEASE=${DEFAULT_RELEASE[0]}
+          echo "$DEFAULT_RELEASE"
+          DEFAULT_PARENT=${DEFAULT_PARENT[0]}
+          echo "$DEFAULT_PARENT"
+
+          # Passing matrix between jobs and/or workflows
+          echo "release="${RELEASES} >> "$GITHUB_OUTPUT"
+          echo "default_release=${DEFAULT_RELEASE}" >> "$GITHUB_OUTPUT"
+          echo "parent="${PARENTS} >> "$GITHUB_OUTPUT"
+          echo "default_parent=${DEFAULT_PARENT}" >> "$GITHUB_OUTPUT"
+          echo "platform"=${PLATFORMS} >> "$GITHUB_OUTPUT"
+          echo "repository"=${REPOSITORY} >> "$GITHUB_OUTPUT"
+          echo "ref"=${REF} >> "$GITHUB_OUTPUT"
+
+  # check-setup:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       parent: ${{ fromJSON(needs.get-matrix.outputs.parent) }}
+  #   needs:
+  #     - get-matrix
+
+  #   steps:
+  #     - 
+  #       name: Check build matrix
+  #       run: |
+
+  #         # Print current parent image and platforms
+  #         echo "${{ matrix.parent }}"
+  #         PLATFORM=${{ toJSON(needs.get-matrix.outputs.platform) }}
+  #         echo "$PLATFORM"
+  #         # Remove square bracket, white spaces and double quotes
+  #         PLATFORM=$(echo $PLATFORM | tr -d "[]| |\"")
+  #         echo "$PLATFORM"

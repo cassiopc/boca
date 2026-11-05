@@ -1,0 +1,44 @@
+[
+  {
+    "height": 111.375,
+    "title": "Central SEMINFO",
+    "width": 408.015625,
+    "x": 28,
+    "y": 36.484375
+  },
+  {
+    "height": 71.140625,
+    "title": "Visão da sala",
+    "width": 163.9375,
+    "x": 28,
+    "y": 413.828125
+  },
+  {
+    "height": 489.1875,
+    "title": "Preparar a mesa para receber equipes",
+    "width": 389.65625,
+    "x": 28,
+    "y": 756.75
+  },
+  {
+    "height": 489.1875,
+    "title": "Aprovar computadores",
+    "width": 389.671875,
+    "x": 437.65625,
+    "y": 756.75
+  },
+  {
+    "height": 489.1875,
+    "title": "Placares por categoria",
+    "width": 389.65625,
+    "x": 847.328125,
+    "y": 756.75
+  },
+  {
+    "height": 98.078125,
+    "title": "Ativação e encerramento",
+    "width": 620,
+    "x": 53,
+    "y": 1305.6875
+  }
+]

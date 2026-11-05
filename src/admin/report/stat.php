@@ -21,16 +21,16 @@ require('header.php');
 
 $d = DBRunReport($_SESSION["usertable"]["contestnumber"],$_SESSION["usertable"]["usersitenumber"]);
 
-echo "<center><h2>Statistics</h2></center>\n";
+echo "<center><h2>Estatísticas</h2></center>\n";
 //----------------------------------------------------------
-echo "<center><h3>Runs by Problem</h3></center>\n";
+echo "<center><h3>Submissões por questão</h3></center>\n";
 echo "<center><table border=1>\n";
-echo "<tr><td><b><u>Problems</u></b></td>";
+echo "<tr><td><b><u>Questões</u></b></td>";
 
-echo "<td>Total</td><td>Accepted</td>";
+echo "<td>Total</td><td>Aceitas</td>";
 echo "</tr>\n";
 
-$str2="Accepted Runs by Problem";
+$str2="Submissões aceitas por questão";
 $color=array();
 $values_ac = array();
 $cor = "";
@@ -69,7 +69,7 @@ foreach($d['problem'] as $keya => $val){
 }
 echo "</table></center>";
 
-$myfile = fopen("runs_by_problems.txt", "w") or die("Unable to open file runs_by_problems.txt!");
+$myfile = fopen("runs_by_problems.txt", "w") or die("Não foi possível abrir o arquivo runs_by_problems.txt.");
 for($i=0;$i<count($values);$i++){
   fwrite($myfile, $values[$i]);
   fwrite($myfile, " ");
@@ -78,7 +78,7 @@ for($i=0;$i<count($values);$i++){
 }
 fclose($myfile);
 
-$myfile = fopen("accepted_runs_by_problems.txt", "w") or die("Unable to open file accepted_runs_by_problems.txt!");
+$myfile = fopen("accepted_runs_by_problems.txt", "w") or die("Não foi possível abrir o arquivo accepted_runs_by_problems.txt.");
 for($i=0;$i<count($values_ac);$i++){
   fwrite($myfile, $values_ac[$i]);
   fwrite($myfile, " ");
@@ -87,22 +87,22 @@ for($i=0;$i<count($values_ac);$i++){
 }
 fclose($myfile);
 
-shell_exec("python3 piechart.py runs_by_problems.txt 'Runs by Problems'");
-shell_exec("python3 piechart.py accepted_runs_by_problems.txt 'Accepted Runs by Problems'");
+shell_exec("python3 piechart.py runs_by_problems.txt 'Submissões por questão'");
+shell_exec("python3 piechart.py accepted_runs_by_problems.txt 'Submissões aceitas por questão'");
 
 
 echo "<center><table><tr>";
-echo "<td><img alt='runs by problems' src=runs_by_problems.png width=600></td></tr>\n";
-echo "<td><img alt='accepted runs by problems' src=accepted_runs_by_problems.png width=600></td>\n";
+echo "<td><img alt='submissões por questão' src=runs_by_problems.png width=600></td></tr>\n";
+echo "<td><img alt='submissões aceitas por questão' src=accepted_runs_by_problems.png width=600></td>\n";
 echo "</table> </center>";
 //----------------------------------------------------------
-echo "<center><h3>Runs by Problem and Answer</h3></center>\n";
+echo "<center><h3>Submissões por questão e resposta</h3></center>\n";
 echo "<center><table border=1>\n";
-echo "<tr><td><b><u>Problems x Answers</u></b></td>";
+echo "<tr><td><b><u>Questões x respostas</u></b></td>";
 
 foreach($d['answer'] as $key => $val){
 // while (list($key, $val) = each($d['answer']))
-  echo "<td>$key</td>";
+  echo "<td>" . displayRunAnswer($key) . "</td>";
 }
 echo "<td>Total</td></tr>\n";
 
@@ -127,9 +127,9 @@ foreach($d['problem'] as $keya => $vala){
 echo "</table></center>";
 
 //----------------------------------------------------------
-echo "<center><h3>Runs by Problem and Language</h3></center>\n";
+echo "<center><h3>Submissões por questão e linguagem</h3></center>\n";
 echo "<center><table border=1>\n";
-echo "<tr><td><b><u>Problems x Languages</u></b></td>";
+echo "<tr><td><b><u>Questões x linguagens</u></b></td>";
 // while (list($key, $val) = each($d['language']))
 foreach($d['language'] as $key => $val){
   echo "<td>$key</td>";
@@ -159,15 +159,15 @@ echo "</table></center>";
 //----------------------------------------------------------
 echo "<br />";
 echo "<hr />";
-echo "<center><h3>Runs by Language</h3></center>\n";
+echo "<center><h3>Submissões por linguagem</h3></center>\n";
 echo "<center><table border=1>\n";
-echo "<tr><td><b><u>Languages</u></b></td>";
+echo "<tr><td><b><u>Linguagens</u></b></td>";
 
-echo "<td>Total</td><td>Accepted</td>";
+echo "<td>Total</td><td>Aceitas</td>";
 echo "</tr>\n";
 
-$str="All Runs by Language";
-$str2="Accepted Runs by Language";
+$str="Todas as submissões por linguagem";
+$str2="Submissões aceitas por linguagem";
 $values = array();
 $values_ac = array();
 foreach($d['language'] as $keya => $val){
@@ -199,7 +199,7 @@ $color[] = "#ffa700";
 $color[] = "#ff0000";
 
 
-$myfile = fopen("all_runs_by_language.txt", "w") or die("Unable to open file all_runs_by_language.txt!");
+$myfile = fopen("all_runs_by_language.txt", "w") or die("Não foi possível abrir o arquivo all_runs_by_language.txt.");
 for($i=0;$i<count($values);$i++){
   fwrite($myfile, $values[$i]);
   fwrite($myfile, " ");
@@ -208,7 +208,7 @@ for($i=0;$i<count($values);$i++){
 }
 fclose($myfile);
 
-$myfile = fopen("accepted_runs_by_language.txt", "w") or die("Unable to open file accepted_runs_by_language.txt!");
+$myfile = fopen("accepted_runs_by_language.txt", "w") or die("Não foi possível abrir o arquivo accepted_runs_by_language.txt.");
 for($i=0;$i<count($values);$i++){
   fwrite($myfile, $values_ac[$i]);
   fwrite($myfile, " ");
@@ -219,25 +219,25 @@ for($i=0;$i<count($values);$i++){
 fclose($myfile);
 
 
-shell_exec("python3 piechart.py all_runs_by_language.txt 'All Runs by Language' 'lower'");
-shell_exec("python3 piechart.py accepted_runs_by_language.txt 'Accepted Runs by Language' 'lower'");
+shell_exec("python3 piechart.py all_runs_by_language.txt 'Todas as submissões por linguagem' 'lower'");
+shell_exec("python3 piechart.py accepted_runs_by_language.txt 'Submissões aceitas por linguagem' 'lower'");
 
 
 
 
 echo "<center><table><tr>";
-echo "<td><img alt='all runs by language' src=all_runs_by_language.png width=600></td></tr>\n";
-echo "<td><img alt='accepted runs by language' src=accepted_runs_by_language.png width=600></td>\n";
+echo "<td><img alt='submissões por linguagem' src=all_runs_by_language.png width=600></td></tr>\n";
+echo "<td><img alt='submissões aceitas por linguagem' src=accepted_runs_by_language.png width=600></td>\n";
 echo "</table> </center>";
 
 
 //----------------------------------------------------------
-echo "<center><h3>Runs by Language and Answer</h3></center>\n";
+echo "<center><h3>Submissões por linguagem e resposta</h3></center>\n";
 echo "<center><table border=1>\n";
-echo "<tr><td><b><u>Languages x Answers</u></b></td>";
+echo "<tr><td><b><u>Linguagens x respostas</u></b></td>";
 foreach($d['answer'] as $key => $val){
 // while (list($key, $val) = each($d['answer']))
-  echo "<td>$key</td>";
+  echo "<td>" . displayRunAnswer($key) . "</td>";
 }
 echo "<td>Total</td></tr>\n";
 
@@ -262,24 +262,24 @@ echo "</table></center>";
 //----------------------------------------------------------
 echo "<br />";
 echo "<hr />";
-echo "<center><h3>Runs by Answer</h3></center>\n";
+echo "<center><h3>Submissões por resposta</h3></center>\n";
 
 echo "<center><table><tr>";
 echo "<td>";
 
 echo "<center><table border=1>\n";
-echo "<tr><td><b><u>Answers</u></b></td>";
+echo "<tr><td><b><u>Respostas</u></b></td>";
 
-echo "<td>Answers</td>";
+echo "<td>Respostas</td>";
 echo "</tr>\n";
 
-$str="All Runs by Answer";
+$str="Todas as submissões por resposta";
 $values = array();
 // while (list($keya, $val) = each($d['answer'])) {
 foreach($d['answer'] as $keya => $val){
   $str .= chr(1) . $keya . "(" . $val . ")" . chr(1) . $val;
-  $values[] = $keya . ":" . $val;
-  echo "<tr><td>$keya</td>";
+  $values[] = displayRunAnswer($keya) . ":" . $val;
+  echo "<tr><td>" . displayRunAnswer($keya) . "</td>";
   echo "<td>$val</td>";
   echo "</tr>";
 }
@@ -287,7 +287,7 @@ echo "</table></center>";
 
 $color[] = "#af7f57";
 $color[] = "#ffffff";
-$myfile = fopen("all_runs_by_answer.txt", "w") or die("Unable to open file all_runs_by_answer.txt!");
+$myfile = fopen("all_runs_by_answer.txt", "w") or die("Não foi possível abrir o arquivo all_runs_by_answer.txt.");
 for($i=0;$i<count($values);$i++){
   fwrite($myfile, $values[$i]);
   fwrite($myfile, " ");
@@ -297,20 +297,20 @@ for($i=0;$i<count($values);$i++){
 
 fclose($myfile);
 
-shell_exec("python3 piechart.py all_runs_by_answer.txt 'All Runs by Answer' 'lower'");
+shell_exec("python3 piechart.py all_runs_by_answer.txt 'Todas as submissões por resposta' 'lower'");
 
 
 
 echo "<center><table><tr>";
-echo "<td><img alt='all runs by answer' src=all_runs_by_answer.png width=600></td></tr>\n";
+echo "<td><img alt='submissões por resposta' src=all_runs_by_answer.png width=600></td></tr>\n";
 echo "</table></center>\n";
 
 //----------------------------------------------------------
 echo "<br />";
 echo "<hr />";
-echo "<center><h3>Runs by User and Problem</h3></center>\n";
+echo "<center><h3>Submissões por usuário e questão</h3></center>\n";
 echo "<center><table border=1>\n";
-echo "<tr><td><b><u>Users x Problems</u></b></td>";
+echo "<tr><td><b><u>Usuários x questões</u></b></td>";
 // while (list($key, $val) = each($d['problem'])) {
 foreach($d['problem'] as $key => $val){
 
@@ -319,7 +319,7 @@ foreach($d['problem'] as $key => $val){
 	  "src=\"" . balloonurl($d['color'][$key]) ."\" />\n";
   echo "</td>";
 }
-echo "<td>Total</td><td>Accepted</td></tr>\n";
+echo "<td>Total</td><td>Aceitas</td></tr>\n";
 
 // while (list($keya, $vala) = each($d['username'])) {
 foreach($d['username'] as $keya => $vala){
@@ -368,7 +368,7 @@ echo "</table></center>";
 //----------------------------------------------------------
 echo "<br />";
 echo "<hr />";
-echo "<center><h3>Runs by Time Period</h3></center>\n";
+echo "<center><h3>Submissões por período</h3></center>\n";
 
 $vezes = 30;
 $passo = $st['siteduration']/$vezes;
@@ -390,7 +390,7 @@ foreach($d['timestamp'] as $keya => $val){
   if($res[$pos] > $m) $m=$res[$pos];
 }
 
-$str="Runs by Time Period" . chr(1) . $m;
+$str="Submissões por período" . chr(1) . $m;
 $atual=0;
 $values = array();
 for($pos=0; $pos<$vezes; $pos++) {
@@ -402,13 +402,13 @@ for($pos=0; $pos<$vezes; $pos++) {
   $values[] = $res[$pos];
 }
 
-$myfile = fopen("runs_by_time_period.txt", "w") or die("Unable to open file runs_by_time_period.txt!");
+$myfile = fopen("runs_by_time_period.txt", "w") or die("Não foi possível abrir o arquivo runs_by_time_period.txt.");
 for($i=0;$i<count($values);$i++){
   fwrite($myfile, $values[$i]);
   fwrite($myfile, "\n");
 }
 
-shell_exec("python3 barplot.py runs_by_time_period.txt 'Runs by Time Period'");
+shell_exec("python3 barplot.py runs_by_time_period.txt 'Submissões por período'");
 
 
 echo "<center><img alt=runs_by_time_period src=runs_by_time_period.png width=900></center>\n";
@@ -434,7 +434,7 @@ foreach($d['timestampyes'] as $keya => $val){
   else $res[$pos]=1;
 }
 
-$str="Accepted Runs by Time Period" . chr(1) . $m;
+$str="Submissões aceitas por período" . chr(1) . $m;
 $atual=0;
 $values_ac = array();
 for($pos=0; $pos<$vezes; $pos++) {
@@ -446,13 +446,13 @@ for($pos=0; $pos<$vezes; $pos++) {
   $values_ac[] = $res[$pos];
 }
 
-$myfile = fopen("accepted_runs_by_time_period.txt", "w") or die("Unable to open file accepted_runs_by_time_period.txt!");
+$myfile = fopen("accepted_runs_by_time_period.txt", "w") or die("Não foi possível abrir o arquivo accepted_runs_by_time_period.txt.");
 for($i=0;$i<count($values_ac);$i++){
   fwrite($myfile, $values_ac[$i]);
   fwrite($myfile, "\n");
 }
 
-shell_exec("python3 barplot.py accepted_runs_by_time_period.txt 'Accepted Runs by Time Period'");
+shell_exec("python3 barplot.py accepted_runs_by_time_period.txt 'Submissões aceitas por período'");
 
 
 echo "<center><img alt=runs_by_time_period src=accepted_runs_by_time_period.png width=900></center>\n";

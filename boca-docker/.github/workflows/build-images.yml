@@ -1,0 +1,423 @@
+---
+name: Build and publish multi-platform Docker images on ghcr.io
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub Actions Documentation
+# https://docs.github.com/en/github-ae@latest/actions
+
+# Reusing workflows
+# https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+on:
+  # Run as reusable workflow
+  workflow_call:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_callinputs
+    inputs:
+      images:
+        description: 
+          Matrix of images to build (i.e., boca-base, boca-web and boca-jail)
+        required: true
+        type: string
+      parents:
+        description: Matrix of parent/base images used in builds
+        required: true
+        type: string
+      default_parent:
+        description: Default parent/base image
+        required: true
+        type: string
+      platforms:
+        description: Matrix of target os/platforms (multi-arch)
+        required: true
+        type: string
+      tags:
+        description: Image tags (whitespace-separated)
+        required: true
+        type: string
+      latest:
+        # The latest tag is automatically handled through the new tag/release
+        # event. Set for conditionally tagging with the latest tag.
+        description: For conditionally tagging with the latest tag
+        required: false
+        type: boolean
+      ref:
+        # The branch, tag or SHA to checkout in builds. If empty, check out
+        # the repository that triggered the workflow.
+        description: 
+          The branch, tag or SHA to checkout (empty for current branch)
+        required: false
+        type: string
+      boca_repository:
+        # Git URL of the BOCA repository to clone from.
+        description: >-
+          Git URL of the BOCA repository to clone from
+          (empty for https://github.com/cassiopc/boca.git)
+        required: false
+        type: string
+      boca_ref:
+        # The branch, tag or SHA to point to in the cloned BOCA repository.
+        description: 
+          The branch, tag or SHA to checkout (empty for BOCA repository's HEAD)
+        required: false
+        type: string
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY_HOST: ghcr.io
+  # Use github.repository (<account>/<repo>)
+  REPOSITORY_NAME: ${{ github.repository }}
+  # Use github.repository_owner (<account>)
+  OWNER_NAME: ${{ github.repository_owner }}
+  # Use GitHub local artifacts
+  DIGESTS_PATH: /tmp/digests
+     
+jobs:
+  # Distribute build of each platform across multiple runners and
+  # push by digest
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      # for actions/checkout to fetch code
+      contents: read
+      # can upload and download package, as well as read/write package metadata
+      packages: write
+    strategy:
+      # If is set to true (default), GitHub will cancel all in-progress and
+      # queued jobs in the matrix if any job in the matrix fails.
+      fail-fast: false
+      matrix:
+        image: ${{ fromJSON(inputs.images) }}
+        parent: ${{ fromJSON(inputs.parents) }}
+        platform: ${{ fromJSON(inputs.platforms) }}
+    name: 
+      build (${{ matrix.image }}, ${{ matrix.parent }}, ${{ matrix.platform }})
+
+    steps:
+      # Setting output parameters between steps, jobs and/or workflows
+      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+      - 
+        name: Write variables to GITHUB_OUTPUT
+        id: setup
+        run: |
+
+          # Set OS release
+          PARENT="${{ matrix.parent }}"
+          # Replace 'ubuntu:' with ''
+          RELEASE=${PARENT//ubuntu:/}
+          echo "$RELEASE"
+          echo "release_name=$RELEASE" >> "$GITHUB_OUTPUT"
+
+          # Set architecture
+          PLATFORM="${{ matrix.platform }}"
+          # Replace 'linux/' with '' and '/' with '-'
+          ARCH=${PLATFORM//linux\//}
+          ARCH=${ARCH//\//-}
+          echo "$ARCH"
+          echo "arch_name=$ARCH" >> "$GITHUB_OUTPUT"
+
+          # Set base image (used in build)
+          if [[ "${{ matrix.image }}" == 'boca-base' ]];
+          then
+            BASE_IMAGE="${{ matrix.parent }}"
+          else
+            BASE_IMAGE="${{ env.REGISTRY_HOST }}/${{ env.REPOSITORY_NAME }}/"
+            BASE_IMAGE+="boca-base:${{ github.ref_name }}"
+          fi
+          echo "$BASE_IMAGE"
+          echo "base_image=$BASE_IMAGE" >> "$GITHUB_OUTPUT"
+
+          # Set image
+          IMG="${{ env.REGISTRY_HOST }}/${{ env.REPOSITORY_NAME }}/"
+          IMG+="${{ matrix.image }}"
+          echo "$IMG"
+          echo "image_name=$IMG" >> "$GITHUB_OUTPUT"
+
+          # Set folder
+          DIR="${{ matrix.image }}"
+          # Remove 'boca-' from image name
+          DIR=${DIR//boca-/}
+          echo "$DIR"
+          echo "folder_name=$DIR" >> "$GITHUB_OUTPUT"
+
+          # Set digests path
+          DIGESTS_PATH="${{ env.DIGESTS_PATH }}/${{ matrix.image }}-${RELEASE}"
+          echo "$DIGESTS_PATH"
+          echo "digests_path=$DIGESTS_PATH" >> "$GITHUB_OUTPUT"
+
+          # Set the cache-to output
+          # https://docs.docker.com/build/cache/backends/gha/
+          echo "${{ github.ref_name }}-${{ matrix.image }}-$RELEASE-$ARCH"
+          CACHE_TO="type=gha,scope=${{ github.ref_name }}-"
+          CACHE_TO+="${{ matrix.image }}-$RELEASE-$ARCH"
+          echo "cache-to=$CACHE_TO" >> "${GITHUB_OUTPUT}"
+
+          # Set the cache-from output
+          if [[ "${{ github.event_name }}" == 'push' ]]; then
+            echo "${{ github.ref_name }}-${{ matrix.image }}-$RELEASE-$ARCH"
+            CACHE_FROM="type=gha,scope=${{ github.ref_name }}-"
+            CACHE_FROM+="${{ matrix.image }}-$RELEASE-$ARCH"
+            echo "cache-from=$CACHE_FROM" >> "${GITHUB_OUTPUT}"
+          else
+            # Use cache from target branch too when building a pull request
+            # In this case, it has to be a multiline string
+            # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+            SCOPE_REF_NAME="${{ github.ref_name }}-${{ matrix.image }}"
+            SCOPE_BASE_REF="${{ github.base_ref }}-${{ matrix.image }}"
+            EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+            echo "cache-from<<${EOF}" >> "${GITHUB_OUTPUT}"
+            printf '%s\n' \
+              "type=gha,scope=$SCOPE_REF_NAME-$RELEASE-$ARCH" \
+              "type=gha,scope=$SCOPE_BASE_REF-$RELEASE-$ARCH" \
+              >> "${GITHUB_OUTPUT}"
+            echo "${EOF}" >> "${GITHUB_OUTPUT}"
+          fi
+
+      # Checkout a repository, so the workflow can access it
+      # https://github.com/actions/checkout
+      - 
+        name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: '${{ inputs.ref }}'
+
+      # Add support for more platforms with QEMU (optional)
+      # https://github.com/docker/setup-qemu-action
+      - 
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      # Create and boot a builder that can be used in the following steps of
+      # the workflow
+      # https://github.com/docker/setup-buildx-action
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Login to a Docker registry (except on PR)
+      # https://github.com/docker/login-action
+      - 
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - 
+        name: Extract Docker metadata (${{ matrix.image }})
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.setup.outputs.image_name }}
+          labels: >-
+            org.opencontainers.image.title=${{ matrix.image }}
+
+            org.opencontainers.image.description=A multi-platform/arch
+            image of the boca-docker project
+
+            org.opencontainers.image.url=${{ steps.setup.outputs.image_name }}
+
+      - 
+        name: Build and push image remotely (${{ matrix.image }})
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/dev/${{ steps.setup.outputs.folder_name }}/Dockerfile
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BASE_IMAGE=${{ steps.setup.outputs.base_image }}
+            REPOSITORY=${{ inputs.boca_repository }}
+            REF=${{ inputs.boca_ref }}
+          # If true, it provides build attestations describing the image
+          # contents and how they were built.
+          provenance: false
+          outputs: >-
+            type=image,name=${{ steps.setup.outputs.image_name }},
+            push-by-digest=true,name-canonical=true,push=true
+          cache-from: >-
+            ${{ steps.setup.outputs.cache-from }}
+          cache-to: >-
+            ${{ steps.setup.outputs.cache-to }}
+
+      - name: Export digest
+        id: export
+        run: |
+
+          mkdir -p ${{ steps.setup.outputs.digests_path }}
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ steps.setup.outputs.digests_path }}/${digest#sha256:}"
+
+          # Set digests name (used in the next step)
+          DIGESTS_NAME="digests-${{ matrix.image }}-"
+          DIGESTS_NAME+="${{ steps.setup.outputs.release_name }}-"
+          DIGESTS_NAME+="${{ steps.setup.outputs.arch_name }}"
+          echo "$DIGESTS_NAME"
+          echo "digests_name=$DIGESTS_NAME" >> "$GITHUB_OUTPUT"
+
+      # Upload artifacts from workflow allowing to share data between jobs
+      # https://github.com/actions/upload-artifact
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name:
+            ${{ steps.export.outputs.digests_name }}
+          path: ${{ steps.setup.outputs.digests_path }}/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # This job creates a manifest list and push it to GitHub Container Registry.
+  merge:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJSON(inputs.images) }}
+        parent: ${{ fromJSON(inputs.parents) }}
+    needs:
+      - build
+
+    steps:
+      - 
+        name: Write variables to GITHUB_OUTPUT
+        id: setup
+        run: |
+
+          # Set OS release
+          PARENT="${{ matrix.parent }}"
+          # Replace 'ubuntu:' with ''
+          RELEASE=${PARENT//ubuntu:/}
+          echo "$RELEASE"
+          echo "release_name=$RELEASE" >> "$GITHUB_OUTPUT"
+
+          # Set image name
+          IMG="${{ env.REGISTRY_HOST }}/${{ env.REPOSITORY_NAME }}/"
+          IMG+="${{ matrix.image }}"
+          echo "$IMG"
+          echo "image_name=$IMG" >> "$GITHUB_OUTPUT"
+
+          # Set digests path
+          DIGESTS_PATH="${{ env.DIGESTS_PATH }}/${{ matrix.image }}-${RELEASE}"
+          echo "$DIGESTS_PATH"
+          echo "digests_path=$DIGESTS_PATH" >> "$GITHUB_OUTPUT"
+
+          # Set digests pattern
+          DIGESTS_PATTERN="digests-${{ matrix.image }}-$RELEASE"
+          echo "$DIGESTS_PATTERN"
+          echo "digests_pattern=$DIGESTS_PATTERN" >> "$GITHUB_OUTPUT"
+
+          # Set tags
+          TAGS="${{ inputs.tags }}"
+          echo "$TAGS"
+          # Split string into an array
+          IFS=', ' read -r -a TAGS <<< "$TAGS"
+
+          # Prepare variables
+          unset EXTRA_TAGS
+          ENABLED=${{ matrix.parent == inputs.default_parent }}
+
+          # Set tags dynamically
+          # Nightly build
+          EXTRA_TAGS="${EXTRA_TAGS}
+              type=schedule,pattern=nightly,suffix=-${RELEASE}
+              type=schedule,pattern=nightly,enable=${ENABLED}"
+          # New release
+          EXTRA_TAGS="${EXTRA_TAGS}
+              type=semver,pattern={{raw}},priority=900,suffix=-${RELEASE}
+              type=semver,pattern={{raw}},priority=1000,enable=${ENABLED}"
+          EXTRA_TAGS="${EXTRA_TAGS}
+              type=semver,pattern={{major}}.{{minor}},priority=900,"
+          EXTRA_TAGS="${EXTRA_TAGS}suffix=-${RELEASE}
+              type=semver,pattern={{major}}.{{minor}},priority=1000,"
+          EXTRA_TAGS="${EXTRA_TAGS}enable=${ENABLED}"
+          # Tag event (same as new release)
+          EXTRA_TAGS="${EXTRA_TAGS}
+              type=ref,event=tag,priority=900,suffix=-${RELEASE}
+              type=ref,event=tag,priority=1000,enable=${ENABLED}"
+          # Branch event
+          EXTRA_TAGS="${EXTRA_TAGS}
+              type=ref,event=branch,priority=900,suffix=-${RELEASE}
+              type=ref,event=branch,priority=1000,enable=${ENABLED}"
+
+          for t in ${TAGS[@]};
+          do
+            echo "${t}"
+
+            EXTRA_TAGS="${EXTRA_TAGS}
+              type=raw,value=${t},priority=1000,enable=${ENABLED}
+              type=raw,value=${t},priority=900,suffix=-${RELEASE},enable=true"
+          done
+
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "extra_tags<<${EOF}" >> "${GITHUB_OUTPUT}"
+          printf '%s\n' \
+            "${EXTRA_TAGS}" >> "${GITHUB_OUTPUT}"
+          echo "${EOF}" >> "${GITHUB_OUTPUT}"
+
+      # Download artifacts that have been uploaded from previous jobs
+      # https://github.com/actions/download-artifact
+      -
+        name: Download digests
+        uses: actions/download-artifact@v5
+        with:
+          pattern:
+            ${{ steps.setup.outputs.digests_pattern }}-*
+          merge-multiple: true
+          path: ${{ steps.setup.outputs.digests_path }}
+
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - 
+        name: Extract Docker metadata (${{ matrix.image }})
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.setup.outputs.image_name }}
+          tags: |
+            ${{ steps.setup.outputs.extra_tags }}
+          flavor: >- 
+            latest=${{ matrix.parent == inputs.default_parent &&
+            (github.event_name == 'push' && contains(github.ref,
+            'refs/tags/') || inputs.latest == true ) }}
+          labels: >-
+            org.opencontainers.image.title=${{ matrix.image }}
+
+            org.opencontainers.image.description=A multi-platform/arch
+            image of the boca-docker project
+
+            org.opencontainers.image.url=${{ steps.setup.outputs.image_name }}
+
+      - 
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY_HOST }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - 
+        name: Create manifest list and push
+        working-directory: ${{ steps.setup.outputs.digests_path }}
+        run: |
+
+          docker buildx imagetools create \
+            $(jq -r '"-t " + (.tags | join(" -t "))' <<< \
+              '${{ steps.meta.outputs.json }}') \
+              $(printf '${{ steps.setup.outputs.image_name }}@sha256:%s ' *)
+
+      - 
+        name: Inspect image
+        run: |
+      
+          IMG="${{ steps.setup.outputs.image_name }}:"
+          IMG+="${{ steps.meta.outputs.version }}"
+          docker buildx imagetools inspect "${IMG}"

@@ -105,14 +105,14 @@ function DBUpdateRunC($contest, $usersite, $usernumber, $runsite, $runnumber, $a
 				  "DBUpdateRunC(get answer)");
 	if ($a == null) {
 		DBExec($c, "rollback work", "DBUpdateRunC(rollback)");
-		MSGError("Problem with the answer table. Contact an admin now!");
+		MSGError("Problema na tabela de respostas. Contate a administração.");
 		LogLevel("Unable to judge a run because the answer was not found (run=$runnumber, site=$runsite, ".
 				 "contest=$contest, answer=$answer).",0);
 		return false;
 	}
 	if ($a["fake"] == 't') {
 		DBExec($c, "rollback work", "DBUpdateRunC(rollback)");
-		MSGError("You must choose a valid answer.");
+		MSGError("Selecione uma resposta válida.");
 		LogLevel("Unable to judge a run because of the fake answer (run=$runnumber, site=$runsite, ".
 				 "contest=$contest, answer=$answer).",0);
 		return false;
@@ -138,7 +138,7 @@ function DBUpdateRunC($contest, $usersite, $usernumber, $runsite, $runnumber, $a
 			DBExec($c, "rollback work", "DBUpdateRunC(rollback)");
 			LogLevel("Unable to judge a run (maybe it was already judged or catched by a chief) " .
 					 "(run=$runnumber, site=$runsite, contest=$contest).",2);
-			MSGError("Unable to judge the run (maybe it was already judged or catched by a chief)");
+			MSGError("Não foi possível julgar a submissão; ela pode já ter sido julgada ou reservada pelo juiz chefe.");
 		}
 		return false;
 	}
@@ -680,11 +680,11 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 	$type['runanswer2']=1;
 	foreach($ac as $key) {
 		if(!isset($param[$key]) || $param[$key]=="") {
-			MSGError("DBNewRun param error: $key not found");
+			MSGError("DBNewRun: o parâmetro $key não foi informado.");
 			return false;
 		}
 		if(isset($type[$key]) && !is_numeric($param[$key])) {
-			MSGError("DBNewRun param error: $key is not numeric");
+			MSGError("DBNewRun: o parâmetro $key deve ser numérico.");
 			return false;
 		}
 		$$key = myhtmlspecialchars($param[$key]);
@@ -715,7 +715,7 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 		if(isset($param[$key])) {
 			$$key = myhtmlspecialchars($param[$key]);
 			if(isset($type[$key]) && !is_numeric($param[$key])) {
-				MSGError("DBNewRun param error: $key is not numeric");
+				MSGError("DBNewRun: o parâmetro $key deve ser numérico.");
 				return false;
 			}
 		}
@@ -740,7 +740,7 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 	if (DBnlines($r) != 1) {
 		DBExec($c, "rollback work", "DBNewRun(rollback-site)");
 		LOGError("Unable to find a unique site/contest in the database. SQL=(" . $sql . ")");
-		MSGError("Unable to find a unique site/contest in the database.");
+		MSGError("Não foi possível identificar o local e a competição no banco de dados.");
 		return false;
 	}
 	$a = DBRow($r,0);
@@ -785,13 +785,13 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 		if ($dif < 0) { if(!isset($param['allowneg'])) {
 			DBExec($c, "rollback work", "DBNewRun(rollback-started)");
 			LOGError("Tried to submit a run but the contest is not started. SQL=(" . $sql . ")");
-			MSGError("The contest is not started yet!");
+			MSGError("A competição ainda não começou!");
 			return 0;
 		} }
 		if (!$b["siterunning"]) {
 			DBExec($c, "rollback work", "DBNewRun(rollback-over)");
 			LOGError("Tried to submit a run but the contest is over. SQL=(" . $sql . ")");
-			MSGError("The contest is over!");
+			MSGError("A competição terminou!");
 			return 0;
 		}
 	} else {
@@ -802,7 +802,7 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 	    if ($dif >= $b['siteduration']) {
 	    DBExec($c, "rollback work", "DBNewRun(rollback-over)");
 	    LOGError("Tried to submit a run but the contest is over. SQL=(" . $sql . ")");
-	    MSGError("The contest is over!");
+	    MSGError("A competição terminou!");
 	    return 0;
 	    }
 	  */
@@ -817,14 +817,14 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 			if (($oid1 = DB_lo_import_text($c, $autostdout)) == null) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import stdout)");
 				LOGError("Unable to create a large object for file stdout (run=$runnumber,site=$site,contest=$contest).");
-				MSGError("problem importing stdout to database. Contact an admin now!");
+				MSGError("Não foi possível importar stdout para o banco de dados. Contate a administração.");
 				return false;
 			}
 		} else {
 			if($autostdout != '') {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import stderr)");
 				LOGError("Unable to create a large object for file stdout that is not BASE64 (run=$runnumber,site=$site,contest=$contest).");
-				MSGError("problem importing stdout (not BASE64) to database. Contact an admin now!");
+				MSGError("Não foi possível importar stdout (formato BASE64 inválido) para o banco de dados. Contate a administração.");
 				return false;
 			}
 			$oid1 = 'NULL';
@@ -836,14 +836,14 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 			if (($oid2 = DB_lo_import_text($c, $autostderr)) == null) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import stderr)");
 				LOGError("Unable to create a large object for file stderr (run=$runnumber,site=$site,contest=$contest).");
-				MSGError("problem importing stderr to database. Contact an admin now!");
+				MSGError("Não foi possível importar stderr para o banco de dados. Contate a administração.");
 				return false;
 			}
 		} else {
 			if($autostderr != '') {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import stderr)");
 				LOGError("Unable to create a large object for file stderr that is not BASE64 (run=$runnumber,site=$site,contest=$contest).");
-				MSGError("problem importing stderr (not BASE64) to database. Contact an admin now!");
+				MSGError("Não foi possível importar stderr (formato BASE64 inválido) para o banco de dados. Contate a administração.");
 				return false;
 			}
 			$oid2 = 'NULL';
@@ -855,7 +855,7 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 			if (($oid = DB_lo_import($c, $filepath)) === false) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import)");
 				LOGError("DBNewRun: Unable to create a large object for file $filepath.");
-				MSGError("problem importing file $filepath to database. Contact an admin now!");
+				MSGError("Não foi possível importar o arquivo $filepath para o banco de dados. Contate a administração.");
 				return false;
 			}
 		} else {
@@ -863,7 +863,7 @@ function DBNewRun($param,$c=null,$allowinsert=true) {
 			if (($oid = DB_lo_import_text($c, $filepath)) == null) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import)");
 				LOGError("DBNewRun: Unable to create a large object for file.");
-				MSGError("problem importing file to database. Contact an admin now!");
+				MSGError("Não foi possível importar o arquivo para o banco de dados. Contate a administração.");
 				return false;
 			}
 		}

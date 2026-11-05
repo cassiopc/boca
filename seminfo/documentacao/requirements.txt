@@ -1,0 +1,6 @@
+# Somente para regenerar/conferir os documentos; não é dependência do evento.
+reportlab==4.4.9
+Markdown==3.11.1
+beautifulsoup4==4.15.0
+pypdf==6.10.0
+pdfplumber==0.11.9

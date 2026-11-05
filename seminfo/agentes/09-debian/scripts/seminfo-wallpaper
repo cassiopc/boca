@@ -1,0 +1,21 @@
+#!/bin/sh
+IMG=/usr/local/share/seminfo/wallpaper.png
+sleep 2
+if [ ! -f "$IMG" ]; then
+  echo "sem wallpaper: $IMG" >&2
+  exit 0
+fi
+xrandr --query | awk '/ connected/{print $1}' | while read -r out; do
+  base="/backdrop/screen0/monitor${out}/workspace0"
+  xfconf-query -c xfce4-desktop -p "$base/last-image" -n -t string -s "$IMG" \
+    || xfconf-query -c xfce4-desktop -p "$base/last-image" -t string -s "$IMG"
+  xfconf-query -c xfce4-desktop -p "$base/image-style" -n -t int -s 5 \
+    || xfconf-query -c xfce4-desktop -p "$base/image-style" -t int -s 5
+done
+xfconf-query -c xfce4-desktop -l | while read -r prop; do
+  case "$prop" in
+    */last-image|*/image-path|*/last-single-image)
+      xfconf-query -c xfce4-desktop -p "$prop" -s "$IMG" || true
+      ;;
+  esac
+done

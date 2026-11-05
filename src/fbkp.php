@@ -70,7 +70,7 @@ function DBBkpDelete($number,$site,$contest,$user,$adm='') {
 	if (DB_lo_unlink($c, $temp['oid']) === false) {
 		DBExec($c, "rollback work", "DBBkpDelete(rollback-import)");
 		LOGError("Unable to delete a large object (user=$user, contest=$contest, site=$site, number=$number).");
-		MSGError("problem deleting bkp from database. Contact an admin.");
+		MSGError("Não foi possível excluir o backup do banco de dados. Contate a administração.");
 		exit;
 	}
 	if (strlen($adm)>0) $str = "deleted by " . $adm;
@@ -94,14 +94,14 @@ function DBNewBkp($contest, $site, $user, $filename, $filepath, $size) {
 	if (DBnlines($r) != 1) {
 		DBExec($c, "rollback work", "DBNewBkp(rollback-toomanyerror)");
 		LOGError("Error in bkp table. SQL=(" . $sql . ")");
-		MSGError("Error in bkp table.");
+		MSGError("Erro na tabela de backups.");
 		exit;
 	}
 	$a = DBRow($r,0);
         if($a['n']>100) {
 		DBExec($c, "rollback work", "DBNewBkp(rollback-toomany)");
 		LOGError("Too many bkps from user=$user, site=$site, contest=$contest.",2);
-		MSGError("Too many bkp files. Try remove some of them before uploading another.");
+		MSGError("Há muitos arquivos de backup. Remova algum antes de enviar outro.");
 		return false;
 	}
 
@@ -111,7 +111,7 @@ function DBNewBkp($contest, $site, $user, $filename, $filepath, $size) {
 	if (DBnlines($r) != 1) {
 		DBExec($c, "rollback work", "DBNewBkp(rollback-max)");
 		LOGError("Error in bkp table. SQL=(" . $sql . ")");
-		MSGError("Error in bkp table.");
+		MSGError("Erro na tabela de backups.");
 		exit;
 	}
 	$a = DBRow($r,0);
@@ -121,7 +121,7 @@ function DBNewBkp($contest, $site, $user, $filename, $filepath, $size) {
 	if (($oid = DB_lo_import($c, $filepath)) === false) {
 		DBExec($c, "rollback work", "DBNewBkp(rollback-import)");
 		LOGError("Unable to create a large object for file $filepath.");
-		MSGError("problem importing bkp to database. Contact an admin now!");
+		MSGError("Não foi possível importar o backup para o banco de dados. Contate a administração.");
 		exit;
 	}
 

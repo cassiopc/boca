@@ -1,0 +1,43 @@
+{
+    "//comment1": "Matrix of supported image tags/releases (latest: first value)",
+    "release": [
+        "1.2.2",
+        "1.2.2-jammy",
+        "1.2.2-focal",
+        "1.2",
+        "1.2-jammy",
+        "1.2-focal",
+        "latest",
+        "nightly",
+        "nightly-jammy",
+        "nightly-focal",
+        "master",
+        "master-jammy",
+        "master-focal",
+        "1.2.1",
+        "1.2.1-jammy",
+        "1.2.1-focal",
+        "1.2.0",
+        "1.2.0-jammy",
+        "1.2.0-focal",
+        "1.1.0",
+        "1.0.0"
+    ],
+    "//comment2": "Matrix of parent/base images used in builds (default: first value)",
+    "parent": [
+        "ubuntu:jammy",
+        "ubuntu:focal"
+    ],
+    "//comment3": "Matrix of target os/platforms (multi-arch)",
+    "platform": [
+        "linux/amd64",
+        "linux/arm/v7",
+        "linux/arm64/v8",
+        "linux/ppc64le",
+        "linux/s390x"
+    ],
+    "//comment4": "Git URL of the BOCA repository to clone from (empty for https://github.com/cassiopc/boca.git)",
+    "repository": "https://github.com/cassiopc/boca.git",
+    "//comment5": "The branch, tag or SHA to point to in the cloned BOCA repository",
+    "ref": "master"
+}

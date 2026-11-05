@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Last modified 21/jul/2012 by cassio@ime.usp.br
 if(isset($_SESSION["locr"]) && isset($_SESSION["loc"]) && !is_readable($_SESSION["locr"] . '/private/conf.php')) {
-	MSGError('Permission problems in ' . $_SESSION["locr"] . '/private/conf.php - the file must be readable to the user running the web server');
+	MSGError('Problema de permissão em ' . $_SESSION["locr"] . '/private/conf.php: o usuário do servidor web precisa ter acesso de leitura.');
 	exit;
 }
 require_once('hex.php');
@@ -167,8 +167,8 @@ function DBConnect($forcenew=false) {
 	}
 	if (!$conn) {
 		LOGError("Unable to connect to database (${conf["dbhost"]},${conf["dbname"]},${conf["dbuser"]}).");
-		MSGError("Unable to connect to database (${conf["dbhost"]}:${conf["dbport"]},${conf["dbname"]},${conf["dbuser"]}). ".
-			"Is it running? Is the DB password in conf.php correct?");
+		MSGError("Não foi possível conectar ao banco de dados (${conf["dbhost"]}:${conf["dbport"]},${conf["dbname"]},${conf["dbuser"]}). ".
+			"Verifique se ele está em execução e se a senha no conf.php está correta.");
 		exit;
 	}
 	if(isset($conf["dbclientenc"]))
@@ -205,7 +205,7 @@ function DBExec($conn,$sql,$txt='') {
 	if (!$result) {
 		LOGError("Unable to exec SQL in the database ($txt). " .
 				 " SQL=(" . sanitizeText(str_replace("\n", " ",$sql)) . "Error=(" . sanitizeText(str_replace("\n", " ",pg_errormessage($conn))) . ")");
-		MSGError("Unable to exec SQL in the database ($txt). Aborting.");
+		MSGError("Não foi possível executar a consulta no banco de dados ($txt). Operação interrompida.");
 		exit;
 	}
 	return $result;
@@ -221,7 +221,7 @@ function DBExecNoSQLLog($sql,$txt='') {
 	$result = DB_pg_exec ($conn, $sql);
 	pg_close($conn);
 	if (!$result) {
-		MSGError("Unable to exec SQL in the database ($txt).");
+		MSGError("Não foi possível executar a consulta no banco de dados ($txt).");
 	}
 	return $result;
 }
@@ -247,7 +247,7 @@ function DBGetRow ($sql,$i,$c=null,$txt='') {
 	if (!$a) {
 	  DBClose($c);
 	  LOGError("Unable to get row $i from a query ($txt). SQL=(" . $sql . ")");
-	  MSGError("Unable to get row from query ($txt).");
+	  MSGError("Não foi possível obter o registro da consulta ($txt).");
 	  exit;
 	}
 	return $a;
@@ -260,7 +260,7 @@ function DBDropDatabase() {
 		$conn = pg_connect ("connect_timeout=10 host=".$conf["dbhost"]." port=".$conf["dbport"]." dbname=template1 user=".$conf["dbsuperuser"].
 				   " password=".$conf["dbsuperpass"]);
 	 if(!$conn) {
-		 MSGError("Unable to connect to template1 as ".$conf["dbsuperuser"]);
+		 MSGError("Não foi possível conectar ao template1 como ".$conf["dbsuperuser"]);
 		 exit;
 	 }
 	 $r = DBExecNonStop($conn, "drop database ${conf["dbname"]}", "DBDropDatabase(drop)");
@@ -275,7 +275,7 @@ function DBCreateDatabase() {
 				   " password=".$conf["dbsuperpass"]);
 
 	 if(!$conn) {
-		 MSGError("Unable to connect to template1 as ".$conf["dbsuperuser"]);
+		 MSGError("Não foi possível conectar ao template1 como ".$conf["dbsuperuser"]);
 		 exit;
 	 }
 	 if(isset($conf["dbencoding"]))
